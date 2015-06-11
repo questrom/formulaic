@@ -1,0 +1,12 @@
+{
+    "name": "questrom/formbuilder",
+    "authors": [
+        {
+            "name": "Jason Hansel",
+            "email": "perljason@gmail.com"
+        }
+    ],
+    "require": {
+        "secondparty/dipper": "0.4"
+    }
+}
