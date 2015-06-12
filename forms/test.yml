@@ -8,3 +8,8 @@ fields:
   - !textbox
     label: test3
     name: tb01
+    required: true
+  - !textbox
+    label: test3
+    name: tb02
+    required: false
