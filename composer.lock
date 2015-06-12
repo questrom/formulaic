@@ -4,8 +4,50 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "1776678e74c0a5d46bb264187a2617de",
+    "hash": "bc977057cd10bf9f86f7ce3687dda76b",
     "packages": [
+        {
+            "name": "noccylabs/sdl",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/noccylabs/php-sdl.git",
+                "reference": "b19544cad4590e32482632e0905c82c34555265f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/noccylabs/php-sdl/zipball/b19544cad4590e32482632e0905c82c34555265f",
+                "reference": "b19544cad4590e32482632e0905c82c34555265f",
+                "shasum": ""
+            },
+            "require": {
+                "symfony/expression-language": "2.4.*"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev",
+                    "dev-sdl2": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "authors": [
+                {
+                    "name": "NoccyLabs",
+                    "email": "noccylabs@gmail.com"
+                }
+            ],
+            "description": "Simple Declarative Language (SDL)",
+            "time": "2014-11-15 03:52:07"
+        },
         {
             "name": "secondparty/dipper",
             "version": "v0.4",
@@ -49,6 +91,90 @@
                 "yaml"
             ],
             "time": "2015-02-25 16:46:35"
+        },
+        {
+            "name": "semantic/ui",
+            "version": "1.12.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Semantic-Org/Semantic-UI.git",
+                "reference": "069ea0aef47ce4f32c1c17b4f6a9a4effddc9600"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Semantic-Org/Semantic-UI/zipball/069ea0aef47ce4f32c1c17b4f6a9a4effddc9600",
+                "reference": "069ea0aef47ce4f32c1c17b4f6a9a4effddc9600",
+                "shasum": ""
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jack Lukic",
+                    "email": "jacklukic@gmail.com",
+                    "homepage": "http://www.jacklukic.com",
+                    "role": "Creator"
+                }
+            ],
+            "description": "Semantic empowers designers and developers by creating a shared vocabulary for UI.",
+            "homepage": "http://www.semantic-ui.com",
+            "keywords": [
+                "css",
+                "framework",
+                "semantic",
+                "ui"
+            ],
+            "time": "2015-05-20 15:52:45"
+        },
+        {
+            "name": "symfony/expression-language",
+            "version": "v2.4.10",
+            "target-dir": "Symfony/Component/ExpressionLanguage",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/expression-language.git",
+                "reference": "b62ea6888654db504813ddf753dac6bd677beb61"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/expression-language/zipball/b62ea6888654db504813ddf753dac6bd677beb61",
+                "reference": "b62ea6888654db504813ddf753dac6bd677beb61",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.4-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Symfony\\Component\\ExpressionLanguage\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Symfony Community",
+                    "homepage": "http://symfony.com/contributors"
+                },
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                }
+            ],
+            "description": "Symfony ExpressionLanguage Component",
+            "homepage": "http://symfony.com",
+            "time": "2014-09-25 09:55:38"
         }
     ],
     "packages-dev": [],

@@ -7,6 +7,15 @@
         }
     ],
     "require": {
-        "secondparty/dipper": "0.4"
-    }
+        "secondparty/dipper": "0.4",
+        "semantic/ui": "1.12.3",
+        "noccylabs/sdl": "2.0.0",
+        "drslump/sexp-php": "master"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/drslump/sexp-php"
+        }
+    ]
 }
