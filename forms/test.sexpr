@@ -1,0 +1,16 @@
+(foo
+    "this is a \"quoted\" string"
+    "also supporting\nnew lines"
+    "The following number will be automatically casted to an integer"
+    1231
+    "unless you call ->setCastNumbers(false)"
+    (bar
+        ; Line comment
+        (int 10) ; This is a comment too
+        (float 3.1415)
+        (string "foobar")
+        (string 'single quotes')
+        (base64 |YWJj|)     ; "abc" encoded in base64
+        (hex #61 62 63#)    ; "abc" encoded as hex octets           
+    )
+)

@@ -1,0 +1,10 @@
+fields:
+  - type: checkbox
+    label: test
+    name: cb01
+  - type: checkbox
+    label: test2
+    name: cb02
+  - type: textbox
+    label: test3
+    name: tb01
