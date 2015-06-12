@@ -1,112 +1,87 @@
+
 <?php
+
 require('vendor/autoload.php');
+
+class Checkbox {	
+	public $label;
+	public $name;
+	function __construct($args) {
+		$this->label = $args['label'];
+		$this->name = $args['name'];
+	}
+	function render() {
+		// TODO fix xss
+		return '<div class="field"> <div class="ui  checkbox"> <input name="' . $this->name. '" type="checkbox"> <label>' . $this->label . '</label> </div> </div>';
+	}
+}
+
+class Textbox {
+	public $label;
+	public $name;
+	function __construct($args) {
+		$this->label = $args['label'];
+		$this->name = $args['name'];
+	}
+	function render() {
+		// TODO fix xss
+		return '<div class="field"> <input name="' . $this->name. '" type="text"> <label>' . $this->label . '</label> </div>';
+	}
+}
+
+class Form {
+	public $items;
+	function __construct($args) {
+		$this->items = $args;
+	}
+	function render() {
+		$text = '<form action="submit.php" method="POST" class="ui form">';
+		foreach($this->items as $k => $x) {
+			if($x['type'] == 'checkbox') {
+				$x = new Checkbox($x);
+			} else {
+				$x = new Textbox($x);
+			}
+			$text .= $x->render();
+		}
+		return $text . ' <input type="Submit" value="hey" class="submit button" /> </form>';
+	}
+}
+
+class Page {
+	public $form;
+	public $json;
+	function __construct($form, $json) {
+		$this->form = $form;
+		$this->json = $json;
+	}
+	function render() {
+		return '<div class="ui page grid"><div class="sixteen wide column">' . $this->form->render() . '</div></div>';
+	}
+}
+
+
 $result = yaml_parse_file('forms/test.yml', 0, $ndocs);
-$json = json_encode($result['fields']);
+
+
+$json = json_encode($result);
+
+$form = new Form($result['fields']);
+
+$page = new Page($form, $json);
+
 ?>
 <!DOCTYPE html>
 <html>
 <head>
 	<meta charset="utf-8">
+	<title>Form</title>
 	<link rel="stylesheet" href="vendor/semantic/ui/dist/semantic.css">
-	<link rel="stylesheet" href="vendor/semantic/ui/dist/components/checkbox.css">
-	<link rel="stylesheet" href="vendor/semantic/ui/dist/components/form.css">
-
-  <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.js"></script>
-  <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.address/1.6/jquery.address.js"></script>
-	<script src="vendor/semantic/ui/dist/semantic.min.js"></script>
-	
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.js"></script>
+	<script src="vendor/semantic/ui/dist/semantic.js"></script>
 </head>
 <body>
-<!-- <div class="pusher"> -->
-	<div class="ui page grid">
-	    <div class="sixteen wide column">
-	      	<div id="formholder">
-	      	</div>
-	    </div>
-	</div>
-	<!-- </div> -->
-<script src="vendor/semantic/ui/dist/components/checkbox.js"></script>
-<script src="vendor/semantic/ui/dist/components/form.js"></script>
-	<script src="jquery.serializejson.js"></script>
-	<!-- <script src="hyperscript-mod.js"></script> -->
-	<script src="mercury.js"></script>
-
-<script>
-var js = <?=$json?>;
-</script>
-
-<!-- -->
-<script>
-
-var h = mercury.h;
-
-// document.getElementById('formholder').appendChild(form(js));
-
-function checkbox(o) {
-	return h('.field',
-		h('.ui.checkbox', [
-			h('input', {name: o.name, type: 'checkbox'}),
-			h('label', o.label)
-		)
-	);
-}
-
-function textbox(o) {
-
-	return h('.field',
-		h('.ui.input', [
-			h('input.input', { name: o.name, type: 'text' }),
-			h('label', o.label)
-		])
-	);
-}
-
-function form(o) {
-	o = o.form;
-	return h('form.ui.form', {action: 'submit.php', method: 'POST'}, [
-		o.map(function(inner) {
-			console.log('$I', inner);
-			if(inner.type === "checkbox") {
-				return checkbox(inner);
-			} else {
-				return textbox(inner);
-			}
-		}),
-		h('input.submit.button', {type:'Submit', value:'hey'})
-	]);
-}
-
-
-var semantic = {};
-
-  semantic.validateForm = {};
-
- semantic.validateForm.ready = function() {
-	$('.ui.checkbox').checkbox();
-		$('.ui.form').form({
-			tb01: {
-				identifier: 'tb01',
-			rules: [
-				{
-				      type   : 'empty',
-		          prompt : 'Please enter a password'
-		      }
-			]
-			}
-		}, {
-			inline: true, on: 'blur'
-		});
-};
-
-
-$(document)
-  .ready(function() {
-
-	mercury.app(document.getElementById('formholder'), mercury.state({ form: mercury.value( js ) }), form);
-
-  	semantic.validateForm.ready();
-  })
-;
-</script>
+	<?=$page->render()?>
+	<script src="client.js"></script>
 </body>
 </html>
