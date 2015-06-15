@@ -1,4 +1,8 @@
+name: "Test Form"
 fields:
+  - !datetime
+    label: helloworld
+    name: dtp1
   - !checkbox
     label: test
     name: cb01
@@ -13,3 +17,20 @@ fields:
     label: test3
     name: tb02
     required: false
+    password: true
+  - !dropdown
+    name: sel01
+    label: test4
+    options: ['Alpha', 'Beta', 'Gamma']
+  - !radios
+    name: rad01
+    label: A few options
+    options: ['Alpha', 'Beta', 'Delta']
+  - !group
+    - !checkboxes
+      name: cbl01
+      label: More options
+      options: ['Eta', 'Zeta', 'Theta']
+    - !textarea
+      name: area51
+      label: Area 51

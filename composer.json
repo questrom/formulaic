@@ -10,6 +10,9 @@
         "secondparty/dipper": "0.4",
         "semantic/ui": "1.12.3",
         "mustache/mustache": "^2.8",
-        "twig/twig": "^1.18"
+        "twig/twig": "^1.18",
+        "eonasdan/bootstrap-datetimepicker": "^4.7",
+        "twbs/bootstrap": "^3.3",
+        "moment/moment": "^2.10"
     }
 }
