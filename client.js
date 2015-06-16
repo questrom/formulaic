@@ -1,5 +1,5 @@
 /* jshint undef: true, unused: true */
-/* globals $, Pikaday */
+/* globals $, moment */
 
 
 $(function() {
@@ -42,69 +42,56 @@ $(function() {
 
 	});
 
-	// $('.datetime').each(function() {
-	// 	var elem = this;
-	// 	new Pikaday({
-	// 		field: $(elem).find('input')[0],
-	// 		bound: false,
-	// 		container: $(elem).find('.container')[0],
-	// 		i18n: {
-	// 		    previousMonth : '',
-	// 		    nextMonth     : '',
-	// 		    months        : ['January','February','March','April','May','June','July','August','September','October','November','December'],
-	// 		    weekdays      : ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
-	// 		    weekdaysShort : ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
-	// 		}
-	// 	});
-	// });
-
-
+	// Custom date-time widget
 
 	$('.datetime').each(function() {
 		var $this = $(this),
-			latest;
+			latestMonth,
+			hidden = $this.find('input[type=hidden]');
 
-		function drawCal(date, showSel) {
-			latest = date;
-			date = date.clone();
-			$this.find('.header').text(date.format('MMMM YYYY'));
-			var monthStart = date.clone().startOf('month').startOf('week');
+		function drawCal(month, date) {
+			latestMonth = month;
+			hidden.val(date && date.format('YYYY-MM-DD'));
+
+			$this.closest('.dropdown').find('> .text').text(date ? date.format('YYYY-MM-DD') : 'Select a date...' );
+
+			// Set the header
+
+			$this.find('.header').text(month.format('MMMM YYYY'));
+
+			// Label individual days
+
+			var monthStart = month.clone().startOf('month').startOf('week');
 			$this.find('td button').each(function() {
-				var $this = $(this);
-				$this.text(monthStart.format('D'));
-				$this.data('day', monthStart.toISOString());
-				
-				if(monthStart.isSame(date) && showSel) {
-					$this.addClass('primary').removeClass('basic');
-				} else if(monthStart.isSame(date, 'month')) {
-					$this.removeClass('primary').addClass('basic');
-				} else {
-					$this.removeClass('primary').removeClass('basic');
-				}
+				$(this).text(monthStart.format('D'))
+						.data('day', monthStart.format('YYYY-MM-DD'))
+						.toggleClass('primary', monthStart.isSame(date))
+						.toggleClass('basic',  !monthStart.isSame(date))
+						.toggleClass('other-month', !monthStart.isSame(month, 'month'));
 
-				monthStart.add('days', 1);
+				monthStart.add(1, 'day');
 			});
 		}
 
-		drawCal( moment(), false );
+		drawCal(moment(), null);
 
 		$this.find('td > button').click(function() {
-
-			var setTo = moment( $(this).data('day') );
-			if(setTo.isSame(latest, 'day')) {
-				drawCal( setTo, false );
+			var $this = $(this);
+			var setTo = moment($this.data('day'));
+			if(setTo.isSame(hidden.val(), 'day')) {
+				drawCal(setTo, null);
 			} else {
-				drawCal( setTo, true );
-			}
-			
+				drawCal(setTo, setTo);
+			}			
 		});
 
 		$this.find('.left.button').click(function() {
-			drawCal( latest.subtract(1, 'month'), false );
+			drawCal(latestMonth.subtract(1, 'month'), null);
 		});
+
 		$this.find('.right.button').click(function() {
-			drawCal( latest.add(1, 'month'), false );
-		})
+			drawCal(latestMonth.add(1, 'month'), null);
+		});
 
 	});
 

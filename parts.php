@@ -1,67 +1,6 @@
 <?php
 
-
-
-
-class HTMLGenerator {
-	function __construct() {
-		$this->tagStack = [];
-		$this->text = '';
-		$this->closed = true;
-	}
-	function __call($name, $args) {
-		$this->text .= ' ' . $name . '="' . htmlspecialchars($args[0]) . '"';
-		return $this;
-	}
-	function __get($name) {
-		if($name === "end") {
-			$this->close();
-			$tag = array_pop($this->tagStack);
-			$this->text .= '</' . $tag . '>';
-			if(count($this->tagStack) === 0) {
-				$ret = $this->text;
-				$this->text = '';
-				return $ret;
-			} else {
-				return $this;
-			}
-		} else {
-			$this->close();
-			$this->tagStack[] = $name;
-			$this->text .= '<' . $name;
-			$this->closed = false;
-			return $this;
-		}
-	}
-	function add($arr) {
-		$this->close();
-		if(is_array($arr)) {
-			foreach ($arr as $item) {
-				$this->add($item);
-			}	
-		} else {
-			$this->text .= ($arr instanceof Component) ? $arr->get(new HTMLGenerator()) : $arr;	
-		}
-		return $this;
-	}
-	private function close() {
-		if(!$this->closed) {
-			$this->text .= '>';
-		}
-		$this->closed = true;
-	}
-	function t($text) {
-		$this->close();
-		$this->text .= htmlspecialchars($text);
-		return $this;
-	}
-	function data($key, $val) {
-		$this->text .= ' data-' . $key . '="' . htmlspecialchars($val) . '"';
-		return $this;
-	}
-}
-
-
+require('include/HTMLGenerator.php');
 
 abstract class Component {
 	abstract function __construct($args);
@@ -126,7 +65,9 @@ class Dropdown extends Component {
 					->i->class('dropdown icon')->end
 					->div->class('menu')
 						->add(array_map(
-							function($v) { $h = new HTMLGenerator(); return $h->div->class('item')->data('value',$v)->t($v)->end; },
+							function($v) use($h) {
+								return $h->div->class('item')->data('value',$v)->t($v)->end;
+							},
 							$this->options
 						))
 					->end
@@ -150,8 +91,7 @@ class Radios extends Component {
 			->label->t($this->label)->end
 			->add(
 				array_map(
-					function($v) {
-						$h = new HTMLGenerator();
+					function($v) use($h) {
 						return $h->div->class('field')
 							->div->class('ui radio checkbox')
 								->input->name($this->name)->type('radio')->value($v)->end
@@ -181,8 +121,7 @@ class Checkboxes extends Component {
 			->label->t($this->label)->end
 			->add(
 				array_map(
-					function($v) {
-						$h = new HTMLGenerator();
+					function($v) use($h) {
 						return $h->div->class('field')
 							->div->class('ui checkbox')
 								->input->name($this->name . '[]')->type('checkbox')->value($v)->end
@@ -206,7 +145,7 @@ class Textbox extends Component {
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
-		$this->required = $args['required'];
+		$this->required = isset($args['required']) ? $args['required'] : false;
 		$this->password = isset($args['password']) ? $args['password'] : false;
 	}
 	function get($h) {
@@ -226,6 +165,48 @@ class Textbox extends Component {
 	}
 }
 
+abstract class SpecialInput extends Component {
+	public $label;
+	public $name;
+	function __construct($args) {
+		$this->label = $args['label'];
+		$this->name = $args['name'];
+	}
+	function render($h, $type, $icon) {
+		return $h->div->class('ui field')
+			->label->t($this->label)->end
+			->div->class($icon ? 'ui left icon input' : 'ui input')
+				->hif($icon)
+					->i->class('icon ' . $icon)->end
+				->end
+				->input->type($type)->name($this->name)->end
+			->end
+		->end;
+	
+	}
+}
+
+class PhoneNumber extends SpecialInput {
+	function get($h) {
+		return $this->render($h, 'tel', 'call');
+	}
+	function validate($against) {}
+}
+
+class EmailAddr extends SpecialInput {
+	function get($h) {
+		return $this->render($h, 'email', 'mail');
+	}
+	function validate($against) {}	
+}
+
+class NumberInp extends SpecialInput {
+	function get($h) {
+		return $this->render($h, 'number', '');
+	}
+	function validate($against) {}		
+}
+
 class DateTimePicker extends Component {
 	public $label;
 	public $name;
@@ -234,35 +215,23 @@ class DateTimePicker extends Component {
 		$this->name = $args['name'];
 	}
 	function get($h) {
-		return $h->div->class('ui field')
+		return $h
+		->div->class('ui field')
 			->label->t($this->label)->end
-			->div->class('datetime')
+			->div->class('ui dropdown datetime basic button')
+				->div->class('text')->t('')->end
+				->i->class('dropdown icon')->end
 				->input->type('hidden')->name($this->name)->end
-				// ->div->class('container')->end
-				->div->class('ui top attached buttons')
-					->button->type('button')->class('ui icon button')
-						->i->class('caret left icon')->end
-					->end
-					->div->class('ui button')
-						->t('July 2015')
-					->end
-					->button->type('button')->class('ui icon button')
-						->i->class('caret right icon')->end
-					->end
-				->end
-				->table->class('ui collapsing compact celled small seven column table')
+				->table->class('ui celled small seven column table menu')
 					->thead
 						->tr
 							->th
-
 								->button->type('button')->class('ui compact icon button fluid left floated')
 									->i->class('caret left icon')->end
 								->end
 							->end
 							->th->colspan(5)
-								->h4->class('ui small header')
-									->t('July 2015')
-								->end
+								->h4->class('ui small center aligned header')->end
 							->end
 							->th
 								->button->type('button')->class('ui compact icon button fluid right floated')
@@ -272,21 +241,19 @@ class DateTimePicker extends Component {
 						->end
 					->end
 					->tbody
-						->add(
-							array_map(
-								function($v) {
-									 $h = new HTMLGenerator();
-									 return $h->tr->add( 
-									 	array_map(
-											function($v) {
-												 $h = new HTMLGenerator();
-												 return $h->td->button->type('button')->class('ui compact fluid attached basic button')->t(22)->end->end;
-											}
-										, range(0, 6))
-									)->end;
-								}
-							, range(0, 5))
-						)
+						->add(array_map(
+							function($v) use($h) {
+								return $h->tr
+									->add(array_map(
+										function($v) use($h) {
+											return $h->td->button->type('button')->class('ui compact fluid attached basic button')->end->end;
+										},
+										range(0, 6)
+									))
+								->end;
+							},
+							range(0, 5)
+						))
 					->end
 				->end
 			->end
@@ -363,12 +330,15 @@ class Form extends Component {
 
 class Page extends Component {
 	public $form;
+	public $name;
 	function __construct($yaml) {
 		$this->form = new Form($yaml['fields']);
+		$this->name = $yaml['name'];
 	}
 	function get($h) {
 		return $h->div->class('ui page grid')
 			->div->class('sixteen wide column')
+				->h1->t($this->name)->end
 				->add($this->form)
 			->end
 		->end;
@@ -387,7 +357,10 @@ function parse_yaml($file) {
 		'!checkboxes' => function($v) { return new Checkboxes($v); },
 		'!textarea' => function($v) { return new Textarea($v); },
 		'!group' => function($v) { return new Group($v); },
-		'!datetime' => function($v) { return new DateTimePicker($v); }
+		'!datetime' => function($v) { return new DateTimePicker($v); },
+		'!phonenumber' => function($v) { return new PhoneNumber($v); },
+		'!email' => function($v) { return new EmailAddr($v); },
+		'!number' => function($v) { return new NumberInp($v); }
 
 	));
 }

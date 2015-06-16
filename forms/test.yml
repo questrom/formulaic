@@ -1,36 +1,54 @@
-name: "Test Form"
+name: "Example Form"
 fields:
+  - !textbox
+    label: Your name
+    name: name
+  - !phonenumber
+    label: Phone number
+    name: phone
+  - !email
+    label: Email address
+    name: email
   - !datetime
-    label: helloworld
-    name: dtp1
+    label: Start date
+    name: start_date
+  - !number
+    label: How many attendees?
+    name: num_attendees
   - !checkbox
-    label: test
-    name: cb01
-  - !checkbox
-    label: t<est2
-    name: cb>02
-  - !textbox
-    label: test3
-    name: tb01
-    required: true
-  - !textbox
-    label: test3
-    name: tb02
-    required: false
-    password: true
-  - !dropdown
-    name: sel01
-    label: test4
-    options: ['Alpha', 'Beta', 'Gamma']
+    label: I agree to the terms and conditions
+    name: agree_to_terms
+  - !textarea
+    label: Additional notes
+    name: additional_notes
   - !radios
-    name: rad01
-    label: A few options
-    options: ['Alpha', 'Beta', 'Delta']
+    label: Choose a link...
+    name: choose_a_link
+    options: [
+      'Career Center',
+      'Student Link',
+      'Tech Help',
+      'BU Calendar'
+    ]
+  - !dropdown
+    label: Choose a school...
+    name: choose_a_school
+    options: [
+      'College of Arts and Sciences',
+      'Questrom School of Business',
+      'College of General Studies'
+    ]
   - !group
-    - !checkboxes
-      name: cbl01
-      label: More options
-      options: ['Eta', 'Zeta', 'Theta']
-    - !textarea
-      name: area51
-      label: Area 51
+    - !textbox
+      label: Username
+      name: username
+      required: true
+    - !textbox
+      label: Password
+      name: password
+      required: true
+      password: true
+  - !checkboxes
+    label: What are your favorite colors?
+    name: fave_colors
+    options: [ 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Hipster', '<html>' ]
