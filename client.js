@@ -4,12 +4,14 @@
 
 $(function() {
 
+	$.fn.form.settings.selector.group = '.field:not(.not-validation-root), .validation-root';
 
 	// $('.ui.checkbox').checkbox();
 	var form = $('.ui.form').form({}, {
 		inline: true
 
 	});
+
 
 	$('.ui.dropdown').dropdown({
 		metadata: {

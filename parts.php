@@ -2,8 +2,8 @@
 
 require('include/HTMLGenerator.php');
 
-abstract class Component {
-	abstract function __construct($args);
+abstract class Component extends ArrayObject {
+	// abstract function __construct($args);
 	abstract function get($h);
 	abstract function validate($against);
 }
@@ -12,10 +12,11 @@ class Checkbox extends Component {
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
+		$this->required = isset($args['required']) ? $args['required'] : false;
 	}
 	function get($h) {
 		return $h
-		->div->class('field')
+		->div->class('field ' . ($this->required ? 'required' : ''))
 			->div->class('ui checkbox')
 				->input->type('checkbox')->name($this->name)->end
 				->label->t($this->label)->end
@@ -23,7 +24,11 @@ class Checkbox extends Component {
 		->end;
 	}
 	function validate($against) {
-		return null;
+		if($this->required && $against !== 'on') {
+			return 'Please check this checkbox.';
+		} else {
+			return null;
+		}
 	}
 }
 
@@ -31,16 +36,32 @@ class Textarea extends Component {
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
+
+		$this->maxLength = isset($args['max-length']) ? $args['max-length'] : INF;
+		$this->minLength = isset($args['min-length']) ? $args['min-length'] : 0;
+		$this->required = isset($args['required']) ? $args['required'] : false;
+		$this->mustMatch = isset($args['must-match']) ? $args['must-match'] : null;
 	}
 	function get($h) {
 		return $h
-		->div->class('field')
+		->div->class('field ' . ($this->required ? 'required' : ''))
 			->label->t($this->label)->end
 			->textarea->name($this->name)->end
 		->end;
 	}
-	function validate($against) {
-		return null;
+	function validate($str) {
+		if($this->required && trim($str) === '') {
+			return 'This field is required.';
+		}
+		if(strlen($str) > $this->maxLength) {
+			return 'The input is too long. Maximum is ' . $this->maxLength . ' characters.';
+		}
+		if(strlen($str) < $this->minLength) {
+			return 'The input is too short. Minimum is ' . $this->minLength . ' characters.';	
+		}
+		if($this->mustMatch !== null && preg_match($this->mustMatch, $str) === 0) {
+			return 'This input is not valid. It must match the pattern: ' . $this->mustMatch;
+		}
 	}
 }
 
@@ -50,6 +71,8 @@ class Dropdown extends Component {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
 		$this->options = $args['options'];
+
+		$this->required = isset($args['required']) ? $args['required'] : false;
 	}
 	function get($h) {
 		return $h
@@ -70,7 +93,11 @@ class Dropdown extends Component {
 			->end
 		->end;
 	}
-	function validate($a) {}
+	function validate($against) {
+		if($this->required && $against === '') {
+			return 'This field is required.';
+		} 
+	}
 }
 
 class Radios extends Component {
@@ -78,15 +105,18 @@ class Radios extends Component {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
 		$this->options = $args['options'];
+
+		$this->required = isset($args['required']) ? $args['required'] : false;
 	}
 	function get($h) {
 		return $h
-		->div->class('grouped fields')
+		->div->class('grouped fields validation-root ' . ($this->required ? 'required' : ''))
 			->label->t($this->label)->end
 			->add(
 				array_map(
 					function($v) use($h) {
-						return $h->div->class('field')
+						return $h
+						->div->class('field not-validation-root')
 							->div->class('ui radio checkbox')
 								->input->name($this->name)->type('radio')->value($v)->end
 								->label->t($v)->end
@@ -98,23 +128,32 @@ class Radios extends Component {
 			)
 		->end;
 	}
-	function validate($a) {}
+	function validate($against) {
+		if($this->required && $against === null) {
+			return 'Please choose an option.';
+		}
+	}
 }
+
 
 class Checkboxes extends Component {
 	function __construct($args) {
-		$this->label = $args['label'];
-		$this->name = $args['name'];
-		$this->options = $args['options'];
+		$args = array_merge($args, [
+			"max-choices" => INF,
+			"min-choices" => 0,
+			"required" => false
+		]);
+
+		parent::__construct($args, ArrayObject::ARRAY_AS_PROPS);
 	}
 	function get($h) {
 		return $h
-		->div->class('grouped fields')
+		->div->class('grouped fields validation-root ' . ($this->required ? 'required' : ''))
 			->label->t($this->label)->end
 			->add(
 				array_map(
 					function($v) use($h) {
-						return $h->div->class('field')
+						return $h->div->class('field not-validation-root')
 							->div->class('ui checkbox')
 								->input->name($this->name . '[]')->type('checkbox')->value($v)->end
 								->label->t($v)->end
@@ -126,7 +165,20 @@ class Checkboxes extends Component {
 			)
 		->end;
 	}
-	function validate($a) {}
+	function validate($against) {
+		if($against === null) {
+			$against = [];
+		}
+		if($this->required && count($against) === 0) {
+			return 'This field is required.';
+		}
+		if(count($against) < $this['min-choices']) {
+			return 'Please choose at least ' . $this['min-choices'] . ' options.'; 
+		}
+		if(count($against) > $this['max-choices']) {
+			return 'At most ' . $this['max-choices'] . ' choices are allowed.'; 
+		}
+	}
 }
 
 class Textbox extends Component {
@@ -134,22 +186,34 @@ class Textbox extends Component {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
 		$this->required = isset($args['required']) ? $args['required'] : false;
-		$this->password = isset($args['password']) ? $args['password'] : false;
+
+
+		$this->maxLength = isset($args['max-length']) ? $args['max-length'] : INF;
+		$this->minLength = isset($args['min-length']) ? $args['min-length'] : 0;
+		$this->required = isset($args['required']) ? $args['required'] : false;
+		$this->mustMatch = isset($args['must-match']) ? $args['must-match'] : null;
 	}
 	function get($h) {
 		return $h
 		->div->class('ui field ' . ($this->required ? 'required' : ''))
 			->label->t($this->label)->end
 			->div->class('ui input')
-				->input->type($this->password ? 'password' : 'text')->name($this->name)->end
+				->input->type('text')->name($this->name)->end
 			->end
 		->end;
 	}
-	function validate($against) {
-		if($this->required && $against == "") {
-			return "Required field cannot be empty";
-		} else {
-			return null;
+	function validate($str) {
+		if($this->required && trim($str) === '') {
+			return 'This field is required.';
+		}
+		if(strlen($str) > $this->maxLength) {
+			return 'The input is too long. Maximum is ' . $this->maxLength . ' characters.';
+		}
+		if(strlen($str) < $this->minLength) {
+			return 'The input is too short. Minimum is ' . $this->minLength . ' characters.';	
+		}
+		if($this->mustMatch !== null && preg_match($this->mustMatch, $str) === 0) {
+			return 'This input is not valid. It must match the pattern: ' . $this->mustMatch;
 		}
 	}
 }
@@ -158,10 +222,19 @@ abstract class SpecialInput extends Component {
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
+
+		$this->maxLength = isset($args['max-length']) ? $args['max-length'] : INF;
+		$this->minLength = isset($args['min-length']) ? $args['min-length'] : 0;
+
+		$this->required = isset($args['required']) ? $args['required'] : false;
+		$this->mustMatch = isset($args['must-match']) ? $args['must-match'] : null;
+
+		// Allowed for all fields but only really makes sense for password ones
+		$this->matchHash = isset($args['match-hash']) ? $args['match-hash'] : null;
 	}
 	function render($h, $type, $icon) {
 		return $h
-		->div->class('ui field')
+		->div->class('ui field ' . ($this->required ? 'required' : ''))
 			->label
 				->t($this->label)
 			->end
@@ -172,7 +245,31 @@ abstract class SpecialInput extends Component {
 				->input->type($type)->name($this->name)->end
 			->end
 		->end;
-	
+	}
+	function validate($str) {
+		if($this->matchHash !== null && !password_verify($str, $this->matchHash)) {
+			return 'Password incorrect!';
+		}
+		if($this->required && trim($str) === '') {
+			return 'This field is required.';
+		}
+		if(strlen($str) > $this->maxLength) {
+			return 'The input is too long. Maximum is ' . $this->maxLength . ' characters.';
+		}
+		if(strlen($str) < $this->minLength) {
+			return 'The input is too short. Minimum is ' . $this->minLength . ' characters.';	
+		}
+		if($this->mustMatch !== null && preg_match($this->mustMatch, $str) === 0) {
+			return 'This input is not valid. It must match the pattern: ' . $this->mustMatch;
+		}
+	}
+}
+
+
+
+class Password extends SpecialInput {
+	function get($h) {
+		return $this->render($h, 'password', '');
 	}
 }
 
@@ -180,21 +277,18 @@ class PhoneNumber extends SpecialInput {
 	function get($h) {
 		return $this->render($h, 'tel', 'call');
 	}
-	function validate($against) {}
 }
 
 class EmailAddr extends SpecialInput {
 	function get($h) {
 		return $this->render($h, 'email', 'mail');
 	}
-	function validate($against) {}	
 }
 
 class NumberInp extends SpecialInput {
 	function get($h) {
 		return $this->render($h, 'number', '');
 	}
-	function validate($against) {}		
 }
 
 class DateTimePicker extends Component {
@@ -329,7 +423,8 @@ class Page extends Component {
 		->end;
 	}
 	function validate($against) {
-		return $this->form->validate($against);
+		// semantic-ui doesnt escape things for us
+		return array_map('htmlspecialchars', $this->form->validate($against));
 	}
 }
 
@@ -337,6 +432,7 @@ function parse_yaml($file) {
 	return yaml_parse_file($file, 0, $ndocs, array(
 		'!checkbox' => function($v) { return new Checkbox($v); },
 		'!textbox' => function($v) { return new Textbox($v); },
+		'!password' => function($v) { return new Password($v); },
 		'!dropdown' => function($v) { return new Dropdown($v); },
 		'!radios' => function($v) { return new Radios($v); },
 		'!checkboxes' => function($v) { return new Checkboxes($v); },

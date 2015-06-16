@@ -18,12 +18,15 @@ fields:
   - !checkbox
     label: I agree to the terms and conditions
     name: agree_to_terms
+    required: true
   - !textarea
     label: Additional notes
     name: additional_notes
+    required: true
   - !radios
     label: Choose a link...
     name: choose_a_link
+    required: true
     options: [
       'Career Center',
       'Student Link',
@@ -33,6 +36,7 @@ fields:
   - !dropdown
     label: Choose a school...
     name: choose_a_school
+    required: true
     options: [
       'College of Arts and Sciences',
       'Questrom School of Business',
@@ -43,12 +47,19 @@ fields:
       label: Username
       name: username
       required: true
-    - !textbox
+      max-length: 20
+    - !password
       label: Password
       name: password
+      # password is 595
+      # generated with PHP's password_hash
+      # in prod, don't store this in plaintext
+      # match-hash: '$2y$10$FeVuAyjk82DNDflP6LevxOG7GCWm11bJ7R48Kx7wHH6a9PP7Z1Aki'
       required: true
-      password: true
   - !checkboxes
     label: What are your favorite colors?
     name: fave_colors
     options: [ 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Hipster', '<html>' ]
+    required: true
+    min-choices: 2
+    # max-choices: 4
