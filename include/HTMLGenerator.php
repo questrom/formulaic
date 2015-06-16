@@ -1,21 +1,17 @@
 <?php
 
-
-abstract class HTMLGeneratorAbstract {
-
-	protected abstract function write($text);
-	abstract function t($text);
-	abstract function add($arr);
-	abstract function __get($name);
+abstract class Writer {
+	abstract function append($other);
+	abstract function getText();
+	function write($other) {
+		return $this->append(new StringWriter($other));
+	}
 }
 
-class StringWriter {
+class StringWriter extends Writer {
 	private $text;
-	function __construct($text) {
+	function __construct($text = '') {
 		$this->text = $text;
-	}
-	function write($other) {
-		return new StringWriter( $this->text . $other );
 	}
 	function append($other) {
 		return new StringWriter( $this->text . $other->getText() );
@@ -25,11 +21,8 @@ class StringWriter {
 	}
 }
 
-class NullWriter {
+class NullWriter extends Writer {
 	function __construct() {}
-	function write($other) {
-		return $this;
-	}
 	function append($other) {
 		return $this;
 	}
@@ -38,15 +31,12 @@ class NullWriter {
 	}
 }
 
-class MiddleWriter {
+class MiddleWriter extends Writer {
 	private $start;
 	private $end;
 	function __construct($start, $end) {
 		$this->start = $start;
 		$this->end = $end;
-	}
-	function write($other) {
-		return new MiddleWriter($this->start->write($other), $this->end);
 	}
 	function append($other) {
 		return new MiddleWriter($this->start->append($other), $this->end);
@@ -56,72 +46,58 @@ class MiddleWriter {
 	}
 }
 
+
+// =============================================================================================================
+
+abstract class HTMLGeneratorAbstract extends Writer {
+	protected $text;
+	protected $parent;
+
+	abstract function hif($cond);
+	abstract function t($text);
+	abstract function add($arr);
+	abstract function __get($name);
+	
+	function getText() { return $this->text->getText(); }
+}
+
+
+// =============================================================================================================
+
+// Generates the opening tag of an HTML element
 class HTMLGeneratorOpen extends HTMLGeneratorAbstract {
-	function __construct($name, $parent, $text) {
-		if(!is_string($name)) {
-			throw new Exception();
-		}
+	function __construct($parent, $text) {
 		$this->parent = $parent;
-		$this->name = $name;
 		$this->text = $text;
 	}
 
-	protected function close() {
-		return new HTMLGeneratorTagless( $this->name, $this->parent, (new MiddleWriter( $this->text, '</' . $this->name . '>'))->write('>') );
-	}
+	// Implement "Writer"
+	function append($text) { return new HTMLGeneratorOpen($this->parent,  $this->text->append($text)); }
 
-	protected function write($text) {
-		return new HTMLGeneratorOpen( $this->name, $this->parent,  $this->text->write($text) );
-	}
+	// Helpers for appending attributes
+	function __call($name, $args) { return $this->write(' ' . $name . '="' . htmlspecialchars($args[0]) . '"'); }
+	function data($key, $val) { return $this->write(' data-' . $key . '="' . htmlspecialchars($val) . '"'); }
 
-	function __call($name, $args) {
-		return $this->write(' ' . $name . '="' . htmlspecialchars($args[0]) . '"');
-	}
-
-	function data($key, $val) {
-		return $this->write(' data-' . $key . '="' . htmlspecialchars($val) . '"');
-	}
-
+	// Automatic closing of opening tags
+	protected function close() { return new HTMLGenerator( $this->parent, $this->text->write('>') ); }
 	function hif($cond) { return $this->close()->hif($cond); } // Html IF
 	function t($text) { return $this->close()->t($text); }
 	function add($arr) { return $this->close()->add($arr); }
 	function __get($name) { return $this->close()->__get($name); }
 }
 
-class HTMLGeneratorTagless extends HTMLGeneratorAbstract {
-	function __construct($name, $parent, $text) {
-
+// Generates the inside of an HTML element
+class HTMLGenerator extends HTMLGeneratorAbstract {
+	function __construct($parent = null, $text = null) {
 		$this->parent = $parent;
-		$this->text = $text;
-	}
-
-
-	function t($text) {
-		return $this->write(htmlspecialchars($text));
-	}
-
-	protected function write($text) {
-		return new HTMLGeneratorTagless( $this->name, $this->parent,  $this->text->write($text));
-	}
-	protected function append($text) {
-		return new HTMLGeneratorTagless( $this->name, $this->parent,  $this->text->append($text));
-	}
-
-	function hif($cond) {
-		if(!$cond) {
-			return new HTMLGeneratorOpen('', $this, new NullWriter() );
-		} else {
-			return new HTMLGeneratorTagless('', $this, new StringWriter('') );
-		}
+		$this->text = ($text === null) ? new StringWriter() : $text;
 	}
 
 	function add($arr) {
 		if(is_array($arr)) {
-			$x = $this;
-			foreach ($arr as $item) {
-				$x = $x->add($item);
-			}	
-			return $x;
+			return array_reduce($arr, function($a, $b) {
+				return $a->add($b);
+			}, $this);
 		} else {
 			return $this->append( ($arr instanceof Component) ? $arr->get(new HTMLGenerator()) : $arr );
 		}
@@ -129,20 +105,18 @@ class HTMLGeneratorTagless extends HTMLGeneratorAbstract {
 
 	function __get($name) {
 		if($name === 'end') {
-			return $this->parent->add( $this->text );
+			return $this->parent->add($this->text);
 		} else {
-			return new HTMLGeneratorOpen($name, $this, new StringWriter('<' . $name) );
+			return new HTMLGeneratorOpen( $this, new MiddleWriter( new StringWriter('<' . $name), '</' . $name . '>')  );
 		}
 	}
 
-}
+	// Implement "Writer"
+	function append($text) { return new HTMLGenerator($this->parent, $this->text->append($text)); }
 
-class HTMLGenerator {
+	// Helper for appending text	
+	function t($text) { return $this->write(htmlspecialchars($text)); }
 
-	function __get($name) {
-		return new HTMLGeneratorOpen($name, $this, new StringWriter('<' . $name) );
-	}
-	function add($arr) {
-		return ($arr instanceof Component) ? $arr->get($this) : $arr;	
-	}
+	// Helper for "if" statements
+	function hif($cond) { return new HTMLGenerator($this, $cond ? new StringWriter() : new NullWriter()); }
 }

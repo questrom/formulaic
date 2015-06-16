@@ -9,14 +9,13 @@ abstract class Component {
 }
 
 class Checkbox extends Component {	
-	public $label;
-	public $name;
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
 	}
 	function get($h) {
-		return $h->div->class('field')
+		return $h
+		->div->class('field')
 			->div->class('ui checkbox')
 				->input->type('checkbox')->name($this->name)->end
 				->label->t($this->label)->end
@@ -29,14 +28,13 @@ class Checkbox extends Component {
 }
 
 class Textarea extends Component {	
-	public $label;
-	public $name;
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
 	}
 	function get($h) {
-		return $h->div->class('field')
+		return $h
+		->div->class('field')
 			->label->t($this->label)->end
 			->textarea->name($this->name)->end
 		->end;
@@ -48,46 +46,42 @@ class Textarea extends Component {
 
 
 class Dropdown extends Component {
-	public $name;
-	public $label;
-	public $options;
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
 		$this->options = $args['options'];
 	}
 	function get($h) {
-		return $h->div->class('field')
-				->label->t($this->label)->end
-				->div->class('ui fluid dropdown selection')
-					->input->name($this->name)->type('hidden')->value('')->end
-					->div->class('default text')->t('Please choose an option...')->end
-					->i->class('dropdown icon')->end
-					->div->class('menu')
-						->add(array_map(
-							function($v) use($h) {
-								return $h->div->class('item')->data('value',$v)->t($v)->end;
-							},
-							$this->options
-						))
-					->end
+		return $h
+		->div->class('field')
+			->label->t($this->label)->end
+			->div->class('ui fluid dropdown selection')
+				->input->name($this->name)->type('hidden')->value('')->end
+				->div->class('default text')->t('Please choose an option...')->end
+				->i->class('dropdown icon')->end
+				->div->class('menu')
+					->add(array_map(
+						function($v) use($h) {
+							return $h->div->class('item')->data('value',$v)->t($v)->end;
+						},
+						$this->options
+					))
 				->end
-			->end;
+			->end
+		->end;
 	}
 	function validate($a) {}
 }
 
 class Radios extends Component {
-	public $name;
-	public $label;
-	public $options;
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
 		$this->options = $args['options'];
 	}
 	function get($h) {
-		return $h->div->class('grouped fields')
+		return $h
+		->div->class('grouped fields')
 			->label->t($this->label)->end
 			->add(
 				array_map(
@@ -108,16 +102,14 @@ class Radios extends Component {
 }
 
 class Checkboxes extends Component {
-	public $name;
-	public $label;
-	public $options;
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
 		$this->options = $args['options'];
 	}
 	function get($h) {
-		return $h->div->class('grouped fields')
+		return $h
+		->div->class('grouped fields')
 			->label->t($this->label)->end
 			->add(
 				array_map(
@@ -138,10 +130,6 @@ class Checkboxes extends Component {
 }
 
 class Textbox extends Component {
-	public $label;
-	public $name;
-	public $required;
-	public $password;
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
@@ -149,7 +137,8 @@ class Textbox extends Component {
 		$this->password = isset($args['password']) ? $args['password'] : false;
 	}
 	function get($h) {
-		return $h->div->class('ui field ' . ($this->required ? 'required' : ''))
+		return $h
+		->div->class('ui field ' . ($this->required ? 'required' : ''))
 			->label->t($this->label)->end
 			->div->class('ui input')
 				->input->type($this->password ? 'password' : 'text')->name($this->name)->end
@@ -166,15 +155,16 @@ class Textbox extends Component {
 }
 
 abstract class SpecialInput extends Component {
-	public $label;
-	public $name;
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
 	}
 	function render($h, $type, $icon) {
-		return $h->div->class('ui field')
-			->label->t($this->label)->end
+		return $h
+		->div->class('ui field')
+			->label
+				->t($this->label)
+			->end
 			->div->class($icon ? 'ui left icon input' : 'ui input')
 				->hif($icon)
 					->i->class('icon ' . $icon)->end
@@ -208,8 +198,6 @@ class NumberInp extends SpecialInput {
 }
 
 class DateTimePicker extends Component {
-	public $label;
-	public $name;
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
@@ -243,10 +231,14 @@ class DateTimePicker extends Component {
 					->tbody
 						->add(array_map(
 							function($v) use($h) {
-								return $h->tr
+								return $h
+								->tr
 									->add(array_map(
 										function($v) use($h) {
-											return $h->td->button->type('button')->class('ui compact fluid attached basic button')->end->end;
+											return $h
+											->td
+												->button->type('button')->class('ui compact fluid attached basic button')->end
+											->end;
 										},
 										range(0, 6)
 									))
@@ -264,48 +256,12 @@ class DateTimePicker extends Component {
 
 
 class Group extends Component {
-	public $items;
 	function __construct($args) {
 		$this->items = $args;
 	}
 	function get($h) {
 		return $h->div->class('ui segment')
 			->add($this->items)
-		->end;
-	}
-	function validate($against) {
-$total = [];
-		foreach($this->items as $x) {
-			if($x instanceof Group) {
-
-				$result = $x->validate( $_POST  );
-				$total = array_merge($total, $result);
-			} else {
-				$result = $x->validate( isset($against[$x->name]) ? $against[$x->name] : null  );
-				if($result != null) {
-					$total[$x->name] = $result;
-				}
-			}
-			
-			
-		}
-		return $total;
-	}
-}
-
-
-class Form extends Component {
-	public $items;
-	function __construct($args) {
-		$this->items = $args;
-	}
-	function get($h) {
-		return $h->form->class('ui form')->action('submit.php')->method('POST')
-			->add($this->items)
-			->button->type('button')->class('ui labeled icon primary button')->data('submit','true')
-				->i->class('checkmark icon')->end
-				->t('Submit Form')
-			->end
 		->end;
 	}
 	function validate($against) {
@@ -321,22 +277,51 @@ class Form extends Component {
 					$total[$x->name] = $result;
 				}
 			}
-			
-			
+		}
+		return $total;
+	}
+}
+
+
+class Form extends Component {
+	function __construct($args) {
+		$this->items = $args;
+	}
+	function get($h) {
+		return $h
+		->form->class('ui form')->action('submit.php')->method('POST')
+			->add($this->items)
+			->button->type('button')->class('ui labeled icon primary button')->data('submit','true')
+				->i->class('checkmark icon')->end
+				->t('Submit Form')
+			->end
+		->end;
+	}
+	function validate($against) {
+		$total = [];
+		foreach($this->items as $x) {
+			if($x instanceof Group) {
+				$result = $x->validate( $_POST  );
+				$total = array_merge($total, $result);
+			} else {
+				$result = $x->validate( isset($against[$x->name]) ? $against[$x->name] : null  );
+				if($result != null) {
+					$total[$x->name] = $result;
+				}
+			}
 		}
 		return $total;
 	}
 }
 
 class Page extends Component {
-	public $form;
-	public $name;
 	function __construct($yaml) {
 		$this->form = new Form($yaml['fields']);
 		$this->name = $yaml['name'];
 	}
 	function get($h) {
-		return $h->div->class('ui page grid')
+		return $h
+		->div->class('ui page grid')
 			->div->class('sixteen wide column')
 				->h1->t($this->name)->end
 				->add($this->form)
