@@ -11,6 +11,9 @@ fields:
   - !email
     label: Email address
     name: email
+  - !url
+    label: Website
+    name: url
   - !date
     label: Start date
     name: start_date
@@ -26,7 +29,7 @@ fields:
   - !checkbox
     label: I agree to the terms and conditions
     name: agree_to_terms
-    # required: true
+    required: true
   - !textarea
     label: Additional notes
     name: additional_notes

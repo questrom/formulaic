@@ -185,7 +185,6 @@ class Dropdown extends Component {
 					return new Ok($x);
 				}
 			});
-
 	}
 }
 
@@ -430,7 +429,40 @@ class EmailAddr extends SpecialInput {
 			});
 	}
 }
+class UrlInput extends SpecialInput {
+	function __construct($args) {
+		$this->label = $args['label'];
+		$this->name = $args['name'];
 
+		$this->required = isset($args['required']) ? $args['required'] : false;
+	}
+	function get($h) {
+		return $this->render($h, 'url', 'world');
+	}
+	function validate($str) {
+		return (new Ok($str))
+			->bind(function($x) {
+				if(!is_string($x)) {
+					return new Err('Invalid data!');
+				}
+				return new Ok($x);
+			})
+			->bind(function($x) {
+				if($this->required && trim($x) === '') {
+					return new Err('This field is required.');
+				}
+				return new Ok($x);
+			})
+			->bind(function($x) {
+				$addr = filter_var($x, FILTER_VALIDATE_URL);
+				if($x === '' || $addr !== false) {
+					return new Ok($addr);
+				} else {
+					return new Err('Invalid URL.');
+				}
+			});
+	}
+}
 class NumberInp extends SpecialInput {
 	function __construct($args) {
 		$this->label = $args['label'];
@@ -459,19 +491,19 @@ class NumberInp extends SpecialInput {
 			})
 			->bind(function($x) {
 				if($x === '') {
-					return new Ok(null);	
+					return new Ok(new Nothing());	
 				}
 
 				$num = filter_var($x, FILTER_VALIDATE_INT);
 
 				if($num !== false) {
-					return new Ok($num);
+					return new Ok(new Just($num));
 				} else {
 					return new Err('Invalid number.');
 				}
 			})
 			->bind(function($x) {
-				if($x !== null && ($x < $this->min || $x > $this->max)) {
+				if($x instanceof Just && ($x->get() < $this->min || $x->get() > $this->max)) {
 					return new Err('Number must be between ' . $this->min . ' and ' . $this->max . '.');
 				}
 				return new Ok($x);
@@ -634,7 +666,7 @@ class DebugOutput {
 
 function parse_yaml($file) {
 	return yaml_parse_file($file, 0, $ndocs, array(
-		'!checkbox' => function($v) { return new Checkbox($v); },
+		'!checkbox' => [ new ReflectionClass('Checkbox'), 'newInstance'],
 		'!textbox' => function($v) { return new Textbox($v); },
 		'!password' => function($v) { return new Password($v); },
 		'!dropdown' => function($v) { return new Dropdown($v); },
@@ -645,6 +677,7 @@ function parse_yaml($file) {
 		'!date' => function($v) { return new DatePicker($v); },
 		'!phonenumber' => function($v) { return new PhoneNumber($v); },
 		'!email' => function($v) { return new EmailAddr($v); },
+		'!url' => function($v) { return new UrlInput($v); },
 		'!number' => function($v) { return new NumberInp($v); },
 		'!debug' => function($v) { return new DebugOutput($v); }
 
