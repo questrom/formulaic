@@ -1,6 +1,7 @@
 <?php
 
 require('include/HTMLGenerator.php');
+require('include/Result.php');
 
 abstract class Component extends ArrayObject {
 	// abstract function __construct($args);
@@ -32,34 +33,6 @@ class Checkbox extends Component {
 	}
 }
 
-abstract class Result { }
-
-class Err extends Result {
-	private $value;
-	function __construct($value) {
-		$this->value = $value;
-	}
-	function get() {
-		return $this->value;
-	}
-	function bind(callable $x) {
-		return $this;
-	}
-}
-
-class Ok extends Result {
-	private $value;
-	function __construct($value) {
-		$this->value = $value;
-	}
-	function get() {
-		return $this->value;
-	}
-	function bind(callable $x) {
-		return $x($this->value);
-	}
-}
-
 class Textarea extends Component {	
 	function __construct($args) {
 		$this->label = $args['label'];
@@ -78,7 +51,6 @@ class Textarea extends Component {
 		->end;
 	}
 	function validate($str) {
-
 		$result = (new Ok($str))
 			->bind(function($x) {
 				if(!is_string($x)) {
@@ -110,9 +82,9 @@ class Textarea extends Component {
 				}
 				return new Ok($x);
 			});
-			if($result instanceof Err) {
-				return $result->get();
-			}
+		if($result instanceof Err) {
+			return $result->get();
+		}
 	}
 }
 
