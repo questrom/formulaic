@@ -2,6 +2,7 @@
 
 require('include/HTMLGenerator.php');
 require('include/Result.php');
+date_default_timezone_set('America/New_York');
 
 abstract class Component extends ArrayObject {
 	// abstract function __construct($args);
@@ -9,53 +10,23 @@ abstract class Component extends ArrayObject {
 	abstract function validate($against);
 }
 
-class Checkbox extends Component {	
-	function __construct($args) {
-		$this->label = $args['label'];
-		$this->name = $args['name'];
-		$this->required = isset($args['required']) ? $args['required'] : false;
-	}
-	function get($h) {
-		return $h
-		->div->class('field ' . ($this->required ? 'required' : ''))
-			->div->class('ui checkbox')
-				->input->type('checkbox')->name($this->name)->end
-				->label->t($this->label)->end
-			->end
-		->end;
-	}
-	function validate($against) {
-		if($this->required && $against !== 'on') {
-			return 'Please check this checkbox.';
-		} else {
-			return null;
-		}
-	}
-}
 
-class Textarea extends Component {	
-	function __construct($args) {
-		$this->label = $args['label'];
-		$this->name = $args['name'];
-
-		$this->maxLength = isset($args['max-length']) ? $args['max-length'] : INF;
-		$this->minLength = isset($args['min-length']) ? $args['min-length'] : 0;
-		$this->required = isset($args['required']) ? $args['required'] : false;
-		$this->mustMatch = isset($args['must-match']) ? $args['must-match'] : null;
-	}
-	function get($h) {
-		return $h
-		->div->class('field ' . ($this->required ? 'required' : ''))
-			->label->t($this->label)->end
-			->textarea->name($this->name)->end
-		->end;
-	}
+trait TextValidate {
 	function validate($str) {
-		$result = (new Ok($str))
+		return (new Ok($str))
 			->bind(function($x) {
 				if(!is_string($x)) {
 					return new Err('Invalid data!');
 				}
+				return new Ok($x);
+			})
+			->bind(function($x) {
+				if(isset($this->matchHash) && $this->matchHash !== null) {
+					if(!password_verify($x, $this->matchHash)) {
+						return new Err('Password incorrect!');
+					}
+				}
+				
 				return new Ok($x);
 			})
 			->bind(function($x) {
@@ -82,10 +53,63 @@ class Textarea extends Component {
 				}
 				return new Ok($x);
 			});
-		if($result instanceof Err) {
-			return $result->get();
-		}
 	}
+}
+
+class Checkbox extends Component {	
+	function __construct($args) {
+		$this->label = $args['label'];
+		$this->name = $args['name'];
+		$this->required = isset($args['required']) ? $args['required'] : false;
+	}
+	function get($h) {
+		return $h
+		->div->class('field ' . ($this->required ? 'required' : ''))
+			->div->class('ui checkbox')
+				->input->type('checkbox')->name($this->name)->end
+				->label->t($this->label)->end
+			->end
+		->end;
+	}
+	function validate($against) {
+		return (new Ok($against))
+			->bind(function($x) {
+				if($x === 'on') {
+					return new Ok(true);
+				} else if($x === null) {
+					return new Ok(false);
+				} else {
+					return new Err('Invalid data!');
+				}
+			})
+			->bind(function($x) {
+				if($this->required && !$x) {
+					return new Err('Please check this box before submitting the form.');
+				}
+				return new Ok($x);
+			});
+	}
+}
+
+class Textarea extends Component {	
+	use TextValidate;
+	function __construct($args) {
+		$this->label = $args['label'];
+		$this->name = $args['name'];
+
+		$this->maxLength = isset($args['max-length']) ? $args['max-length'] : INF;
+		$this->minLength = isset($args['min-length']) ? $args['min-length'] : 0;
+		$this->required = isset($args['required']) ? $args['required'] : false;
+		$this->mustMatch = isset($args['must-match']) ? $args['must-match'] : null;
+	}
+	function get($h) {
+		return $h
+		->div->class('field ' . ($this->required ? 'required' : ''))
+			->label->t($this->label)->end
+			->textarea->name($this->name)->end
+		->end;
+	}
+
 }
 
 
@@ -117,9 +141,24 @@ class Dropdown extends Component {
 		->end;
 	}
 	function validate($against) {
-		if($this->required && $against === '') {
-			return 'This field is required.';
-		} 
+		return (new Ok($against))
+			->bind(function($x) {
+				if($x === '') {
+					return new Ok(null);
+				} else if(in_array($x, $this->options, TRUE)) {
+					return new Ok($x);
+				} else {
+					return new Err('Invalid data!');
+				}
+			})
+			->bind(function($x) {
+				if($this->required && $x === null) {
+					return new Err('This field is required.');
+				} else {
+					return new Ok($x);
+				}
+			});
+
 	}
 }
 
@@ -152,21 +191,33 @@ class Radios extends Component {
 		->end;
 	}
 	function validate($against) {
-		if($this->required && $against === null) {
-			return 'Please choose an option.';
-		}
+		return (new Ok($against))
+			->bind(function($x) {
+				if($x === null) {
+					return new Ok(null);
+				} else if(in_array($x, $this->options, TRUE)) {
+					return new Ok($x);
+				} else {
+					return new Err('Invalid data!');
+				}
+			})
+			->bind(function($x) {
+				if($this->required && $x === null) {
+					return new Err('Please choose an option.');
+				}
+				return new Ok($x);
+			});
 	}
 }
 
 
 class Checkboxes extends Component {
 	function __construct($args) {
-		$args = array_merge($args, [
+		$args = array_merge([
 			"max-choices" => INF,
 			"min-choices" => 0,
 			"required" => false
-		]);
-
+		], $args);
 		parent::__construct($args, ArrayObject::ARRAY_AS_PROPS);
 	}
 	function get($h) {
@@ -189,22 +240,40 @@ class Checkboxes extends Component {
 		->end;
 	}
 	function validate($against) {
-		if($against === null) {
-			$against = [];
-		}
-		if($this->required && count($against) === 0) {
-			return 'This field is required.';
-		}
-		if(count($against) < $this['min-choices']) {
-			return 'Please choose at least ' . $this['min-choices'] . ' options.'; 
-		}
-		if(count($against) > $this['max-choices']) {
-			return 'At most ' . $this['max-choices'] . ' choices are allowed.'; 
-		}
+		return (new Ok($against))
+			->bind(function($x) {
+				if($x === null) {
+					return new Ok([]);
+				} else if(is_array($x) && count(array_diff($x, $this->options)) === 0 ) {
+					return new Ok($x);
+				} else {
+					return new Err('Invalid data!');
+				}
+			})
+			->bind(function($x) {
+				if($this->required && count($x) === 0) {
+					return new Err('This field is required.');
+				}
+				return new Ok($x);
+			})
+			->bind(function($x) {
+				if(count($x) < $this['min-choices']) {
+					return new Err('Please choose at least ' . $this['min-choices'] . ' options.');
+				}
+				return new Ok($x);
+			})
+			->bind(function($x) {
+				if(count($x) > $this['max-choices']) {
+					return new Err('At most ' . $this['max-choices'] . ' choices are allowed.');
+				}
+				return new Ok($x);
+			});
 	}
 }
 
 class Textbox extends Component {
+	use TextValidate;
+
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
@@ -215,6 +284,8 @@ class Textbox extends Component {
 		$this->minLength = isset($args['min-length']) ? $args['min-length'] : 0;
 		$this->required = isset($args['required']) ? $args['required'] : false;
 		$this->mustMatch = isset($args['must-match']) ? $args['must-match'] : null;
+		$this->matchHash = isset($args['match-hash']) ? $args['match-hash'] : null;
+
 	}
 	function get($h) {
 		return $h
@@ -225,34 +296,18 @@ class Textbox extends Component {
 			->end
 		->end;
 	}
-	function validate($str) {
-		if($this->required && trim($str) === '') {
-			return 'This field is required.';
-		}
-		if(strlen($str) > $this->maxLength) {
-			return 'The input is too long. Maximum is ' . $this->maxLength . ' characters.';
-		}
-		if(strlen($str) < $this->minLength) {
-			return 'The input is too short. Minimum is ' . $this->minLength . ' characters.';	
-		}
-		if($this->mustMatch !== null && preg_match($this->mustMatch, $str) === 0) {
-			return 'This input is not valid. It must match the pattern: ' . $this->mustMatch;
-		}
-	}
 }
 
 abstract class SpecialInput extends Component {
+	use TextValidate;
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
 
 		$this->maxLength = isset($args['max-length']) ? $args['max-length'] : INF;
 		$this->minLength = isset($args['min-length']) ? $args['min-length'] : 0;
-
 		$this->required = isset($args['required']) ? $args['required'] : false;
 		$this->mustMatch = isset($args['must-match']) ? $args['must-match'] : null;
-
-		// Allowed for all fields but only really makes sense for password ones
 		$this->matchHash = isset($args['match-hash']) ? $args['match-hash'] : null;
 	}
 	function render($h, $type, $icon) {
@@ -268,23 +323,6 @@ abstract class SpecialInput extends Component {
 				->input->type($type)->name($this->name)->end
 			->end
 		->end;
-	}
-	function validate($str) {
-		if($this->matchHash !== null && !password_verify($str, $this->matchHash)) {
-			return 'Password incorrect!';
-		}
-		if($this->required && trim($str) === '') {
-			return 'This field is required.';
-		}
-		if(strlen($str) > $this->maxLength) {
-			return 'The input is too long. Maximum is ' . $this->maxLength . ' characters.';
-		}
-		if(strlen($str) < $this->minLength) {
-			return 'The input is too short. Minimum is ' . $this->minLength . ' characters.';	
-		}
-		if($this->mustMatch !== null && preg_match($this->mustMatch, $str) === 0) {
-			return 'This input is not valid. It must match the pattern: ' . $this->mustMatch;
-		}
 	}
 }
 
@@ -318,6 +356,10 @@ class DateTimePicker extends Component {
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
+
+		$this->required = isset($args['required']) ? $args['required'] : false;
+		$this->minDate = isset($args['min-date']) ? DateTimeImmutable::createFromFormat('Y-m-d', $args['min-date']) : null;
+		$this->maxDate = isset($args['max-date']) ? DateTimeImmutable::createFromFormat('Y-m-d', $args['max-date']) : null;
 	}
 	function get($h) {
 		return $h
@@ -368,11 +410,75 @@ class DateTimePicker extends Component {
 			->end
 		->end;
 	}
-	function validate($against) {}
+	function validate($against) {
+		return (new Ok($against))
+			->bind(function($x) {
+				if($x === '') {
+					return new Ok(null);
+				}
+				$date = DateTimeImmutable::createFromFormat('Y-m-d', $x);
+				if($date !== false) {
+					return new Ok($date);
+				} else {
+					return new Err('Invalid date!');
+				}
+			})
+			->bind(function($x) {
+				if($this->required && $x === null) {
+					return new Err('This field is required.');
+				}
+				return new Ok($x);
+			})
+			->bind(function($x) {
+				if($x !== null && $this->minDate !== null && $this->minDate > $x) {
+					return new Err('Please enter a date starting at ' . $this->minDate->format('Y-m-d'));
+				}
+				return new Ok($x);
+			})
+			->bind(function($x) {
+				if($x !== null && $this->maxDate !== null && $this->maxDate < $x) {
+					return new Err('Please enter a date ending at ' . $this->maxDate->format('Y-m-d'));
+				}
+				return new Ok($x);
+			});
+
+	}
 }
 
 
+trait GroupValidate {
+	function validate($against) {
+
+		$total = new Ok([]);
+
+
+		foreach($this->items as $x) {
+			if($x instanceof Group) {
+				$result = $x->validate($against);	
+				$merger = $result->get();
+			} else {
+				$result = $x->validate( isset($against[$x->name]) ? $against[$x->name] : null  );
+				$merger = [$x->name => $result->get()];
+			}
+
+			$total = $total
+				->bind(function($x) use ($result) {
+					return $result instanceof Err ? new Err([]) : new Ok($x);
+				})
+				->bind(function($x) use ($merger) {
+					return new Ok(array_merge($merger,$x));
+				})
+				->bind_err(function($x) use ($merger, $result) {
+					return $result instanceof Err ? new Err(array_merge($merger,$x)) : new Err($x);
+				});
+
+		}
+		return $total;
+	}
+}
+
 class Group extends Component {
+	use GroupValidate;
 	function __construct($args) {
 		$this->items = $args;
 	}
@@ -381,26 +487,12 @@ class Group extends Component {
 			->add($this->items)
 		->end;
 	}
-	function validate($against) {
-		$total = [];
-		foreach($this->items as $x) {
-			if($x instanceof Group) {
-
-				$result = $x->validate( $_POST  );
-				$total = array_merge($total, $result);
-			} else {
-				$result = $x->validate( isset($against[$x->name]) ? $against[$x->name] : null  );
-				if($result != null) {
-					$total[$x->name] = $result;
-				}
-			}
-		}
-		return $total;
-	}
 }
 
 
 class Form extends Component {
+	use GroupValidate;
+
 	function __construct($args) {
 		$this->items = $args;
 	}
@@ -414,21 +506,7 @@ class Form extends Component {
 			->end
 		->end;
 	}
-	function validate($against) {
-		$total = [];
-		foreach($this->items as $x) {
-			if($x instanceof Group) {
-				$result = $x->validate( $_POST  );
-				$total = array_merge($total, $result);
-			} else {
-				$result = $x->validate( isset($against[$x->name]) ? $against[$x->name] : null  );
-				if($result != null) {
-					$total[$x->name] = $result;
-				}
-			}
-		}
-		return $total;
-	}
+
 }
 
 class Page extends Component {
@@ -447,7 +525,8 @@ class Page extends Component {
 	}
 	function validate($against) {
 		// semantic-ui doesnt escape things for us
-		return array_map('htmlspecialchars', $this->form->validate($against));
+		// return array_map('htmlspecialchars', $this->form->validate($against));
+		return $this->form->validate($against);
 	}
 }
 

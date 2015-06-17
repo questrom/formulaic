@@ -14,6 +14,9 @@ class Err extends Result {
 	function bind(callable $x) {
 		return $this;
 	}
+	function bind_err(callable $x) {
+		return $x($this->value);
+	}
 }
 
 class Ok extends Result {
@@ -26,5 +29,8 @@ class Ok extends Result {
 	}
 	function bind(callable $x) {
 		return $x($this->value);
+	}
+	function bind_err(callable $x) {
+		return $this;
 	}
 }

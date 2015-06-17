@@ -22,11 +22,12 @@ $(function() {
 
 	$('.checkbox').checkbox();
 
+
 	$('[data-submit=true]').on('click', function() {
 
-
+		/*
 		$('.red.prompt').remove();
-		$('.field.error').removeClass('error');
+		$('.field.error, .validation-root.error').removeClass('error');
 
 		$.ajax('validate.php', {
 			data: $('form').serialize(),
@@ -38,11 +39,14 @@ $(function() {
 				valid = false;
 			}
 			if(valid) {
+		*/
 				form.submit();
+		/*
 			}
 		});
-
+		*/
 	});
+
 
 	// Custom date-time widget
 
