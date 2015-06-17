@@ -42,7 +42,15 @@ $(function() {
 				valid = false;
 			}
 			if(valid) {
-				form.submit();
+				$('[data-submit=true]').addClass('loading').attr('disabled', true);
+				$.ajax('submit.php', {
+					data: $('form').serialize(),
+					method: 'POST'	
+				}).done(function(success) {
+
+					$('[data-submit=true]').removeClass('loading').text('Done!').removeAttr('disabled');
+					$('.ui.form').append($('<p>').html(success));
+				});
 			}
 		});
 		
@@ -51,7 +59,7 @@ $(function() {
 
 	// Custom date-time widget
 
-	$('.datetime').each(function() {
+	$('.datepicker').each(function() {
 		var $this = $(this),
 			latestMonth,
 			hidden = $this.find('input[type=hidden]');

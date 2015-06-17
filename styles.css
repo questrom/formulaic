@@ -1,10 +1,10 @@
-.datetime td, .datetime th { padding:0 !important; }
-.datetime button { border:none !important;}
-.datetime .header { margin:0 !important; line-height: 30px !important;  }
-.datetime thead button { border-radius: 0 !important; }
-.datetime tbody button { padding:10px 20px !important; transition:none !important;}
+.datepicker td, .datepicker th { padding:0 !important; }
+.datepicker button { border:none !important;}
+.datepicker .header { margin:0 !important; line-height: 30px !important;  }
+.datepicker thead button { border-radius: 0 !important; }
+.datepicker tbody button { padding:10px 20px !important; transition:none !important;}
 .other-month.ui.basic.button { background:#ddd !important;}
-.datetime table.ui.table { margin:0 !important;}
+.datepicker table.ui.table { margin:0 !important;}
 .ui.page.grid { max-width: 600px !important; padding:0 !important; margin:0 auto !important;}
 
 .ui.checkbox + .ui.red.label.visible { float:left; margin-right: 1000px;}
@@ -12,3 +12,4 @@
 .ui.form .required > label:after,
 .ui.form .required  .ui.checkbox:after { font-size: 1.5rem; top: 5px; right:-10px; left: auto;}
 
+.centered-button { margin: 0 auto !important; display: block !important;  }

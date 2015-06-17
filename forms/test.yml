@@ -3,30 +3,30 @@ fields:
   - !textbox
     label: Your name
     name: name
-    must-match: '/<b>/'
+    # must-match: '/<b>/'
   - !phonenumber
     label: Phone number
     name: phone
-    required: true
+    # required: true
   - !email
     label: Email address
     name: email
-  - !datetime
+  - !date
     label: Start date
     name: start_date
-    required: true
+    # required: true
     min-date: 2015-06-17
     max-date: 2015-06-20
   - !number
     label: How many attendees?
     name: num_attendees
-    required: true
+    # required: true
     min: 3
     max: 5
   - !checkbox
     label: I agree to the terms and conditions
     name: agree_to_terms
-    required: true
+    # required: true
   - !textarea
     label: Additional notes
     name: additional_notes
@@ -35,7 +35,7 @@ fields:
   - !radios
     label: Choose a link...
     name: choose_a_link
-    required: true
+    # required: true
     options: [
       'Career Center',
       'Student Link',
@@ -45,7 +45,7 @@ fields:
   - !dropdown
     label: Choose a school...
     name: choose_a_school
-    required: true
+    # required: true
     options: [
       'College of Arts and Sciences',
       'Questrom School of Business',
@@ -55,8 +55,8 @@ fields:
     - !textbox
       label: Username
       name: username
-      # required: true
-      match-hash: '$2y$10$FeVuAyjk82DNDflP6LevxOG7GCWm11bJ7R48Kx7wHH6a9PP7Z1Aki'
+      required: true
+      # match-hash: '$2y$10$FeVuAyjk82DNDflP6LevxOG7GCWm11bJ7R48Kx7wHH6a9PP7Z1Aki'
       max-length: 20
     - !password
       label: Password
@@ -70,6 +70,8 @@ fields:
     label: What are your favorite colors?
     name: fave_colors
     options: [ 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Hipster', '<html>' ]
-    required: true
-    min-choices: 2
+    # required: true
+    # min-choices: 2
     # max-choices: 4
+outputs:
+  - !debug

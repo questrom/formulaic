@@ -59,11 +59,7 @@ trait TextValidate {
 
 trait GroupValidate {
 	function validate($against) {
-
-		$total = new Ok([]);
-
-
-		foreach($this->items as $x) {
+		return array_reduce($this->items, function($total, $x) use($against) {
 			if($x instanceof Group) {
 				$result = $x->validate($against);	
 				$merger = $result->get();
@@ -71,8 +67,7 @@ trait GroupValidate {
 				$result = $x->validate( isset($against[$x->name]) ? $against[$x->name] : null  );
 				$merger = [$x->name => $result->get()];
 			}
-
-			$total = $total
+			return $total
 				->bind(function($x) use ($result) {
 					return $result instanceof Err ? new Err([]) : new Ok($x);
 				})
@@ -82,9 +77,7 @@ trait GroupValidate {
 				->bind_err(function($x) use ($merger, $result) {
 					return $result instanceof Err ? new Err(array_merge($merger,$x)) : new Err($x);
 				});
-
-		}
-		return $total;
+		}, new Ok([]));
 	}
 }
 
@@ -141,7 +134,6 @@ class Textarea extends Component {
 			->textarea->name($this->name)->end
 		->end;
 	}
-
 }
 
 
@@ -179,15 +171,15 @@ class Dropdown extends Component {
 		return (new Ok($against))
 			->bind(function($x) {
 				if($x === '') {
-					return new Ok(null);
+					return new Ok(new Nothing());
 				} else if(in_array($x, $this->options, TRUE)) {
-					return new Ok($x);
+					return new Ok(new Just($x));
 				} else {
 					return new Err('Invalid data!');
 				}
 			})
 			->bind(function($x) {
-				if($this->required && $x === null) {
+				if($this->required && $x instanceof Nothing) {
 					return new Err('This field is required.');
 				} else {
 					return new Ok($x);
@@ -229,15 +221,15 @@ class Radios extends Component {
 		return (new Ok($against))
 			->bind(function($x) {
 				if($x === null) {
-					return new Ok(null);
+					return new Ok(new Nothing());
 				} else if(in_array($x, $this->options, TRUE)) {
-					return new Ok($x);
+					return new Ok(new Just($x));
 				} else {
 					return new Err('Invalid data!');
 				}
 			})
 			->bind(function($x) {
-				if($this->required && $x === null) {
+				if($this->required && $x instanceof Nothing) {
 					return new Err('Please choose an option.');
 				}
 				return new Ok($x);
@@ -317,7 +309,7 @@ class Textbox extends Component {
 
 		$this->maxLength = isset($args['max-length']) ? $args['max-length'] : INF;
 		$this->minLength = isset($args['min-length']) ? $args['min-length'] : 0;
-		$this->required = isset($args['required']) ? $args['required'] : false;
+		$this->required  = isset($args['required'])   ? $args['required']   : false;
 		$this->mustMatch = isset($args['must-match']) ? $args['must-match'] : null;
 		$this->matchHash = isset($args['match-hash']) ? $args['match-hash'] : null;
 
@@ -334,7 +326,6 @@ class Textbox extends Component {
 }
 
 abstract class SpecialInput extends Component {
-	use TextValidate;
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
@@ -364,6 +355,7 @@ abstract class SpecialInput extends Component {
 
 
 class Password extends SpecialInput {
+	use TextValidate;
 	function get($h) {
 		return $this->render($h, 'password', '');
 	}
@@ -487,7 +479,7 @@ class NumberInp extends SpecialInput {
 	}
 }
 
-class DateTimePicker extends Component {
+class DatePicker extends Component {
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
@@ -500,7 +492,7 @@ class DateTimePicker extends Component {
 		return $h
 		->div->class('ui field')
 			->label->t($this->label)->end
-			->div->class('ui dropdown datetime basic button')
+			->div->class('ui dropdown datepicker basic button')
 				->div->class('text')->t('')->end
 				->i->class('dropdown icon')->end
 				->input->type('hidden')->name($this->name)->end
@@ -605,7 +597,7 @@ class Form extends Component {
 		return $h
 		->form->class('ui form')->action('submit.php')->method('POST')
 			->add($this->items)
-			->button->type('button')->class('ui labeled icon primary button')->data('submit','true')
+			->button->type('button')->class('ui labeled icon positive big button centered-button')->data('submit','true')
 				->i->class('checkmark icon')->end
 				->t('Submit Form')
 			->end
@@ -633,6 +625,13 @@ class Page extends Component {
 	}
 }
 
+class DebugOutput {
+	function __construct($args) {}
+	function run($data) {
+		var_dump($data);
+	}
+}
+
 function parse_yaml($file) {
 	return yaml_parse_file($file, 0, $ndocs, array(
 		'!checkbox' => function($v) { return new Checkbox($v); },
@@ -643,10 +642,11 @@ function parse_yaml($file) {
 		'!checkboxes' => function($v) { return new Checkboxes($v); },
 		'!textarea' => function($v) { return new Textarea($v); },
 		'!group' => function($v) { return new Group($v); },
-		'!datetime' => function($v) { return new DateTimePicker($v); },
+		'!date' => function($v) { return new DatePicker($v); },
 		'!phonenumber' => function($v) { return new PhoneNumber($v); },
 		'!email' => function($v) { return new EmailAddr($v); },
-		'!number' => function($v) { return new NumberInp($v); }
+		'!number' => function($v) { return new NumberInp($v); },
+		'!debug' => function($v) { return new DebugOutput($v); }
 
 	));
 }
