@@ -23,6 +23,7 @@ fields:
     label: Additional notes
     name: additional_notes
     required: true
+    min-length: 5
   - !radios
     label: Choose a link...
     name: choose_a_link

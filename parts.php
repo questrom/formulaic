@@ -32,6 +32,34 @@ class Checkbox extends Component {
 	}
 }
 
+abstract class Result { }
+
+class Err extends Result {
+	private $value;
+	function __construct($value) {
+		$this->value = $value;
+	}
+	function get() {
+		return $this->value;
+	}
+	function bind(callable $x) {
+		return $this;
+	}
+}
+
+class Ok extends Result {
+	private $value;
+	function __construct($value) {
+		$this->value = $value;
+	}
+	function get() {
+		return $this->value;
+	}
+	function bind(callable $x) {
+		return $x($this->value);
+	}
+}
+
 class Textarea extends Component {	
 	function __construct($args) {
 		$this->label = $args['label'];
@@ -50,18 +78,41 @@ class Textarea extends Component {
 		->end;
 	}
 	function validate($str) {
-		if($this->required && trim($str) === '') {
-			return 'This field is required.';
-		}
-		if(strlen($str) > $this->maxLength) {
-			return 'The input is too long. Maximum is ' . $this->maxLength . ' characters.';
-		}
-		if(strlen($str) < $this->minLength) {
-			return 'The input is too short. Minimum is ' . $this->minLength . ' characters.';	
-		}
-		if($this->mustMatch !== null && preg_match($this->mustMatch, $str) === 0) {
-			return 'This input is not valid. It must match the pattern: ' . $this->mustMatch;
-		}
+
+		$result = (new Ok($str))
+			->bind(function($x) {
+				if(!is_string($x)) {
+					return new Err('Invalid data!');
+				}
+				return new Ok($x);
+			})
+			->bind(function($x) {
+				if($this->required && trim($x) === '') {
+					return new Err('This field is required.');
+				}
+				return new Ok($x);
+			})
+			->bind(function($x) {
+				if(strlen($x) > $this->maxLength) {
+					return new Err('The input is too long. Maximum is ' . $this->maxLength . ' characters.');
+				}
+				return new Ok($x);
+			})
+			->bind(function($x) {
+				if(strlen($x) < $this->minLength) {
+					return new Err('The input is too short. Minimum is ' . $this->minLength . ' characters.');
+				}
+				return new Ok($x);
+			})
+			->bind(function($x) {
+				if($this->mustMatch !== null && preg_match($this->mustMatch, $x) === 0) {
+					return new Err('This input is not valid. It must match the pattern: ' . $this->mustMatch);
+				}
+				return new Ok($x);
+			});
+			if($result instanceof Err) {
+				return $result->get();
+			}
 	}
 }
 
