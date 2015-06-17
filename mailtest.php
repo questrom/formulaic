@@ -10,3 +10,5 @@ $headers .= 'Content-Type: text/html; charset=ISO-8859-1\r\n';
 $message = '<html><body><h1>Test</h1></body></html>';
 
 mail($to, $subject, $message, $headers);
+
+// test
