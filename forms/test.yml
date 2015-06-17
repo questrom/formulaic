@@ -3,9 +3,11 @@ fields:
   - !textbox
     label: Your name
     name: name
+    must-match: '/<b>/'
   - !phonenumber
     label: Phone number
     name: phone
+    required: true
   - !email
     label: Email address
     name: email
@@ -18,6 +20,9 @@ fields:
   - !number
     label: How many attendees?
     name: num_attendees
+    required: true
+    min: 3
+    max: 5
   - !checkbox
     label: I agree to the terms and conditions
     name: agree_to_terms

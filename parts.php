@@ -56,6 +56,38 @@ trait TextValidate {
 	}
 }
 
+
+trait GroupValidate {
+	function validate($against) {
+
+		$total = new Ok([]);
+
+
+		foreach($this->items as $x) {
+			if($x instanceof Group) {
+				$result = $x->validate($against);	
+				$merger = $result->get();
+			} else {
+				$result = $x->validate( isset($against[$x->name]) ? $against[$x->name] : null  );
+				$merger = [$x->name => $result->get()];
+			}
+
+			$total = $total
+				->bind(function($x) use ($result) {
+					return $result instanceof Err ? new Err([]) : new Ok($x);
+				})
+				->bind(function($x) use ($merger) {
+					return new Ok(array_merge($merger,$x));
+				})
+				->bind_err(function($x) use ($merger, $result) {
+					return $result instanceof Err ? new Err(array_merge($merger,$x)) : new Err($x);
+				});
+
+		}
+		return $total;
+	}
+}
+
 class Checkbox extends Component {	
 	function __construct($args) {
 		$this->label = $args['label'];
@@ -132,7 +164,10 @@ class Dropdown extends Component {
 				->div->class('menu')
 					->add(array_map(
 						function($v) use($h) {
-							return $h->div->class('item')->data('value',$v)->t($v)->end;
+							return $h
+							->div
+								->class('item')->data('value', $v)->t($v)
+							->end;
 						},
 						$this->options
 					))
@@ -335,20 +370,120 @@ class Password extends SpecialInput {
 }
 
 class PhoneNumber extends SpecialInput {
+	function __construct($args) {
+		$this->label = $args['label'];
+		$this->name = $args['name'];
+
+		$this->required = isset($args['required']) ? $args['required'] : false;
+	}
 	function get($h) {
 		return $this->render($h, 'tel', 'call');
+	}
+	function validate($str) {
+		return (new Ok($str))
+			->bind(function($x) {
+				if(!is_string($x)) {
+					return new Err('Invalid data!');
+				}
+				return new Ok($x);
+			})
+			->bind(function($x) {
+				if($this->required && trim($x) === '') {
+					return new Err('This field is required.');
+				}
+				return new Ok($x);
+			})
+			->bind(function($x) {
+				$phn = preg_replace('/[^x+0-9]/', '', $x);
+				if(strlen($phn) >= 10 || $x === '') {
+					return new Ok($phn);
+				} else {
+					return new Err('Invalid phone number.');
+				}
+			});
 	}
 }
 
 class EmailAddr extends SpecialInput {
+	function __construct($args) {
+		$this->label = $args['label'];
+		$this->name = $args['name'];
+
+		$this->required = isset($args['required']) ? $args['required'] : false;
+	}
 	function get($h) {
 		return $this->render($h, 'email', 'mail');
+	}
+	function validate($str) {
+		return (new Ok($str))
+			->bind(function($x) {
+				if(!is_string($x)) {
+					return new Err('Invalid data!');
+				}
+				return new Ok($x);
+			})
+			->bind(function($x) {
+				if($this->required && trim($x) === '') {
+					return new Err('This field is required.');
+				}
+				return new Ok($x);
+			})
+			->bind(function($x) {
+				$addr = filter_var($x, FILTER_VALIDATE_EMAIL);
+				if($x === '' || $addr !== false) {
+					return new Ok($addr);
+				} else {
+					return new Err('Invalid email address.');
+				}
+			});
 	}
 }
 
 class NumberInp extends SpecialInput {
+	function __construct($args) {
+		$this->label = $args['label'];
+		$this->name = $args['name'];
+
+		$this->required = isset($args['required']) ? $args['required'] : false;
+		$this->min = isset($args['min']) ? $args['min'] : -INF;
+		$this->max = isset($args['max']) ? $args['max'] : INF;
+	}
 	function get($h) {
 		return $this->render($h, 'number', '');
+	}
+	function validate($str) {
+		return (new Ok($str))
+			->bind(function($x) {
+				if(!is_string($x)) {
+					return new Err('Invalid data!');
+				}
+				return new Ok($x);
+			})
+			->bind(function($x) {
+				if($this->required && trim($x) === '') {
+					return new Err('This field is required.');
+				}
+				return new Ok($x);
+			})
+			->bind(function($x) {
+				if($x === '') {
+					return new Ok(null);	
+				}
+
+				$num = filter_var($x, FILTER_VALIDATE_INT);
+
+				if($num !== false) {
+					return new Ok($num);
+				} else {
+					return new Err('Invalid number.');
+				}
+			})
+			->bind(function($x) {
+				if($x !== null && ($x < $this->min || $x > $this->max)) {
+					return new Err('Number must be between ' . $this->min . ' and ' . $this->max . '.');
+				}
+				return new Ok($x);
+			});
 	}
 }
 
@@ -446,36 +581,6 @@ class DateTimePicker extends Component {
 }
 
 
-trait GroupValidate {
-	function validate($against) {
-
-		$total = new Ok([]);
-
-
-		foreach($this->items as $x) {
-			if($x instanceof Group) {
-				$result = $x->validate($against);	
-				$merger = $result->get();
-			} else {
-				$result = $x->validate( isset($against[$x->name]) ? $against[$x->name] : null  );
-				$merger = [$x->name => $result->get()];
-			}
-
-			$total = $total
-				->bind(function($x) use ($result) {
-					return $result instanceof Err ? new Err([]) : new Ok($x);
-				})
-				->bind(function($x) use ($merger) {
-					return new Ok(array_merge($merger,$x));
-				})
-				->bind_err(function($x) use ($merger, $result) {
-					return $result instanceof Err ? new Err(array_merge($merger,$x)) : new Err($x);
-				});
-
-		}
-		return $total;
-	}
-}
 
 class Group extends Component {
 	use GroupValidate;
@@ -524,8 +629,6 @@ class Page extends Component {
 		->end;
 	}
 	function validate($against) {
-		// semantic-ui doesnt escape things for us
-		// return array_map('htmlspecialchars', $this->form->validate($against));
 		return $this->form->validate($against);
 	}
 }

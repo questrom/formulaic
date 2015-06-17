@@ -1,17 +1,22 @@
 /* jshint undef: true, unused: true */
-/* globals $, moment */
+/* globals $, moment, document */
 
 
 $(function() {
 
+	// http://shebang.brandonmintern.com/foolproof-html-escaping-in-javascript/
+	function escapeHtml(str) {
+	    var div = document.createElement('div');
+	    div.appendChild(document.createTextNode(str));
+	    return div.innerHTML;
+	}
+
+
 	$.fn.form.settings.selector.group = '.field:not(.not-validation-root), .validation-root';
 
-	// $('.ui.checkbox').checkbox();
 	var form = $('.ui.form').form({}, {
 		inline: true
-
 	});
-
 
 	$('.ui.dropdown').dropdown({
 		metadata: {
@@ -22,10 +27,8 @@ $(function() {
 
 	$('.checkbox').checkbox();
 
-
 	$('[data-submit=true]').on('click', function() {
 
-		/*
 		$('.red.prompt').remove();
 		$('.field.error, .validation-root.error').removeClass('error');
 
@@ -35,16 +38,14 @@ $(function() {
 		}).done(function(x) {
 			var results = JSON.parse(x).v, valid = true;
 			for(var k in results) {
-				form.form('add prompt', k, [ results[k] ]);
+				form.form('add prompt', k, [ escapeHtml(results[k]) ]);
 				valid = false;
 			}
 			if(valid) {
-		*/
 				form.submit();
-		/*
 			}
 		});
-		*/
+		
 	});
 
 
