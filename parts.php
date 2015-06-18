@@ -607,6 +607,7 @@ class DatePicker extends Component {
 				}
 				
 				$date = DateTimeImmutable::createFromFormat('Y-m-d', $x);
+				$date = $date->setTime(0, 0, 0);
 
 				if($date !== false) {
 					return new Ok(new Just($date));
@@ -656,7 +657,7 @@ class Header extends Component {
 		$this->text = $args['text'];
 		$this->subhead = isset($args['subhead']) ? $args['subhead'] : null;
 		$this->icon = isset($args['icon']) ? $args['icon'] : null;
-		$this->size = isset($args['size']) ? $args['size'] : 2;
+		$this->size = isset($args['size']) ? $args['size'] : 1;
 
 		/*
 
@@ -826,19 +827,38 @@ class Form extends Component {
 class Page extends Component {
 	function __construct($yaml) {
 		$this->form = new Form($yaml['fields']);
-		$this->name = $yaml['name'];
+		$this->title = isset($yaml['title']) ? $yaml['title'] : 'Form';
 	}
 	function get($h) {
 		return $h
-		->div->class('ui page grid')
-			->div->class('sixteen wide column')
-				->h1->t($this->name)->end
-				->add($this->form)
+		->html
+			->head
+				->meta->charset('utf-8')->end
+				->title->t($this->title)->end
+				->link->rel("stylesheet")->href("vendor/semantic/ui/dist/semantic.css")->end
+				->link->rel("stylesheet")->href("styles.css")->end
+			->end
+			->body
+				->div->class('ui page grid')
+					->div->class('sixteen wide column')
+						->add($this->form)
+					->end
+				->end
+				->script->src("http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.js")->end
+				->script->src("vendor/moment/moment/moment.js")->end
+				->script->src("vendor/semantic/ui/dist/semantic.js")->end
+				->script->src("client.js")->end
 			->end
 		->end;
 	}
 	function validate($against) {
-		return $this->form->validate($against);
+		$res = $this->form->validate($against);
+		$res = $res->bind(function($r) {
+			$r['_timestamp'] = new DateTimeImmutable();
+			$r['_ip'] = $_SERVER['REMOTE_ADDR'];	
+			return new Ok($r);
+		});
+		return $res;
 	}
 }
 
@@ -849,26 +869,57 @@ class DebugOutput {
 	}
 }
 
+class MongoOutput {
+	function __construct($args) {
+		$this->server = $args['server'];
+		$this->database = $args['database'];
+		$this->collection = $args['collection'];
+	}
+	function run($data) {
+		$data = array_map(function($x) {
+			if($x instanceof Nothing) {
+				return null;
+			} else if ($x instanceof Just) {
+				return $x->get();
+			} else {
+				return $x;
+			}
+		}, $data);
+		$data = array_map(function($x) {
+			if($x instanceof DateTimeImmutable) {
+				return new MongoDate($x->getTimestamp());
+			} else {
+				return $x;
+			}
+		}, $data);
+		
+		$collection = (new MongoClient($this->server))
+			->selectDB($this->database)
+			->selectCollection($this->collection);
+		$collection->insert($data);
+	}
+}
+
 function parse_yaml($file) {
-	return yaml_parse_file($file, 0, $ndocs, array(
-		'!checkbox' => [ new ReflectionClass('Checkbox'), 'newInstance'],
-		'!textbox' => function($v) { return new Textbox($v); },
-		'!password' => function($v) { return new Password($v); },
-		'!dropdown' => function($v) { return new Dropdown($v); },
-		'!radios' => function($v) { return new Radios($v); },
-		'!checkboxes' => function($v) { return new Checkboxes($v); },
-		'!textarea' => function($v) { return new Textarea($v); },
-		'!group' => function($v) { return new Group($v); },
-		'!date' => function($v) { return new DatePicker($v); },
+	return yaml_parse_file($file, 0, $ndocs, [
+		'!checkbox'    => [ new ReflectionClass('Checkbox'), 'newInstance'],
+		'!textbox'     => function($v) { return new Textbox($v);     },
+		'!password'    => function($v) { return new Password($v);    },
+		'!dropdown'    => function($v) { return new Dropdown($v);    },
+		'!radios'      => function($v) { return new Radios($v);      },
+		'!checkboxes'  => function($v) { return new Checkboxes($v);  },
+		'!textarea'    => function($v) { return new Textarea($v);    },
+		'!group'       => function($v) { return new Group($v);       },
+		'!date'        => function($v) { return new DatePicker($v);  },
 		'!phonenumber' => function($v) { return new PhoneNumber($v); },
-		'!email' => function($v) { return new EmailAddr($v); },
-		'!url' => function($v) { return new UrlInput($v); },
-		'!number' => function($v) { return new NumberInp($v); },
-		'!debug' => function($v) { return new DebugOutput($v); },
+		'!email'       => function($v) { return new EmailAddr($v);   },
+		'!url'         => function($v) { return new UrlInput($v);    },
+		'!number'      => function($v) { return new NumberInp($v);   },
+		'!debug'       => function($v) { return new DebugOutput($v); },
+		'!mongo'       => function($v) { return new MongoOutput($v); },
 		'!groupheader' => function($v) { return new GroupHeader($v); },
 		'!groupnotice' => function($v) { return new GroupNotice($v); },
-		'!notice' => function($v) { return new Notice($v); },
-		'!header' => function($v) { return new Header($v); }
-
-	));
+		'!notice'      => function($v) { return new Notice($v);      },
+		'!header'      => function($v) { return new Header($v);      }
+	]);
 }

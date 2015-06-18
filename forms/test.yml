@@ -1,13 +1,16 @@
-name: "Example Form"
+name: 'Example Form'
+title: 'Example Form'
+debug: true
 fields:
+  - !header 'Example Form'
   - !header
     text: 'Hello world'
     # subhead: 'this is a test'
     icon: plug
-    # size: 4
+    size: 4
   - !textbox { label: Your name, name: name }
   - !notice
-    header: "Wonderful!"
+    header: 'Wonderful!'
     text: Hello world!
     type: info
     icon: inbox
@@ -16,13 +19,13 @@ fields:
     - Gamma delta
     - Epsilon zeta
   - !phonenumber { label: Phone number, name: phone }
-  - !email { label: Email address, name: email, must-have-domain: "bu.edu" }
+  - !email { label: Email address, name: email, must-have-domain: 'bu.edu' }
   - !url { label: Website, name: url }
-  - !date { label: "Start date", name: start_date, min-date: 2015-06-17, max-date: 2015-06-20 }
-  - !number { label: "How many attendees?", name: num_attendees, min: 3, max: 5 }
-  - !checkbox { label: "I agree to the terms and conditions", name: agree_to_terms, required: true }
+  - !date { label: 'Start date', name: start_date, min-date: 2015-06-17, max-date: 2015-06-20 }
+  - !number { label: 'How many attendees?', name: num_attendees, min: 3, max: 5 }
+  - !checkbox { label: 'I agree to the terms and conditions', name: agree_to_terms, required: true }
   - !header 'abc'
-  - !textarea { label: "Additional notes", name: additional_notes }
+  - !textarea { label: 'Additional notes', name: additional_notes }
   - !radios
     label: Choose a link...
     name: choose_a_link
@@ -43,9 +46,9 @@ fields:
      - College of General Studies
   - !group
     fields:
-      - !groupheader "Login!"
+      - !groupheader 'Login!'
       - !groupnotice
-          # header: "Wonderful!"
+          # header: 'Wonderful!'
           text: Hello world!
           # type: info
           # icon: inbox
@@ -76,3 +79,7 @@ fields:
     # max-choices: 4
 outputs:
   - !debug
+  - !mongo
+    server: mongodb://localhost:27017
+    database: forms
+    collection: example_form

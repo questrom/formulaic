@@ -2,21 +2,27 @@
 /* globals $, moment, document */
 
 
+function addPrompt(name, prompt) {
+	$(document.getElementsByName(name))
+		.closest('.field:not(.not-validation-root), .validation-root')
+		.addClass('error')
+		.append(
+			$('<div>')
+				.addClass('ui red pointing prompt label')
+				.text(prompt)
+		);
+}
+
+function removePrompts() {
+	$('.red.prompt').remove();
+	$('.field.error, .validation-root.error').removeClass('error');
+}
+
 $(function() {
 
-	// http://shebang.brandonmintern.com/foolproof-html-escaping-in-javascript/
-	function escapeHtml(str) {
-	    var div = document.createElement('div');
-	    div.appendChild(document.createTextNode(str));
-	    return div.innerHTML;
-	}
-
-
-	$.fn.form.settings.selector.group = '.field:not(.not-validation-root), .validation-root';
-
-	var form = $('.ui.form').form({}, {
-		inline: true
-	});
+	// var form = $('.ui.form').form({}, {
+	// 	inline: true
+	// });
 
 	$('.ui.dropdown').dropdown({
 		metadata: {
@@ -29,29 +35,39 @@ $(function() {
 
 	$('[data-submit=true]').on('click', function() {
 
-		$('.red.prompt').remove();
-		$('.field.error, .validation-root.error').removeClass('error');
+		removePrompts();
+		$('[data-submit=true]').addClass('loading').attr('disabled', true);
 
 		$.ajax('validate.php', {
 			data: $('form').serialize(),
 			method: 'POST'	
 		}).done(function(x) {
-			var results = JSON.parse(x).v, valid = true;
-			for(var k in results) {
-				form.form('add prompt', k, [ escapeHtml(results[k]) ]);
-				valid = false;
-			}
-			if(valid) {
-				$('[data-submit=true]').addClass('loading').attr('disabled', true);
-				$.ajax('submit.php', {
-					data: $('form').serialize(),
-					method: 'POST'	
-				}).done(function(success) {
+			x = JSON.parse(x);
+			$('[data-submit=true]').removeClass('loading').text('Done!').removeAttr('disabled');
+			if(x.v) {
+				var results = x.v;
+				for(var k in results) {
+					addPrompt(k, results[k]);	
+					valid = false;
+				}
+			} else if(typeof x.data == 'string') {
+				var output = x.data;
 
-					$('[data-submit=true]').removeClass('loading').text('Done!').removeAttr('disabled');
-					$('.ui.form').append($('<p>').html(success));
-				});
+					
+					$('.ui.form').append($('<p>').html(output));
+			} else {
+				throw new Error();
 			}
+
+			// if(valid) {
+
+			// 	$.ajax('submit.php', {
+			// 		data: $('form').serialize(),
+			// 		method: 'POST'	
+			// 	}).done(function(success) {
+
+			// 	});
+			// }
 		});
 		
 	});

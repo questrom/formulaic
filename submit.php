@@ -1,10 +1,5 @@
 <?php
 
-// TODO validate here also
-
-// var_dump($_POST);
-
-
 require('vendor/autoload.php');
 require('parts.php');
 
@@ -23,4 +18,6 @@ foreach($result['outputs'] as $output) {
 	$output->run($data);
 }
 
-echo 'Submitted!';
+echo json_encode([
+	'data' => $data
+]);
