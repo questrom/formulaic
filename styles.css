@@ -14,3 +14,5 @@
 .centered-button { margin: 0 auto !important; display: block !important; }
 
 .ui.top.attached.header { margin-top:0 !important; }
+
+.ui.icon.message > .icon:not(.close) { vertical-align:top; }

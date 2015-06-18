@@ -631,11 +631,53 @@ class DatePicker extends Component {
 }
 
 class GroupHeader extends Component {
-
 	function __construct($str) {
 		$this->text = $str;
 	}
-	function get($h) {}
+	function get($h) {
+		return $h->t($this->text);
+	}
+	function validate($a) {
+		return null;
+	}
+}
+
+class Header extends Component {
+	function __construct($args) {
+		if(is_string($args)) {
+			$args = ['text' => $args];
+		}
+		$this->text = $args['text'];
+		$this->subhead = isset($args['subhead']) ? $args['subhead'] : null;
+		$this->icon = isset($args['icon']) ? $args['icon'] : null;
+		$this->size = isset($args['size']) ? $args['size'] : 2;
+
+		/*
+
+			 text: 'Hello world'
+			    subhead: 'this is a test'
+			    icon: plug
+			    size: 1
+		*/
+	}
+	function get($h) { //this->size
+		$inside = $h->t($this->text)
+				->hif($this->subhead !== null)
+					->div->class('sub header')->t($this->subhead)->end
+				->end;
+		return $h
+		->{'h' . $this->size}->class('ui header')
+			->hif($this->icon !== null)
+				->i->class($this->icon . ' icon')->end
+				->div->class('content')
+					->add($inside)
+				->end
+			->end
+			->hif($this->icon === null)
+				->add($inside)
+			->end
+		->end;
+	}
 	function validate($a) {
 		return null;
 	}
@@ -648,7 +690,6 @@ class GroupNotice extends Component {
 		$this->icon = isset($args['icon']) ? $args['icon'] : null;
 		$this->list = isset($args['list']) ? $args['list'] : null;
 		$this->type = isset($args['type']) ? $args['type'] : null;
-
 	}
 	function get($h) {
 		return $h
@@ -676,6 +717,14 @@ class GroupNotice extends Component {
 	}
 	function validate($a) {
 		return null;
+	}
+}
+
+class Notice extends GroupNotice {
+	function get($h) {
+		return $h->div->class('ui message floating ' . ($this->icon === null ? '' : ' icon') . ($this->type ? ' ' . $this->type : ''))
+			->add(parent::get($h))
+		->end;
 	}
 }
 
@@ -720,7 +769,7 @@ class Group extends Component {
 
 					if($value instanceof GroupHeader) {
 						return $h->h5->class('ui header ' . $attachment)
-							->t($value->text)
+							->add($value)
 						->end;
 					} else if(is_array($value)) {
 						return $h->div->class('ui  segment ' . $attachment)
@@ -728,7 +777,7 @@ class Group extends Component {
 						->end;
 					} else if($value instanceof GroupNotice) {
 						return $h->div->class('ui message ' . $attachment . ($value->icon === null ? '' : ' icon') . ($value->type ? ' ' . $value->type : ''))
-						  ->add($value->get($h))
+						  ->add($value)
 						->end;
 					}
 				}, array_reduce($this->items, function($carry, $item) {
@@ -811,7 +860,9 @@ function parse_yaml($file) {
 		'!number' => function($v) { return new NumberInp($v); },
 		'!debug' => function($v) { return new DebugOutput($v); },
 		'!groupheader' => function($v) { return new GroupHeader($v); },
-		'!groupnotice' => function($v) { return new GroupNotice($v); }
+		'!groupnotice' => function($v) { return new GroupNotice($v); },
+		'!notice' => function($v) { return new Notice($v); },
+		'!header' => function($v) { return new Header($v); }
 
 	));
 }
