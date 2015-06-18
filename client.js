@@ -58,18 +58,7 @@ $(function() {
 			} else {
 				throw new Error();
 			}
-
-			// if(valid) {
-
-			// 	$.ajax('submit.php', {
-			// 		data: $('form').serialize(),
-			// 		method: 'POST'	
-			// 	}).done(function(success) {
-
-			// 	});
-			// }
 		});
-		
 	});
 
 
