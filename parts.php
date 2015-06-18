@@ -49,7 +49,7 @@ trait TextValidate {
 			})
 			->bind(function($x) {
 				if($this->mustMatch !== null && preg_match($this->mustMatch, $x) === 0) {
-					return new Err('This input is not valid. It must match the pattern: ' . $this->mustMatch);
+					return new Err('Invalid input!');
 				}
 				return new Ok($x);
 			});
@@ -64,8 +64,11 @@ trait GroupValidate {
 				$result = $x->validate($against);	
 				$merger = $result->get();
 			} else {
-				$result = $x->validate( isset($against[$x->name]) ? $against[$x->name] : null  );
-				$merger = [$x->name => $result->get()];
+				$result = $x->validate( (isset($x->name) && isset($against[$x->name])) ? $against[$x->name] : null  );
+				$merger = isset($x->name) ? [$x->name => $result->get()] : [];
+			}
+			if($result === null) {
+				return $total;
 			}
 			return $total
 				->bind(function($x) use ($result) {
@@ -401,6 +404,7 @@ class EmailAddr extends SpecialInput {
 		$this->name = $args['name'];
 
 		$this->required = isset($args['required']) ? $args['required'] : false;
+		$this->mustHaveDomain = isset($args['must-have-domain']) ? $args['must-have-domain'] : null;
 	}
 	function get($h) {
 		return $this->render($h, 'email', 'mail');
@@ -426,6 +430,19 @@ class EmailAddr extends SpecialInput {
 				} else {
 					return new Err('Invalid email address.');
 				}
+			})
+			->bind(function($x) {
+				if($x !== '' && $this->mustHaveDomain !== null) {
+					// The simplest way, according to http://stackoverflow.com/questions/6917198/
+					// This seems overly simple, but apparently it works
+					$domain = explode('@', $x);
+					$domain = array_pop($domain);
+					// var_dump($domain);
+					if($domain !== $this->mustHaveDomain) {
+						return new Err('Domain must equal: ' . $this->mustHaveDomain . '.');
+					}
+				}
+				return new Ok($x);
 			});
 	}
 }
@@ -484,17 +501,24 @@ class NumberInp extends SpecialInput {
 				return new Ok($x);
 			})
 			->bind(function($x) {
-				if($this->required && trim($x) === '') {
+				if(trim($x) === '') {
+					return new Ok(new Nothing());
+				} else {
+					return new Ok(new Just($x));
+				}
+			})
+			->bind(function($x) {
+				if($this->required && $x instanceof Nothing) {
 					return new Err('This field is required.');
 				}
 				return new Ok($x);
 			})
 			->bind(function($x) {
-				if($x === '') {
+				if($x instanceof Nothing) {
 					return new Ok(new Nothing());	
 				}
 
-				$num = filter_var($x, FILTER_VALIDATE_INT);
+				$num = filter_var($x->get(), FILTER_VALIDATE_INT);
 
 				if($num !== false) {
 					return new Ok(new Just($num));
@@ -573,29 +597,31 @@ class DatePicker extends Component {
 		return (new Ok($against))
 			->bind(function($x) {
 				if($x === '') {
-					return new Ok(null);
+					return new Ok(new Nothing());
 				}
+				
 				$date = DateTimeImmutable::createFromFormat('Y-m-d', $x);
+
 				if($date !== false) {
-					return new Ok($date);
+					return new Ok(new Just($date));
 				} else {
 					return new Err('Invalid date!');
 				}
 			})
 			->bind(function($x) {
-				if($this->required && $x === null) {
+				if($this->required && $x instanceof Nothing) {
 					return new Err('This field is required.');
 				}
 				return new Ok($x);
 			})
 			->bind(function($x) {
-				if($x !== null && $this->minDate !== null && $this->minDate > $x) {
+				if($x instanceof Just && $this->minDate !== null && $this->minDate > $x->get()) {
 					return new Err('Please enter a date starting at ' . $this->minDate->format('Y-m-d'));
 				}
 				return new Ok($x);
 			})
 			->bind(function($x) {
-				if($x !== null && $this->maxDate !== null && $this->maxDate < $x) {
+				if($x instanceof Just && $this->maxDate !== null && $this->maxDate < $x->get()) {
 					return new Err('Please enter a date ending at ' . $this->maxDate->format('Y-m-d'));
 				}
 				return new Ok($x);
@@ -604,17 +630,121 @@ class DatePicker extends Component {
 	}
 }
 
+class GroupHeader extends Component {
 
+	function __construct($str) {
+		$this->text = $str;
+	}
+	function get($h) {}
+	function validate($a) {
+		return null;
+	}
+}
+
+class GroupNotice extends Component {
+	function __construct($args) {
+		$this->text = $args['text'];
+		$this->header = isset($args['header']) ? $args['header'] : null;
+		$this->icon = isset($args['icon']) ? $args['icon'] : null;
+		$this->list = isset($args['list']) ? $args['list'] : null;
+		$this->type = isset($args['type']) ? $args['type'] : null;
+
+	}
+	function get($h) {
+		return $h
+		->hif($this->icon !== null)
+			->i->class($this->icon . ' icon')->end
+		->end
+		->div->class('content')
+			->hif($this->header !== null)
+				->div->class('header')
+					->t($this->header)
+				->end
+			->end
+			->p
+				->t($this->text)
+			->end
+			->hif($this->list !== null)
+			  ->ul->class('list')
+			    ->add(array_map(function($item) use($h) {
+			    	// var_dump($this->list);
+			    	return $h->li->t($item)->end;
+			    }, $this->list === null ? [] : $this->list ))
+			  ->end
+			->end
+		->end;
+	}
+	function validate($a) {
+		return null;
+	}
+}
+
+function startEndMap(callable $fn, $list) {
+	$lastPos = count($list) - 1;
+	$result = [];
+	foreach ($list as $key => $value) {
+		if($key === 0 && $key === $lastPos) {
+			$result[] = $fn($value, 'ONLY');
+		} else if($key === 0) {
+			$result[] = $fn($value, 'FIRST');
+		} else if($key === $lastPos) {
+			$result[] = $fn($value, 'LAST');
+		} else {
+			$result[] = $fn($value, 'MIDDLE');
+		}
+	}
+	return $result;
+}
 
 class Group extends Component {
 	use GroupValidate;
 	function __construct($args) {
-		$this->items = $args;
+		$this->items = $args['fields'];
+		// $this->header = isset($args['header']) ? $args['header'] : null;
 	}
 	function get($h) {
-		return $h->div->class('ui segment')
-			->add($this->items)
-		->end;
+
+		return $h
+			->add(
+				startEndMap(function($value, $place) use ($h) {
+					
+					if($place === 'ONLY') {
+						$attachment = '';
+					} else if($place === 'FIRST') {
+						$attachment = 'top attached';
+					} else if($place === 'LAST') {
+						$attachment = 'bottom attached';
+					} else if($place === 'MIDDLE') {
+						$attachment = 'attached';
+					}
+
+					if($value instanceof GroupHeader) {
+						return $h->h5->class('ui header ' . $attachment)
+							->t($value->text)
+						->end;
+					} else if(is_array($value)) {
+						return $h->div->class('ui  segment ' . $attachment)
+							->add($value)
+						->end;
+					} else if($value instanceof GroupNotice) {
+						return $h->div->class('ui message ' . $attachment . ($value->icon === null ? '' : ' icon') . ($value->type ? ' ' . $value->type : ''))
+						  ->add($value->get($h))
+						->end;
+					}
+				}, array_reduce($this->items, function($carry, $item) {
+					if($item instanceof GroupHeader || $item instanceof GroupNotice) {
+						array_push($carry, $item);
+						return $carry;
+					} else if( is_array(end($carry)) ) {
+						array_push($carry[count($carry)-1], $item);
+						return $carry;
+					} else {
+						array_push($carry, [$item]);
+						return $carry;
+					}
+				}, []))
+			);
+	
 	}
 }
 
@@ -679,7 +809,9 @@ function parse_yaml($file) {
 		'!email' => function($v) { return new EmailAddr($v); },
 		'!url' => function($v) { return new UrlInput($v); },
 		'!number' => function($v) { return new NumberInp($v); },
-		'!debug' => function($v) { return new DebugOutput($v); }
+		'!debug' => function($v) { return new DebugOutput($v); },
+		'!groupheader' => function($v) { return new GroupHeader($v); },
+		'!groupnotice' => function($v) { return new GroupNotice($v); }
 
 	));
 }

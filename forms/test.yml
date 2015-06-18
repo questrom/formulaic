@@ -1,40 +1,13 @@
 name: "Example Form"
 fields:
-  - !textbox
-    label: Your name
-    name: name
-    # must-match: '/<b>/'
-  - !phonenumber
-    label: Phone number
-    name: phone
-    # required: true
-  - !email
-    label: Email address
-    name: email
-  - !url
-    label: Website
-    name: url
-  - !date
-    label: Start date
-    name: start_date
-    # required: true
-    min-date: 2015-06-17
-    max-date: 2015-06-20
-  - !number
-    label: How many attendees?
-    name: num_attendees
-    # required: true
-    min: 3
-    max: 5
-  - !checkbox
-    label: I agree to the terms and conditions
-    name: agree_to_terms
-    required: true
-  - !textarea
-    label: Additional notes
-    name: additional_notes
-    # required: true
-    # min-length: 5
+  - !textbox { label: Your name, name: name }
+  - !phonenumber { label: Phone number, name: phone }
+  - !email { label: Email address, name: email, must-have-domain: "bu.edu" }
+  - !url { label: Website, name: url }
+  - !date { label: "Start date", name: start_date, min-date: 2015-06-17, max-date: 2015-06-20 }
+  - !number { label: "How many attendees?", name: num_attendees, min: 3, max: 5 }
+  - !checkbox { label: "I agree to the terms and conditions", name: agree_to_terms, required: true }
+  - !textarea { label: "Additional notes", name: additional_notes }
   - !radios
     label: Choose a link...
     name: choose_a_link
@@ -49,26 +22,36 @@ fields:
     label: Choose a school...
     name: choose_a_school
     # required: true
-    options: [
-      'College of Arts and Sciences',
-      'Questrom School of Business',
-      'College of General Studies'
-    ]
+    options:
+     - College of Arts and Sciences
+     - Questrom School of Business
+     - College of General Studies
   - !group
-    - !textbox
-      label: Username
-      name: username
-      required: true
-      # match-hash: '$2y$10$FeVuAyjk82DNDflP6LevxOG7GCWm11bJ7R48Kx7wHH6a9PP7Z1Aki'
-      max-length: 20
-    - !password
-      label: Password
-      name: password
-      # password is 595
-      # generated with PHP's password_hash
-      # in prod, don't store this in plaintext
-      # match-hash: '$2y$10$FeVuAyjk82DNDflP6LevxOG7GCWm11bJ7R48Kx7wHH6a9PP7Z1Aki'
-      # required: true
+    fields:
+      - !groupheader "Login!"
+      - !groupnotice
+          # header: "Wonderful!"
+          text: Hello world!
+          # type: info
+          # icon: inbox
+          # list:
+          # - Alpha beta
+          # - Gamma delta
+          # - Epsilon zeta
+      - !textbox
+        label: Username
+        name: username
+        required: true
+        # match-hash: '$2y$10$FeVuAyjk82DNDflP6LevxOG7GCWm11bJ7R48Kx7wHH6a9PP7Z1Aki'
+        max-length: 20
+      - !password
+        label: Password
+        name: password
+        # password is 595
+        # generated with PHP's password_hash
+        # in prod, don't store this in plaintext
+        # match-hash: '$2y$10$FeVuAyjk82DNDflP6LevxOG7GCWm11bJ7R48Kx7wHH6a9PP7Z1Aki'
+        # required: true
   - !checkboxes
     label: What are your favorite colors?
     name: fave_colors

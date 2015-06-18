@@ -12,3 +12,5 @@
 .ui.form .required > label:after,
 .ui.form .required  .ui.checkbox:after { font-size: 1.5rem; top: 5px; right:-10px; left: auto;}
 .centered-button { margin: 0 auto !important; display: block !important; }
+
+.ui.top.attached.header { margin-top:0 !important; }
