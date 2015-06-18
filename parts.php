@@ -22,7 +22,9 @@ trait TextValidate {
 			})
 			->bind(function($x) {
 				if(isset($this->matchHash) && $this->matchHash !== null) {
-					if(!password_verify($x, $this->matchHash)) {
+					if(password_verify($x, $this->matchHash)) {
+						return new Ok(null);
+					} else {
 						return new Err('Password incorrect!');
 					}
 				}
@@ -67,7 +69,7 @@ trait GroupValidate {
 				$result = $x->validate( (isset($x->name) && isset($against[$x->name])) ? $against[$x->name] : null  );
 				$merger = isset($x->name) ? [$x->name => $result->get()] : [];
 			}
-			if($result === null) {
+			if($result instanceof Ok && $result->get() === null) {
 				return $total;
 			}
 			return $total
@@ -437,7 +439,7 @@ class EmailAddr extends SpecialInput {
 					// This seems overly simple, but apparently it works
 					$domain = explode('@', $x);
 					$domain = array_pop($domain);
-					// var_dump($domain);
+					
 					if($domain !== $this->mustHaveDomain) {
 						return new Err('Domain must equal: ' . $this->mustHaveDomain . '.');
 					}
@@ -488,6 +490,7 @@ class NumberInp extends SpecialInput {
 		$this->required = isset($args['required']) ? $args['required'] : false;
 		$this->min = isset($args['min']) ? $args['min'] : -INF;
 		$this->max = isset($args['max']) ? $args['max'] : INF;
+		$this->integer = isset($args['integer']) ? $args['integer'] : false;
 	}
 	function get($h) {
 		return $this->render($h, 'number', '');
@@ -517,8 +520,11 @@ class NumberInp extends SpecialInput {
 				if($x instanceof Nothing) {
 					return new Ok(new Nothing());	
 				}
-
-				$num = filter_var($x->get(), FILTER_VALIDATE_INT);
+				if($this->integer) {
+					$num = filter_var($x->get(), FILTER_VALIDATE_INT);
+				} else {
+					$num = filter_var($x->get(), FILTER_VALIDATE_FLOAT);
+				}
 
 				if($num !== false) {
 					return new Ok(new Just($num));
@@ -638,7 +644,7 @@ class GroupHeader extends Component {
 		return $h->t($this->text);
 	}
 	function validate($a) {
-		return null;
+		return new Ok(null);
 	}
 }
 
@@ -679,7 +685,7 @@ class Header extends Component {
 		->end;
 	}
 	function validate($a) {
-		return null;
+		return new Ok(null);
 	}
 }
 
@@ -716,7 +722,7 @@ class GroupNotice extends Component {
 		->end;
 	}
 	function validate($a) {
-		return null;
+		return new Ok(null);
 	}
 }
 

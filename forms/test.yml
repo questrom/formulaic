@@ -65,7 +65,7 @@ fields:
         # password is 595
         # generated with PHP's password_hash
         # in prod, don't store this in plaintext
-        # match-hash: '$2y$10$FeVuAyjk82DNDflP6LevxOG7GCWm11bJ7R48Kx7wHH6a9PP7Z1Aki'
+        match-hash: '$2y$10$FeVuAyjk82DNDflP6LevxOG7GCWm11bJ7R48Kx7wHH6a9PP7Z1Aki'
         # required: true
   - !checkboxes
     label: What are your favorite colors?
