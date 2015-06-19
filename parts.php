@@ -97,7 +97,7 @@ class Checkbox extends Component {
 		->div->class('field ' . ($this->required ? 'required' : ''))
 			->div->class('ui checkbox')
 				->input->type('checkbox')->name($this->name)->end
-				->label->t($this->label)->end
+				->ins(label($h, $this->label))
 			->end
 		->end;
 	}
@@ -134,11 +134,22 @@ class Textarea extends Component {
 	}
 	function get($h) {
 		return $h
-		->div->class('field ' . ($this->required ? 'required' : ''))
-			->label->t($this->label)->end
+		->ins(fieldBox($h, $this->required))
+			->ins(label($h, $this->label))
 			->textarea->name($this->name)->end
 		->end;
 	}
+}
+
+function fieldBox($h, $required) {
+	return $h->div->class('field ' . ($required ? ' required' : ''));
+}
+function label($h, $label) {
+	return $h->label->t($label)->end;
+}
+
+function dropdownDiv($h) {
+	return $h->div->class('ui fluid dropdown selection');
 }
 
 
@@ -151,10 +162,10 @@ class Dropdown extends Component {
 		$this->required = isset($args['required']) ? $args['required'] : false;
 	}
 	function get($h) {
-		return $h
-		->div->class('field')
-			->label->t($this->label)->end
-			->div->class('ui fluid dropdown selection')
+		return fieldBox($h, $this->required)
+			->ins(label($h, $this->label))
+			->hif(!$this->required)->t('test')->end
+			->ins(dropdownDiv($h))
 				->input->name($this->name)->type('hidden')->value('')->end
 				->div->class('default text')->t('Please choose an option...')->end
 				->i->class('dropdown icon')->end
@@ -204,7 +215,7 @@ class Radios extends Component {
 	function get($h) {
 		return $h
 		->div->class('grouped fields validation-root ' . ($this->required ? 'required' : ''))
-			->label->t($this->label)->end
+			->ins(label($h, $this->label))
 			->add(
 				array_map(
 					function($v) use($h) {
@@ -254,7 +265,7 @@ class Checkboxes extends Component {
 	function get($h) {
 		return $h
 		->div->class('grouped fields validation-root ' . ($this->required ? 'required' : ''))
-			->label->t($this->label)->end
+			->ins(label($h, $this->label))
 			->add(
 				array_map(
 					function($v) use($h) {
@@ -321,7 +332,7 @@ class Textbox extends Component {
 	function get($h) {
 		return $h
 		->div->class('ui field ' . ($this->required ? 'required' : ''))
-			->label->t($this->label)->end
+			->ins(label($h, $this->label))
 			->div->class('ui input')
 				->input->type('text')->name($this->name)->end
 			->end
@@ -343,9 +354,7 @@ abstract class SpecialInput extends Component {
 	function render($h, $type, $icon) {
 		return $h
 		->div->class('ui field ' . ($this->required ? 'required' : ''))
-			->label
-				->t($this->label)
-			->end
+			->ins(label($h, $this->label))
 			->div->class($icon ? 'ui left icon input' : 'ui input')
 				->hif($icon)
 					->i->class('icon ' . $icon)->end
@@ -553,7 +562,7 @@ class DatePicker extends Component {
 	function get($h) {
 		return $h
 		->div->class('ui field')
-			->label->t($this->label)->end
+			->ins(label($h, $this->label))
 			->div->class('ui dropdown datepicker basic button')
 				->div->class('text')->t('')->end
 				->i->class('dropdown icon')->end
@@ -756,7 +765,6 @@ class Group extends Component {
 	use GroupValidate;
 	function __construct($args) {
 		$this->items = $args['fields'];
-		// $this->header = isset($args['header']) ? $args['header'] : null;
 	}
 	function get($h) {
 
@@ -789,13 +797,13 @@ class Group extends Component {
 					}
 				}, array_reduce($this->items, function($carry, $item) {
 					if($item instanceof GroupHeader || $item instanceof GroupNotice) {
-						array_push($carry, $item);
+						$carry[] = $item;
 						return $carry;
 					} else if( is_array(end($carry)) ) {
-						array_push($carry[count($carry)-1], $item);
+						$carry[count($carry)-1][] = $item;
 						return $carry;
 					} else {
-						array_push($carry, [$item]);
+						$carry[] = [$item];
 						return $carry;
 					}
 				}, []))
@@ -830,6 +838,7 @@ class Page extends Component {
 		$this->title = isset($yaml['title']) ? $yaml['title'] : 'Form';
 	}
 	function get($h) {
+		// var_dump($h->html->end);
 		return $h
 		->html
 			->head

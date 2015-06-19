@@ -7,4 +7,4 @@ require('parts.php');
 $result = parse_yaml('forms/test.yml');
 $page = new Page($result);
 
-echo '<!DOCTYPE html>' . $page->get(new HTMLGenerator())->getText();
+echo '<!DOCTYPE html>' . $page->get(new HTMLGeneratorUnparented())->getText();

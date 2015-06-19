@@ -2,7 +2,7 @@ name: 'Example Form'
 title: 'Example Form'
 debug: true
 fields:
-  - !header 'Example Form'
+  - !header 'Example Form <b>test'
   - !header
     text: 'Hello world'
     # subhead: 'this is a test'
@@ -39,7 +39,7 @@ fields:
   - !dropdown
     label: Choose a school...
     name: choose_a_school
-    # required: true
+    required: true
     options:
      - College of Arts and Sciences
      - Questrom School of Business
