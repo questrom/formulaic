@@ -81,7 +81,7 @@ class Textarea extends Component {
 	function validate($str) {
 		return (new OkJust($str))
 			->filterString()
-			->matchHash( isset($this->matchHash) ? $this->matchHash : null )
+			->matchHash(isset($this->matchHash) ? $this->matchHash : null)
 			->requiredString($this->required)
 			->minMaxLength($this->minLength, $this->maxLength)
 			->matchRegex($this->mustMatch);
@@ -142,11 +142,16 @@ class Dropdown extends Component {
 
 class Radios extends Component {
 	function __construct($args) {
+
+		$args = array_merge($args, [
+			'required' => false
+		]);
+
 		$this->label = $args['label'];
 		$this->name = $args['name'];
 		$this->options = $args['options'];
 
-		$this->required = isset($args['required']) ? $args['required'] : false;
+		$this->required = $args['required'];
 	}
 	function get($h) {
 		return $h

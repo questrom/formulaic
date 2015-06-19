@@ -85,11 +85,15 @@ abstract class Validate extends Result {
 	function filterNumber($integer) {
 		return $this->innerBind(function($x) use ($integer) {
 			
+
+
 			if($integer) {
 				$num = filter_var($x, FILTER_VALIDATE_INT);
 			} else {
 				$num = filter_var($x, FILTER_VALIDATE_FLOAT);
 			}
+
+			// var_dump($x, $integer);
 
 			if($num !== false) {
 				return new OkJust($num);
@@ -111,8 +115,10 @@ abstract class Validate extends Result {
 		return $this->bind(function($x) use ($enable) {
 			if($enable && $x instanceof Nothing) {
 				return new Err('This field is required.');
+			} else if ($x instanceof Nothing) {
+				return new OkNothing();
 			} else {
-				return new OkJust($x);
+				return new OkJust($x->get());
 			}
 		});
 	}

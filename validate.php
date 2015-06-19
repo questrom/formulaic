@@ -17,7 +17,6 @@ if($data instanceof Err) {
 	]);
 } else {
 
-	
 
 	ob_start();
 	$data = $data->get();
