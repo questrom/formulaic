@@ -2,62 +2,14 @@
 
 require('include/HTMLGenerator.php');
 require('include/Result.php');
+require('include/Validate.php');
 date_default_timezone_set('America/New_York');
 
-abstract class Component extends ArrayObject {
+abstract class Component {
 	// abstract function __construct($args);
 	abstract function get($h);
 	abstract function validate($against);
 }
-
-
-trait TextValidate {
-	function validate($str) {
-		return (new Ok($str))
-			->bind(function($x) {
-				if(!is_string($x)) {
-					return new Err('Invalid data!');
-				}
-				return new Ok($x);
-			})
-			->bind(function($x) {
-				if(isset($this->matchHash) && $this->matchHash !== null) {
-					if(password_verify($x, $this->matchHash)) {
-						return new Ok(null);
-					} else {
-						return new Err('Password incorrect!');
-					}
-				}
-				
-				return new Ok($x);
-			})
-			->bind(function($x) {
-				if($this->required && trim($x) === '') {
-					return new Err('This field is required.');
-				}
-				return new Ok($x);
-			})
-			->bind(function($x) {
-				if(strlen($x) > $this->maxLength) {
-					return new Err('The input is too long. Maximum is ' . $this->maxLength . ' characters.');
-				}
-				return new Ok($x);
-			})
-			->bind(function($x) {
-				if(strlen($x) < $this->minLength) {
-					return new Err('The input is too short. Minimum is ' . $this->minLength . ' characters.');
-				}
-				return new Ok($x);
-			})
-			->bind(function($x) {
-				if($this->mustMatch !== null && preg_match($this->mustMatch, $x) === 0) {
-					return new Err('Invalid input!');
-				}
-				return new Ok($x);
-			});
-	}
-}
-
 
 trait GroupValidate {
 	function validate($against) {
@@ -69,22 +21,23 @@ trait GroupValidate {
 				$result = $x->validate( (isset($x->name) && isset($against[$x->name])) ? $against[$x->name] : null  );
 				$merger = isset($x->name) ? [$x->name => $result->get()] : [];
 			}
-			if($result instanceof Ok && $result->get() === null) {
+			if($result instanceof OkJust && $result->get() === null) {
 				return $total;
 			}
 			return $total
-				->bind(function($x) use ($result) {
-					return $result instanceof Err ? new Err([]) : new Ok($x);
+				->innerBind(function($x) use ($result) {
+					return $result instanceof Err ? new Err([]) : new OkJust($x);
 				})
-				->bind(function($x) use ($merger) {
-					return new Ok(array_merge($merger,$x));
+				->innerBind(function($x) use ($merger) {
+					return new OkJust(array_merge($merger,$x));
 				})
 				->bind_err(function($x) use ($merger, $result) {
 					return $result instanceof Err ? new Err(array_merge($merger,$x)) : new Err($x);
 				});
-		}, new Ok([]));
+		}, new OkJust([]));
 	}
 }
+
 
 class Checkbox extends Component {	
 	function __construct($args) {
@@ -102,27 +55,13 @@ class Checkbox extends Component {
 		->end;
 	}
 	function validate($against) {
-		return (new Ok($against))
-			->bind(function($x) {
-				if($x === 'on') {
-					return new Ok(true);
-				} else if($x === null) {
-					return new Ok(false);
-				} else {
-					return new Err('Invalid data!');
-				}
-			})
-			->bind(function($x) {
-				if($this->required && !$x) {
-					return new Err('Please check this box before submitting the form.');
-				}
-				return new Ok($x);
-			});
+		return (new OkJust($against))
+			->filterBoolean()
+			->requiredBoolean($this->required);
 	}
 }
 
 class Textarea extends Component {	
-	use TextValidate;
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
@@ -139,13 +78,24 @@ class Textarea extends Component {
 			->textarea->name($this->name)->end
 		->end;
 	}
+	function validate($str) {
+		return (new OkJust($str))
+			->filterString()
+			->matchHash( isset($this->matchHash) ? $this->matchHash : null )
+			->requiredString($this->required)
+			->minMaxLength($this->minLength, $this->maxLength)
+			->matchRegex($this->mustMatch);
+	}
 }
 
 function fieldBox($h, $required) {
 	return $h->div->class('field ' . ($required ? ' required' : ''));
 }
 function label($h, $label) {
-	return $h->label->t($label)->end;
+	return $h
+	->label
+		->t($label)
+	->end;
 }
 
 function dropdownDiv($h) {
@@ -184,23 +134,9 @@ class Dropdown extends Component {
 		->end;
 	}
 	function validate($against) {
-		return (new Ok($against))
-			->bind(function($x) {
-				if($x === '') {
-					return new Ok(new Nothing());
-				} else if(in_array($x, $this->options, TRUE)) {
-					return new Ok(new Just($x));
-				} else {
-					return new Err('Invalid data!');
-				}
-			})
-			->bind(function($x) {
-				if($this->required && $x instanceof Nothing) {
-					return new Err('This field is required.');
-				} else {
-					return new Ok($x);
-				}
-			});
+		return (new OkJust($against))
+			->filterChosenFromOptions($this->options)
+			->requiredMaybe($this->required);
 	}
 }
 
@@ -233,34 +169,22 @@ class Radios extends Component {
 		->end;
 	}
 	function validate($against) {
-		return (new Ok($against))
-			->bind(function($x) {
-				if($x === null) {
-					return new Ok(new Nothing());
-				} else if(in_array($x, $this->options, TRUE)) {
-					return new Ok(new Just($x));
-				} else {
-					return new Err('Invalid data!');
-				}
-			})
-			->bind(function($x) {
-				if($this->required && $x instanceof Nothing) {
-					return new Err('Please choose an option.');
-				}
-				return new Ok($x);
-			});
+		return (new OkJust($against))
+			->filterChosenFromOptions($this->options)
+			->requiredMaybe($this->required);
 	}
 }
 
 
 class Checkboxes extends Component {
 	function __construct($args) {
-		$args = array_merge([
-			"max-choices" => INF,
-			"min-choices" => 0,
-			"required" => false
-		], $args);
-		parent::__construct($args, ArrayObject::ARRAY_AS_PROPS);
+		$this->label = $args['label'];
+		$this->name = $args['name'];
+		$this->options = $args['options'];
+
+		$this->required = isset($args['required']) ? $args['required'] : false;
+		$this->minChoices = isset($args['min-choices']) ? $args['min-choices'] : 0;
+		$this->maxChoices = isset($args['max-choices']) ? $args['max-choices'] : INF;
 	}
 	function get($h) {
 		return $h
@@ -282,40 +206,14 @@ class Checkboxes extends Component {
 		->end;
 	}
 	function validate($against) {
-		return (new Ok($against))
-			->bind(function($x) {
-				if($x === null) {
-					return new Ok([]);
-				} else if(is_array($x) && count(array_diff($x, $this->options)) === 0 ) {
-					return new Ok($x);
-				} else {
-					return new Err('Invalid data!');
-				}
-			})
-			->bind(function($x) {
-				if($this->required && count($x) === 0) {
-					return new Err('This field is required.');
-				}
-				return new Ok($x);
-			})
-			->bind(function($x) {
-				if(count($x) < $this['min-choices']) {
-					return new Err('Please choose at least ' . $this['min-choices'] . ' options.');
-				}
-				return new Ok($x);
-			})
-			->bind(function($x) {
-				if(count($x) > $this['max-choices']) {
-					return new Err('At most ' . $this['max-choices'] . ' choices are allowed.');
-				}
-				return new Ok($x);
-			});
+		return (new OkJust($against))
+			->filterManyChosenFromOptions($this->options)
+			->requiredChoice($this->required)
+			->minMaxChoices($this->minChoices, $this->maxChoices);
 	}
 }
 
 class Textbox extends Component {
-	use TextValidate;
-
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
@@ -337,6 +235,14 @@ class Textbox extends Component {
 				->input->type('text')->name($this->name)->end
 			->end
 		->end;
+	}
+	function validate($str) {
+		return (new OkJust($str))
+			->filterString()
+			->matchHash( isset($this->matchHash) ? $this->matchHash : null )
+			->requiredString($this->required)
+			->minMaxLength($this->minLength, $this->maxLength)
+			->matchRegex($this->mustMatch);
 	}
 }
 
@@ -368,9 +274,16 @@ abstract class SpecialInput extends Component {
 
 
 class Password extends SpecialInput {
-	use TextValidate;
 	function get($h) {
 		return $this->render($h, 'password', '');
+	}
+	function validate($str) {
+		return (new OkJust($str))
+			->filterString()
+			->matchHash( isset($this->matchHash) ? $this->matchHash : null )
+			->requiredString($this->required)
+			->minMaxLength($this->minLength, $this->maxLength)
+			->matchRegex($this->mustMatch);
 	}
 }
 
@@ -385,27 +298,10 @@ class PhoneNumber extends SpecialInput {
 		return $this->render($h, 'tel', 'call');
 	}
 	function validate($str) {
-		return (new Ok($str))
-			->bind(function($x) {
-				if(!is_string($x)) {
-					return new Err('Invalid data!');
-				}
-				return new Ok($x);
-			})
-			->bind(function($x) {
-				if($this->required && trim($x) === '') {
-					return new Err('This field is required.');
-				}
-				return new Ok($x);
-			})
-			->bind(function($x) {
-				$phn = preg_replace('/[^x+0-9]/', '', $x);
-				if(strlen($phn) >= 10 || $x === '') {
-					return new Ok($phn);
-				} else {
-					return new Err('Invalid phone number.');
-				}
-			});
+		return (new OkJust($str))
+			->filterString()
+			->requiredString($this->required)
+			->filterPhone();
 	}
 }
 
@@ -421,40 +317,11 @@ class EmailAddr extends SpecialInput {
 		return $this->render($h, 'email', 'mail');
 	}
 	function validate($str) {
-		return (new Ok($str))
-			->bind(function($x) {
-				if(!is_string($x)) {
-					return new Err('Invalid data!');
-				}
-				return new Ok($x);
-			})
-			->bind(function($x) {
-				if($this->required && trim($x) === '') {
-					return new Err('This field is required.');
-				}
-				return new Ok($x);
-			})
-			->bind(function($x) {
-				$addr = filter_var($x, FILTER_VALIDATE_EMAIL);
-				if($x === '' || $addr !== false) {
-					return new Ok($addr);
-				} else {
-					return new Err('Invalid email address.');
-				}
-			})
-			->bind(function($x) {
-				if($x !== '' && $this->mustHaveDomain !== null) {
-					// The simplest way, according to http://stackoverflow.com/questions/6917198/
-					// This seems overly simple, but apparently it works
-					$domain = explode('@', $x);
-					$domain = array_pop($domain);
-					
-					if($domain !== $this->mustHaveDomain) {
-						return new Err('Domain must equal: ' . $this->mustHaveDomain . '.');
-					}
-				}
-				return new Ok($x);
-			});
+		return (new OkJust($str))
+			->filterString()
+			->requiredString($this->required)
+			->filterFilterVar(FILTER_VALIDATE_EMAIL, 'Invalid email address.')
+			->mustHaveDomain($this->mustHaveDomain);
 	}
 }
 class UrlInput extends SpecialInput {
@@ -468,27 +335,10 @@ class UrlInput extends SpecialInput {
 		return $this->render($h, 'url', 'world');
 	}
 	function validate($str) {
-		return (new Ok($str))
-			->bind(function($x) {
-				if(!is_string($x)) {
-					return new Err('Invalid data!');
-				}
-				return new Ok($x);
-			})
-			->bind(function($x) {
-				if($this->required && trim($x) === '') {
-					return new Err('This field is required.');
-				}
-				return new Ok($x);
-			})
-			->bind(function($x) {
-				$addr = filter_var($x, FILTER_VALIDATE_URL);
-				if($x === '' || $addr !== false) {
-					return new Ok($addr);
-				} else {
-					return new Err('Invalid URL.');
-				}
-			});
+		return (new OkJust($str))
+			->filterString()
+			->requiredString($this->required)
+			->filterFilterVar(FILTER_VALIDATE_URL, 'Invalid URL.');
 	}
 }
 class NumberInp extends SpecialInput {
@@ -505,48 +355,12 @@ class NumberInp extends SpecialInput {
 		return $this->render($h, 'number', '');
 	}
 	function validate($str) {
-		return (new Ok($str))
-			->bind(function($x) {
-				if(!is_string($x)) {
-					return new Err('Invalid data!');
-				}
-				return new Ok($x);
-			})
-			->bind(function($x) {
-				if(trim($x) === '') {
-					return new Ok(new Nothing());
-				} else {
-					return new Ok(new Just($x));
-				}
-			})
-			->bind(function($x) {
-				if($this->required && $x instanceof Nothing) {
-					return new Err('This field is required.');
-				}
-				return new Ok($x);
-			})
-			->bind(function($x) {
-				if($x instanceof Nothing) {
-					return new Ok(new Nothing());	
-				}
-				if($this->integer) {
-					$num = filter_var($x->get(), FILTER_VALIDATE_INT);
-				} else {
-					$num = filter_var($x->get(), FILTER_VALIDATE_FLOAT);
-				}
-
-				if($num !== false) {
-					return new Ok(new Just($num));
-				} else {
-					return new Err('Invalid number.');
-				}
-			})
-			->bind(function($x) {
-				if($x instanceof Just && ($x->get() < $this->min || $x->get() > $this->max)) {
-					return new Err('Number must be between ' . $this->min . ' and ' . $this->max . '.');
-				}
-				return new Ok($x);
-			});
+		return (new OkJust($str))
+			->filterString()
+			->maybeString() // So we end up with a Maybe<> if not required
+			->requiredMaybe($this->required)
+			->filterNumber($this->integer)
+			->minMaxNumber($this->min, $this->max);
 	}
 }
 
@@ -609,39 +423,10 @@ class DatePicker extends Component {
 		->end;
 	}
 	function validate($against) {
-		return (new Ok($against))
-			->bind(function($x) {
-				if($x === '') {
-					return new Ok(new Nothing());
-				}
-				
-				$date = DateTimeImmutable::createFromFormat('Y-m-d', $x);
-				$date = $date->setTime(0, 0, 0);
-
-				if($date !== false) {
-					return new Ok(new Just($date));
-				} else {
-					return new Err('Invalid date!');
-				}
-			})
-			->bind(function($x) {
-				if($this->required && $x instanceof Nothing) {
-					return new Err('This field is required.');
-				}
-				return new Ok($x);
-			})
-			->bind(function($x) {
-				if($x instanceof Just && $this->minDate !== null && $this->minDate > $x->get()) {
-					return new Err('Please enter a date starting at ' . $this->minDate->format('Y-m-d'));
-				}
-				return new Ok($x);
-			})
-			->bind(function($x) {
-				if($x instanceof Just && $this->maxDate !== null && $this->maxDate < $x->get()) {
-					return new Err('Please enter a date ending at ' . $this->maxDate->format('Y-m-d'));
-				}
-				return new Ok($x);
-			});
+		return (new OkJust($against))
+			->filterDate()
+			->requiredMaybe($this->required)
+			->minMaxDate($this->minDate, $this->maxDate);
 
 	}
 }
@@ -654,7 +439,7 @@ class GroupHeader extends Component {
 		return $h->t($this->text);
 	}
 	function validate($a) {
-		return new Ok(null);
+		return new OkJust(null);
 	}
 }
 
@@ -695,7 +480,7 @@ class Header extends Component {
 		->end;
 	}
 	function validate($a) {
-		return new Ok(null);
+		return new OkJust(null);
 	}
 }
 
@@ -732,7 +517,7 @@ class GroupNotice extends Component {
 		->end;
 	}
 	function validate($a) {
-		return new Ok(null);
+		return new OkJust(null);
 	}
 }
 
@@ -823,9 +608,18 @@ class Form extends Component {
 		return $h
 		->form->class('ui form')->action('submit.php')->method('POST')
 			->add($this->items)
+			->div->class('ui floating error message validation-error-message')
+				->div->class('header')
+					->t('Error validating data')
+				->end
+				->p
+					->t('Unfortunately, the data you provided contains errors. Please see above for more information. ')
+					->t('After you have corrected the errors, press the button below to try again.')
+				->end
+			->end
 			->button->type('button')->class('ui labeled icon positive big button centered-button')->data('submit','true')
 				->i->class('checkmark icon')->end
-				->t('Submit Form')
+				->span->t('Submit Form')->end
 			->end
 		->end;
 	}
@@ -836,6 +630,7 @@ class Page extends Component {
 	function __construct($yaml) {
 		$this->form = new Form($yaml['fields']);
 		$this->title = isset($yaml['title']) ? $yaml['title'] : 'Form';
+		$this->successMessage = isset($yaml['success-message']) ? $yaml['success-message'] : 'The form was submitted successfully.';
 	}
 	function get($h) {
 		// var_dump($h->html->end);
@@ -853,6 +648,28 @@ class Page extends Component {
 						->add($this->form)
 					->end
 				->end
+				->div->class('success-modal ui small modal')
+					->div->class('header')
+						->t('Submission complete')
+					->end
+					->div->class('content')
+						->p->t($this->successMessage)->end
+					->end
+					->div->class('actions')
+						->button->type('button')->class('ui primary button')->t('OK')->end
+					->end
+				->end
+				->div->class('failure-modal ui small modal')
+					->div->class('red ui header')
+						->t('Submission failed')
+					->end
+					->div->class('content')
+						->p->t('The server encountered an error when processing your request. Please try again.')->end
+					->end
+					->div->class('actions')
+						->button->type('button')->class('ui primary button')->t('OK')->end
+					->end
+				->end
 				->script->src("http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.js")->end
 				->script->src("vendor/moment/moment/moment.js")->end
 				->script->src("vendor/semantic/ui/dist/semantic.js")->end
@@ -862,10 +679,10 @@ class Page extends Component {
 	}
 	function validate($against) {
 		$res = $this->form->validate($against);
-		$res = $res->bind(function($r) {
+		$res = $res->innerBind(function($r) {
 			$r['_timestamp'] = new DateTimeImmutable();
 			$r['_ip'] = $_SERVER['REMOTE_ADDR'];	
-			return new Ok($r);
+			return new OkJust($r);
 		});
 		return $res;
 	}

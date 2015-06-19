@@ -8,12 +8,16 @@ $page = new Page($result);
 
 $data = $page->validate($_POST);
 
+// throw new Exception();
+
 if($data instanceof Err) {
 	echo json_encode([
 		'success' => false,
 		'v' =>  $data->get()
 	]);
 } else {
+
+	
 
 	ob_start();
 	$data = $data->get();

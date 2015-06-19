@@ -1,39 +1,13 @@
 <?php
 
 
-abstract class Result { }
-
-class Err extends Result {
-	private $value;
-	function __construct($value) {
-		$this->value = $value;
-	}
-	function get() {
-		return $this->value;
-	}
-	function bind(callable $x) {
-		return $this;
-	}
-	function bind_err(callable $x) {
-		return $x($this->value);
-	}
+abstract class Result {
+	abstract function get();
+	// abstract function __construct($value);
+	// abstract function bind(callable $x);
+	abstract function bind_err(callable $x);
 }
 
-class Ok extends Result {
-	private $value;
-	function __construct($value) {
-		$this->value = $value;
-	}
-	function get() {
-		return $this->value;
-	}
-	function bind(callable $x) {
-		return $x($this->value);
-	}
-	function bind_err(callable $x) {
-		return $this;
-	}
-}
 
 abstract class Maybe { }
 

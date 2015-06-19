@@ -1,6 +1,8 @@
 name: 'Example Form'
 title: 'Example Form'
 debug: true
+
+success-message: 'Lorem ipsum!'
 fields:
   - !header 'Example Form <b>test'
   - !header
@@ -19,7 +21,7 @@ fields:
     - Gamma delta
     - Epsilon zeta
   - !phonenumber { label: Phone number, name: phone }
-  - !email { label: Email address, name: email, must-have-domain: 'bu.edu' }
+  - !email { label: Email address, name: email, must-have-domain: 'bu.edu', required: true }
   - !url { label: Website, name: url }
   - !date { label: 'Start date', name: start_date, min-date: 2015-06-17, max-date: 2015-06-20 }
   - !number { label: 'How many attendees?', name: num_attendees, min: 3, max: 5 }

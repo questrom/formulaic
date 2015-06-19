@@ -13,3 +13,7 @@
 .ui.icon.message > .icon:not(.close) { vertical-align:top; }
 
 .red.prompt { display: table; }
+
+./*ui.form .success.message, .ui.form .warning.message, .ui.form .error.message {
+	display:block !important;
+}*/

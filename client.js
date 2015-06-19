@@ -20,9 +20,9 @@ function removePrompts() {
 
 $(function() {
 
-	// var form = $('.ui.form').form({}, {
-	// 	inline: true
-	// });
+
+	$.fn.modal.settings.transition='scale';
+
 
 	$('.ui.dropdown').dropdown({
 		metadata: {
@@ -30,6 +30,13 @@ $(function() {
 			defaultValue: 'null'
 		}
 	});
+
+	function doFail() {
+			$('.validation-error-message').hide();
+			var submit = $('[data-submit=true]').removeClass('loading').removeAttr('disabled');
+				$(submit).find('span').text('Try Again');
+			$('.failure-modal').modal('show');
+	}
 
 	$('.checkbox').checkbox();
 
@@ -42,22 +49,36 @@ $(function() {
 			data: $('form').serialize(),
 			method: 'POST'	
 		}).done(function(x) {
-			x = JSON.parse(x);
-			$('[data-submit=true]').removeClass('loading').text('Done!').removeAttr('disabled');
+			try {
+				x = JSON.parse(x);
+			} catch(e) {
+				console.log(x);
+				doFail();
+				return;
+			}
 			if(x.v) {
+				$('.validation-error-message').show();
+				var submit = $('[data-submit=true]').removeClass('loading').removeAttr('disabled');
+				$(submit).find('span').text('Try Again');
+
 				var results = x.v;
+
 				for(var k in results) {
 					addPrompt(k, results[k]);	
-					valid = false;
 				}
-			} else if(typeof x.data == 'string') {
-				var output = x.data;
-
-					
-					$('.ui.form').append($('<p>').html(output));
 			} else {
-				throw new Error();
+				$('.validation-error-message').hide();
+				$('[data-submit=true]').removeClass('loading').removeAttr('disabled').find('span').text('Submit Again');
+
+
+				var output = x.data;
+				if(output) {
+					$('.ui.form').append($('<p>').html(output));
+				}
+				$('.success-modal').modal('show');
 			}
+		}).fail(function(x) {
+			doFail();
 		});
 	});
 
