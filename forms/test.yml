@@ -7,13 +7,13 @@ fields:
   - !header 'Example Form <b>test'
   - !header
     text: 'Hello world'
-    # subhead: 'this is a test'
     icon: plug
     size: 4
   - !time
     label: Start time
     name: start_time
     min: '1:00 AM'
+    step: 5
     # max: '1:00 PM'
   - !range
     label: Volume

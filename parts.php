@@ -13,6 +13,8 @@ abstract class InputComponent extends Component {
 	abstract function validate($against);
 }
 
+// Abstract components
+
 abstract class GroupComponent extends InputComponent {
 	function validate($against) {
 		return $against->innerBind(function($val) {
@@ -55,6 +57,36 @@ abstract class GroupComponent extends InputComponent {
 }
 
 
+
+abstract class SpecialInput extends InputComponent {
+	function __construct($args) {
+		$this->label = $args['label'];
+		$this->name = $args['name'];
+
+		$this->maxLength = isset($args['max-length']) ? $args['max-length'] : INF;
+		$this->minLength = isset($args['min-length']) ? $args['min-length'] : 0;
+		$this->required = isset($args['required']) ? $args['required'] : false;
+		$this->mustMatch = isset($args['must-match']) ? $args['must-match'] : null;
+		$this->matchHash = isset($args['match-hash']) ? $args['match-hash'] : null;
+	}
+	function render($h, $type, $icon) {
+		return $h
+		->div->class('ui field ' . ($this->required ? 'required' : ''))
+			->ins(label($h, $this->label))
+			->div->class($icon ? 'ui left icon input' : 'ui input')
+				->hif($icon)
+					->i->class('icon ' . $icon)->end
+				->end
+				->input->type($type)->name($this->name)->end
+			->end
+		->end;
+	}
+}
+
+
+
+// Specific components
+
 class Checkbox extends InputComponent {	
 	function __construct($args) {
 		$this->label = $args['label'];
@@ -85,12 +117,14 @@ class TimeInput extends InputComponent {
 		$this->required = isset($args['required']) ? $args['required'] : false;
 		$this->max = isset($args['max']) ? $args['max'] : null;
 		$this->min = isset($args['min']) ? $args['min'] : null;
+
+		$this->step = isset($args['step']) ? $args['step'] : 'any';
 	}
 	function get($h) {
 		return $h
 		->div->class('field ' . ($this->required ? ' required' : ''))
 			->ins(label($h, $this->label))
-			->div->class('ui right labeled input time-input')
+			->div->class('ui input time-input')
 				->input->type('text')->name($this->name)->data('inputmask', " 'alias': 'h:s t', 'placeholder': 'hh:mm am' ")->end
 				->end
 			->end
@@ -100,7 +134,8 @@ class TimeInput extends InputComponent {
 		return $against
 			->filterTime()
 			->requiredMaybe($this->required)
-			->minMaxTime($this->min, $this->max);
+			->minMaxTime($this->min, $this->max)
+			->stepTime($this->step);
 	}
 }
 
@@ -336,32 +371,6 @@ class Range extends InputComponent {
 			->filterNumber(false)
 			->minMaxNumber($this->min, $this->max)
 			->stepNumber($this->step);
-	}
-}
-
-
-abstract class SpecialInput extends InputComponent {
-	function __construct($args) {
-		$this->label = $args['label'];
-		$this->name = $args['name'];
-
-		$this->maxLength = isset($args['max-length']) ? $args['max-length'] : INF;
-		$this->minLength = isset($args['min-length']) ? $args['min-length'] : 0;
-		$this->required = isset($args['required']) ? $args['required'] : false;
-		$this->mustMatch = isset($args['must-match']) ? $args['must-match'] : null;
-		$this->matchHash = isset($args['match-hash']) ? $args['match-hash'] : null;
-	}
-	function render($h, $type, $icon) {
-		return $h
-		->div->class('ui field ' . ($this->required ? 'required' : ''))
-			->ins(label($h, $this->label))
-			->div->class($icon ? 'ui left icon input' : 'ui input')
-				->hif($icon)
-					->i->class('icon ' . $icon)->end
-				->end
-				->input->type($type)->name($this->name)->end
-			->end
-		->end;
 	}
 }
 
@@ -770,6 +779,8 @@ class Page extends InputComponent {
 	}
 }
 
+// Outputs
+
 class DebugOutput {
 	function __construct($args) {}
 	function run($data) {
@@ -817,8 +828,8 @@ function parse_yaml($file) {
 		'!radios'      => function($v) { return new Radios($v);      },
 		'!checkboxes'  => function($v) { return new Checkboxes($v);  },
 		'!textarea'    => function($v) { return new Textarea($v);    },
-		'!range'    => function($v) { return new Range($v);    },
-		'!time'    => function($v) { return new TimeInput($v);    },
+		'!range'       => function($v) { return new Range($v);       },
+		'!time'        => function($v) { return new TimeInput($v);   },
 		'!group'       => function($v) { return new Group($v);       },
 		'!date'        => function($v) { return new DatePicker($v);  },
 		'!phonenumber' => function($v) { return new PhoneNumber($v); },

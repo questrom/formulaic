@@ -276,7 +276,21 @@ abstract class Validate extends Result {
 			});
 		}
 	}
+	function stepTime($step) {
+		if($step === 'any') {
+			return $this;
+		} else {
+			return $this->innerBind(function($x) use ($step) {
 
+				if(($x % ( 60 * $step)) === 0) {
+					return new OkJust($x);					
+				} else {
+					return new Err('Time must be a multiple of ' . $step . ' minutes.');
+				}
+
+			});
+		}
+	}
 }
 
 
