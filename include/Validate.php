@@ -59,6 +59,10 @@ abstract class Validate extends Result {
 	function filterDate() {
 		return $this->innerBind(function($x) {
 				
+				if(trim($x) == '') {
+					return new OkNothing(null);
+				}
+
 				$date = DateTimeImmutable::createFromFormat('Y-m-d', $x);
 				$date = $date->setTime(0, 0, 0);
 
@@ -68,6 +72,28 @@ abstract class Validate extends Result {
 					return new Err('Invalid date!');
 				}
 			});
+	}
+	static function timeToSeconds($x) {
+
+		$date = DateTimeImmutable::createFromFormat('g:i a', $x);
+		return 	($date->format('G') * 3600) + ($date->format('i') * 60);
+	}
+	function filterTime() {
+		return $this->innerBind(function($x) {
+
+			if(trim($x) == '') {
+				return new OkNothing(null);
+			}
+				
+			$date = DateTimeImmutable::createFromFormat('g:i a', $x);
+			
+			if($date !== false) {
+				$seconds = ($date->format('G') * 3600) + ($date->format('i') * 60);
+				return new OkJust($seconds);
+			} else {
+				return new Err('Invalid time!');
+			}
+		});
 	}
 	function filterPhone() {
 		return $this->innerBind(function($x) {
@@ -218,7 +244,25 @@ abstract class Validate extends Result {
 			return new OkJust($x);
 		});
 	}
-	
+	function minMaxTime($min, $max) {
+		$compmin = $min === null ? 0 : self::timeToSeconds($min);
+		$compmax = $max === null ? 86400 : self::timeToSeconds($max);
+
+		// For text display
+		if($min === null) {
+			$min = '12:00 AM';
+		}
+		if($max === null) {
+			$max = '11:59 PM';
+		}
+
+		return $this->innerBind(function($x) use($min, $max, $compmin, $compmax) {
+			if($x < $compmin || $x > $compmax) {
+				return new Err('Time must be between ' . $min . ' and ' . $max . '.');
+			}
+			return new OkJust($x);
+		});
+	}
 	function stepNumber($step) {
 		if($step === 'any') {
 			return $this;

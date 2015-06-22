@@ -13,6 +13,7 @@
         "twig/twig": "^1.18",
         "eonasdan/bootstrap-datetimepicker": "^4.7",
         "twbs/bootstrap": "^3.3",
-        "moment/moment": "^2.10"
+        "moment/moment": "^2.10",
+        "robinherbots/jquery.inputmask": "^3.1"
     }
 }

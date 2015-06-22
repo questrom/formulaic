@@ -83,81 +83,25 @@ class TimeInput extends InputComponent {
 		$this->name = $args['name'];
 
 		$this->required = isset($args['required']) ? $args['required'] : false;
-		$this->max = isset($args['max']) ? $args['max'] : 86400;
-		$this->min = isset($args['min']) ? $args['min'] : 0;
+		$this->max = isset($args['max']) ? $args['max'] : null;
+		$this->min = isset($args['min']) ? $args['min'] : null;
 	
 	}
 	function get($h) {
 		return $h
 		->div->class('field ' . ($this->required ? ' required' : ''))
-
 			->ins(label($h, $this->label))
 			->div->class('ui right labeled input time-input')
-				->input->type('text')->name($this->name . '[]')->end
-				
-				->div->class('ui large label colon')
-					->t(':')
-				->end
-				
-				->input->type('text')->name($this->name . '[]')->end
-				->div->class('ui dropdown label')
-					->input->type('hidden')->name($this->name . '[]')->end
-					->div->class('text')->t('am')->end
-					->i->class('dropdown icon')->end
-					->div->class('menu')
-						->div->class('item')->t('am')->end
-						->div->class('item')->t('pm')->end
-					->end
+				->input->type('text')->name($this->name)->data('inputmask', " 'alias': 'h:s t', 'placeholder': 'hh:mm am' ")->end
 				->end
 			->end
 		->end;
 	}
 	function validate($against) {
 		return $against
-			->innerBind(function($arr) {
-				if(!is_array($arr) || count($arr) !== 3 || ($arr[2] !== 'am' && $arr[2] !== 'pm')) {
-					return new Err('Invalid data1.');
-				}
-				return new OkJust($arr);
-			})
-			->innerBind(function($arr) {
-				if($arr[0] === '' && $arr[1] === '') {
-					return new OkNothing(null);
-				} else if($arr[0] === '' || $arr[1] === '') {
-					return new Err('Invalid data2.');
-				} else {
-					return new OkJust($arr);
-				}
-			})
+			->filterTime()
 			->requiredMaybe($this->required)
-			->innerBind(function($arr) {
-
-				// Strip leading zeroes
-				$arr[1] = preg_replace('/^0+/','',$arr[1]);
-				if($arr[1] === '') {
-					// In case it was zero before the preg_replace call
-					$arr[1] = '0';
-				}
-
-				$arr[0] = filter_var($arr[0], FILTER_VALIDATE_INT);
-				$arr[1] = filter_var($arr[1], FILTER_VALIDATE_INT);
-				if($arr[0] === false || $arr[1] === false) {
-					return new Err('Invalid data3.');	
-				}
-				return new OkJust($arr);
-			})
-			->innerBind(function($arr) {
-				// http://stackoverflow.com/questions/15780415/how-can-i-store-time-of-day-in-mongodb-as-a-string-give-arbitrary-year-month-d
-				if($arr[0] == 12) {
-					$arr[0] = 0;
-				}
-				if($arr[2] === 'pm') {
-					$arr[0] += 12;
-				}
-				return new OkJust($arr[0] * 3600 + $arr[1] * 60);
-			})
-			->minMaxNumber($this->min, $this->max);
-		// TODO
+			->minMaxTime($this->min, $this->max);
 	}
 }
 
@@ -579,7 +523,6 @@ class DatePicker extends InputComponent {
 	}
 	function validate($against) {
 		return $against
-			->filterEmptyString()
 			->filterDate()
 			->requiredMaybe($this->required)
 			->minMaxDate($this->minDate, $this->maxDate);
@@ -605,14 +548,6 @@ class Header extends Component {
 		$this->subhead = isset($args['subhead']) ? $args['subhead'] : null;
 		$this->icon = isset($args['icon']) ? $args['icon'] : null;
 		$this->size = isset($args['size']) ? $args['size'] : 1;
-
-		/*
-
-			 text: 'Hello world'
-			    subhead: 'this is a test'
-			    icon: plug
-			    size: 1
-		*/
 	}
 	function get($h) { //this->size
 		$inside = $h->t($this->text)
@@ -817,10 +752,11 @@ class Page extends InputComponent {
 						->button->type('button')->class('ui primary button')->t('OK')->end
 					->end
 				->end
-				->script->src("http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.js")->end
-				->script->src("vendor/moment/moment/moment.js")->end
-				->script->src("vendor/semantic/ui/dist/semantic.js")->end
-				->script->src("client.js")->end
+				->script->src('http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.js')->end
+				->script->src('vendor/robinherbots/jquery.inputmask/dist/jquery.inputmask.bundle.js')->end
+				->script->src('vendor/moment/moment/moment.js')->end
+				->script->src('vendor/semantic/ui/dist/semantic.js')->end
+				->script->src('client.js')->end
 			->end
 		->end;
 	}

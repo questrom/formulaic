@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "767a09f653f38553c6c132e0003736c9",
+    "hash": "af4ebb68c258bb5c6ac75ca13c8cd57e",
     "packages": [
         {
             "name": "components/jquery",
@@ -309,6 +309,42 @@
             ],
             "description": "Simple Declarative Language (SDL)",
             "time": "2014-11-15 03:52:07"
+        },
+        {
+            "name": "robinherbots/jquery.inputmask",
+            "version": "3.1.63",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/RobinHerbots/jquery.inputmask.git",
+                "reference": "c40c7287eadc31e341ebbf0c02352eb55b9cbc48"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/RobinHerbots/jquery.inputmask/zipball/c40c7287eadc31e341ebbf0c02352eb55b9cbc48",
+                "reference": "c40c7287eadc31e341ebbf0c02352eb55b9cbc48",
+                "shasum": ""
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Robin Herbots"
+                }
+            ],
+            "description": "jquery.inputmask is a jquery plugin which create an input mask.",
+            "homepage": "http://robinherbots.github.io/jquery.inputmask",
+            "keywords": [
+                "form",
+                "input",
+                "inputmask",
+                "jquery",
+                "mask",
+                "plugins"
+            ],
+            "time": "2015-05-04 09:03:48"
         },
         {
             "name": "robloach/component-installer",

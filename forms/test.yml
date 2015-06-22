@@ -13,8 +13,8 @@ fields:
   - !time
     label: Start time
     name: start_time
-    # in seconds past midnight
-    min: 1000
+    min: '1:00 AM'
+    # max: '1:00 PM'
   - !range
     label: Volume
     name: volume

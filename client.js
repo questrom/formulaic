@@ -137,4 +137,6 @@ $(function() {
 
 	});
 
+	$("[data-inputmask]").inputmask();
+	
 });
