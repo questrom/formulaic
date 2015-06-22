@@ -25,8 +25,13 @@ class Just extends Maybe {
 }
 
 class Nothing extends Maybe {
+
+	private $value;
+	function __construct($value = null) {
+		$this->value = $value;
+	}
 	function get() {
-		return null;
+		return $this->value;
 	}
 	function bind(callable $x) {
 		return $this;

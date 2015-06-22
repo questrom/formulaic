@@ -10,6 +10,18 @@ fields:
     # subhead: 'this is a test'
     icon: plug
     size: 4
+  - !time
+    label: Start time
+    name: start_time
+    # in seconds past midnight
+    min: 1000
+  - !range
+    label: Volume
+    name: volume
+    min: 3
+    max: 5
+    default: 4
+    step: 0.5
   - !textbox { label: Your name, name: name }
   - !notice
     header: 'Wonderful!'
@@ -21,11 +33,11 @@ fields:
     - Gamma delta
     - Epsilon zeta
   - !phonenumber { label: Phone number, name: phone }
-  - !email { label: Email address, name: email, must-have-domain: 'bu.edu', required: true }
+  - !email { label: Email address, name: email, must-have-domain: 'bu.edu' }
   - !url { label: Website, name: url }
   - !date { label: 'Start date', name: start_date, min-date: 2015-06-17, max-date: 2015-06-20 }
   - !number { label: 'How many attendees?', name: num_attendees, min: 3, max: 5 }
-  - !checkbox { label: 'I agree to the terms and conditions', name: agree_to_terms, required: true }
+  - !checkbox { label: 'I agree to the terms and conditions', name: agree_to_terms, must-check: true }
   - !header 'abc'
   - !textarea { label: 'Additional notes', name: additional_notes }
   - !radios
@@ -76,7 +88,7 @@ fields:
     label: What are your favorite colors?
     name: fave_colors
     options: [ 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Hipster', '<html>' ]
-    # required: true
+    required: true
     # min-choices: 2
     # max-choices: 4
 outputs:

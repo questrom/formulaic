@@ -2,7 +2,7 @@
 
 abstract class Validate extends Result {
 	// Type filters
- function filterBoolean() {
+ 	function filterBoolean() {
 		return $this->innerBind(function($x) {
 			$value = filter_var($x, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
 
@@ -27,7 +27,7 @@ abstract class Validate extends Result {
 	function filterFilterVar($cons, $msg) {
 		return $this->innerBind(function($x) use ($cons, $msg) {
 			$addr = filter_var($x, $cons);
-			if($x === '' || $addr !== false) {
+			if($addr !== false) {
 				return new OkJust($addr);
 			} else {
 				return new Err($msg);
@@ -58,9 +58,6 @@ abstract class Validate extends Result {
 	}
 	function filterDate() {
 		return $this->innerBind(function($x) {
-				if($x === '') {
-					return new OkNothing();
-				}
 				
 				$date = DateTimeImmutable::createFromFormat('Y-m-d', $x);
 				$date = $date->setTime(0, 0, 0);
@@ -84,16 +81,12 @@ abstract class Validate extends Result {
 	}
 	function filterNumber($integer) {
 		return $this->innerBind(function($x) use ($integer) {
-			
-
 
 			if($integer) {
 				$num = filter_var($x, FILTER_VALIDATE_INT);
 			} else {
 				$num = filter_var($x, FILTER_VALIDATE_FLOAT);
 			}
-
-			// var_dump($x, $integer);
 
 			if($num !== false) {
 				return new OkJust($num);
@@ -102,8 +95,37 @@ abstract class Validate extends Result {
 			}
 		});
 	}
+	function filterEmptyString() {
+		return $this->innerBind(function($x) {
+			if(trim($x) === '') {
+				return new OkNothing($x); 
+			} else {
+				return new OkJust($x);
+			}
+		});
+	}
+	function filterNoChoices() {
+		return $this->innerBind(function($x) {
+				if(count($x) === 0) {
+					return new OkNothing($x);
+				}
+				return new OkJust($x);
+			});
+	}
 	// Required checkers
-	function requiredBoolean($enable) {
+	function requiredMaybe($enable) {
+		return $this->bind(function($x) use ($enable) {
+			if($enable && $x instanceof Nothing) {
+				return new Err('This field is required.');
+			} else if ($x instanceof Nothing) {
+				return new OkNothing($x->get());
+			} else {
+				return new OkJust($x->get());
+			}
+		});
+	}
+	// More sophisticated checks
+	function mustBeTrue($enable) {
 		return $this->innerBind(function($x) use ($enable) {
 			if($enable && !$x) {
 				return new Err('Please check this box before submitting the form.');
@@ -111,37 +133,9 @@ abstract class Validate extends Result {
 			return new OkJust($x);
 		});
 	}
-	function requiredMaybe($enable) {
-		return $this->bind(function($x) use ($enable) {
-			if($enable && $x instanceof Nothing) {
-				return new Err('This field is required.');
-			} else if ($x instanceof Nothing) {
-				return new OkNothing();
-			} else {
-				return new OkJust($x->get());
-			}
-		});
-	}
-	function requiredChoice($enable) {
-		return $this->innerBind(function($x) use ($enable) {
-				if($enable && count($x) === 0) {
-					return new Err('This field is required.');
-				}
-				return new OkJust($x);
-			});
-	}
-	function requiredString($enable) {
-		return $this->innerBind(function($x) use ($enable) {
-			if($enable && trim($x) === '') {
-				return new Err('This field is required.');
-			}
-			return new OkJust($x);
-		});
-	}
-	// More sophisticated checks
 	function mustHaveDomain($checkDomain) {
 		return $this->innerBind(function($x) use ($checkDomain) {
-			if($x !== '' && $checkDomain !== null) {
+			if($checkDomain !== null) {
 				// The simplest way, according to http://stackoverflow.com/questions/6917198/
 				// This seems overly simple, but apparently it works
 				$domain = explode('@', $x);
@@ -224,6 +218,20 @@ abstract class Validate extends Result {
 			return new OkJust($x);
 		});
 	}
+	
+	function stepNumber($step) {
+		if($step === 'any') {
+			return $this;
+		} else {
+			return $this->innerBind(function($x) use ($step) {
+				
+				// Avoid floating point rounding errors
+				$x = $step * round($x / $step);
+
+				return new OkJust($x);
+			});
+		}
+	}
 
 }
 
@@ -248,12 +256,14 @@ class Err extends Validate {
 }
 
 class OkNothing extends Validate {
-	function __construct() {}
+	function __construct($value = null) {
+		$this->value = $value;
+	}
 	function get() {
-		return null;
+		return $this->value;
 	}
 	function bind(callable $x) {
-		return $x(new Nothing());
+		return $x(new Nothing($this->value));
 	}
 	function bind_err(callable $x) {
 		return $this;

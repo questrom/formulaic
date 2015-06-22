@@ -14,6 +14,9 @@
 
 .red.prompt { display: table; }
 
-./*ui.form .success.message, .ui.form .warning.message, .ui.form .error.message {
-	display:block !important;
-}*/
+.colon { padding-left:2px !important; padding-right:2px !important; border-radius:0 !important;}
+.colon + input { border-radius:0 !important;}
+
+.time-input {width:100px !important;}
+
+.time-input.ui.labeled.input input { padding-right: 14px !important;}

@@ -6,48 +6,64 @@ require('include/Validate.php');
 date_default_timezone_set('America/New_York');
 
 abstract class Component {
-	// abstract function __construct($args);
 	abstract function get($h);
+}
+
+abstract class InputComponent extends Component {
 	abstract function validate($against);
 }
 
 trait GroupValidate {
 	function validate($against) {
-		return array_reduce($this->items, function($total, $x) use($against) {
-			if($x instanceof Group) {
-				$result = $x->validate($against);	
-				$merger = $result->get();
-			} else {
-				$result = $x->validate( (isset($x->name) && isset($against[$x->name])) ? $against[$x->name] : null  );
-				$merger = isset($x->name) ? [$x->name => $result->get()] : [];
-			}
-			if($result instanceof OkJust && $result->get() === null) {
-				return $total;
-			}
-			return $total
-				->innerBind(function($x) use ($result) {
-					return $result instanceof Err ? new Err([]) : new OkJust($x);
-				})
-				->innerBind(function($x) use ($merger) {
-					return new OkJust(array_merge($merger,$x));
-				})
-				->bind_err(function($x) use ($merger, $result) {
-					return $result instanceof Err ? new Err(array_merge($merger,$x)) : new Err($x);
-				});
-		}, new OkJust([]));
+		return $against->innerBind(function($val) {
+			return array_reduce($this->items, function($total, $x) use($val) {
+				
+				if($x instanceof Group) {
+					$result = $x->validate( new OkJust($val) );	
+					$merger = $result->get();
+				} else if($x instanceof InputComponent) {
+					$result = $x->validate( new OkJust( isset($val[$x->name]) ? $val[$x->name] : null  ) );
+					$merger = [$x->name => $result->get()];
+				} else {
+					return $total;
+				}
+
+				return $total
+					->innerBind(function($x) use ($result) {
+						return $result->bind(function($data) use($x) {
+							return new OkJust($x);
+						})->bind_err(function($data) {
+							return new Err([]);
+						});
+					})
+					->innerBind(function($x) use ($merger) {
+						return new OkJust(array_merge($merger,$x));
+					})
+					->bind_err(function($x) use ($merger, $result) {
+
+						$merger = $result->bind(function($x) {
+							return new OkJust([]);
+						})->bind_err(function($x) use ($merger) {
+							return new OkJust($merger);
+						})->get();
+
+						return new Err(array_merge($merger,$x));
+					});
+			}, new OkJust([]));
+		});
 	}
 }
 
 
-class Checkbox extends Component {	
+class Checkbox extends InputComponent {	
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
-		$this->required = isset($args['required']) ? $args['required'] : false;
+		$this->mustCheck = isset($args['must-check']) ? $args['must-check'] : false;
 	}
 	function get($h) {
 		return $h
-		->div->class('field ' . ($this->required ? 'required' : ''))
+		->div->class('field ' . ($this->mustCheck ? 'required' : ''))
 			->div->class('ui checkbox')
 				->input->type('checkbox')->name($this->name)->end
 				->ins(label($h, $this->label))
@@ -55,13 +71,98 @@ class Checkbox extends Component {
 		->end;
 	}
 	function validate($against) {
-		return (new OkJust($against))
+		return $against
 			->filterBoolean()
-			->requiredBoolean($this->required);
+			->mustBeTrue($this->mustCheck);
 	}
 }
 
-class Textarea extends Component {	
+class TimeInput extends InputComponent {	
+	function __construct($args) {
+		$this->label = $args['label'];
+		$this->name = $args['name'];
+
+		$this->required = isset($args['required']) ? $args['required'] : false;
+		$this->max = isset($args['max']) ? $args['max'] : 86400;
+		$this->min = isset($args['min']) ? $args['min'] : 0;
+	
+	}
+	function get($h) {
+		return $h
+		->div->class('field ' . ($this->required ? ' required' : ''))
+
+			->ins(label($h, $this->label))
+			->div->class('ui right labeled input time-input')
+				->input->type('text')->name($this->name . '[]')->end
+				
+				->div->class('ui large label colon')
+					->t(':')
+				->end
+				
+				->input->type('text')->name($this->name . '[]')->end
+				->div->class('ui dropdown label')
+					->input->type('hidden')->name($this->name . '[]')->end
+					->div->class('text')->t('am')->end
+					->i->class('dropdown icon')->end
+					->div->class('menu')
+						->div->class('item')->t('am')->end
+						->div->class('item')->t('pm')->end
+					->end
+				->end
+			->end
+		->end;
+	}
+	function validate($against) {
+		return $against
+			->innerBind(function($arr) {
+				if(!is_array($arr) || count($arr) !== 3 || ($arr[2] !== 'am' && $arr[2] !== 'pm')) {
+					return new Err('Invalid data1.');
+				}
+				return new OkJust($arr);
+			})
+			->innerBind(function($arr) {
+				if($arr[0] === '' && $arr[1] === '') {
+					return new OkNothing(null);
+				} else if($arr[0] === '' || $arr[1] === '') {
+					return new Err('Invalid data2.');
+				} else {
+					return new OkJust($arr);
+				}
+			})
+			->requiredMaybe($this->required)
+			->innerBind(function($arr) {
+
+				// Strip leading zeroes
+				$arr[1] = preg_replace('/^0+/','',$arr[1]);
+				if($arr[1] === '') {
+					// In case it was zero before the preg_replace call
+					$arr[1] = '0';
+				}
+
+				$arr[0] = filter_var($arr[0], FILTER_VALIDATE_INT);
+				$arr[1] = filter_var($arr[1], FILTER_VALIDATE_INT);
+				if($arr[0] === false || $arr[1] === false) {
+					return new Err('Invalid data3.');	
+				}
+				return new OkJust($arr);
+			})
+			->innerBind(function($arr) {
+				// http://stackoverflow.com/questions/15780415/how-can-i-store-time-of-day-in-mongodb-as-a-string-give-arbitrary-year-month-d
+				if($arr[0] == 12) {
+					$arr[0] = 0;
+				}
+				if($arr[2] === 'pm') {
+					$arr[0] += 12;
+				}
+				return new OkJust($arr[0] * 3600 + $arr[1] * 60);
+			})
+			->minMaxNumber($this->min, $this->max);
+		// TODO
+	}
+}
+
+
+class Textarea extends InputComponent {	
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
@@ -78,13 +179,14 @@ class Textarea extends Component {
 			->textarea->name($this->name)->end
 		->end;
 	}
-	function validate($str) {
-		return (new OkJust($str))
+	function validate($against) {
+		return $against
 			->filterString()
 			->matchHash(isset($this->matchHash) ? $this->matchHash : null)
-			->requiredString($this->required)
 			->minMaxLength($this->minLength, $this->maxLength)
-			->matchRegex($this->mustMatch);
+			->matchRegex($this->mustMatch)
+			->filterEmptyString()
+			->requiredMaybe($this->required);
 	}
 }
 
@@ -103,7 +205,7 @@ function dropdownDiv($h) {
 }
 
 
-class Dropdown extends Component {
+class Dropdown extends InputComponent {
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
@@ -134,13 +236,13 @@ class Dropdown extends Component {
 		->end;
 	}
 	function validate($against) {
-		return (new OkJust($against))
+		return $against
 			->filterChosenFromOptions($this->options)
 			->requiredMaybe($this->required);
 	}
 }
 
-class Radios extends Component {
+class Radios extends InputComponent {
 	function __construct($args) {
 
 		$args = array_merge($args, [
@@ -174,14 +276,14 @@ class Radios extends Component {
 		->end;
 	}
 	function validate($against) {
-		return (new OkJust($against))
+		return $against
 			->filterChosenFromOptions($this->options)
 			->requiredMaybe($this->required);
 	}
 }
 
 
-class Checkboxes extends Component {
+class Checkboxes extends InputComponent {
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
@@ -211,14 +313,15 @@ class Checkboxes extends Component {
 		->end;
 	}
 	function validate($against) {
-		return (new OkJust($against))
+		return $against
 			->filterManyChosenFromOptions($this->options)
-			->requiredChoice($this->required)
-			->minMaxChoices($this->minChoices, $this->maxChoices);
+			->minMaxChoices($this->minChoices, $this->maxChoices)
+			->filterNoChoices()
+			->requiredMaybe($this->required);
 	}
 }
 
-class Textbox extends Component {
+class Textbox extends InputComponent {
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
@@ -241,17 +344,60 @@ class Textbox extends Component {
 			->end
 		->end;
 	}
-	function validate($str) {
-		return (new OkJust($str))
+	function validate($against) {
+		return $against
 			->filterString()
 			->matchHash( isset($this->matchHash) ? $this->matchHash : null )
-			->requiredString($this->required)
 			->minMaxLength($this->minLength, $this->maxLength)
-			->matchRegex($this->mustMatch);
+			->matchRegex($this->mustMatch)
+			->filterEmptyString()
+			->requiredMaybe($this->required);
 	}
 }
 
-abstract class SpecialInput extends Component {
+function midpoint($a, $b) {
+	return $a + (($b - $a) / 2);
+}
+
+class Range extends InputComponent {
+	function __construct($args) {
+
+		$this->label = $args['label'];
+		$this->name = $args['name'];
+
+		$this->max = isset($args['max']) ? $args['max'] : 1;
+		$this->min = isset($args['min']) ? $args['min'] : 0;
+		$this->step = isset($args['step']) ? $args['step'] : 'any';
+		$this->def = isset($args['default']) ? $args['default'] : midpoint($this->min, $this->max);
+	}
+	function get($h) {
+		return $h
+		->div->class('ui field')
+			->ins(label($h, $this->label))
+			->div->class('ui input')
+				->input
+					->type('range')
+					->name($this->name)
+					->max($this->max)
+					->min($this->min)
+					->step($this->step)
+					->value($this->def)
+				->end
+			->end
+		->end;
+	}
+	function validate($against) {
+		return $against
+			->filterString()
+			->maybeString() // So we end up with a Maybe<> if not required
+			->filterNumber(false)
+			->minMaxNumber($this->min, $this->max)
+			->stepNumber($this->step);
+	}
+}
+
+
+abstract class SpecialInput extends InputComponent {
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
@@ -282,13 +428,14 @@ class Password extends SpecialInput {
 	function get($h) {
 		return $this->render($h, 'password', '');
 	}
-	function validate($str) {
-		return (new OkJust($str))
+	function validate($against) {
+		return $against
 			->filterString()
 			->matchHash( isset($this->matchHash) ? $this->matchHash : null )
-			->requiredString($this->required)
 			->minMaxLength($this->minLength, $this->maxLength)
-			->matchRegex($this->mustMatch);
+			->matchRegex($this->mustMatch)
+			->filterEmptyString()
+			->requiredMaybe($this->required);
 	}
 }
 
@@ -302,10 +449,11 @@ class PhoneNumber extends SpecialInput {
 	function get($h) {
 		return $this->render($h, 'tel', 'call');
 	}
-	function validate($str) {
-		return (new OkJust($str))
+	function validate($against) {
+		return $against
 			->filterString()
-			->requiredString($this->required)
+			->filterEmptyString()
+			->requiredMaybe($this->required)
 			->filterPhone();
 	}
 }
@@ -321,10 +469,11 @@ class EmailAddr extends SpecialInput {
 	function get($h) {
 		return $this->render($h, 'email', 'mail');
 	}
-	function validate($str) {
-		return (new OkJust($str))
+	function validate($against) {
+		return $against
 			->filterString()
-			->requiredString($this->required)
+			->filterEmptyString()
+			->requiredMaybe($this->required)
 			->filterFilterVar(FILTER_VALIDATE_EMAIL, 'Invalid email address.')
 			->mustHaveDomain($this->mustHaveDomain);
 	}
@@ -339,10 +488,11 @@ class UrlInput extends SpecialInput {
 	function get($h) {
 		return $this->render($h, 'url', 'world');
 	}
-	function validate($str) {
-		return (new OkJust($str))
+	function validate($against) {
+		return $against
 			->filterString()
-			->requiredString($this->required)
+			->filterEmptyString()
+			->requiredMaybe($this->required)
 			->filterFilterVar(FILTER_VALIDATE_URL, 'Invalid URL.');
 	}
 }
@@ -359,8 +509,8 @@ class NumberInp extends SpecialInput {
 	function get($h) {
 		return $this->render($h, 'number', '');
 	}
-	function validate($str) {
-		return (new OkJust($str))
+	function validate($against) {
+		return $against
 			->filterString()
 			->maybeString() // So we end up with a Maybe<> if not required
 			->requiredMaybe($this->required)
@@ -369,7 +519,7 @@ class NumberInp extends SpecialInput {
 	}
 }
 
-class DatePicker extends Component {
+class DatePicker extends InputComponent {
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
@@ -428,7 +578,8 @@ class DatePicker extends Component {
 		->end;
 	}
 	function validate($against) {
-		return (new OkJust($against))
+		return $against
+			->filterEmptyString()
 			->filterDate()
 			->requiredMaybe($this->required)
 			->minMaxDate($this->minDate, $this->maxDate);
@@ -442,9 +593,6 @@ class GroupHeader extends Component {
 	}
 	function get($h) {
 		return $h->t($this->text);
-	}
-	function validate($a) {
-		return new OkJust(null);
 	}
 }
 
@@ -484,9 +632,6 @@ class Header extends Component {
 			->end
 		->end;
 	}
-	function validate($a) {
-		return new OkJust(null);
-	}
 }
 
 class GroupNotice extends Component {
@@ -521,9 +666,6 @@ class GroupNotice extends Component {
 			->end
 		->end;
 	}
-	function validate($a) {
-		return new OkJust(null);
-	}
 }
 
 class Notice extends GroupNotice {
@@ -551,7 +693,7 @@ function startEndMap(callable $fn, $list) {
 	return $result;
 }
 
-class Group extends Component {
+class Group extends InputComponent {
 	use GroupValidate;
 	function __construct($args) {
 		$this->items = $args['fields'];
@@ -603,7 +745,7 @@ class Group extends Component {
 }
 
 
-class Form extends Component {
+class Form extends InputComponent {
 	use GroupValidate;
 
 	function __construct($args) {
@@ -631,7 +773,7 @@ class Form extends Component {
 
 }
 
-class Page extends Component {
+class Page extends InputComponent {
 	function __construct($yaml) {
 		$this->form = new Form($yaml['fields']);
 		$this->title = isset($yaml['title']) ? $yaml['title'] : 'Form';
@@ -740,6 +882,8 @@ function parse_yaml($file) {
 		'!radios'      => function($v) { return new Radios($v);      },
 		'!checkboxes'  => function($v) { return new Checkboxes($v);  },
 		'!textarea'    => function($v) { return new Textarea($v);    },
+		'!range'    => function($v) { return new Range($v);    },
+		'!time'    => function($v) { return new TimeInput($v);    },
 		'!group'       => function($v) { return new Group($v);       },
 		'!date'        => function($v) { return new DatePicker($v);  },
 		'!phonenumber' => function($v) { return new PhoneNumber($v); },

@@ -6,7 +6,7 @@ require('parts.php');
 $result = parse_yaml('forms/test.yml');
 $page = new Page($result);
 
-$data = $page->validate($_POST);
+$data = $page->validate(new OkJust($_POST));
 
 // throw new Exception();
 

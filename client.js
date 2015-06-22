@@ -4,6 +4,7 @@
 
 function addPrompt(name, prompt) {
 	$(document.getElementsByName(name))
+		.add($(document.getElementsByName(name + '[]')))
 		.closest('.field:not(.not-validation-root), .validation-root')
 		.addClass('error')
 		.append(
