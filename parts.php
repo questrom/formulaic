@@ -13,12 +13,12 @@ abstract class InputComponent extends Component {
 	abstract function validate($against);
 }
 
-trait GroupValidate {
+abstract class GroupComponent extends InputComponent {
 	function validate($against) {
 		return $against->innerBind(function($val) {
 			return array_reduce($this->items, function($total, $x) use($val) {
 				
-				if($x instanceof Group) {
+				if($x instanceof GroupComponent) {
 					$result = $x->validate( new OkJust($val) );	
 					$merger = $result->get();
 				} else if($x instanceof InputComponent) {
@@ -85,7 +85,6 @@ class TimeInput extends InputComponent {
 		$this->required = isset($args['required']) ? $args['required'] : false;
 		$this->max = isset($args['max']) ? $args['max'] : null;
 		$this->min = isset($args['min']) ? $args['min'] : null;
-	
 	}
 	function get($h) {
 		return $h
@@ -628,8 +627,8 @@ function startEndMap(callable $fn, $list) {
 	return $result;
 }
 
-class Group extends InputComponent {
-	use GroupValidate;
+class Group extends GroupComponent {
+	
 	function __construct($args) {
 		$this->items = $args['fields'];
 	}
@@ -680,8 +679,8 @@ class Group extends InputComponent {
 }
 
 
-class Form extends InputComponent {
-	use GroupValidate;
+class Form extends GroupComponent {
+
 
 	function __construct($args) {
 		$this->items = $args;
