@@ -5,6 +5,9 @@ require('include/Validate.php');
 date_default_timezone_set('America/New_York');
 
 abstract class Component {
+	function __construct($args) {
+		$this->showIf = isset($args['show-if']) ? $args['show-if'] : null;
+	}
 	abstract function get($h);
 }
 
@@ -12,19 +15,29 @@ abstract class InputComponent extends Component {
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
+		parent::__construct($args);
 	}
 	abstract function validate($against);
 }
 
 // Abstract components
 
-abstract class GroupComponent extends InputComponent {
+abstract class GroupComponent extends Component {
 	function validate($against) {
-		return $against->innerBind(function($val) {
+		return $against->innerBind(function($val)  {
 			return array_reduce($this->items, function($total, $x) use($val) {
 				
+				$pval = $val['post'];
+				$fval = $val['files'];
+
 				if($x instanceof GroupComponent) {
-					$result = $x->validate( new OkJust($val) );
+					if($x->showIf !== null &&
+						!(isset($pval[$x->showIf]) ? $pval[$x->showIf] === "on" : false)
+					) {
+						$result = new NoResult();
+					} else {
+						$result = $x->validate( new OkJust($val) );
+					}
 					
 					$mergeM = $result
 						->bind(function($r) {
@@ -44,7 +57,15 @@ abstract class GroupComponent extends InputComponent {
 						});
 
 				} else if($x instanceof InputComponent) {
-					$result = $x->validate( new OkJust( isset($val[$x->name]) ? $val[$x->name] : null  ) );
+					if($x->showIf !== null &&
+						!(isset($pval[$x->showIf]) ? $pval[$x->showIf] === "on" : false)
+					) {
+						$result = new NoResult();
+					} else if($x instanceof FileUpload) {
+						$result = $x->validate( new OkJust( isset($fval[$x->name]) ? $fval[$x->name] : null  ) );
+					} else {
+						$result = $x->validate( new OkJust( isset($pval[$x->name]) ? $pval[$x->name] : null  ) );
+					}
 
 					$mergeM = $result
 						->bind(function($r) use($x) {
@@ -106,7 +127,7 @@ abstract class SpecialInput extends InputComponent {
 	}
 	protected function render($h, $type, $icon) {
 		return $h
-		->div->class('ui field ' . ($this->required ? 'required' : ''))
+		->div->class('ui field ' . ($this->required ? 'required' : ''))->data('show-if',$this->showIf)
 			->ins(label($h, $this->label))
 			->div->class($icon ? 'ui left icon input' : 'ui input')
 				->hif($icon)
@@ -129,7 +150,7 @@ class Checkbox extends InputComponent {
 	}
 	function get($h) {
 		return $h
-		->div->class('field ' . ($this->mustCheck ? 'required' : ''))
+		->div->class('field ' . ($this->mustCheck ? 'required' : ''))->data('show-if',$this->showIf)
 			->div->class('ui checkbox')
 				->input->type('checkbox')->name($this->name)->end
 				->ins(label($h, $this->label))
@@ -155,7 +176,7 @@ class TimeInput extends InputComponent {
 	}
 	function get($h) {
 		return $h
-		->div->class('field ' . ($this->required ? ' required' : ''))
+		->div->class('field ' . ($this->required ? ' required' : ''))->data('show-if',$this->showIf)
 			->ins(label($h, $this->label))
 			->div->class('ui left icon input')
 				->i->class('clock icon')->end
@@ -185,7 +206,7 @@ class DateTimePicker extends InputComponent {
 	}
 	function get($h) {
 		return $h
-		->div->class('field ' . ($this->required ? ' required' : ''))
+		->div->class('field ' . ($this->required ? ' required' : ''))->data('show-if',$this->showIf)
 			->ins(label($h, $this->label))
 			->div->class('ui left icon input')
 				->i->class('calendar icon')->end
@@ -215,7 +236,7 @@ class Textarea extends InputComponent {
 	}
 	function get($h) {
 		return $h
-		->ins(fieldBox($h, $this->required))
+		->ins(fieldBox($h, $this->required, $this->showIf))
 			->ins(label($h, $this->label))
 			->textarea->name($this->name)->end
 		->end;
@@ -230,8 +251,8 @@ class Textarea extends InputComponent {
 	}
 }
 
-function fieldBox($h, $required) {
-	return $h->div->class('field ' . ($required ? ' required' : ''));
+function fieldBox($h, $required, $showIf) {
+	return $h->div->class('field ' . ($required ? ' required' : ''))->data('show-if',$showIf);
 }
 function label($h, $label) {
 	return $h
@@ -253,7 +274,7 @@ class Dropdown extends InputComponent {
 		$this->required = isset($args['required']) ? $args['required'] : false;
 	}
 	function get($h) {
-		return fieldBox($h, $this->required)
+		return fieldBox($h, $this->required, $this->showIf)
 			->ins(label($h, $this->label))
 			->hif(!$this->required)->t('test')->end
 			->ins(dropdownDiv($h))
@@ -290,7 +311,7 @@ class Radios extends InputComponent {
 	}
 	function get($h) {
 		return $h
-		->div->class('grouped fields validation-root ' . ($this->required ? 'required' : ''))
+		->div->class('grouped fields validation-root ' . ($this->required ? 'required' : ''))->data('show-if',$this->showIf)
 			->ins(label($h, $this->label))
 			->add(
 				array_map(
@@ -327,7 +348,7 @@ class Checkboxes extends InputComponent {
 	}
 	function get($h) {
 		return $h
-		->div->class('grouped fields validation-root ' . ($this->required ? 'required' : ''))
+		->div->class('grouped fields validation-root ' . ($this->required ? 'required' : ''))->data('show-if',$this->showIf)
 			->ins(label($h, $this->label))
 			->add(
 				array_map(
@@ -367,7 +388,7 @@ class Textbox extends InputComponent {
 	}
 	function get($h) {
 		return $h
-		->div->class('ui field ' . ($this->required ? 'required' : ''))
+		->div->class('ui field ' . ($this->required ? 'required' : ''))->data('show-if',$this->showIf)
 			->ins(label($h, $this->label))
 			->div->class('ui input')
 				->input->type('text')->name($this->name)->end
@@ -383,6 +404,56 @@ class Textbox extends InputComponent {
 			->requiredMaybe($this->required);
 	}
 }
+
+
+class FileUpload extends InputComponent {
+	function __construct($args) {
+		parent::__construct($args);
+		$this->required  = isset($args['required']) ? $args['required'] : false;
+		$this->allowedExtensions = $args['allowed-extensions'];
+		$this->maxSize = $args['max-size'];
+
+	}
+	function get($h) {
+		return $h
+		->div->class('ui field ' . ($this->required ? 'required' : ''))->data('show-if',$this->showIf)
+			->ins(label($h, $this->label))
+			->div->class('ui input')
+				->input->type('file')->name($this->name)->end
+			->end
+		->end;
+	}
+	function validate($against) {
+		return $against
+			->innerBind(function($val) {
+				if(!is_array($val) || !isset($val['error'])) {
+					return new Err('Invalid data.');
+				} else if($val['error'] === UPLOAD_ERR_NO_FILE) {
+					return new EmptyResult(null);
+				} else if($val['error'] === UPLOAD_ERR_OK) {
+					return new OkJust($val);
+				} else {
+					return new Err('Error uploading file.');
+				}
+			})
+			->requiredMaybe($this->required)
+			->innerBind(function($file) {
+				$ext = strrchr($file, '.');
+				if(!in_array($ext, $this->allowedExtensions)) {
+					$exts = implode(', ', array_map('htmlspecialchars', $this->allowedExtensions));
+					return new Err('Invalid file extension. Supported extensions are: ' . $exts . '.');
+				}
+				return new OkJust($file);
+			})
+			->innerBind(function($file) {
+				if($file['size'] > $this->maxSize) {
+					return new Err('File must be under ' . $this->maxSize . ' bytes in size.');
+				}
+				return new OkJust($file);
+			});
+	}
+}
+
 
 function midpoint($a, $b) {
 	return $a + (($b - $a) / 2);
@@ -400,7 +471,7 @@ class Range extends InputComponent {
 	}
 	function get($h) {
 		return $h
-		->div->class('ui field')
+		->div->class('ui field')->data('show-if',$this->showIf)
 			->ins(label($h, $this->label))
 			->div->class('ui input')
 				->input
@@ -528,7 +599,7 @@ class DatePicker extends InputComponent {
 	}
 	function get($h) {
 		return $h
-		->div->class('field ' . ($this->required ? ' required' : ''))
+		->div->class('field ' . ($this->required ? ' required' : ''))->data('show-if',$this->showIf)
 			->ins(label($h, $this->label))
 			->div->class('ui left icon input')
 				->i->class('calendar icon')->end
@@ -546,11 +617,18 @@ class DatePicker extends InputComponent {
 }
 
 class GroupHeader extends Component {
-	function __construct($str) {
-		$this->text = $str;
+	function __construct($args) {
+		if(is_string($args)) {
+			$args = ['text' => $args];
+		}
+		$this->text = $args['text'];
+		parent::__construct($args);
 	}
 	function get($h) {
-		return $h->t($this->text);
+		return $h
+		->h5->class('ui header attached ')->data('show-if', $this->showIf)
+			->t($this->text)
+		->end;
 	}
 }
 
@@ -563,6 +641,7 @@ class Header extends Component {
 		$this->subhead = isset($args['subhead']) ? $args['subhead'] : null;
 		$this->icon = isset($args['icon']) ? $args['icon'] : null;
 		$this->size = isset($args['size']) ? $args['size'] : 1;
+		parent::__construct($args);
 	}
 	function get($h) { //this->size
 		$inside = $h->t($this->text)
@@ -570,7 +649,7 @@ class Header extends Component {
 					->div->class('sub header')->t($this->subhead)->end
 				->end;
 		return $h
-		->{'h' . $this->size}->class('ui header')
+		->{'h' . $this->size}->class('ui header')->data('show-if', $this->showIf)
 			->hif($this->icon !== null)
 				->i->class($this->icon . ' icon')->end
 				->div->class('content')
@@ -584,13 +663,14 @@ class Header extends Component {
 	}
 }
 
-class GroupNotice extends Component {
+class BaseNotice extends Component {
 	function __construct($args) {
 		$this->text = $args['text'];
 		$this->header = isset($args['header']) ? $args['header'] : null;
 		$this->icon = isset($args['icon']) ? $args['icon'] : null;
 		$this->list = isset($args['list']) ? $args['list'] : null;
 		$this->type = isset($args['type']) ? $args['type'] : null;
+		parent::__construct($args);
 	}
 	function get($h) {
 		return $h
@@ -618,71 +698,43 @@ class GroupNotice extends Component {
 	}
 }
 
-class Notice extends GroupNotice {
+class GroupNotice extends BaseNotice {
 	function get($h) {
-		return $h->div->class('ui message floating ' . ($this->icon === null ? '' : ' icon') . ($this->type ? ' ' . $this->type : ''))
+		return
+		$h
+		->div->class('ui message attached ' . ($this->icon === null ? '' : ' icon') . ($this->type ? ' ' . $this->type : ''))->data('show-if', $this->showIf)
 			->add(parent::get($h))
 		->end;
 	}
 }
 
-class Position {
-	const Only = 1;
-	const First = 2;
-	const Last = 3;
-	const Middle = 4;
-}
-
-function startEndMap(callable $fn, $list) {
-	$lastPos = count($list) - 1;
-	$result = [];
-	foreach ($list as $key => $value) {
-		if($key === 0 && $key === $lastPos) {
-			$result[] = $fn($value, Position::Only);
-		} else if($key === 0) {
-			$result[] = $fn($value, Position::First);
-		} else if($key === $lastPos) {
-			$result[] = $fn($value, Position::Last);
-		} else {
-			$result[] = $fn($value, Position::Middle);
-		}
+class Notice extends BaseNotice {
+	function get($h) {
+		return
+		$h
+		->div->class('ui message floating ' . ($this->icon === null ? '' : ' icon') . ($this->type ? ' ' . $this->type : ''))->data('show-if', $this->showIf)
+			->add(parent::get($h))
+		->end;
 	}
-	return $result;
 }
 
 class Group extends GroupComponent {
 	
 	function __construct($args) {
 		$this->items = $args['fields'];
+		parent::__construct($args);
 	}
 	function get($h) {
 
 		return $h
-			->add(
-				startEndMap(function($value, $place) use ($h) {
-					
-					if($place === Position::Only) {
-						$attachment = '';
-					} else if($place === Position::First) {
-						$attachment = 'top attached';
-					} else if($place === Position::Last) {
-						$attachment = 'bottom attached';
-					} else if($place === Position::Middle) {
-						$attachment = 'attached';
-					}
-
-					if($value instanceof GroupHeader) {
-						return $h->h5->class('ui header ' . $attachment)
+		->div->class('group')->data('show-if', $this->showIf)
+			->add(array_map(function($value) use ($h) {
+					if(is_array($value)) {
+						return $h->div->class('ui segment attached ')
 							->add($value)
 						->end;
-					} else if(is_array($value)) {
-						return $h->div->class('ui  segment ' . $attachment)
-							->add($value)
-						->end;
-					} else if($value instanceof GroupNotice) {
-						return $h->div->class('ui message ' . $attachment . ($value->icon === null ? '' : ' icon') . ($value->type ? ' ' . $value->type : ''))
-						  ->add($value)
-						->end;
+					} else {
+						return $value;
 					}
 				}, array_reduce($this->items, function($carry, $item) {
 					if($item instanceof GroupHeader || $item instanceof GroupNotice) {
@@ -695,9 +747,8 @@ class Group extends GroupComponent {
 						$carry[] = [$item];
 						return $carry;
 					}
-				}, []))
-			);
-	
+				}, [])))
+		->end;
 	}
 }
 
@@ -838,6 +889,7 @@ function parse_yaml($file) {
 		'!groupnotice' => function($v) { return new GroupNotice($v);         },
 		'!notice'      => function($v) { return new Notice($v);              },
 		'!header'      => function($v) { return new Header($v);              },
-		'!datetime'    => function($v) { return new DateTimePicker($v);      }
+		'!datetime'    => function($v) { return new DateTimePicker($v);      },
+		'!file'        => function($v) { return new FileUpload($v);          }
 	]);
 }

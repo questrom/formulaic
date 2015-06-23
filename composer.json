@@ -9,6 +9,8 @@
     "require": {
         "semantic/ui": "1.12.3",
         "moment/moment": "^2.10",
-        "robinherbots/jquery.inputmask": "^3.1"
+        "robinherbots/jquery.inputmask": "^3.1",
+        "aws/aws-sdk-php": "^3.0",
+        "tpyo/amazon-s3-php-class": "^0.5.1"
     }
 }

@@ -4,11 +4,22 @@ debug: true
 
 success-message: 'Lorem ipsum!'
 fields:
-  - !header 'Example Form <b>test'
+  - !header 'Example Form'
+  - !header
+    text: 'HTML escaping <works>!'
+    size: 4
   - !header
     text: 'Hello world'
     icon: plug
     size: 4
+    show-if: existence
+  - !file
+    label: Upload a file...
+    name: upload_file
+    max-size: 1000
+    allowed-extensions:
+    - docx
+    - jpg
   - !datetime
     label: Start at
     name: start_datetime
@@ -44,14 +55,25 @@ fields:
   - !email { label: Email address, name: email, must-have-domain: 'bu.edu' }
   - !url { label: Website, name: url }
   - !date { label: 'Start date', name: start_date, min: 2015-06-17, max: 2015-06-20 }
-  - !number { label: 'How many attendees?', name: num_attendees, min: 3, max: 5 }
-  - !checkbox { label: 'I agree to the terms and conditions', name: agree_to_terms, must-check: true }
+  - !number
+    label: 'How many attendees?'
+    name: num_attendees
+    min: 3
+    max: 5
+    required: true
+    show-if: existence
+  - !checkbox
+    label: 'I agree to the terms and conditions'
+    name: agree_to_terms
+    must-check: true
+  - !checkbox
+    label: 'I exist'
+    name: existence
   - !header 'abc'
   - !textarea { label: 'Additional notes', name: additional_notes }
   - !radios
     label: Choose a link...
     name: choose_a_link
-    # required: true
     options: [
       'Career Center',
       'Student Link',
@@ -67,6 +89,7 @@ fields:
      - Questrom School of Business
      - College of General Studies
   - !group
+    show-if: existence
     fields:
       - !groupheader 'Login!'
       - !groupnotice

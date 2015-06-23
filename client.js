@@ -63,14 +63,31 @@ $(function() {
 
 	$('.checkbox').checkbox();
 
+	function handleBox() {
+		var $this = $(this);
+		var name = $this.attr('name');
+		if(name.slice(-2) === '[]') {
+			return;
+		}
+		$('[data-show-if=' + name + ']').toggle($this.is(':checked'));
+	}
+
+	$('input[type=checkbox]').on('change', handleBox).each(handleBox);
+
 	$('[data-submit=true]').on('click', function() {
 
 		removePrompts();
 		$('[data-submit=true]').addClass('loading').attr('disabled', true);
 
+		var formData = new FormData($('form')[0]);
+
 		$.ajax('validate.php', {
-			data: $('form').serialize(),
-			method: 'POST'	
+			data: formData,
+			method: 'POST',
+			// http://stackoverflow.com/questions/10899384/uploading-both-data-and-files-in-one-form-using-ajax
+			contentType: false,
+			cache: false,
+			processData: false
 		}).done(function(x) {
 			try {
 				x = JSON.parse(x);
@@ -104,6 +121,8 @@ $(function() {
 			doFail();
 		});
 	});
+
+
 
 
 
