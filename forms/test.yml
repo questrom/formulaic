@@ -38,7 +38,9 @@ fields:
     - Alpha beta
     - Gamma delta
     - Epsilon zeta
-  - !phonenumber { label: Phone number, name: phone }
+  - !phonenumber
+    label: Phone number
+    name: phone
   - !email { label: Email address, name: email, must-have-domain: 'bu.edu' }
   - !url { label: Website, name: url }
   - !date { label: 'Start date', name: start_date, min: 2015-06-17, max: 2015-06-20 }

@@ -37,7 +37,7 @@ abstract class Validate {
 	function filterChosenFromOptions($options) {
 		return $this->innerBind(function($x) use($options) {
 				if($x === '' || $x === null) {
-					return new OkNothing();
+					return new EmptyResult(null);
 				} else if(in_array($x, $options, TRUE)) {
 					return new OkJust($x);
 				} else {
@@ -60,13 +60,14 @@ abstract class Validate {
 		return $this->innerBind(function($x) {
 				
 				if(trim($x) == '') {
-					return new OkNothing(null);
+					return new EmptyResult(null);
 				}
 
-				$date = DateTimeImmutable::createFromFormat('Y-m-d', $x);
-				$date = $date->setTime(0, 0, 0);
+				$date = DateTimeImmutable::createFromFormat('m/d/Y', $x);
+				
 
 				if($date !== false) {
+					$date = $date->setTime(0, 0, 0);
 					return new OkJust($date);
 				} else {
 					return new Err('Invalid date!');
@@ -82,7 +83,7 @@ abstract class Validate {
 		return $this->innerBind(function($x) {
 
 			if(trim($x) == '') {
-				return new OkNothing(null);
+				return new EmptyResult(null);
 			}
 				
 			$date = DateTimeImmutable::createFromFormat('g:i a', $x);
@@ -99,7 +100,7 @@ abstract class Validate {
 		return $this->innerBind(function($x) {
 
 			if(trim($x) == '') {
-				return new OkNothing(null);
+				return new EmptyResult(null);
 			}
 				
 			$date = DateTimeImmutable::createFromFormat('m/d/Y g:i a', $x);
@@ -140,7 +141,7 @@ abstract class Validate {
 	function filterEmptyString() {
 		return $this->innerBind(function($x) {
 			if(trim($x) === '') {
-				return new OkNothing($x); 
+				return new EmptyResult($x); 
 			} else {
 				return new OkJust($x);
 			}
@@ -149,7 +150,7 @@ abstract class Validate {
 	function filterNoChoices() {
 		return $this->innerBind(function($x) {
 				if(count($x) === 0) {
-					return new OkNothing($x);
+					return new EmptyResult($x);
 				}
 				return new OkJust($x);
 			});
@@ -160,7 +161,7 @@ abstract class Validate {
 			if($enable) {
 				return new Err('This field is required.');
 			} else {
-				return new OkNothing($x);
+				return new EmptyResult($x);
 			}
 		});
 	}
@@ -222,7 +223,7 @@ abstract class Validate {
 		return $this->innerBind(function($x) use ($hash) {
 			if($hash !== null) {
 				if(password_verify($x, $hash)) {
-					return new OkJust(null);
+					return new NoResult();
 				} else {
 					return new Err('Password incorrect!');
 				}
@@ -244,7 +245,7 @@ abstract class Validate {
 	function maybeString() {
 		return $this->innerBind(function($x) {
 				if(trim($x) === '') {
-					return new OkNothing();
+					return new EmptyResult($x);
 				} else {
 					return new OkJust($x);
 				}
@@ -343,10 +344,10 @@ class Err extends Validate {
 	function __construct($value) {
 		$this->value = $value;
 	}
-	function get() {
-		return $this->value;
-	}
 	function bind(callable $x) {
+		return $this;
+	}
+	function bindNoResult(callable $x) {
 		return $this;
 	}
 	function bind_err(callable $x) {
@@ -361,12 +362,38 @@ class Err extends Validate {
 	}
 }
 
-class OkNothing extends Validate {
-	function __construct($value = null) {
-		$this->value = $value;
+
+class NoResult extends Validate {
+
+	function __construct() { }
+	
+	// incorrect
+	function bind(callable $x) {
+		return $this;
 	}
-	function get() {
-		return $this->value;
+
+	function bindNoResult(callable $x) {
+		return $x();
+	}
+	
+	function bind_err(callable $x) {
+		return $this;
+	}
+
+	function innerBind(callable $x) {
+		return $this;
+	}
+
+	function bindNothing(callable $x) {
+		return $this;
+	}
+}
+
+
+class EmptyResult extends Validate {
+	private $value;
+	function __construct($value) {
+		$this->value = $value;
 	}
 	function bind(callable $x) {
 		return $x($this->value);
@@ -378,7 +405,9 @@ class OkNothing extends Validate {
 	function innerBind(callable $x) {
 		return $this;
 	}
-
+	function bindNoResult(callable $x) {
+		return $this;
+	}
 	function bindNothing(callable $x) {
 		return $x($this->value);
 	}
@@ -389,9 +418,6 @@ class OkJust  extends Validate {
 	function __construct($value) {
 		$this->value = $value;
 	}
-	function get() {
-		return $this->value;
-	}
 	function bind(callable $x) {
 		return $x($this->value);
 	}
@@ -400,6 +426,9 @@ class OkJust  extends Validate {
 	}
 	function innerBind(callable $x) {
 		return $x($this->value);
+	}
+	function bindNoResult(callable $x) {
+		return $this;
 	}
 	function bindNothing(callable $x) {
 		return $this;

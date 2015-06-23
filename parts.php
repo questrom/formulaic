@@ -9,6 +9,10 @@ abstract class Component {
 }
 
 abstract class InputComponent extends Component {
+	function __construct($args) {
+		$this->label = $args['label'];
+		$this->name = $args['name'];
+	}
 	abstract function validate($against);
 }
 
@@ -32,6 +36,11 @@ abstract class GroupComponent extends InputComponent {
 							return new Err(function($total) use ($r) {
 								return array_merge($r, $total);
 							});	
+						})
+						->bindNoResult(function() {
+							return new OkJust(function($z) {
+								return $z;
+							});
 						});
 
 				} else if($x instanceof InputComponent) {
@@ -47,6 +56,11 @@ abstract class GroupComponent extends InputComponent {
 							return new Err(function($total) use ($r, $x) {
 								return array_merge([$x->name => $r], $total);
 							});	
+						})
+						->bindNoResult(function() {
+							return new OkJust(function($z) {
+								return $z;
+							});
 						});
 
 				} else {
@@ -82,8 +96,7 @@ abstract class GroupComponent extends InputComponent {
 
 abstract class SpecialInput extends InputComponent {
 	function __construct($args) {
-		$this->label = $args['label'];
-		$this->name = $args['name'];
+		parent::__construct($args);
 
 		$this->maxLength = isset($args['max-length']) ? $args['max-length'] : INF;
 		$this->minLength = isset($args['min-length']) ? $args['min-length'] : 0;
@@ -111,8 +124,7 @@ abstract class SpecialInput extends InputComponent {
 
 class Checkbox extends InputComponent {	
 	function __construct($args) {
-		$this->label = $args['label'];
-		$this->name = $args['name'];
+		parent::__construct($args);
 		$this->mustCheck = isset($args['must-check']) ? $args['must-check'] : false;
 	}
 	function get($h) {
@@ -133,8 +145,7 @@ class Checkbox extends InputComponent {
 
 class TimeInput extends InputComponent {	
 	function __construct($args) {
-		$this->label = $args['label'];
-		$this->name = $args['name'];
+		parent::__construct($args);
 
 		$this->required = isset($args['required']) ? $args['required'] : false;
 		$this->max = isset($args['max']) ? $args['max'] : null;
@@ -146,7 +157,8 @@ class TimeInput extends InputComponent {
 		return $h
 		->div->class('field ' . ($this->required ? ' required' : ''))
 			->ins(label($h, $this->label))
-			->div->class('ui input time-input')
+			->div->class('ui left icon input')
+				->i->class('clock icon')->end
 				->input->type('text')->name($this->name)->data('inputmask', " 'alias': 'h:s t', 'placeholder': 'hh:mm am' ")->end
 				->end
 			->end
@@ -163,8 +175,7 @@ class TimeInput extends InputComponent {
 
 class DateTimePicker extends InputComponent {	
 	function __construct($args) {
-		$this->label = $args['label'];
-		$this->name = $args['name'];
+		parent::__construct($args);
 
 		$this->required = isset($args['required']) ? $args['required'] : false;
 		$this->max = isset($args['max']) ? DateTimeImmutable::createFromFormat('m/d/Y g:i a', $args['max']) : null;
@@ -176,7 +187,8 @@ class DateTimePicker extends InputComponent {
 		return $h
 		->div->class('field ' . ($this->required ? ' required' : ''))
 			->ins(label($h, $this->label))
-			->div->class('ui input')
+			->div->class('ui left icon input')
+				->i->class('calendar icon')->end
 				->input->type('text')->name($this->name)->data('inputmask', " 'alias': 'proper-datetime' ")->end
 				->end
 			->end
@@ -194,8 +206,7 @@ class DateTimePicker extends InputComponent {
 
 class Textarea extends InputComponent {	
 	function __construct($args) {
-		$this->label = $args['label'];
-		$this->name = $args['name'];
+		parent::__construct($args);
 
 		$this->maxLength = isset($args['max-length']) ? $args['max-length'] : INF;
 		$this->minLength = isset($args['min-length']) ? $args['min-length'] : 0;
@@ -212,7 +223,6 @@ class Textarea extends InputComponent {
 	function validate($against) {
 		return $against
 			->filterString()
-			->matchHash(isset($this->matchHash) ? $this->matchHash : null)
 			->minMaxLength($this->minLength, $this->maxLength)
 			->matchRegex($this->mustMatch)
 			->filterEmptyString()
@@ -237,10 +247,9 @@ function dropdownDiv($h) {
 
 class Dropdown extends InputComponent {
 	function __construct($args) {
-		$this->label = $args['label'];
-		$this->name = $args['name'];
-		$this->options = $args['options'];
+		parent::__construct($args);
 
+		$this->options = $args['options'];
 		$this->required = isset($args['required']) ? $args['required'] : false;
 	}
 	function get($h) {
@@ -274,16 +283,10 @@ class Dropdown extends InputComponent {
 
 class Radios extends InputComponent {
 	function __construct($args) {
+		parent::__construct($args);
 
-		$args = array_merge($args, [
-			'required' => false
-		]);
-
-		$this->label = $args['label'];
-		$this->name = $args['name'];
 		$this->options = $args['options'];
-
-		$this->required = $args['required'];
+		$this->required = isset($args['required']) ? $args['required'] : false;
 	}
 	function get($h) {
 		return $h
@@ -315,8 +318,7 @@ class Radios extends InputComponent {
 
 class Checkboxes extends InputComponent {
 	function __construct($args) {
-		$this->label = $args['label'];
-		$this->name = $args['name'];
+		parent::__construct($args);
 		$this->options = $args['options'];
 
 		$this->required = isset($args['required']) ? $args['required'] : false;
@@ -353,8 +355,7 @@ class Checkboxes extends InputComponent {
 
 class Textbox extends InputComponent {
 	function __construct($args) {
-		$this->label = $args['label'];
-		$this->name = $args['name'];
+		parent::__construct($args);
 		$this->required  = isset($args['required']) ? $args['required'] : false;
 
 
@@ -362,7 +363,6 @@ class Textbox extends InputComponent {
 		$this->minLength = isset($args['min-length']) ? $args['min-length'] : 0;
 		$this->required  = isset($args['required'])   ? $args['required']   : false;
 		$this->mustMatch = isset($args['must-match']) ? $args['must-match'] : null;
-		$this->matchHash = isset($args['match-hash']) ? $args['match-hash'] : null;
 
 	}
 	function get($h) {
@@ -377,7 +377,6 @@ class Textbox extends InputComponent {
 	function validate($against) {
 		return $against
 			->filterString()
-			->matchHash( isset($this->matchHash) ? $this->matchHash : null )
 			->minMaxLength($this->minLength, $this->maxLength)
 			->matchRegex($this->mustMatch)
 			->filterEmptyString()
@@ -392,8 +391,7 @@ function midpoint($a, $b) {
 class Range extends InputComponent {
 	function __construct($args) {
 
-		$this->label = $args['label'];
-		$this->name = $args['name'];
+		parent::__construct($args);
 
 		$this->max = isset($args['max']) ? $args['max'] : 1;
 		$this->min = isset($args['min']) ? $args['min'] : 0;
@@ -445,8 +443,7 @@ class Password extends SpecialInput {
 
 class PhoneNumber extends SpecialInput {
 	function __construct($args) {
-		$this->label = $args['label'];
-		$this->name = $args['name'];
+		parent::__construct($args);
 
 		$this->required = isset($args['required']) ? $args['required'] : false;
 	}
@@ -464,8 +461,7 @@ class PhoneNumber extends SpecialInput {
 
 class EmailAddr extends SpecialInput {
 	function __construct($args) {
-		$this->label = $args['label'];
-		$this->name = $args['name'];
+		parent::__construct($args);
 
 		$this->required = isset($args['required']) ? $args['required'] : false;
 		$this->mustHaveDomain = isset($args['must-have-domain']) ? $args['must-have-domain'] : null;
@@ -484,8 +480,7 @@ class EmailAddr extends SpecialInput {
 }
 class UrlInput extends SpecialInput {
 	function __construct($args) {
-		$this->label = $args['label'];
-		$this->name = $args['name'];
+		parent::__construct($args);
 
 		$this->required = isset($args['required']) ? $args['required'] : false;
 	}
@@ -502,8 +497,7 @@ class UrlInput extends SpecialInput {
 }
 class NumberInp extends SpecialInput {
 	function __construct($args) {
-		$this->label = $args['label'];
-		$this->name = $args['name'];
+		parent::__construct($args);
 
 		$this->required = isset($args['required']) ? $args['required'] : false;
 		$this->min = isset($args['min']) ? $args['min'] : -INF;
@@ -524,59 +518,21 @@ class NumberInp extends SpecialInput {
 }
 
 class DatePicker extends InputComponent {
+
 	function __construct($args) {
-		$this->label = $args['label'];
-		$this->name = $args['name'];
+		parent::__construct($args);
 
 		$this->required = isset($args['required']) ? $args['required'] : false;
-		$this->minDate = isset($args['min-date']) ? DateTimeImmutable::createFromFormat('Y-m-d', $args['min-date']) : null;
-		$this->maxDate = isset($args['max-date']) ? DateTimeImmutable::createFromFormat('Y-m-d', $args['max-date']) : null;
+		$this->min = isset($args['min']) ? DateTimeImmutable::createFromFormat('Y-m-d', $args['min']) : null;
+		$this->max = isset($args['max']) ? DateTimeImmutable::createFromFormat('Y-m-d', $args['max']) : null;
 	}
 	function get($h) {
 		return $h
-		->div->class('ui field')
+		->div->class('field ' . ($this->required ? ' required' : ''))
 			->ins(label($h, $this->label))
-			->div->class('ui dropdown datepicker basic button')
-				->div->class('text')->t('')->end
-				->i->class('dropdown icon')->end
-				->input->type('hidden')->name($this->name)->end
-				->table->class('ui celled small seven column table menu')
-					->thead
-						->tr
-							->th
-								->button->type('button')->class('ui compact icon button fluid left floated')
-									->i->class('caret left icon')->end
-								->end
-							->end
-							->th->colspan(5)
-								->h4->class('ui small center aligned header')->end
-							->end
-							->th
-								->button->type('button')->class('ui compact icon button fluid right floated')
-									->i->class('caret right icon')->end
-								->end
-							->end
-						->end
-					->end
-					->tbody
-						->add(array_map(
-							function($v) use($h) {
-								return $h
-								->tr
-									->add(array_map(
-										function($v) use($h) {
-											return $h
-											->td
-												->button->type('button')->class('ui compact fluid attached basic button')->end
-											->end;
-										},
-										range(0, 6)
-									))
-								->end;
-							},
-							range(0, 5)
-						))
-					->end
+			->div->class('ui left icon input')
+				->i->class('calendar icon')->end
+				->input->type('text')->name($this->name)->data('inputmask', " 'alias': 'mm/dd/yyyy' ")->end
 				->end
 			->end
 		->end;
@@ -585,8 +541,7 @@ class DatePicker extends InputComponent {
 		return $against
 			->filterDate()
 			->requiredMaybe($this->required)
-			->minMaxDate($this->minDate, $this->maxDate);
-
+			->minMaxDate($this->min, $this->max);
 	}
 }
 
@@ -820,7 +775,6 @@ class Page extends InputComponent {
 				->end
 				->script->src('http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.js')->end
 				->script->src('vendor/robinherbots/jquery.inputmask/dist/jquery.inputmask.bundle.js')->end
-				->script->src('vendor/moment/moment/moment.js')->end
 				->script->src('vendor/semantic/ui/dist/semantic.js')->end
 				->script->src('client.js')->end
 			->end

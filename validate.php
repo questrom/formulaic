@@ -8,30 +8,29 @@ $page = new Page($result);
 
 $data = $page->validate(new OkJust($_POST));
 
-// throw new Exception();
 
-if($data instanceof Err) {
-	echo json_encode([
-		'success' => false,
-		'v' =>  $data->get()
-	]);
-} else {
+$data
+	->bind_err(function($val) {
+		echo json_encode([
+			'success' => false,
+			'v' =>  $val
+		]);	
+		return new Err($val);
+	})
+	->bind(function($val) use ($result) {
+		ob_start();
+		foreach($result['outputs'] as $output) {
+			$output->run($val);
+		}
+		$out = ob_get_clean();
 
+		if(!isset($result['debug']) || $result['debug'] === false) {
+			$out = '';
+		}
 
-	ob_start();
-	$data = $data->get();
-	foreach($result['outputs'] as $output) {
-		$output->run($data);
-	}
-	$out = ob_get_clean();
-
-	if(!isset($result['debug']) || $result['debug'] === false) {
-		$out = '';
-	}
-
-	echo json_encode([
-		'success' => true,
-		'data' => $out
-	]);
-}
+		echo json_encode([
+			'success' => true,
+			'data' => $out
+		]);
+	});
 
