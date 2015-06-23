@@ -1,7 +1,7 @@
 <?php
 
 require('include/HTMLGenerator.php');
-require('include/Result.php');
+// require('include/Result.php');
 require('include/Validate.php');
 date_default_timezone_set('America/New_York');
 
@@ -21,36 +21,59 @@ abstract class GroupComponent extends InputComponent {
 			return array_reduce($this->items, function($total, $x) use($val) {
 				
 				if($x instanceof GroupComponent) {
-					$result = $x->validate( new OkJust($val) );	
-					$merger = $result->get();
+					$result = $x->validate( new OkJust($val) );
+					
+					$mergeM = $result
+						->bind(function($r) {
+							return new OkJust(function($total) use ($r) {
+								return array_merge($r, $total);
+							});	
+						})
+						->bind_err(function($r) {
+							return new Err(function($total) use ($r) {
+								return array_merge($r, $total);
+							});	
+						});
+
 				} else if($x instanceof InputComponent) {
 					$result = $x->validate( new OkJust( isset($val[$x->name]) ? $val[$x->name] : null  ) );
-					$merger = [$x->name => $result->get()];
+
+					$mergeM = $result
+						->bind(function($r) use($x) {
+							return new OkJust(function($total) use ($r, $x) {
+								return array_merge([$x->name => $r], $total);
+							});	
+						})
+						->bind_err(function($r) use($x) {
+							return new Err(function($total) use ($r, $x) {
+								return array_merge([$x->name => $r], $total);
+							});	
+						});
+
 				} else {
-					return $total;
+					$mergeM = new OkJust(function($z) {
+						return $z;
+					});
 				}
 
-				return $total
-					->innerBind(function($x) use ($result) {
-						return $result->bind(function($data) use($x) {
-							return new OkJust($x);
-						})->bind_err(function($data) {
-							return new Err([]);
-						});
-					})
-					->innerBind(function($x) use ($merger) {
-						return new OkJust(array_merge($merger,$x));
-					})
-					->bind_err(function($x) use ($merger, $result) {
 
-						$merger = $result->bind(function($x) {
-							return new OkJust([]);
-						})->bind_err(function($x) use ($merger) {
-							return new OkJust($merger);
-						})->get();
-
-						return new Err(array_merge($merger,$x));
+				return $mergeM
+					->bind_err(function($merge) use($total) {
+						return $total
+							->innerBind(function($x) {
+								return new Err([]);
+							})
+							->bind_err(function($x) use ($merge) {
+								return new Err($merge($x));
+							});
+					})
+					->innerBind(function($merge) use($total) {
+						return $total
+							->innerBind(function($x) use ($merge) {
+								return new OkJust($merge($x));
+							});
 					});
+					
 			}, new OkJust([]));
 		});
 	}
@@ -65,11 +88,11 @@ abstract class SpecialInput extends InputComponent {
 
 		$this->maxLength = isset($args['max-length']) ? $args['max-length'] : INF;
 		$this->minLength = isset($args['min-length']) ? $args['min-length'] : 0;
-		$this->required = isset($args['required']) ? $args['required'] : false;
+		$this->required  = isset($args['required']) ? $args['required'] : false;
 		$this->mustMatch = isset($args['must-match']) ? $args['must-match'] : null;
 		$this->matchHash = isset($args['match-hash']) ? $args['match-hash'] : null;
 	}
-	function render($h, $type, $icon) {
+	protected function render($h, $type, $icon) {
 		return $h
 		->div->class('ui field ' . ($this->required ? 'required' : ''))
 			->ins(label($h, $this->label))
@@ -303,7 +326,7 @@ class Textbox extends InputComponent {
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
-		$this->required = isset($args['required']) ? $args['required'] : false;
+		$this->required  = isset($args['required']) ? $args['required'] : false;
 
 
 		$this->maxLength = isset($args['max-length']) ? $args['max-length'] : INF;
@@ -619,18 +642,25 @@ class Notice extends GroupNotice {
 	}
 }
 
+class Position {
+	const Only = 1;
+	const First = 2;
+	const Last = 3;
+	const Middle = 4;
+}
+
 function startEndMap(callable $fn, $list) {
 	$lastPos = count($list) - 1;
 	$result = [];
 	foreach ($list as $key => $value) {
 		if($key === 0 && $key === $lastPos) {
-			$result[] = $fn($value, 'ONLY');
+			$result[] = $fn($value, Position::Only);
 		} else if($key === 0) {
-			$result[] = $fn($value, 'FIRST');
+			$result[] = $fn($value, Position::First);
 		} else if($key === $lastPos) {
-			$result[] = $fn($value, 'LAST');
+			$result[] = $fn($value, Position::Last);
 		} else {
-			$result[] = $fn($value, 'MIDDLE');
+			$result[] = $fn($value, Position::Middle);
 		}
 	}
 	return $result;
@@ -647,13 +677,13 @@ class Group extends GroupComponent {
 			->add(
 				startEndMap(function($value, $place) use ($h) {
 					
-					if($place === 'ONLY') {
+					if($place === Position::Only) {
 						$attachment = '';
-					} else if($place === 'FIRST') {
+					} else if($place === Position::First) {
 						$attachment = 'top attached';
-					} else if($place === 'LAST') {
+					} else if($place === Position::Last) {
 						$attachment = 'bottom attached';
-					} else if($place === 'MIDDLE') {
+					} else if($place === Position::Middle) {
 						$attachment = 'attached';
 					}
 
@@ -723,7 +753,6 @@ class Page extends InputComponent {
 		$this->successMessage = isset($yaml['success-message']) ? $yaml['success-message'] : 'The form was submitted successfully.';
 	}
 	function get($h) {
-		// var_dump($h->html->end);
 		return $h
 		->html
 			->head
@@ -795,15 +824,7 @@ class MongoOutput {
 		$this->collection = $args['collection'];
 	}
 	function run($data) {
-		$data = array_map(function($x) {
-			if($x instanceof Nothing) {
-				return null;
-			} else if ($x instanceof Just) {
-				return $x->get();
-			} else {
-				return $x;
-			}
-		}, $data);
+		
 		$data = array_map(function($x) {
 			if($x instanceof DateTimeImmutable) {
 				return new MongoDate($x->getTimestamp());

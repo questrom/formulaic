@@ -1,6 +1,6 @@
 <?php
 
-abstract class Validate extends Result {
+abstract class Validate {
 	// Type filters
  	function filterBoolean() {
 		return $this->innerBind(function($x) {
@@ -140,13 +140,11 @@ abstract class Validate extends Result {
 	}
 	// Required checkers
 	function requiredMaybe($enable) {
-		return $this->bind(function($x) use ($enable) {
-			if($enable && $x instanceof Nothing) {
+		return $this->bindNothing(function($x) use ($enable) {
+			if($enable) {
 				return new Err('This field is required.');
-			} else if ($x instanceof Nothing) {
-				return new OkNothing($x->get());
 			} else {
-				return new OkJust($x->get());
+				return new OkNothing($x);
 			}
 		});
 	}
@@ -311,6 +309,10 @@ class Err extends Validate {
 	function innerBind(callable $x) {
 		return $this;
 	}
+
+	function bindNothing(callable $x) {
+		return $this;
+	}
 }
 
 class OkNothing extends Validate {
@@ -321,7 +323,7 @@ class OkNothing extends Validate {
 		return $this->value;
 	}
 	function bind(callable $x) {
-		return $x(new Nothing($this->value));
+		return $x($this->value);
 	}
 	function bind_err(callable $x) {
 		return $this;
@@ -329,6 +331,10 @@ class OkNothing extends Validate {
 
 	function innerBind(callable $x) {
 		return $this;
+	}
+
+	function bindNothing(callable $x) {
+		return $x($this->value);
 	}
 }
 
@@ -341,12 +347,15 @@ class OkJust  extends Validate {
 		return $this->value;
 	}
 	function bind(callable $x) {
-		return $x(new Just($this->value));
+		return $x($this->value);
 	}
 	function bind_err(callable $x) {
 		return $this;
 	}
 	function innerBind(callable $x) {
 		return $x($this->value);
+	}
+	function bindNothing(callable $x) {
+		return $this;
 	}
 }
