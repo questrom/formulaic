@@ -19,9 +19,11 @@ $data
 	})
 	->bind(function($val) use ($result) {
 		ob_start();
+		var_dump($val);
 		foreach($result['outputs'] as $output) {
 			$output->run($val);
 		}
+
 		$out = ob_get_clean();
 
 		if(!isset($result['debug']) || $result['debug'] === false) {

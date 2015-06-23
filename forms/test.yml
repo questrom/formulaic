@@ -100,7 +100,6 @@ fields:
     # min-choices: 2
     # max-choices: 4
 outputs:
-  - !debug
   - !mongo
     server: mongodb://localhost:27017
     database: forms

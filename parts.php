@@ -793,13 +793,6 @@ class Page extends InputComponent {
 
 // Outputs
 
-class DebugOutput {
-	function __construct($args) {}
-	function run($data) {
-		var_dump($data);
-	}
-}
-
 class MongoOutput {
 	function __construct($args) {
 		$this->server = $args['server'];
@@ -840,7 +833,6 @@ function parse_yaml($file) {
 		'!email'       => function($v) { return new EmailAddr($v);           },
 		'!url'         => function($v) { return new UrlInput($v);            },
 		'!number'      => function($v) { return new NumberInp($v);           },
-		'!debug'       => function($v) { return new DebugOutput($v);         },
 		'!mongo'       => function($v) { return new MongoOutput($v);         },
 		'!groupheader' => function($v) { return new GroupHeader($v);         },
 		'!groupnotice' => function($v) { return new GroupNotice($v);         },
