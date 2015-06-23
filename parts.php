@@ -20,6 +20,14 @@ abstract class InputComponent extends Component {
 	abstract function validate($against);
 }
 
+
+class FileInfo {
+	function __construct($value) {
+		$this->value = $value;
+	}
+}
+
+
 // Abstract components
 
 abstract class GroupComponent extends Component {
@@ -438,7 +446,8 @@ class FileUpload extends InputComponent {
 			})
 			->requiredMaybe($this->required)
 			->innerBind(function($file) {
-				$ext = strrchr($file, '.');
+				$ext = substr(strrchr($file['name'], '.'),1);
+
 				if(!in_array($ext, $this->allowedExtensions)) {
 					$exts = implode(', ', array_map('htmlspecialchars', $this->allowedExtensions));
 					return new Err('Invalid file extension. Supported extensions are: ' . $exts . '.');
@@ -450,6 +459,9 @@ class FileUpload extends InputComponent {
 					return new Err('File must be under ' . $this->maxSize . ' bytes in size.');
 				}
 				return new OkJust($file);
+			})
+			->innerBind(function($file) {
+				return new OkJust(new FileInfo($file));
 			});
 	}
 }
@@ -851,6 +863,8 @@ class MongoOutput {
 		$this->collection = $args['collection'];
 	}
 	function run($data) {
+
+		$oldData = $data;
 		
 		$data = array_map(function($x) {
 			if($x instanceof DateTimeImmutable) {
@@ -864,6 +878,28 @@ class MongoOutput {
 			->selectDB($this->database)
 			->selectCollection($this->collection);
 		$collection->insert($data);
+
+		return $oldData;
+	}
+}
+
+class S3Output {
+	function __construct($args) {
+		$this->secret = yaml_parse_file('./config/s3-secret.yml');
+		$this->s3 = new S3($this->secret['key-id'], $this->secret['key-secret']);
+		$this->bucket = $args['bucket'];
+	}
+	function run($data) {
+		$data = array_map(function($x) {
+			if($x instanceof FileInfo) {
+				$x = $x->value;
+				$ret = $this->s3->putObject(S3::inputFile($x['tmp_name'], false), $this->bucket, 'test.abc', S3::ACL_PUBLIC_READ);
+				var_dump($ret);
+			} else {
+				return $x;
+			}
+		}, $data);
+		return $data;
 	}
 }
 
@@ -890,6 +926,7 @@ function parse_yaml($file) {
 		'!notice'      => function($v) { return new Notice($v);              },
 		'!header'      => function($v) { return new Header($v);              },
 		'!datetime'    => function($v) { return new DateTimePicker($v);      },
+		'!s3'          => function($v) { return new S3Output($v);            },
 		'!file'        => function($v) { return new FileUpload($v);          }
 	]);
 }

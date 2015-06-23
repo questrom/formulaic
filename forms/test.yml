@@ -16,7 +16,7 @@ fields:
   - !file
     label: Upload a file...
     name: upload_file
-    max-size: 1000
+    max-size: 100000
     allowed-extensions:
     - docx
     - jpg
@@ -123,6 +123,8 @@ fields:
     # min-choices: 2
     # max-choices: 4
 outputs:
+  - !s3
+    bucket: form-builder-uploads
   - !mongo
     server: mongodb://localhost:27017
     database: forms
