@@ -24,10 +24,11 @@ $data
 	})
 	->bind(function($val) use ($result) {
 		ob_start();
-		var_dump($val);
+		
 		foreach($result['outputs'] as $output) {
-			$output->run($val);
+			$val = $output->run($val);
 		}
+		var_dump($val);
 
 		$out = ob_get_clean();
 

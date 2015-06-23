@@ -893,8 +893,10 @@ class S3Output {
 		$data = array_map(function($x) {
 			if($x instanceof FileInfo) {
 				$x = $x->value;
-				$ret = $this->s3->putObject(S3::inputFile($x['tmp_name'], false), $this->bucket, 'test.abc', S3::ACL_PUBLIC_READ);
-				var_dump($ret);
+				$name = 'test.abc';
+				$ret = $this->s3->putObject(S3::inputFile($x['tmp_name'], false), $this->bucket, $name, S3::ACL_PUBLIC_READ);
+				return $name;
+				// var_dump($ret);
 			} else {
 				return $x;
 			}
