@@ -9,6 +9,12 @@ fields:
     text: 'Hello world'
     icon: plug
     size: 4
+  - !datetime
+    label: Start at
+    name: start_datetime
+    min: '01/01/2015 11:11 AM'
+    max: '01/01/2016 11:11 AM'
+    step: 10
   - !time
     label: Start time
     name: start_time
@@ -35,7 +41,7 @@ fields:
   - !phonenumber { label: Phone number, name: phone }
   - !email { label: Email address, name: email, must-have-domain: 'bu.edu' }
   - !url { label: Website, name: url }
-  - !date { label: 'Start date', name: start_date, min-date: 2015-06-17, max-date: 2015-06-20 }
+  - !date { label: 'Start date', name: start_date, min: 2015-06-17, max: 2015-06-20 }
   - !number { label: 'How many attendees?', name: num_attendees, min: 3, max: 5 }
   - !checkbox { label: 'I agree to the terms and conditions', name: agree_to_terms, must-check: true }
   - !header 'abc'

@@ -95,6 +95,22 @@ abstract class Validate {
 			}
 		});
 	}
+	function filterDateTime() {
+		return $this->innerBind(function($x) {
+
+			if(trim($x) == '') {
+				return new OkNothing(null);
+			}
+				
+			$date = DateTimeImmutable::createFromFormat('m/d/Y g:i a', $x);
+			
+			if($date !== false) {
+				return new OkJust($date);
+			} else {
+				return new Err('Invalid time!');
+			}
+		});
+	}
 	function filterPhone() {
 		return $this->innerBind(function($x) {
 			$phn = preg_replace('/[^x+0-9]/', '', $x);
@@ -261,6 +277,18 @@ abstract class Validate {
 			return new OkJust($x);
 		});
 	}
+	function minMaxDateTime($min, $max) {
+
+		return $this->innerBind(function($x) use($min, $max) {
+			if($min !== null && $min->diff($x)->invert === 1) {
+				return new Err('Date must be after ' . $min->format('m/d/Y g:i a') . '.');
+			}
+			if($max !== null && $x->diff($max)->invert === 1) {
+				return new Err('Date must be before ' . $max->format('m/d/Y g:i a') . '.');
+			}
+			return new OkJust($x);
+		});
+	}
 	function stepNumber($step) {
 		if($step === 'any') {
 			return $this;
@@ -278,10 +306,28 @@ abstract class Validate {
 		if($step === 'any') {
 			return $this;
 		} else {
+			
 			return $this->innerBind(function($x) use ($step) {
 
 				if(($x % ( 60 * $step)) === 0) {
 					return new OkJust($x);					
+				} else {
+					return new Err('Time must be a multiple of ' . $step . ' minutes.');
+				}
+
+			});
+		}
+	}
+	function stepDateTime($step) {
+		if($step === 'any') {
+			return $this;
+		} else {
+			return $this->innerBind(function($date) use ($step) {
+
+				$seconds = ($date->format('G') * 3600) + ($date->format('i') * 60);
+
+				if(($seconds % ( 60 * $step)) === 0) {
+					return new OkJust($date);					
 				} else {
 					return new Err('Time must be a multiple of ' . $step . ' minutes.');
 				}

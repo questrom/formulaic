@@ -1,7 +1,6 @@
 <?php
 
 require('include/HTMLGenerator.php');
-// require('include/Result.php');
 require('include/Validate.php');
 date_default_timezone_set('America/New_York');
 
@@ -159,6 +158,36 @@ class TimeInput extends InputComponent {
 			->requiredMaybe($this->required)
 			->minMaxTime($this->min, $this->max)
 			->stepTime($this->step);
+	}
+}
+
+class DateTimePicker extends InputComponent {	
+	function __construct($args) {
+		$this->label = $args['label'];
+		$this->name = $args['name'];
+
+		$this->required = isset($args['required']) ? $args['required'] : false;
+		$this->max = isset($args['max']) ? DateTimeImmutable::createFromFormat('m/d/Y g:i a', $args['max']) : null;
+		$this->min = isset($args['min']) ? DateTimeImmutable::createFromFormat('m/d/Y g:i a', $args['min']) : null;
+
+		$this->step = isset($args['step']) ? $args['step'] : 'any';
+	}
+	function get($h) {
+		return $h
+		->div->class('field ' . ($this->required ? ' required' : ''))
+			->ins(label($h, $this->label))
+			->div->class('ui input')
+				->input->type('text')->name($this->name)->data('inputmask', " 'alias': 'proper-datetime' ")->end
+				->end
+			->end
+		->end;
+	}
+	function validate($against) {
+		return $against
+			->filterDateTime()
+			->requiredMaybe($this->required)
+			->minMaxDateTime($this->min, $this->max)
+			->stepDateTime($this->step);
 	}
 }
 
@@ -843,25 +872,26 @@ class MongoOutput {
 function parse_yaml($file) {
 	return yaml_parse_file($file, 0, $ndocs, [
 		'!checkbox'    => [ new ReflectionClass('Checkbox'), 'newInstance'],
-		'!textbox'     => function($v) { return new Textbox($v);     },
-		'!password'    => function($v) { return new Password($v);    },
-		'!dropdown'    => function($v) { return new Dropdown($v);    },
-		'!radios'      => function($v) { return new Radios($v);      },
-		'!checkboxes'  => function($v) { return new Checkboxes($v);  },
-		'!textarea'    => function($v) { return new Textarea($v);    },
-		'!range'       => function($v) { return new Range($v);       },
-		'!time'        => function($v) { return new TimeInput($v);   },
-		'!group'       => function($v) { return new Group($v);       },
-		'!date'        => function($v) { return new DatePicker($v);  },
-		'!phonenumber' => function($v) { return new PhoneNumber($v); },
-		'!email'       => function($v) { return new EmailAddr($v);   },
-		'!url'         => function($v) { return new UrlInput($v);    },
-		'!number'      => function($v) { return new NumberInp($v);   },
-		'!debug'       => function($v) { return new DebugOutput($v); },
-		'!mongo'       => function($v) { return new MongoOutput($v); },
-		'!groupheader' => function($v) { return new GroupHeader($v); },
-		'!groupnotice' => function($v) { return new GroupNotice($v); },
-		'!notice'      => function($v) { return new Notice($v);      },
-		'!header'      => function($v) { return new Header($v);      }
+		'!textbox'     => function($v) { return new Textbox($v);             },
+		'!password'    => function($v) { return new Password($v);            },
+		'!dropdown'    => function($v) { return new Dropdown($v);            },
+		'!radios'      => function($v) { return new Radios($v);              },
+		'!checkboxes'  => function($v) { return new Checkboxes($v);          },
+		'!textarea'    => function($v) { return new Textarea($v);            },
+		'!range'       => function($v) { return new Range($v);               },
+		'!time'        => function($v) { return new TimeInput($v);           },
+		'!group'       => function($v) { return new Group($v);               },
+		'!date'        => function($v) { return new DatePicker($v);          },
+		'!phonenumber' => function($v) { return new PhoneNumber($v);         },
+		'!email'       => function($v) { return new EmailAddr($v);           },
+		'!url'         => function($v) { return new UrlInput($v);            },
+		'!number'      => function($v) { return new NumberInp($v);           },
+		'!debug'       => function($v) { return new DebugOutput($v);         },
+		'!mongo'       => function($v) { return new MongoOutput($v);         },
+		'!groupheader' => function($v) { return new GroupHeader($v);         },
+		'!groupnotice' => function($v) { return new GroupNotice($v);         },
+		'!notice'      => function($v) { return new Notice($v);              },
+		'!header'      => function($v) { return new Header($v);              },
+		'!datetime'    => function($v) { return new DateTimePicker($v);      }
 	]);
 }
