@@ -7,7 +7,6 @@ abstract class HTMLGeneratorAbstract {
 	abstract function hif($cond);
 	abstract function t($text);
 	abstract function add($arr);
-	// abstract function ins($gen);
 	abstract function __get($name);
 	
 	abstract function getText();
