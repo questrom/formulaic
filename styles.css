@@ -1,22 +1,14 @@
-.datepicker td, .datepicker th { padding:0 !important; }
-.datepicker thead button { border-radius: 0 !important; }
-.datepicker tbody button { padding:10px 20px !important; transition:none !important;}
-.other-month.ui.basic.button { background:#ddd !important;}
-.datepicker th, .datepicker td { vertical-align:middle;}
-.datepicker tbody .ui.basic.button:not(.other-month):hover { background:#eee !important; }
 .ui.page.grid { max-width: 600px !important; padding:0 !important; margin:0 auto !important;}
+
 .ui.checkbox + .ui.red.label.visible { float:left; margin-right: 1000px;}
+
 .ui.form .required > label:after,
 .ui.form .required  .ui.checkbox:after { font-size: 1.5rem; top: 5px; right:-10px; left: auto;}
+
 .centered-button { margin: 0 auto !important; display: block !important; }
+
 .ui.top.attached.header { margin-top:0 !important; }
+
 .ui.icon.message > .icon:not(.close) { vertical-align:top; }
 
 .red.prompt { display: table; }
-
-.colon { padding-left:2px !important; padding-right:2px !important; border-radius:0 !important;}
-.colon + input { border-radius:0 !important;}
-
-.time-input {width:100px !important;}
-
-.time-input.ui.labeled.input input { padding-right: 14px !important;}
