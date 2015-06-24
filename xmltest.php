@@ -1,10 +1,9 @@
-
 <?php
 
 require('vendor/autoload.php');
 require('parts.php');
 
-$result = parse_xml('forms/test.xml');
-$page = new Page($result);
+
+$page = parse_xml('config/test.xml');
 
 echo '<!DOCTYPE html>' . $page->get(new HTMLGeneratorUnparented())->getText();

@@ -2,6 +2,10 @@
 
 require('include/HTMLGenerator.php');
 require('include/Validate.php');
+
+require('jade/autoload.php.dist');
+use Everzet\Jade\Jade;
+
 date_default_timezone_set('America/New_York');
 
 abstract class Component {
@@ -35,12 +39,12 @@ abstract class GroupComponent extends Component {
 		return $against->innerBind(function($val)  {
 			return array_reduce($this->items, function($total, $x) use($val) {
 				
-				$pval = $val['post'];
-				$fval = $val['files'];
+				$post_value = $val['post'];
+				$file_value = $val['files'];
 
 				if($x instanceof GroupComponent) {
 					if($x->showIf !== null &&
-						!(isset($pval[$x->showIf]) ? $pval[$x->showIf] === "on" : false)
+						!(isset($post_value[$x->showIf]) ? $post_value[$x->showIf] === "on" : false)
 					) {
 						$result = new NoResult();
 					} else {
@@ -66,13 +70,13 @@ abstract class GroupComponent extends Component {
 
 				} else if($x instanceof InputComponent) {
 					if($x->showIf !== null &&
-						!(isset($pval[$x->showIf]) ? $pval[$x->showIf] === "on" : false)
+						!(isset($post_value[$x->showIf]) ? $post_value[$x->showIf] === "on" : false)
 					) {
 						$result = new NoResult();
 					} else if($x instanceof FileUpload) {
-						$result = $x->validate( new OkJust( isset($fval[$x->name]) ? $fval[$x->name] : null  ) );
+						$result = $x->validate( new OkJust( isset($file_value[$x->name]) ? $file_value[$x->name] : null  ) );
 					} else {
-						$result = $x->validate( new OkJust( isset($pval[$x->name]) ? $pval[$x->name] : null  ) );
+						$result = $x->validate( new OkJust( isset($post_value[$x->name]) ? $post_value[$x->name] : null  ) );
 					}
 
 					$mergeM = $result
@@ -905,30 +909,109 @@ class S3Output {
 	}
 }
 
-function parse_yaml($file) {
-	return yaml_parse_file($file, 0, $ndocs, [
-		'!checkbox'    => [ new ReflectionClass('Checkbox'), 'newInstance'],
-		'!textbox'     => function($v) { return new Textbox($v);             },
-		'!password'    => function($v) { return new Password($v);            },
-		'!dropdown'    => function($v) { return new Dropdown($v);            },
-		'!radios'      => function($v) { return new Radios($v);              },
-		'!checkboxes'  => function($v) { return new Checkboxes($v);          },
-		'!textarea'    => function($v) { return new Textarea($v);            },
-		'!range'       => function($v) { return new Range($v);               },
-		'!time'        => function($v) { return new TimeInput($v);           },
-		'!group'       => function($v) { return new Group($v);               },
-		'!date'        => function($v) { return new DatePicker($v);          },
-		'!phonenumber' => function($v) { return new PhoneNumber($v);         },
-		'!email'       => function($v) { return new EmailAddr($v);           },
-		'!url'         => function($v) { return new UrlInput($v);            },
-		'!number'      => function($v) { return new NumberInp($v);           },
-		'!mongo'       => function($v) { return new MongoOutput($v);         },
-		'!groupheader' => function($v) { return new GroupHeader($v);         },
-		'!groupnotice' => function($v) { return new GroupNotice($v);         },
-		'!notice'      => function($v) { return new Notice($v);              },
-		'!header'      => function($v) { return new Header($v);              },
-		'!datetime'    => function($v) { return new DateTimePicker($v);      },
-		'!s3'          => function($v) { return new S3Output($v);            },
-		'!file'        => function($v) { return new FileUpload($v);          }
-	]);
+class ExNode {
+	function __construct() {
+		$this->tag = '';
+		$this->attrs = [];
+		$this->children = [];
+		$this->byTag = [];
+	}
+}
+
+function domToArray($elem){
+	global $parsers;
+
+	$arr = new ExNode();
+	$arr->tag = $elem->tagName;
+	foreach($elem->attributes as $attr) {
+		$arr->attrs[$attr->name] = $attr->value;
+	}
+	foreach ($elem->childNodes as $child) {
+		if($child instanceof DOMElement) {
+			$arr->children[] = domToArray($child);
+			$arr->byTag[$child->tagName] = domToArray($child);
+		} else if($child instanceof DOMText) {
+			if(trim($child->data) !== '') {
+				$arr->children[] = $child->data;
+			}
+		}
+	}
+	if(isset($parsers[$arr->tag])) {
+		return $parsers[$arr->tag]($arr->attrs, $arr->children, $arr->byTag, $arr);
+	}
+	return $arr;
+}
+
+
+$parsers =  [
+		'checkbox'    => [ new ReflectionClass('Checkbox'), 'newInstance'],
+		'textbox'     => function($v) { return new Textbox($v);             },
+		'password'    => function($v) { return new Password($v);            },
+		'dropdown'    => function($v, $c) { $v['options'] = $c; return new Dropdown($v);            },
+		'radios'      => function($v, $c) { $v['options'] = $c; return new Radios($v);              },
+		'checkboxes'  => function($v, $c) { $v['options'] = $c; return new Checkboxes($v);          },
+		'textarea'    => function($v) { return new Textarea($v);            },
+		'range'       => function($v) { return new Range($v);               },
+		'time'        => function($v) { return new TimeInput($v);           },
+		'group'       => function($v, $c) {$v['fields'] = $c; return new Group($v);               },
+		'date'        => function($v) { return new DatePicker($v);          },
+		'phonenumber' => function($v) { return new PhoneNumber($v);         },
+		'email'       => function($v) { return new EmailAddr($v);           },
+		'url'         => function($v) { return new UrlInput($v);            },
+		'number'      => function($v) { return new NumberInp($v);           },
+		'mongo'       => function($v) { return new MongoOutput($v);         },
+		'groupheader' => function($v) { return new GroupHeader($v);         },
+		'groupnotice' => function($v, $c) { if(count($c)) { $v['list'] = $c; } return new GroupNotice($v);         },
+		'notice'      => function($v, $c) { if(count($c)) { $v['list'] = $c; } return new Notice($v);              },
+		'header'      => function($v) { return new Header($v);              },
+		'datetime'    => function($v) { return new DateTimePicker($v);      },
+		's3'          => function($v) { return new S3Output($v);            },
+		'file'        => function($v, $allow) {
+			$v['allowed-extensions'] = $allow;
+			return new FileUpload($v);
+		},
+		'allow' => function($att) {
+			return $att['ext'];
+		},
+		'option' => function($att, $chl) {
+			return $chl[0] . '';
+		},
+		'fields' => function($att, $chl, $byt) {
+			return $chl;
+		},
+		'li' => function($att, $chl, $byt) {
+			return $chl[0] . '';
+		},
+		'outputs' => function($att, $c) {
+			return $c;
+		}
+	];
+
+
+$jade = new Jade(new Everzet\Jade\Parser(new Everzet\Jade\Lexer\Lexer()), new Everzet\Jade\Dumper\PHPDumper());
+
+function parse_xml($file) {
+
+	global $jade;
+
+	$xml = $jade->render('config/test.jade');
+
+	$doc = new DOMDocument();
+	$doc->loadXML($xml);
+
+	$root = $doc->documentElement;
+
+
+	$res = domToArray($root);
+
+	$page = [
+		'fields' => $res->byTag['fields'],
+		'title' => $res->attrs['title'],
+		'success-message' => $res->attrs['success-message'],
+		'debug' => isset($res->attrs['debug']) ? ($res->attrs['debug'] === 'true') : false,
+		'outputs' => $res->byTag['outputs']
+	];
+
+
+	return $page;
 }
