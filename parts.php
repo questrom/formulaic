@@ -945,104 +945,102 @@ function domToArray($elem){
 			}
 		}
 	}
-	if(isset($parsers[$arr->tag])) {
-		return $parsers[$arr->tag]($arr->attrs, $arr->children, $arr->byTag, $arr);
-	}
-	return $arr;
+	return $parsers[$arr->tag]($arr);
 }
 
 
 $parsers =  [
 	'checkbox' => function($v) {
-		return new Checkbox($v);
+		return new Checkbox($v->attrs);
 	},
 	'textbox' => function($v) {
-		return new Textbox($v);             
+		return new Textbox($v->attrs);             
 	},
 	'password' => function($v) {
-		return new Password($v);            
+		return new Password($v->attrs);            
 	},
-	'dropdown' => function($v, $c) {
-		$v['options'] = $c; return new Dropdown($v);            
+	'dropdown' => function($v) {
+		$v->attrs['options'] = $v->children; return new Dropdown($v->attrs);            
 	},
-	'radios' => function($v, $c) {
-		$v['options'] = $c; return new Radios($v);              
+	'radios' => function($v) {
+		$v->attrs['options'] = $v->children; return new Radios($v->attrs);              
 	},
-	'checkboxes' => function($v, $c) {
-		$v['options'] = $c; return new Checkboxes($v);          
+	'checkboxes' => function($v) {
+		$v->attrs['options'] = $v->children; return new Checkboxes($v->attrs);          
 	},
 	'textarea' => function($v) {
-		return new Textarea($v);            
+		return new Textarea($v->attrs);            
 	},
 	'range' => function($v) {
-		return new Range($v);               
+		return new Range($v->attrs);               
 	},
 	'time' => function($v) {
-		return new TimeInput($v);           
+		return new TimeInput($v->attrs);           
 	},
-	'group' => function($v, $c) {
-		$v['fields'] = $c;
-		return new Group($v);               	
+	'group' => function($v) {
+		$v->attrs['fields'] = $v->children;
+		return new Group($v->attrs);               	
 	},
 	'date' => function($v) {
-		return new DatePicker($v);          
+		return new DatePicker($v->attrs);          
 	},
 	'phonenumber' => function($v) {
-		return new PhoneNumber($v);         
+		return new PhoneNumber($v->attrs);         
 	},
 	'email' => function($v) {
-		return new EmailAddr($v);           
+		return new EmailAddr($v->attrs);           
 	},
 	'url' => function($v) {
-		return new UrlInput($v);            
+		return new UrlInput($v->attrs);            
 	},
 	'number' => function($v) {
-		return new NumberInp($v);           
+		return new NumberInp($v->attrs);           
 	},
 	'mongo' => function($v) {
-		return new MongoOutput($v);         
+		return new MongoOutput($v->attrs);         
 	},
-	'notice' => function($v, $c) {
-		if(count($c)) {
-			$v['list'] = $c;
+	'notice' => function($v) {
+		if(count($v->children)) {
+			$v->attrs['list'] = $v->children;
 		}
-		return new Notice($v);              
+		return new Notice($v->attrs);              
 	},
-	'header' => function($v, $c) {
-		$v['text'] = $c[0]; return new Header($v);              
+	'header' => function($v) {
+		$v->attrs['text'] = $v->children[0];
+		return new Header($v->attrs);              
 	},
 	'datetime' => function($v) {
-		return new DateTimePicker($v);      
+		return new DateTimePicker($v->attrs);      
 	},
 	's3' => function($v) {
-		return new S3Output($v);            
+		return new S3Output($v->attrs);            
 	},
-	'file' => function($v, $allow) {
-		$v['allowed-extensions'] = $allow;
-		return new FileUpload($v);
+	'file' => function($v) {
+		$v->attrs['allowed-extensions'] = $v->children;
+		return new FileUpload($v->attrs);
 	},
-	'allow' => function($att) {
-		return $att['ext'];
+	'allow' => function($v) {
+		return $v->attrs['ext'];
 	},
-	'option' => function($att, $chl) {
-		return $chl[0] . '';
+	'option' => function($v) {
+		return $v->children[0] . '';
 	},
-	'fields' => function($att, $chl, $byt) {
-		return $chl;
+	'fields' => function($v) {
+		return $v->children;
 	},
-	'li' => function($att, $chl, $byt) {
-		return $chl[0] . '';
+	'li' => function($v) {
+		return $v->children[0] . '';
 	},
-	'outputs' => function($att, $c) {
-		return $c;
+	'outputs' => function($v) {
+		return $v->children;
 	},
-	'form' => function($attrs, $c, $byTag) {
+	'form' => function($v) {
 		return [
-			'fields' => $byTag['fields'],
-			'title' => $attrs['title'],
-			'success-message' => $attrs['success-message'],
-			'debug' => isset($attrs['debug']),
-			'outputs' => $byTag['outputs']
+			'fields' => $v->byTag['fields'],
+			'title' => $v->attrs['title'],
+			'success-message' => $v->attrs['success-message'],
+			'debug' => isset($v->attrs['debug']),
+			'outputs' => $v->byTag['outputs']
 		];
 	}
 ];
