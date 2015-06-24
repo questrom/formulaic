@@ -131,9 +131,9 @@ abstract class SpecialInput extends InputComponent {
 	function __construct($args) {
 		parent::__construct($args);
 
-		$this->maxLength = isset($args['max-length']) ? $args['max-length'] : INF;
-		$this->minLength = isset($args['min-length']) ? $args['min-length'] : 0;
-		$this->required  = isset($args['required']) ? $args['required'] : false;
+		$this->maxLength = isset($args['max-length']) ? intval($args['max-length']) : INF;
+		$this->minLength = isset($args['min-length']) ? intval($args['min-length']) : 0;
+		$this->required  = isset($args['required']);
 		$this->mustMatch = isset($args['must-match']) ? $args['must-match'] : null;
 		$this->matchHash = isset($args['match-hash']) ? $args['match-hash'] : null;
 	}
@@ -158,7 +158,7 @@ abstract class SpecialInput extends InputComponent {
 class Checkbox extends InputComponent {	
 	function __construct($args) {
 		parent::__construct($args);
-		$this->mustCheck = isset($args['must-check']) ? $args['must-check'] : false;
+		$this->mustCheck = isset($args['must-check']);
 	}
 	function get($h) {
 		return $h
@@ -180,11 +180,11 @@ class TimeInput extends InputComponent {
 	function __construct($args) {
 		parent::__construct($args);
 
-		$this->required = isset($args['required']) ? $args['required'] : false;
+		$this->required = isset($args['required']);
 		$this->max = isset($args['max']) ? $args['max'] : null;
 		$this->min = isset($args['min']) ? $args['min'] : null;
 
-		$this->step = isset($args['step']) ? $args['step'] : 'any';
+		$this->step = isset($args['step']) ? intval($args['step']) : 'any';
 	}
 	function get($h) {
 		return $h
@@ -210,7 +210,7 @@ class DateTimePicker extends InputComponent {
 	function __construct($args) {
 		parent::__construct($args);
 
-		$this->required = isset($args['required']) ? $args['required'] : false;
+		$this->required = isset($args['required']);
 		$this->max = isset($args['max']) ? DateTimeImmutable::createFromFormat('m/d/Y g:i a', $args['max']) : null;
 		$this->min = isset($args['min']) ? DateTimeImmutable::createFromFormat('m/d/Y g:i a', $args['min']) : null;
 
@@ -241,9 +241,9 @@ class Textarea extends InputComponent {
 	function __construct($args) {
 		parent::__construct($args);
 
-		$this->maxLength = isset($args['max-length']) ? $args['max-length'] : INF;
-		$this->minLength = isset($args['min-length']) ? $args['min-length'] : 0;
-		$this->required = isset($args['required']) ? $args['required'] : false;
+		$this->maxLength = isset($args['max-length']) ? intval($args['max-length']) : INF;
+		$this->minLength = isset($args['min-length']) ? intval($args['min-length']) : 0;
+		$this->required = isset($args['required']);
 		$this->mustMatch = isset($args['must-match']) ? $args['must-match'] : null;
 	}
 	function get($h) {
@@ -283,7 +283,7 @@ class Dropdown extends InputComponent {
 		parent::__construct($args);
 
 		$this->options = $args['options'];
-		$this->required = isset($args['required']) ? $args['required'] : false;
+		$this->required = isset($args['required']);
 	}
 	function get($h) {
 		return fieldBox($h, $this->required, $this->showIf)
@@ -319,7 +319,7 @@ class Radios extends InputComponent {
 		parent::__construct($args);
 
 		$this->options = $args['options'];
-		$this->required = isset($args['required']) ? $args['required'] : false;
+		$this->required = isset($args['required']);
 	}
 	function get($h) {
 		return $h
@@ -354,9 +354,9 @@ class Checkboxes extends InputComponent {
 		parent::__construct($args);
 		$this->options = $args['options'];
 
-		$this->required = isset($args['required']) ? $args['required'] : false;
-		$this->minChoices = isset($args['min-choices']) ? $args['min-choices'] : 0;
-		$this->maxChoices = isset($args['max-choices']) ? $args['max-choices'] : INF;
+		$this->required = isset($args['required']);
+		$this->minChoices = isset($args['min-choices']) ? intval($args['min-choices']) : 0;
+		$this->maxChoices = isset($args['max-choices']) ? intval($args['max-choices']) : INF;
 	}
 	function get($h) {
 		return $h
@@ -388,13 +388,14 @@ class Checkboxes extends InputComponent {
 
 class Textbox extends InputComponent {
 	function __construct($args) {
+
+
 		parent::__construct($args);
-		$this->required  = isset($args['required']) ? $args['required'] : false;
+		$this->required  = isset($args['required']);
 
 
-		$this->maxLength = isset($args['max-length']) ? $args['max-length'] : INF;
-		$this->minLength = isset($args['min-length']) ? $args['min-length'] : 0;
-		$this->required  = isset($args['required'])   ? $args['required']   : false;
+		$this->maxLength = isset($args['max-length']) ? intval($args['max-length']) : INF;
+		$this->minLength = isset($args['min-length']) ? intval($args['min-length']) : 0;
 		$this->mustMatch = isset($args['must-match']) ? $args['must-match'] : null;
 
 	}
@@ -421,9 +422,9 @@ class Textbox extends InputComponent {
 class FileUpload extends InputComponent {
 	function __construct($args) {
 		parent::__construct($args);
-		$this->required  = isset($args['required']) ? $args['required'] : false;
+		$this->required  = isset($args['required']);
 		$this->allowedExtensions = $args['allowed-extensions'];
-		$this->maxSize = $args['max-size'];
+		$this->maxSize = intval($args['max-size']);
 
 	}
 	function get($h) {
@@ -480,10 +481,10 @@ class Range extends InputComponent {
 
 		parent::__construct($args);
 
-		$this->max = isset($args['max']) ? $args['max'] : 1;
-		$this->min = isset($args['min']) ? $args['min'] : 0;
+		$this->max = isset($args['max']) ? intval($args['max']) : 1;
+		$this->min = isset($args['min']) ? intval($args['min']) : 0;
 		$this->step = isset($args['step']) ? $args['step'] : 'any';
-		$this->def = isset($args['default']) ? $args['default'] : midpoint($this->min, $this->max);
+		$this->def = isset($args['default']) ? intval($args['default']) : midpoint($this->min, $this->max);
 	}
 	function get($h) {
 		return $h
@@ -512,7 +513,6 @@ class Range extends InputComponent {
 }
 
 
-
 class Password extends SpecialInput {
 	function get($h) {
 		return $this->render($h, 'password', '');
@@ -532,7 +532,7 @@ class PhoneNumber extends SpecialInput {
 	function __construct($args) {
 		parent::__construct($args);
 
-		$this->required = isset($args['required']) ? $args['required'] : false;
+		$this->required = isset($args['required']);
 	}
 	function get($h) {
 		return $this->render($h, 'tel', 'call');
@@ -550,7 +550,7 @@ class EmailAddr extends SpecialInput {
 	function __construct($args) {
 		parent::__construct($args);
 
-		$this->required = isset($args['required']) ? $args['required'] : false;
+		$this->required = isset($args['required']);
 		$this->mustHaveDomain = isset($args['must-have-domain']) ? $args['must-have-domain'] : null;
 	}
 	function get($h) {
@@ -569,7 +569,7 @@ class UrlInput extends SpecialInput {
 	function __construct($args) {
 		parent::__construct($args);
 
-		$this->required = isset($args['required']) ? $args['required'] : false;
+		$this->required = isset($args['required']);
 	}
 	function get($h) {
 		return $this->render($h, 'url', 'world');
@@ -586,10 +586,10 @@ class NumberInp extends SpecialInput {
 	function __construct($args) {
 		parent::__construct($args);
 
-		$this->required = isset($args['required']) ? $args['required'] : false;
-		$this->min = isset($args['min']) ? $args['min'] : -INF;
-		$this->max = isset($args['max']) ? $args['max'] : INF;
-		$this->integer = isset($args['integer']) ? $args['integer'] : false;
+		$this->required = isset($args['required']);
+		$this->min = isset($args['min']) ? intval($args['min']) : -INF;
+		$this->max = isset($args['max']) ? intval($args['max']) : INF;
+		$this->integer = isset($args['integer']);
 	}
 	function get($h) {
 		return $this->render($h, 'number', '');
@@ -609,7 +609,7 @@ class DatePicker extends InputComponent {
 	function __construct($args) {
 		parent::__construct($args);
 
-		$this->required = isset($args['required']) ? $args['required'] : false;
+		$this->required = isset($args['required']);
 		$this->min = isset($args['min']) ? DateTimeImmutable::createFromFormat('Y-m-d', $args['min']) : null;
 		$this->max = isset($args['max']) ? DateTimeImmutable::createFromFormat('Y-m-d', $args['max']) : null;
 	}
@@ -634,9 +634,6 @@ class DatePicker extends InputComponent {
 
 class GroupHeader extends Component {
 	function __construct($args) {
-		if(is_string($args)) {
-			$args = ['text' => $args];
-		}
 		$this->text = $args['text'];
 		parent::__construct($args);
 	}
@@ -656,7 +653,7 @@ class Header extends Component {
 		$this->text = $args['text'];
 		$this->subhead = isset($args['subhead']) ? $args['subhead'] : null;
 		$this->icon = isset($args['icon']) ? $args['icon'] : null;
-		$this->size = isset($args['size']) ? $args['size'] : 1;
+		$this->size = isset($args['size']) ? intval($args['size']) : 1;
 		parent::__construct($args);
 	}
 	function get($h) { //this->size
@@ -681,6 +678,8 @@ class Header extends Component {
 
 class BaseNotice extends Component {
 	function __construct($args) {
+		$this->__args = $args; // Used by Group later on
+
 		$this->text = $args['text'];
 		$this->header = isset($args['header']) ? $args['header'] : null;
 		$this->icon = isset($args['icon']) ? $args['icon'] : null;
@@ -742,6 +741,16 @@ class Group extends GroupComponent {
 	}
 	function get($h) {
 
+		$items = array_map(function($item) {
+			if($item instanceof Header) {
+				return new GroupHeader(['text' => $item->text]);
+			} else if($item instanceof Notice) {
+				return new GroupNotice($item->__args);
+			} else {
+				return $item;
+			}
+		}, $this->items);
+
 		return $h
 		->div->class('group')->data('show-if', $this->showIf)
 			->add(array_map(function($value) use ($h) {
@@ -752,7 +761,7 @@ class Group extends GroupComponent {
 					} else {
 						return $value;
 					}
-				}, array_reduce($this->items, function($carry, $item) {
+				}, array_reduce($items, function($carry, $item) {
 					if($item instanceof GroupHeader || $item instanceof GroupNotice) {
 						$carry[] = $item;
 						return $carry;
@@ -993,15 +1002,6 @@ $parsers =  [
 	'mongo' => function($v) {
 		return new MongoOutput($v);         
 	},
-	'groupheader' => function($v) {
-		return new GroupHeader($v);         
-	},
-	'groupnotice' => function($v, $c) {
-		if(count($c)) {
-			$v['list'] = $c;
-		}
-		return new GroupNotice($v);         
-	},
 	'notice' => function($v, $c) {
 		if(count($c)) {
 			$v['list'] = $c;
@@ -1037,13 +1037,13 @@ $parsers =  [
 		return $c;
 	},
 	'form' => function($attrs, $c, $byTag) {
-		return new Page([
+		return [
 			'fields' => $byTag['fields'],
 			'title' => $attrs['title'],
 			'success-message' => $attrs['success-message'],
 			'debug' => isset($attrs['debug']),
 			'outputs' => $byTag['outputs']
-		]);
+		];
 	}
 ];
 
@@ -1056,8 +1056,6 @@ function parse_jade($file) {
 	global $jade;
 
 	$xml = $jade->render($file);
-
-	// echo '<pre>' . htmlspecialchars(($xml)) . '</pre>';
 
 	$doc = new DOMDocument();
 	$doc->loadXML($xml);

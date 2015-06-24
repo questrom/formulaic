@@ -77,6 +77,7 @@ abstract class Validate {
 	static function timeToSeconds($x) {
 
 		$date = DateTimeImmutable::createFromFormat('g:i a', $x);
+
 		return 	($date->format('G') * 3600) + ($date->format('i') * 60);
 	}
 	function filterTime() {
@@ -294,8 +295,10 @@ abstract class Validate {
 		if($step === 'any') {
 			return $this;
 		} else {
+			
+				// var_dump($step);
 			return $this->innerBind(function($x) use ($step) {
-				
+
 				// Avoid floating point rounding errors
 				$x = $step * round($x / $step);
 
