@@ -994,7 +994,7 @@ function parse_xml($file) {
 
 	global $jade;
 
-	$xml = $jade->render('config/test.jade');
+	$xml = $jade->render('forms/test.jade');
 
 	$doc = new DOMDocument();
 	$doc->loadXML($xml);
@@ -1004,11 +1004,12 @@ function parse_xml($file) {
 
 	$res = domToArray($root);
 
+
 	$page = [
 		'fields' => $res->byTag['fields'],
 		'title' => $res->attrs['title'],
 		'success-message' => $res->attrs['success-message'],
-		'debug' => isset($res->attrs['debug']) ? ($res->attrs['debug'] === 'true') : false,
+		'debug' => isset($res->attrs['debug']) ? isset($res->attrs['debug']) : false,
 		'outputs' => $res->byTag['outputs']
 	];
 

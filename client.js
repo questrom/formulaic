@@ -1,5 +1,5 @@
 /* jshint undef: true, unused: true */
-/* globals $, document */
+/* globals $, document, FormData */
 
 
 function addPrompt(name, prompt) {
@@ -33,7 +33,7 @@ $(function() {
                 val1: new RegExp("0[1-9]|1[012]") //month
             },
             leapday: "02/29/",
-            onKeyDown: function (e, buffer, caretPos, opts) {
+            onKeyDown: function (e) {
                 var $input = $(this);
                 if (e.ctrlKey && e.keyCode == $.inputmask.keyCode.RIGHT) {
                     var today = new Date();
@@ -81,7 +81,7 @@ $(function() {
 
 		var formData = new FormData($('form')[0]);
 
-		$.ajax('validate.php', {
+		$.ajax('submit.php', {
 			data: formData,
 			method: 'POST',
 			// http://stackoverflow.com/questions/10899384/uploading-both-data-and-files-in-one-form-using-ajax
@@ -117,7 +117,7 @@ $(function() {
 				}
 				$('.success-modal').modal('show');
 			}
-		}).fail(function(x) {
+		}).fail(function() {
 			doFail();
 		});
 	});
