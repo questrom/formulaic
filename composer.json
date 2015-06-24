@@ -11,6 +11,7 @@
         "moment/moment": "^2.10",
         "robinherbots/jquery.inputmask": "^3.1",
         "aws/aws-sdk-php": "^3.0",
-        "tpyo/amazon-s3-php-class": "^0.5.1"
+        "tpyo/amazon-s3-php-class": "^0.5.1",
+        "phpmailer/phpmailer": "^5.2"
     }
 }
