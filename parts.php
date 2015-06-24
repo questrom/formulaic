@@ -984,17 +984,28 @@ $parsers =  [
 		},
 		'outputs' => function($att, $c) {
 			return $c;
+		},
+		'form' => function($attrs, $c, $byTag) {
+			return new Page([
+				'fields' => $byTag['fields'],
+				'title' => $attrs['title'],
+				'success-message' => $attrs['success-message'],
+				'debug' => isset($attrs['debug']),
+				'outputs' => $byTag['outputs']
+			]);
 		}
 	];
 
 
 $jade = new Jade(new Everzet\Jade\Parser(new Everzet\Jade\Lexer\Lexer()), new Everzet\Jade\Dumper\PHPDumper());
 
-function parse_xml($file) {
+function parse_jade($file) {
 
 	global $jade;
 
-	$xml = $jade->render('forms/test.jade');
+	$xml = $jade->render($file);
+
+	echo '<pre>' . htmlspecialchars(($xml)) . '</pre>';
 
 	$doc = new DOMDocument();
 	$doc->loadXML($xml);
@@ -1002,16 +1013,7 @@ function parse_xml($file) {
 	$root = $doc->documentElement;
 
 
-	$res = domToArray($root);
-
-
-	$page = [
-		'fields' => $res->byTag['fields'],
-		'title' => $res->attrs['title'],
-		'success-message' => $res->attrs['success-message'],
-		'debug' => isset($res->attrs['debug']) ? isset($res->attrs['debug']) : false,
-		'outputs' => $res->byTag['outputs']
-	];
+	$page = domToArray($root);
 
 
 	return $page;

@@ -4,7 +4,6 @@
 require('vendor/autoload.php');
 require('parts.php');
 
-$result = parse_xml('forms/test.xml');
-$page = new Page($result);
+$page = parse_jade('forms/test.jade');
 
 echo '<!DOCTYPE html>' . $page->get(new HTMLGeneratorUnparented())->getText();
