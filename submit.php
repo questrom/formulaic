@@ -3,8 +3,8 @@
 require('vendor/autoload.php');
 require('parts.php');
 
-$result = parse_jade('forms/test.jade');
-$page = new Page($result);
+$page = Parser::parse_jade('forms/test.jade');
+
 
 $data = $page->validate(new OkJust(
 	[
@@ -22,18 +22,17 @@ $data
 		]);	
 		return new Err($val);
 	})
-	->bind(function($val) use ($result) {
+	->bind(function($val) use ($page) {
 
 		ob_start();
 		
-		foreach($result['outputs'] as $output) {
-			$val = $output->run($val);
-		}
+		$val = $page->outputs->run($val);
+		
 		var_dump($val);
 
 		$out = ob_get_clean();
 
-		if(!isset($result['debug'])) {
+		if(!$page->debug) {
 			$out = '';
 		}
 
