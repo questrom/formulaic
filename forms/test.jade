@@ -1,9 +1,9 @@
 !!! xml
 form(name='Example Form', title='Example Form', debug='true', success-message='Lorem ipsum!')
   fields
-    header(text='Example Form')
-    header(size='4', text='HTML Escaping <works>')
-    header(icon='plug', size='4', show-if='existence', text='Hello world')
+    header Example Form
+    header(size='4') HTML Escaping &lt;works&gt;
+    header(icon='plug', size='4', show-if='existence') Hello world
     file(label='Upload a file...', name='upload_file', max-size='100000')
       allow(ext='docx')
       allow(ext='jpg')
@@ -22,7 +22,7 @@ form(name='Example Form', title='Example Form', debug='true', success-message='L
     number(label='How many attendees?', name='num_attendees', min='3', max='5', required='true', show-if='existence')
     checkbox(label='I agree to the terms and conditions', name='agree_to_terms', must-check='true')
     checkbox(label='I exist', name='existence')
-    header(text='abc')
+    header abc
     textarea(label='Additional notes', name='additional_notes')
     radios(label='Choose a link...', name='choose_a_link')
       option Career Center

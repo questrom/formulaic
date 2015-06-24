@@ -944,59 +944,111 @@ function domToArray($elem){
 
 
 $parsers =  [
-		'checkbox'    => [ new ReflectionClass('Checkbox'), 'newInstance'],
-		'textbox'     => function($v) { return new Textbox($v);             },
-		'password'    => function($v) { return new Password($v);            },
-		'dropdown'    => function($v, $c) { $v['options'] = $c; return new Dropdown($v);            },
-		'radios'      => function($v, $c) { $v['options'] = $c; return new Radios($v);              },
-		'checkboxes'  => function($v, $c) { $v['options'] = $c; return new Checkboxes($v);          },
-		'textarea'    => function($v) { return new Textarea($v);            },
-		'range'       => function($v) { return new Range($v);               },
-		'time'        => function($v) { return new TimeInput($v);           },
-		'group'       => function($v, $c) {$v['fields'] = $c; return new Group($v);               },
-		'date'        => function($v) { return new DatePicker($v);          },
-		'phonenumber' => function($v) { return new PhoneNumber($v);         },
-		'email'       => function($v) { return new EmailAddr($v);           },
-		'url'         => function($v) { return new UrlInput($v);            },
-		'number'      => function($v) { return new NumberInp($v);           },
-		'mongo'       => function($v) { return new MongoOutput($v);         },
-		'groupheader' => function($v) { return new GroupHeader($v);         },
-		'groupnotice' => function($v, $c) { if(count($c)) { $v['list'] = $c; } return new GroupNotice($v);         },
-		'notice'      => function($v, $c) { if(count($c)) { $v['list'] = $c; } return new Notice($v);              },
-		'header'      => function($v) { return new Header($v);              },
-		'datetime'    => function($v) { return new DateTimePicker($v);      },
-		's3'          => function($v) { return new S3Output($v);            },
-		'file'        => function($v, $allow) {
-			$v['allowed-extensions'] = $allow;
-			return new FileUpload($v);
-		},
-		'allow' => function($att) {
-			return $att['ext'];
-		},
-		'option' => function($att, $chl) {
-			return $chl[0] . '';
-		},
-		'fields' => function($att, $chl, $byt) {
-			return $chl;
-		},
-		'li' => function($att, $chl, $byt) {
-			return $chl[0] . '';
-		},
-		'outputs' => function($att, $c) {
-			return $c;
-		},
-		'form' => function($attrs, $c, $byTag) {
-			return new Page([
-				'fields' => $byTag['fields'],
-				'title' => $attrs['title'],
-				'success-message' => $attrs['success-message'],
-				'debug' => isset($attrs['debug']),
-				'outputs' => $byTag['outputs']
-			]);
+	'checkbox' => function($v) {
+		return new Checkbox($v);
+	},
+	'textbox' => function($v) {
+		return new Textbox($v);             
+	},
+	'password' => function($v) {
+		return new Password($v);            
+	},
+	'dropdown' => function($v, $c) {
+		$v['options'] = $c; return new Dropdown($v);            
+	},
+	'radios' => function($v, $c) {
+		$v['options'] = $c; return new Radios($v);              
+	},
+	'checkboxes' => function($v, $c) {
+		$v['options'] = $c; return new Checkboxes($v);          
+	},
+	'textarea' => function($v) {
+		return new Textarea($v);            
+	},
+	'range' => function($v) {
+		return new Range($v);               
+	},
+	'time' => function($v) {
+		return new TimeInput($v);           
+	},
+	'group' => function($v, $c) {
+		$v['fields'] = $c;
+		return new Group($v);               	
+	},
+	'date' => function($v) {
+		return new DatePicker($v);          
+	},
+	'phonenumber' => function($v) {
+		return new PhoneNumber($v);         
+	},
+	'email' => function($v) {
+		return new EmailAddr($v);           
+	},
+	'url' => function($v) {
+		return new UrlInput($v);            
+	},
+	'number' => function($v) {
+		return new NumberInp($v);           
+	},
+	'mongo' => function($v) {
+		return new MongoOutput($v);         
+	},
+	'groupheader' => function($v) {
+		return new GroupHeader($v);         
+	},
+	'groupnotice' => function($v, $c) {
+		if(count($c)) {
+			$v['list'] = $c;
 		}
-	];
+		return new GroupNotice($v);         
+	},
+	'notice' => function($v, $c) {
+		if(count($c)) {
+			$v['list'] = $c;
+		}
+		return new Notice($v);              
+	},
+	'header' => function($v, $c) {
+		$v['text'] = $c[0]; return new Header($v);              
+	},
+	'datetime' => function($v) {
+		return new DateTimePicker($v);      
+	},
+	's3' => function($v) {
+		return new S3Output($v);            
+	},
+	'file' => function($v, $allow) {
+		$v['allowed-extensions'] = $allow;
+		return new FileUpload($v);
+	},
+	'allow' => function($att) {
+		return $att['ext'];
+	},
+	'option' => function($att, $chl) {
+		return $chl[0] . '';
+	},
+	'fields' => function($att, $chl, $byt) {
+		return $chl;
+	},
+	'li' => function($att, $chl, $byt) {
+		return $chl[0] . '';
+	},
+	'outputs' => function($att, $c) {
+		return $c;
+	},
+	'form' => function($attrs, $c, $byTag) {
+		return new Page([
+			'fields' => $byTag['fields'],
+			'title' => $attrs['title'],
+			'success-message' => $attrs['success-message'],
+			'debug' => isset($attrs['debug']),
+			'outputs' => $byTag['outputs']
+		]);
+	}
+];
 
 
+// Modified Jade from original...
 $jade = new Jade(new Everzet\Jade\Parser(new Everzet\Jade\Lexer\Lexer()), new Everzet\Jade\Dumper\PHPDumper());
 
 function parse_jade($file) {
@@ -1005,7 +1057,7 @@ function parse_jade($file) {
 
 	$xml = $jade->render($file);
 
-	echo '<pre>' . htmlspecialchars(($xml)) . '</pre>';
+	// echo '<pre>' . htmlspecialchars(($xml)) . '</pre>';
 
 	$doc = new DOMDocument();
 	$doc->loadXML($xml);
