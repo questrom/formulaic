@@ -18,27 +18,20 @@ $data
 	->bind_err(function($val) {
 		echo json_encode([
 			'success' => false,
-			'v' =>  $val
+			'errors' =>  $val
 		]);	
 		return new Err($val);
 	})
 	->bind(function($val) use ($page) {
 
 		ob_start();
-		
-		$val = $page->outputs->run($val);
-		
-		var_dump($val);
-
+			$val = $page->outputs->run($val);
+			var_dump($val);
 		$out = ob_get_clean();
-
-		if(!$page->debug) {
-			$out = '';
-		}
 
 		echo json_encode([
 			'success' => true,
-			'data' => $out
+			'debugOutput' => $page->debug ? $out : ''
 		]);
 	});
 

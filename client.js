@@ -96,12 +96,12 @@ $(function() {
 				doFail();
 				return;
 			}
-			if(x.v) {
+			if(x.errors) {
 				$('.validation-error-message').show();
 				var submit = $('[data-submit=true]').removeClass('loading').removeAttr('disabled');
 				$(submit).find('span').text('Try Again');
 
-				var results = x.v;
+				var results = x.errors;
 
 				for(var k in results) {
 					addPrompt(k, results[k]);	
@@ -111,7 +111,7 @@ $(function() {
 				$('[data-submit=true]').removeClass('loading').removeAttr('disabled').find('span').text('Submit Again');
 
 
-				var output = x.data;
+				var output = x.debugOutput;
 				if(output) {
 					$('.ui.form').append($('<p>').html(output));
 				}
