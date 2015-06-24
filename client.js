@@ -5,6 +5,7 @@
 function addPrompt(name, prompt) {
 	$(document.getElementsByName(name))
 		.add($(document.getElementsByName(name + '[]')))
+		.add($('[data-validation-name="' + name + '"]'))
 		.closest('.field:not(.not-validation-root), .validation-root')
 		.addClass('error')
 		.append(
@@ -20,6 +21,24 @@ function removePrompts() {
 }
 
 $(function() {
+
+
+	$('.add-item').click(function() {
+		var $this = $(this);
+		var template = $this.closest('.list-items').find('> script').text();
+
+		var listCo = $this.closest('.list-component');
+		var num = listCo.data('count');
+		listCo.data('count', num + 1);
+
+		template = template.replace(/\{\{index\}\}/g, num);
+
+		var item = $(template);
+		item.insertBefore($this.closest('.segment'));
+		item.find('.delete-btn').click(function() {
+			$(this).closest('.segment').remove();
+		});
+	});
 
 	// Based on code from jquery.inputmask
     $.extend($.inputmask.defaults.aliases, {
@@ -97,6 +116,7 @@ $(function() {
 				return;
 			}
 			if(x.errors) {
+				console.log(x.errors);
 				$('.validation-error-message').show();
 				var submit = $('[data-submit=true]').removeClass('loading').removeAttr('disabled');
 				$(submit).find('span').text('Try Again');

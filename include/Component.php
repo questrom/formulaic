@@ -120,6 +120,9 @@ abstract class GroupComponent extends Component {
 
 
 
+
+
+
 abstract class SpecialInput extends InputComponent {
 	function __construct($args) {
 		parent::__construct($args);
@@ -726,6 +729,52 @@ class Notice extends BaseNotice {
 	}
 }
 
+
+
+class ListComponent extends InputComponent {
+	function __construct($args) {
+		$this->item = $args['item'];
+		
+		// $args['label'] = '';
+		parent::__construct($args);
+
+		$this->oldName = $this->item->name;
+		$this->item->name = $this->name . '[{{index}}][' . $this->item->name . ']';
+
+	}
+	function get($h) {
+		return $h
+		->div->class('ui field not-validation-root list-component')->data('count','0')
+			->h5->class('top attached ui header')->t($this->label)->end
+			->div->data('validation-name', $this->name)->class('validation-root ui bottom attached segment list-items')
+				->script->type('text/template')
+					->div->class('ui vertical segment close-item')
+							
+							
+							->div->class('content')
+								->add($this->item->get($h))
+
+							->end
+							->button->type('button')->class('ui compact negative icon button delete-btn')->i->class('trash icon')->end->end
+					->end
+				->end
+				->div->class('ui center aligned vertical segment')
+					->button->type('button')->class('ui primary button add-item')->t('Add an item')->end
+				->end
+			->end
+		->end;
+	}
+	function validate($x) {
+		return $x->innerBind(function($val) {
+			if(!is_array($val)) {
+				return new Err('Invalid data');
+			}
+
+			return $this->item->validate( new OkJust($val[0][$this->oldName]) );
+		});
+	}
+}
+
 class Group extends GroupComponent {
 	
 	function __construct($args) {
@@ -748,7 +797,7 @@ class Group extends GroupComponent {
 		->div->class('group')->data('show-if', $this->showIf)
 			->add(array_map(function($value) use ($h) {
 					if(is_array($value)) {
-						return $h->div->class('ui segment attached ')
+						return $h->div->class('ui segment attached')
 							->add($value)
 						->end;
 					} else {

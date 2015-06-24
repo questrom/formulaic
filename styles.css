@@ -40,3 +40,21 @@ margin: 20px auto;
 .group > :first-child:last-child.attached {
 	border-radius: 0.3125rem 0.3125rem 0.2857rem 0.2857rem !important;
 }
+
+.close-item {
+    display:flex;
+
+    align-items: flex-start;
+}
+
+.close-item > .content {  
+    flex: 1;
+    margin-right: 15px;
+}
+.close-item > button {
+    margin-top:5px !important;
+}
+
+.list-component > .segment {
+    padding: 0 15px;
+}

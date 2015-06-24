@@ -14,7 +14,8 @@ form(name='Example Form', title='Example Form', debug=true, success-message='Lor
       li Alpha beta
       li Gamma delta
       li Epsilon zeta
-    phonenumber(label='Phone number', name='phone')
+    list(name='phone_list', label='Phone #s')
+      phonenumber(label='Phone number', name='phone')
     email(label='Email address', name='email', must-have-domain='bu.edu')
     url(label='Website', name='url')
     date(label='Start date', name='start_date', min='2015-06-17', max='2015-06-20')

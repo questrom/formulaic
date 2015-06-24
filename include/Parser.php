@@ -99,6 +99,10 @@ $parsers =  [
 			'debug' => isset($v->attrs['debug']),
 			'outputs' => $v->byTag['outputs']
 		]);
+	},
+	'list' => function($v) {
+		$v->attrs['item'] = $v->children[0];
+		return new ListComponent($v->attrs);
 	}
 ];
 
