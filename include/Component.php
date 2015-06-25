@@ -13,6 +13,19 @@ abstract class Component {
 	}
 	abstract function get($h);
 	abstract function getMerger($val);
+
+	function getIfShown($valHolder) {
+		return $valHolder->bind(function($val) {
+			$post_value = $val->post;
+			if($this->showIf !== null &&
+				!(isset($post_value[$this->showIf]) ? $post_value[$this->showIf] === "on" : false)
+			) {
+				return new OkJust([]);
+			} else {
+				return $this->getMerger( new OkJust( $val  ) );
+			}
+		});
+	}
 }
 
 abstract class EmptyComponent extends Component {
@@ -79,18 +92,7 @@ abstract class GroupComponent extends Component {
 		return $against->innerBind(function($val)  {
 			return array_reduce($this->items, function($total, $x) use($val) {
 
-				$post_value = $val->post;
-				$file_value = $val->files;
-
-
-				if($x->showIf !== null &&
-					!(isset($post_value[$x->showIf]) ? $post_value[$x->showIf] === "on" : false)
-				) {
-					$result = new OkJust([]);
-				} else {
-					$result = $x->getMerger( new OkJust( $val  ) );
-				}
-
+				$result = $x->getIfShown( new OkJust( $val  ) );
 
 				$mergeM = $result
 					->bind(function($r) {
