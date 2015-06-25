@@ -14,7 +14,7 @@ form(name='Example Form', title='Example Form', debug=true, success-message='Lor
       li Alpha beta
       li Gamma delta
       li Epsilon zeta
-    list(name='phone_list', label='Clients', add-text='Add a client')
+    list(name='phone_list', label='Clients', add-text='Add a client', show-if='existence')
       phonenumber(label='Phone number', name='phone')
       url(label='Website',name='url',required=true)
       checkbox(label='An actual client', name='is_actual')

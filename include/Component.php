@@ -766,7 +766,7 @@ class ListComponent extends GroupComponent {
 
 
 		return $h
-		->div->class('ui field not-validation-root list-component')->data('count','0')->data('group-name', $this->name)
+		->div->class('ui field not-validation-root list-component')->data('count','0')->data('group-name', $this->name)->data('show-if', $this->showIf)
 			->h5->class('top attached ui message')->t($this->label)->end
 			->div->data('validation-name', $this->name)->class('validation-root ui bottom attached segment list-items')
 				->script->type('text/template')
