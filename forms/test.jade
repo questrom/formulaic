@@ -14,10 +14,10 @@ form(name='Example Form', title='Example Form', debug=true, success-message='Lor
       li Alpha beta
       li Gamma delta
       li Epsilon zeta
-    list(name='phone_list', label='Phone #s')
+    list(name='phone_list', label='Clients', add-text='Add a client')
       phonenumber(label='Phone number', name='phone')
+      url(label='Website',name='url',required=true)
     email(label='Email address', name='email', must-have-domain='bu.edu')
-    url(label='Website', name='url')
     date(label='Start date', name='start_date', min='2015-06-17', max='2015-06-20')
     number(label='How many attendees?', name='num_attendees', min='3', max='5', required=true, show-if='existence')
     checkbox(label='I agree to the terms and conditions', name='agree_to_terms', must-check=true)

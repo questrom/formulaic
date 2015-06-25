@@ -495,7 +495,7 @@ class Range extends InputComponent {
 		return $h
 		->div->class('ui field')->data('show-if',$this->showIf)
 			->ins(label($h, $this->label))
-			->div->class('ui input')
+			->div
 				->input
 					->type('range')
 					->name($this->name)
@@ -503,6 +503,8 @@ class Range extends InputComponent {
 					->min($this->min)
 					->step($this->step)
 					->value($this->def)
+				->end
+				->span->class('ui left pointing horizontal label range-value')
 				->end
 			->end
 		->end;
@@ -745,37 +747,40 @@ class Notice extends BaseNotice {
 
 
 
-class ListComponent extends NamedLabeledComponent {
+class ListComponent extends GroupComponent {
 	function __construct($args) {
-		// Only handles case in which there is just one child
-		$this->item = $args['item'];
+		$this->items = $args['items'];
+		$this->name = $args['name'];
+		$this->label = $args['label'];
+		$this->addText = isset($args['add-text']) ? $args['add-text'] : 'Add an item';
 		parent::__construct($args);
 	}
 	function get($h) {
 
-		// May produce "sparse" arrays
 
 		return $h
 		->div->class('ui field not-validation-root list-component')->data('count','0')->data('group-name', $this->name)
-			->h5->class('top attached ui header')->t($this->label)->end
+			->h5->class('top attached ui message')->t($this->label)->end
 			->div->data('validation-name', $this->name)->class('validation-root ui bottom attached segment list-items')
 				->script->type('text/template')
 					->div->class('ui vertical segment close-item')
 							->div->class('content')
-								->add($this->item->get($h))
+								->add($this->items)
 							->end
 							->button->type('button')->class('ui compact negative icon button delete-btn')->i->class('trash icon')->end->end
 					->end
 				->end
 				->div->class('ui center aligned vertical segment')
-					->button->type('button')->class('ui primary button add-item')->t('Add an item')->end
+					->button->type('button')->class('ui primary labeled icon button add-item')
+						->i->class('plus icon')->end
+						->t($this->addText)
+					->end
 				->end
 			->end
 		->end;
 	}
 	function getMerger($val) {
 
-		// Only handles list of single items but works...
 
 		$val = $val->innerBind(function($v) {
 			return new OkJust(isset($v->post[$this->name]) ? $v->post[$this->name] : null);
@@ -796,20 +801,16 @@ class ListComponent extends NamedLabeledComponent {
 
 			$result = new OkJust([]);
 			foreach ($list as $index => $value) {
-				$validationResult = $this->item->getMerger(
+				$validationResult = parent::getMerger(
 					new OkJust(
 						new ClientData($value, null)
 					)
 				);
-				// echo "\n\n\n";
-				// var_dump($validationResult);
-				// echo "\n\n\n";
 
 				$result = $result
 					->innerBind(function($soFar) use($validationResult, $index) {
 						return $validationResult
-							->innerBind(function($fieldResult) use($soFar, $index, $validationResult) {
-								// var_dump($fieldResult);
+							->innerBind(function($fieldResult) use($soFar, $index) {
 								$soFar[$index] = $fieldResult;
 								return new OkJust($soFar);
 							})
@@ -819,10 +820,11 @@ class ListComponent extends NamedLabeledComponent {
 					})
 					->bind_err(function($errorSoFar) use($validationResult, $index) {
 						return $validationResult
-							->bind_err(function($fieldError) use($errorSoFar, $index, $validationResult) {
-								// var_dump($validationResult);
-								// var_dump($this->name . '[' . $index . '][' . $this->item->name . ']');
-								$errorSoFar[ $this->name . '[' . $index . '][' . $this->item->name . ']'  ] = current($fieldError);
+							->bind_err(function($fieldError) use($errorSoFar, $index) {
+								foreach($fieldError as $k => $v) {
+									$errorSoFar[ $this->name . '[' . $index . '][' . $k . ']'  ] = $v;
+								}
+
 								return new Err($errorSoFar);
 							})
 							->innerBind(function($fieldResult) use($errorSoFar) {
@@ -835,22 +837,7 @@ class ListComponent extends NamedLabeledComponent {
 				->innerBind(function($x) {
 					return new OkJust([$this->name => array_values($x)]);
 				});
-			// var_dump($result);
 			return $result;
-			// return $this->item->getMerger(new OkJust(
-			// 		new ClientData($data[0], null)
-			// 	))->bind(function($x) {
-			// 		$x = current($x);
-			// 		return new OkJust(
-			// 			[$this->name=>[0=>[$this->item->name=>$x]]]
-			// 		);
-			// 	})
-			// 	->bind_err(function($x) {
-
-			// 		$x = current($x);
-			// 		$name = $this->name . '[0][' . $this->item->name . ']';
-			// 		return new Err([$name=>$x]);
-			// 	});
 		});
 	}
 }

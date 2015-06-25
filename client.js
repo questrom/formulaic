@@ -55,6 +55,11 @@ $.fn.modal.settings.transition='scale';
 
 $(function() {
 
+	function handleRange() {
+		$(this).parent().find('span.range-value').text($(this).val());
+	}
+
+	$('input[type=range]').on('input', handleRange).each(handleRange);
 
 	$('.add-item').click(function() {
 		var $this = $(this);
@@ -102,6 +107,8 @@ $(function() {
 	}
 
 	$('input[type=checkbox]').on('change', handleBox).each(handleBox);
+
+	$("[data-inputmask]").inputmask();
 
 	$('[data-submit=true]').on('click', function() {
 
@@ -154,8 +161,5 @@ $(function() {
 
 
 
-
-
-	$("[data-inputmask]").inputmask();
 
 });

@@ -8,69 +8,69 @@ $parsers =  [
 		return new Checkbox($v->attrs);
 	},
 	'textbox' => function($v) {
-		return new Textbox($v->attrs);             
+		return new Textbox($v->attrs);
 	},
 	'password' => function($v) {
-		return new Password($v->attrs);            
+		return new Password($v->attrs);
 	},
 	'dropdown' => function($v) {
 		$v->attrs['options'] = $v->children;
-		return new Dropdown($v->attrs);            
+		return new Dropdown($v->attrs);
 	},
 	'radios' => function($v) {
 		$v->attrs['options'] = $v->children;
-		return new Radios($v->attrs);              
+		return new Radios($v->attrs);
 	},
 	'checkboxes' => function($v) {
 		$v->attrs['options'] = $v->children;
-		return new Checkboxes($v->attrs);          
+		return new Checkboxes($v->attrs);
 	},
 	'textarea' => function($v) {
-		return new Textarea($v->attrs);            
+		return new Textarea($v->attrs);
 	},
 	'range' => function($v) {
-		return new Range($v->attrs);               
+		return new Range($v->attrs);
 	},
 	'time' => function($v) {
-		return new TimeInput($v->attrs);           
+		return new TimeInput($v->attrs);
 	},
 	'group' => function($v) {
 		$v->attrs['fields'] = $v->children;
-		return new Group($v->attrs);               	
+		return new Group($v->attrs);
 	},
 	'date' => function($v) {
-		return new DatePicker($v->attrs);          
+		return new DatePicker($v->attrs);
 	},
 	'phonenumber' => function($v) {
-		return new PhoneNumber($v->attrs);         
+		return new PhoneNumber($v->attrs);
 	},
 	'email' => function($v) {
-		return new EmailAddr($v->attrs);           
+		return new EmailAddr($v->attrs);
 	},
 	'url' => function($v) {
-		return new UrlInput($v->attrs);            
+		return new UrlInput($v->attrs);
 	},
 	'number' => function($v) {
-		return new NumberInp($v->attrs);           
+		return new NumberInp($v->attrs);
 	},
 	'mongo' => function($v) {
-		return new MongoOutput($v->attrs);         
+		return new MongoOutput($v->attrs);
 	},
 	'notice' => function($v) {
 		if(count($v->children)) {
 			$v->attrs['list'] = $v->children;
 		}
-		return new Notice($v->attrs);              
+		return new Notice($v->attrs);
 	},
 	'header' => function($v) {
 		$v->attrs['text'] = $v->children[0];
-		return new Header($v->attrs);              
+		return new Header($v->attrs);
 	},
 	'datetime' => function($v) {
-		return new DateTimePicker($v->attrs);      
+		return new DateTimePicker($v->attrs);
 	},
 	's3' => function($v) {
-		return new S3Output($v->attrs);            
+		return new S3Output($v->attrs);
 	},
 	'file' => function($v) {
 		$v->attrs['allowed-extensions'] = $v->children;
@@ -101,7 +101,7 @@ $parsers =  [
 		]);
 	},
 	'list' => function($v) {
-		$v->attrs['item'] = $v->children[0];
+		$v->attrs['items'] = $v->children;
 		return new ListComponent($v->attrs);
 	}
 ];
@@ -160,5 +160,5 @@ class Parser {
 
 
 		return $page;
-	}	
+	}
 }
