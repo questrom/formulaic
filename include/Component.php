@@ -538,7 +538,6 @@ class Password extends SpecialInput {
 class PhoneNumber extends SpecialInput {
 	function __construct($args) {
 		parent::__construct($args);
-
 		$this->required = isset($args['required']);
 	}
 	function get($h) {
@@ -550,11 +549,6 @@ class PhoneNumber extends SpecialInput {
 			->filterEmptyString()
 			->requiredMaybe($this->required)
 			->filterPhone();
-	}
-	function getMerger($val) {
-		// echo 'GMVAL\n';
-		// var_dump($this->name);
-		return parent::getMerger($val);
 	}
 }
 
