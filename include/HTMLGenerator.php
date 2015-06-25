@@ -1,16 +1,16 @@
 <?php
 
 abstract class HTMLGeneratorAbstract {
-	
+
 	protected $parent;
 
 	abstract function hif($cond);
 	abstract function t($text);
 	abstract function add($arr);
 	abstract function __get($name);
-	
+
 	abstract function getText();
-	
+
 }
 
 
@@ -33,14 +33,14 @@ class HTMLGeneratorText {
 	function getText() { return htmlspecialchars($this->text); }
 }
 
-class HTMLGeneratorTagless extends HTMLGeneratorAbstract {
+class HTMLContentGenerator extends HTMLGeneratorAbstract {
 
 	function __construct($children = []) {
 		$this->children = $children;
 	}
 
 	function add($arr) {
-		return new HTMLGeneratorTagless(
+		return new HTMLContentGenerator(
 			array_merge(
 				$this->children,
 				is_array($arr) ? $arr : [$arr]
@@ -51,7 +51,7 @@ class HTMLGeneratorTagless extends HTMLGeneratorAbstract {
 	function getText() {
 		return implode( array_map(function($child) {
 			if($child instanceof Component) {
-				return $child->get(new HTMLGeneratorUnparented())->getText();
+				return $child->get(new HTMLParentlessContext())->getText();
 			} else {
 				return $child->getText();
 			}
@@ -59,17 +59,17 @@ class HTMLGeneratorTagless extends HTMLGeneratorAbstract {
 	}
 
 	function __get($name) {
-		return new HTMLGenerator(new HTMLGeneratorTagless(), $name, []);
+		return new HTMLTagGenerator(new HTMLContentGenerator(), $name, []);
 	}
 
-	// Helper for appending text	
+	// Helper for appending text
 	function t($text) { return $this->add(new HTMLGeneratorText($text)); }
 	// Helper for "if" statements
-	function hif($cond) { return $cond ? new HTMLGeneratorTagless() : new HTMLGeneratorNull(); }
+	function hif($cond) { return $cond ? new HTMLContentGenerator() : new HTMLGeneratorNull(); }
 }
 
 // Generates the inside of an HTML element
-class HTMLGenerator extends HTMLGeneratorAbstract {
+class HTMLTagGenerator extends HTMLGeneratorAbstract {
 	function __construct( $tagless, $tag, $attrs) {
 		$this->tag = $tag;
 		$this->attrs = $attrs;
@@ -77,14 +77,14 @@ class HTMLGenerator extends HTMLGeneratorAbstract {
 	}
 
 	function __call($name, $args) {
-		return new HTMLGenerator($this->tagless, $this->tag, array_merge($this->attrs, [ $name => $args[0] ] )  );
+		return new HTMLTagGenerator($this->tagless, $this->tag, array_merge($this->attrs, [ $name => $args[0] ] )  );
 	}
 	function data($key, $val) {
-		return new HTMLGenerator($this->tagless, $this->tag, array_merge($this->attrs, [  'data-' . $key => $val ] ));
+		return new HTMLTagGenerator($this->tagless, $this->tag, array_merge($this->attrs, [  'data-' . $key => $val ] ));
 	}
 
 	function add($arr) {
-		return new HTMLGenerator($this->tagless->add($arr), $this->tag, $this->attrs);
+		return new HTMLTagGenerator($this->tagless->add($arr), $this->tag, $this->attrs);
 	}
 
 	function getText() {
@@ -98,63 +98,63 @@ class HTMLGenerator extends HTMLGeneratorAbstract {
 	}
 
 
-	function __get($name) { return new HTMLGenerator( new HTMLGeneratorTagless(), $name, [] ); }
+	function __get($name) { return new HTMLTagGenerator( new HTMLContentGenerator(), $name, [] ); }
 
-	// Helper for appending text	
-	function t($text) { return new HTMLGenerator($this->tagless->t($text), $this->tag, $this->attrs); }
+	// Helper for appending text
+	function t($text) { return new HTMLTagGenerator($this->tagless->t($text), $this->tag, $this->attrs); }
 
 	// Helper for "if" statements
-	function hif($cond) { return $cond ? new HTMLGeneratorTagless() : new HTMLGeneratorNull(); }
+	function hif($cond) { return $cond ? new HTMLContentGenerator() : new HTMLGeneratorNull(); }
 }
 
-class HTMLGeneratorParented extends HTMLGeneratorAbstract {
+class HTMLParentContext extends HTMLGeneratorAbstract {
 	function __construct($parent, $generator) {
 		$this->parent = $parent;
 		$this->generator = $generator;
 	}
 
 	function hif($cond) {
-		return new HTMLGeneratorParented($this, $this->generator->hif($cond));
+		return new HTMLParentContext($this, $this->generator->hif($cond));
 	}
 
-	function __call($name, $args) { return new HTMLGeneratorParented( $this->parent, $this->generator->__call($name, $args)); }
-	function t($text) { return new HTMLGeneratorParented( $this->parent, $this->generator->t($text)); }
-	function add($arr) { return new HTMLGeneratorParented( $this->parent, $this->generator->add($arr)); }
-	function data($key, $val) { return new HTMLGeneratorParented( $this->parent, $this->generator->data($key, $val)); }
+	function __call($name, $args) { return new HTMLParentContext( $this->parent, $this->generator->__call($name, $args)); }
+	function t($text) { return new HTMLParentContext( $this->parent, $this->generator->t($text)); }
+	function add($arr) { return new HTMLParentContext( $this->parent, $this->generator->add($arr)); }
+	function data($key, $val) { return new HTMLParentContext( $this->parent, $this->generator->data($key, $val)); }
 
 	function ins($gen) {
-		return new HTMLGeneratorParented($this, $gen->generator);
+		return new HTMLParentContext($this, $gen->generator);
 	}
 
 	function __get($name) {
 		if($name === 'end') {
 			return $this->parent->add($this);
 		} else {
-			return new HTMLGeneratorParented($this, $this->generator->__get($name));
+			return new HTMLParentContext($this, $this->generator->__get($name));
 		}
 	}
-	
+
 	function getText() { return $this->generator->getText(); }
 }
 
-class HTMLGeneratorUnparented extends HTMLGeneratorAbstract{
+class HTMLParentlessContext extends HTMLGeneratorAbstract{
 	function __construct($generator = null) {
-		$this->generator = $generator ? $generator : new HTMLGeneratorTagless();
+		$this->generator = $generator ? $generator : new HTMLContentGenerator();
 	}
 	function __get($name) {
-		return new HTMLGeneratorParented($this, $this->generator->__get($name));
+		return new HTMLParentContext($this, $this->generator->__get($name));
 	}
 	function add($arr) {
-		return new HTMLGeneratorUnparented($this->generator->add($arr));
+		return new HTMLParentlessContext($this->generator->add($arr));
 	}
 	function t($arr) {
-		return new HTMLGeneratorUnparented($this->generator->t($arr));
+		return new HTMLParentlessContext($this->generator->t($arr));
 	}
 	function hif($arr) {
-		return new HTMLGeneratorParented($this, $this->generator->hif($arr));
+		return new HTMLParentContext($this, $this->generator->hif($arr));
 	}
 	function ins($gen) {
-		return new HTMLGeneratorParented($this, $gen->generator);
+		return new HTMLParentContext($this, $gen->generator);
 	}
 	function getText() {
 		return $this->generator->getText();
