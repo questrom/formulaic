@@ -68,9 +68,9 @@ function handleBox() {
 function enableFormControls(root) {
 
 
-	$('input[type=range]').on('input', handleRange).each(handleRange);
+	root.find('input[type=range]').on('input', handleRange).each(handleRange);
 
-	$('.add-item').click(function() {
+	root.find('.add-item').click(function() {
 		var $this = $(this);
 		var template = $this.closest('.list-items').find('> script').text();
 
@@ -86,14 +86,16 @@ function enableFormControls(root) {
 
 		item.insertBefore($this.closest('.segment'));
 
+
 		item.find('.delete-btn').click(function() {
 			$(this).closest('.segment').remove();
 		});
 
+
 		enableFormControls(item);
 	});
 
-	$('.ui.dropdown').dropdown({
+	root.find('.ui.dropdown').dropdown({
 		metadata: {
 			defaultText: 'abc',
 			defaultValue: 'null'
@@ -101,12 +103,12 @@ function enableFormControls(root) {
 	});
 
 
-	$('input[type=checkbox]').on('change', handleBox).each(handleBox);
+	root.find('input[type=checkbox]').on('change', handleBox).each(handleBox);
 
-	$('.checkbox').checkbox();
+	root.find('.checkbox').checkbox();
 
 
-	$("[data-inputmask]").inputmask();
+	root.find("[data-inputmask]").inputmask();
 
 }
 

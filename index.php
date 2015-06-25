@@ -5,4 +5,4 @@ require('parts.php');
 
 $page = Parser::parse_jade('forms/test.jade');
 
-echo '<!DOCTYPE html>' . $page->get(new HTMLParentlessContext())->getText();
+echo '<!DOCTYPE html>' . $page->get(new HTMLParentlessContext());

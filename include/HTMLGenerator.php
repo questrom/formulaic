@@ -1,75 +1,79 @@
 <?php
 
 abstract class HTMLGeneratorAbstract {
-
 	protected $parent;
-
 	abstract function hif($cond);
-	abstract function t($text);
+
 	abstract function add($arr);
 	abstract function __get($name);
-
-	abstract function getText();
-
+	abstract function __toString();
+	function t($text) {
+		return $this->add($text);
+	}
 }
 
 
 // =============================================================================================================
 
-class HTMLGeneratorNull extends HTMLGeneratorAbstract {
+
+abstract class HTMLRealGenerator extends HTMLGeneratorAbstract {
+	function __get($name) {
+		return new HTMLTagGenerator(new HTMLContentGenerator(), $name, []);
+	}
+
+	// Helper for "if" statements
+	function hif($cond) { return $cond ? new HTMLContentGenerator() : new HTMLDummyGenerator(); }
+}
+
+class HTMLDummyGenerator extends HTMLGeneratorAbstract {
 	function add($arr) { return $this; }
 	function __get($name) { return $this; }
 	function ins($gen) { return $this; }
-	function getText() { return ''; }
+	function __toString() { return ''; }
 	function append($text) { return $this; }
-	function t($text) { return $this; }
 	function hif($cond) { return $this; }
 	function data($key, $val) { return $this; }
 	function __call($name, $args) { return $this; }
 }
 
-class HTMLGeneratorText {
-	function __construct($text) { $this->text = $text; }
-	function getText() { return htmlspecialchars($this->text); }
-}
 
-class HTMLContentGenerator extends HTMLGeneratorAbstract {
+class HTMLContentGenerator extends HTMLRealGenerator {
 
 	function __construct($children = []) {
 		$this->children = $children;
 	}
 
 	function add($arr) {
+		if(!is_array($arr)) {
+			$arr = [$arr];
+		}
+		$arr = array_map(function($item) {
+			if($item instanceof Component) {
+				return $item->get(new HTMLParentlessContext());
+			} else if(is_string($item)) {
+				return htmlspecialchars($item);
+			} else {
+				return $item;
+			}
+		}, $arr);
 		return new HTMLContentGenerator(
 			array_merge(
 				$this->children,
-				is_array($arr) ? $arr : [$arr]
+				$arr
 			)
 		);
 	}
 
-	function getText() {
-		return implode( array_map(function($child) {
-			if($child instanceof Component) {
-				return $child->get(new HTMLParentlessContext())->getText();
-			} else {
-				return $child->getText();
-			}
-		}, $this->children) );
+	function __toString() {
+		// Avoid errors caused by excess recursion by using iteration here...
+		return implode($this->children);
 	}
 
-	function __get($name) {
-		return new HTMLTagGenerator(new HTMLContentGenerator(), $name, []);
-	}
 
-	// Helper for appending text
-	function t($text) { return $this->add(new HTMLGeneratorText($text)); }
-	// Helper for "if" statements
-	function hif($cond) { return $cond ? new HTMLContentGenerator() : new HTMLGeneratorNull(); }
 }
 
 // Generates the inside of an HTML element
-class HTMLTagGenerator extends HTMLGeneratorAbstract {
+class HTMLTagGenerator extends HTMLRealGenerator {
 	function __construct( $tagless, $tag, $attrs) {
 		$this->tag = $tag;
 		$this->attrs = $attrs;
@@ -87,24 +91,22 @@ class HTMLTagGenerator extends HTMLGeneratorAbstract {
 		return new HTMLTagGenerator($this->tagless->add($arr), $this->tag, $this->attrs);
 	}
 
-	function getText() {
+	function __toString() {
 		$att = '<' . $this->tag;
 		foreach ($this->attrs as $key => $value) {
 			$att .= ' ' . $key . '="' . htmlspecialchars($value) . '"';
 		}
 		$att .= '>';
 
-		return $att . $this->tagless->getText() . '</' . $this->tag . '>';
+		return $att . $this->tagless. '</' . $this->tag . '>';
 	}
 
 
 	function __get($name) { return new HTMLTagGenerator( new HTMLContentGenerator(), $name, [] ); }
 
-	// Helper for appending text
-	function t($text) { return new HTMLTagGenerator($this->tagless->t($text), $this->tag, $this->attrs); }
 
 	// Helper for "if" statements
-	function hif($cond) { return $cond ? new HTMLContentGenerator() : new HTMLGeneratorNull(); }
+	function hif($cond) { return $cond ? new HTMLContentGenerator() : new HTMLDummyGenerator(); }
 }
 
 class HTMLParentContext extends HTMLGeneratorAbstract {
@@ -118,7 +120,6 @@ class HTMLParentContext extends HTMLGeneratorAbstract {
 	}
 
 	function __call($name, $args) { return new HTMLParentContext( $this->parent, $this->generator->__call($name, $args)); }
-	function t($text) { return new HTMLParentContext( $this->parent, $this->generator->t($text)); }
 	function add($arr) { return new HTMLParentContext( $this->parent, $this->generator->add($arr)); }
 	function data($key, $val) { return new HTMLParentContext( $this->parent, $this->generator->data($key, $val)); }
 
@@ -134,7 +135,7 @@ class HTMLParentContext extends HTMLGeneratorAbstract {
 		}
 	}
 
-	function getText() { return $this->generator->getText(); }
+	function __toString() { return $this->generator->__toString(); }
 }
 
 class HTMLParentlessContext extends HTMLGeneratorAbstract{
@@ -147,16 +148,13 @@ class HTMLParentlessContext extends HTMLGeneratorAbstract{
 	function add($arr) {
 		return new HTMLParentlessContext($this->generator->add($arr));
 	}
-	function t($arr) {
-		return new HTMLParentlessContext($this->generator->t($arr));
-	}
 	function hif($arr) {
 		return new HTMLParentContext($this, $this->generator->hif($arr));
 	}
 	function ins($gen) {
 		return new HTMLParentContext($this, $gen->generator);
 	}
-	function getText() {
-		return $this->generator->getText();
+	function __toString() {
+		return $this->generator->__toString();
 	}
 }
