@@ -51,13 +51,22 @@ $.extend($.inputmask.defaults.aliases, {
 
 $.fn.modal.settings.transition='scale';
 
+function handleRange() {
+	$(this).parent().find('span.range-value').text($(this).val());
+}
 
-
-$(function() {
-
-	function handleRange() {
-		$(this).parent().find('span.range-value').text($(this).val());
+function handleBox() {
+	var $this = $(this);
+	var name = $this.attr('name');
+	if(name.slice(-2) === '[]') {
+		return;
 	}
+	$('[data-show-if="' + name + '"]').toggle($this.is(':checked'));
+}
+
+
+function enableFormControls(root) {
+
 
 	$('input[type=range]').on('input', handleRange).each(handleRange);
 
@@ -76,9 +85,12 @@ $(function() {
 		});
 
 		item.insertBefore($this.closest('.segment'));
+
 		item.find('.delete-btn').click(function() {
 			$(this).closest('.segment').remove();
 		});
+
+		enableFormControls(item);
 	});
 
 	$('.ui.dropdown').dropdown({
@@ -88,6 +100,22 @@ $(function() {
 		}
 	});
 
+
+	$('input[type=checkbox]').on('change', handleBox).each(handleBox);
+
+	$('.checkbox').checkbox();
+
+
+	$("[data-inputmask]").inputmask();
+
+}
+
+
+$(function() {
+
+	enableFormControls($('form'));
+
+
 	function doFail() {
 			$('.validation-error-message').hide();
 			var submit = $('[data-submit=true]').removeClass('loading').removeAttr('disabled');
@@ -95,20 +123,6 @@ $(function() {
 			$('.failure-modal').modal('show');
 	}
 
-	$('.checkbox').checkbox();
-
-	function handleBox() {
-		var $this = $(this);
-		var name = $this.attr('name');
-		if(name.slice(-2) === '[]') {
-			return;
-		}
-		$('[data-show-if=' + name + ']').toggle($this.is(':checked'));
-	}
-
-	$('input[type=checkbox]').on('change', handleBox).each(handleBox);
-
-	$("[data-inputmask]").inputmask();
 
 	$('[data-submit=true]').on('click', function() {
 

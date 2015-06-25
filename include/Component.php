@@ -142,7 +142,7 @@ abstract class SpecialInput extends InputComponent {
 		$this->minLength = isset($args['min-length']) ? intval($args['min-length']) : 0;
 		$this->required  = isset($args['required']);
 		$this->mustMatch = isset($args['must-match']) ? $args['must-match'] : null;
-		$this->matchHash = isset($args['match-hash']) ? $args['match-hash'] : null;
+
 	}
 	protected function makeInput($h, $type, $icon) {
 		return $h
@@ -523,6 +523,10 @@ class Range extends InputComponent {
 
 
 class Password extends SpecialInput {
+	function __construct($args) {
+		parent::__construct($args);
+		$this->matchHash = isset($args['match-hash']) ? $args['match-hash'] : null;
+	}
 	function get($h) {
 		return $this->makeInput($h, 'password', '');
 	}
@@ -534,6 +538,13 @@ class Password extends SpecialInput {
 			->matchRegex($this->mustMatch)
 			->filterEmptyString()
 			->requiredMaybe($this->required);
+	}
+	function getMerger($val) {
+		return parent::getMerger($val)
+			->bind(function($x) {
+				// Avoid storing passwords.
+				return new OkJust([]);
+			});
 	}
 }
 
