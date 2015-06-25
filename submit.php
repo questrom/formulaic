@@ -6,11 +6,8 @@ require('parts.php');
 $page = Parser::parse_jade('forms/test.jade');
 
 
-$data = $page->validate(new OkJust(
-	[
-		'post' => $_POST,
-		'files' => $_FILES
-	]
+$data = $page->getMerger(new OkJust(
+	new ClientData($_POST, $_FILES)
 ));
 
 
@@ -19,7 +16,7 @@ $data
 		echo json_encode([
 			'success' => false,
 			'errors' =>  $val
-		]);	
+		]);
 		return new Err($val);
 	})
 	->bind(function($val) use ($page) {

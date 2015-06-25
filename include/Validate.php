@@ -58,13 +58,13 @@ abstract class Validate {
 	}
 	function filterDate() {
 		return $this->innerBind(function($x) {
-				
+
 				if(trim($x) == '') {
 					return new EmptyResult(null);
 				}
 
 				$date = DateTimeImmutable::createFromFormat('m/d/Y', $x);
-				
+
 
 				if($date !== false) {
 					$date = $date->setTime(0, 0, 0);
@@ -86,9 +86,9 @@ abstract class Validate {
 			if(trim($x) == '') {
 				return new EmptyResult(null);
 			}
-				
+
 			$date = DateTimeImmutable::createFromFormat('g:i a', $x);
-			
+
 			if($date !== false) {
 				$seconds = ($date->format('G') * 3600) + ($date->format('i') * 60);
 				return new OkJust($seconds);
@@ -103,9 +103,9 @@ abstract class Validate {
 			if(trim($x) == '') {
 				return new EmptyResult(null);
 			}
-				
+
 			$date = DateTimeImmutable::createFromFormat('m/d/Y g:i a', $x);
-			
+
 			if($date !== false) {
 				return new OkJust($date);
 			} else {
@@ -142,7 +142,7 @@ abstract class Validate {
 	function filterEmptyString() {
 		return $this->innerBind(function($x) {
 			if(trim($x) === '') {
-				return new EmptyResult($x); 
+				return new EmptyResult($x);
 			} else {
 				return new OkJust($x);
 			}
@@ -182,7 +182,7 @@ abstract class Validate {
 				// This seems overly simple, but apparently it works
 				$domain = explode('@', $x);
 				$domain = array_pop($domain);
-				
+
 				if($domain !== $checkDomain) {
 					return new Err('Domain must equal: ' . $checkDomain . '.');
 				}
@@ -224,12 +224,12 @@ abstract class Validate {
 		return $this->innerBind(function($x) use ($hash) {
 			if($hash !== null) {
 				if(password_verify($x, $hash)) {
-					return new NoResult();
+					return new OkJust(null);
 				} else {
 					return new Err('Password incorrect!');
 				}
 			}
-			
+
 			return new OkJust($x);
 		});
 	}
@@ -295,7 +295,7 @@ abstract class Validate {
 		if($step === 'any') {
 			return $this;
 		} else {
-			
+
 				// var_dump($step);
 			return $this->innerBind(function($x) use ($step) {
 
@@ -310,11 +310,11 @@ abstract class Validate {
 		if($step === 'any') {
 			return $this;
 		} else {
-			
+
 			return $this->innerBind(function($x) use ($step) {
 
 				if(($x % ( 60 * $step)) === 0) {
-					return new OkJust($x);					
+					return new OkJust($x);
 				} else {
 					return new Err('Time must be a multiple of ' . $step . ' minutes.');
 				}
@@ -331,7 +331,7 @@ abstract class Validate {
 				$seconds = ($date->format('G') * 3600) + ($date->format('i') * 60);
 
 				if(($seconds % ( 60 * $step)) === 0) {
-					return new OkJust($date);					
+					return new OkJust($date);
 				} else {
 					return new Err('Time must be a multiple of ' . $step . ' minutes.');
 				}
@@ -350,9 +350,6 @@ class Err extends Validate {
 	function bind(callable $x) {
 		return $this;
 	}
-	function bindNoResult(callable $x) {
-		return $this;
-	}
 	function bind_err(callable $x) {
 		return $x($this->value);
 	}
@@ -364,34 +361,6 @@ class Err extends Validate {
 		return $this;
 	}
 }
-
-
-class NoResult extends Validate {
-
-	function __construct() { }
-	
-	// incorrect
-	function bind(callable $x) {
-		return $this;
-	}
-
-	function bindNoResult(callable $x) {
-		return $x();
-	}
-	
-	function bind_err(callable $x) {
-		return $this;
-	}
-
-	function innerBind(callable $x) {
-		return $this;
-	}
-
-	function bindNothing(callable $x) {
-		return $this;
-	}
-}
-
 
 class EmptyResult extends Validate {
 	private $value;
@@ -406,9 +375,6 @@ class EmptyResult extends Validate {
 	}
 
 	function innerBind(callable $x) {
-		return $this;
-	}
-	function bindNoResult(callable $x) {
 		return $this;
 	}
 	function bindNothing(callable $x) {
@@ -429,9 +395,6 @@ class OkJust  extends Validate {
 	}
 	function innerBind(callable $x) {
 		return $x($this->value);
-	}
-	function bindNoResult(callable $x) {
-		return $this;
 	}
 	function bindNothing(callable $x) {
 		return $this;

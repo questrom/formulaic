@@ -1,22 +1,66 @@
 <?php
 
+class ClientData {
+	function __construct($post, $files) {
+		$this->post = $post;
+		$this->files = $files;
+	}
+}
 
 abstract class Component {
 	function __construct($args) {
 		$this->showIf = isset($args['show-if']) ? $args['show-if'] : null;
 	}
 	abstract function get($h);
+	abstract function getMerger($val);
 }
 
-abstract class InputComponent extends Component {
+abstract class EmptyComponent extends Component {
+	function getMerger($val) {
+		return new OkJust([]);
+	}
+}
+
+abstract class NamedLabeledComponent extends Component {
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
 		parent::__construct($args);
 	}
-	abstract function validate($against);
 }
 
+abstract class InputComponent extends NamedLabeledComponent {
+
+	abstract protected function validate($against);
+	function getMerger($val) {
+		$val = $val->innerBind(function($v) {
+			return new OkJust(isset($v->post[$this->name]) ? $v->post[$this->name] : null);
+		});
+		return $this->validate($val)
+			->bind(function($r) {
+				return new OkJust([$this->name => $r]);
+			})
+			->bind_err(function($r) {
+				return new Err([$this->name => $r]);
+			});
+	}
+}
+
+abstract class FileInputComponent extends NamedLabeledComponent {
+	abstract protected function validate($against);
+	function getMerger($val) {
+		$val = $val->innerBind(function($v) {
+			return new OkJust(isset($v->files[$this->name]) ? $v->files[$this->name] : null);
+		});
+		return $this->validate($val)
+			->bind(function($r) {
+				return new OkJust([$this->name => $r]);
+			})
+			->bind_err(function($r) {
+				return new Err([$this->name => $r]);
+			});
+	}
+}
 
 class FileInfo {
 	function __construct($value) {
@@ -28,72 +72,37 @@ class FileInfo {
 // Abstract components
 
 abstract class GroupComponent extends Component {
-	function validate($against) {
+	function getMerger($val) {
+		return $this->validate($val);
+	}
+	protected function validate($against) {
 		return $against->innerBind(function($val)  {
 			return array_reduce($this->items, function($total, $x) use($val) {
-				
-				$post_value = $val['post'];
-				$file_value = $val['files'];
 
-				if($x instanceof GroupComponent) {
-					if($x->showIf !== null &&
-						!(isset($post_value[$x->showIf]) ? $post_value[$x->showIf] === "on" : false)
-					) {
-						$result = new NoResult();
-					} else {
-						$result = $x->validate( new OkJust($val) );
-					}
-					
-					$mergeM = $result
-						->bind(function($r) {
-							return new OkJust(function($total) use ($r) {
-								return array_merge($r, $total);
-							});	
-						})
-						->bind_err(function($r) {
-							return new Err(function($total) use ($r) {
-								return array_merge($r, $total);
-							});	
-						})
-						->bindNoResult(function() {
-							return new OkJust(function($z) {
-								return $z;
-							});
-						});
+				$post_value = $val->post;
+				$file_value = $val->files;
 
-				} else if($x instanceof InputComponent) {
-					if($x->showIf !== null &&
-						!(isset($post_value[$x->showIf]) ? $post_value[$x->showIf] === "on" : false)
-					) {
-						$result = new NoResult();
-					} else if($x instanceof FileUpload) {
-						$result = $x->validate( new OkJust( isset($file_value[$x->name]) ? $file_value[$x->name] : null  ) );
-					} else {
-						$result = $x->validate( new OkJust( isset($post_value[$x->name]) ? $post_value[$x->name] : null  ) );
-					}
 
-					$mergeM = $result
-						->bind(function($r) use($x) {
-							return new OkJust(function($total) use ($r, $x) {
-								return array_merge([$x->name => $r], $total);
-							});	
-						})
-						->bind_err(function($r) use($x) {
-							return new Err(function($total) use ($r, $x) {
-								return array_merge([$x->name => $r], $total);
-							});	
-						})
-						->bindNoResult(function() {
-							return new OkJust(function($z) {
-								return $z;
-							});
-						});
-
+				if($x->showIf !== null &&
+					!(isset($post_value[$x->showIf]) ? $post_value[$x->showIf] === "on" : false)
+				) {
+					$result = new OkJust([]);
 				} else {
-					$mergeM = new OkJust(function($z) {
-						return $z;
-					});
+					$result = $x->getMerger( new OkJust( $val  ) );
 				}
+
+
+				$mergeM = $result
+					->bind(function($r) {
+						return new OkJust(function($total) use ($r) {
+							return array_merge($r, $total);
+						});
+					})
+					->bind_err(function($r) use($x) {
+						return new Err(function($total) use ($r) {
+							return array_merge($r, $total);
+						});
+					});
 
 
 				return $mergeM
@@ -112,7 +121,7 @@ abstract class GroupComponent extends Component {
 								return new OkJust($merge($x));
 							});
 					});
-					
+
 			}, new OkJust([]));
 		});
 	}
@@ -133,7 +142,7 @@ abstract class SpecialInput extends InputComponent {
 		$this->mustMatch = isset($args['must-match']) ? $args['must-match'] : null;
 		$this->matchHash = isset($args['match-hash']) ? $args['match-hash'] : null;
 	}
-	protected function render($h, $type, $icon) {
+	protected function makeInput($h, $type, $icon) {
 		return $h
 		->div->class('ui field ' . ($this->required ? 'required' : ''))->data('show-if',$this->showIf)
 			->ins(label($h, $this->label))
@@ -151,7 +160,7 @@ abstract class SpecialInput extends InputComponent {
 
 // Specific components
 
-class Checkbox extends InputComponent {	
+class Checkbox extends InputComponent {
 	function __construct($args) {
 		parent::__construct($args);
 		$this->mustCheck = isset($args['must-check']);
@@ -165,14 +174,14 @@ class Checkbox extends InputComponent {
 			->end
 		->end;
 	}
-	function validate($against) {
+	protected function validate($against) {
 		return $against
 			->filterBoolean()
 			->mustBeTrue($this->mustCheck);
 	}
 }
 
-class TimeInput extends InputComponent {	
+class TimeInput extends InputComponent {
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -193,7 +202,7 @@ class TimeInput extends InputComponent {
 			->end
 		->end;
 	}
-	function validate($against) {
+	protected function validate($against) {
 		return $against
 			->filterTime()
 			->requiredMaybe($this->required)
@@ -202,7 +211,7 @@ class TimeInput extends InputComponent {
 	}
 }
 
-class DateTimePicker extends InputComponent {	
+class DateTimePicker extends InputComponent {
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -223,7 +232,7 @@ class DateTimePicker extends InputComponent {
 			->end
 		->end;
 	}
-	function validate($against) {
+	protected function validate($against) {
 		return $against
 			->filterDateTime()
 			->requiredMaybe($this->required)
@@ -233,7 +242,7 @@ class DateTimePicker extends InputComponent {
 }
 
 
-class Textarea extends InputComponent {	
+class Textarea extends InputComponent {
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -249,7 +258,7 @@ class Textarea extends InputComponent {
 			->textarea->name($this->name)->end
 		->end;
 	}
-	function validate($against) {
+	protected function validate($against) {
 		return $against
 			->filterString()
 			->minMaxLength($this->minLength, $this->maxLength)
@@ -303,7 +312,7 @@ class Dropdown extends InputComponent {
 			->end
 		->end;
 	}
-	function validate($against) {
+	protected function validate($against) {
 		return $against
 			->filterChosenFromOptions($this->options)
 			->requiredMaybe($this->required);
@@ -337,7 +346,7 @@ class Radios extends InputComponent {
 			)
 		->end;
 	}
-	function validate($against) {
+	protected function validate($against) {
 		return $against
 			->filterChosenFromOptions($this->options)
 			->requiredMaybe($this->required);
@@ -373,7 +382,7 @@ class Checkboxes extends InputComponent {
 			)
 		->end;
 	}
-	function validate($against) {
+	protected function validate($against) {
 		return $against
 			->filterManyChosenFromOptions($this->options)
 			->minMaxChoices($this->minChoices, $this->maxChoices)
@@ -404,7 +413,7 @@ class Textbox extends InputComponent {
 			->end
 		->end;
 	}
-	function validate($against) {
+	protected function validate($against) {
 		return $against
 			->filterString()
 			->minMaxLength($this->minLength, $this->maxLength)
@@ -415,7 +424,7 @@ class Textbox extends InputComponent {
 }
 
 
-class FileUpload extends InputComponent {
+class FileUpload extends FileInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
 		$this->required  = isset($args['required']);
@@ -432,7 +441,7 @@ class FileUpload extends InputComponent {
 			->end
 		->end;
 	}
-	function validate($against) {
+	protected function validate($against) {
 		return $against
 			->innerBind(function($val) {
 				if(!is_array($val) || !isset($val['error'])) {
@@ -498,7 +507,7 @@ class Range extends InputComponent {
 			->end
 		->end;
 	}
-	function validate($against) {
+	protected function validate($against) {
 		return $against
 			->filterString()
 			->maybeString() // So we end up with a Maybe<> if not required
@@ -511,9 +520,9 @@ class Range extends InputComponent {
 
 class Password extends SpecialInput {
 	function get($h) {
-		return $this->render($h, 'password', '');
+		return $this->makeInput($h, 'password', '');
 	}
-	function validate($against) {
+	protected function validate($against) {
 		return $against
 			->filterString()
 			->matchHash( isset($this->matchHash) ? $this->matchHash : null )
@@ -531,14 +540,19 @@ class PhoneNumber extends SpecialInput {
 		$this->required = isset($args['required']);
 	}
 	function get($h) {
-		return $this->render($h, 'tel', 'call');
+		return $this->makeInput($h, 'tel', 'call');
 	}
-	function validate($against) {
+	protected function validate($against) {
 		return $against
 			->filterString()
 			->filterEmptyString()
 			->requiredMaybe($this->required)
 			->filterPhone();
+	}
+	function getMerger($val) {
+		// echo 'GMVAL\n';
+		// var_dump($this->name);
+		return parent::getMerger($val);
 	}
 }
 
@@ -550,9 +564,9 @@ class EmailAddr extends SpecialInput {
 		$this->mustHaveDomain = isset($args['must-have-domain']) ? $args['must-have-domain'] : null;
 	}
 	function get($h) {
-		return $this->render($h, 'email', 'mail');
+		return $this->makeInput($h, 'email', 'mail');
 	}
-	function validate($against) {
+	protected function validate($against) {
 		return $against
 			->filterString()
 			->filterEmptyString()
@@ -568,9 +582,9 @@ class UrlInput extends SpecialInput {
 		$this->required = isset($args['required']);
 	}
 	function get($h) {
-		return $this->render($h, 'url', 'world');
+		return $this->makeInput($h, 'url', 'world');
 	}
-	function validate($against) {
+	protected function validate($against) {
 		return $against
 			->filterString()
 			->filterEmptyString()
@@ -588,9 +602,9 @@ class NumberInp extends SpecialInput {
 		$this->integer = isset($args['integer']);
 	}
 	function get($h) {
-		return $this->render($h, 'number', '');
+		return $this->makeInput($h, 'number', '');
 	}
-	function validate($against) {
+	protected function validate($against) {
 		return $against
 			->filterString()
 			->maybeString() // So we end up with a Maybe<> if not required
@@ -620,7 +634,7 @@ class DatePicker extends InputComponent {
 			->end
 		->end;
 	}
-	function validate($against) {
+	protected function validate($against) {
 		return $against
 			->filterDate()
 			->requiredMaybe($this->required)
@@ -628,7 +642,7 @@ class DatePicker extends InputComponent {
 	}
 }
 
-class GroupHeader extends Component {
+class GroupHeader extends EmptyComponent {
 	function __construct($args) {
 		$this->text = $args['text'];
 		parent::__construct($args);
@@ -641,7 +655,7 @@ class GroupHeader extends Component {
 	}
 }
 
-class Header extends Component {
+class Header extends EmptyComponent {
 	function __construct($args) {
 		if(is_string($args)) {
 			$args = ['text' => $args];
@@ -672,7 +686,7 @@ class Header extends Component {
 	}
 }
 
-class BaseNotice extends Component {
+class BaseNotice extends EmptyComponent {
 	function __construct($args) {
 		$this->__args = $args; // Used by Group later on
 
@@ -731,11 +745,15 @@ class Notice extends BaseNotice {
 
 
 
-class ListComponent extends InputComponent {
+class ListComponent extends NamedLabeledComponent {
 	function __construct($args) {
+
+		// Only handles case in which there is just one child
+		// Probably shouldn't tamper with $this->item->name
+		// Using {{index}} at all is kind of a hack...
+
 		$this->item = $args['item'];
-		
-		// $args['label'] = '';
+
 		parent::__construct($args);
 
 		$this->oldName = $this->item->name;
@@ -743,17 +761,17 @@ class ListComponent extends InputComponent {
 
 	}
 	function get($h) {
+
+		// May produce "sparse" arrays
+
 		return $h
 		->div->class('ui field not-validation-root list-component')->data('count','0')
 			->h5->class('top attached ui header')->t($this->label)->end
 			->div->data('validation-name', $this->name)->class('validation-root ui bottom attached segment list-items')
 				->script->type('text/template')
 					->div->class('ui vertical segment close-item')
-							
-							
 							->div->class('content')
 								->add($this->item->get($h))
-
 							->end
 							->button->type('button')->class('ui compact negative icon button delete-btn')->i->class('trash icon')->end->end
 					->end
@@ -764,19 +782,50 @@ class ListComponent extends InputComponent {
 			->end
 		->end;
 	}
-	function validate($x) {
-		return $x->innerBind(function($val) {
-			if(!is_array($val)) {
-				return new Err('Invalid data');
-			}
+	function getMerger($val) {
 
-			return $this->item->validate( new OkJust($val[0][$this->oldName]) );
+		// Only handles list of single items but works...
+
+		$val = $val->innerBind(function($v) {
+			return new OkJust(isset($v->post[$this->name]) ? $v->post[$this->name] : null);
+		});
+		return $val
+		->innerBind(function($data) {
+			if($data === null) {
+				return new OkJust([]);
+			} else if(is_array($data)) {
+				return new OkJust($data);
+			} else {
+				return new Err([
+					$this->name => 'Invalid data'
+				]);;
+			}
+		})
+		->innerBind(function($data) {
+			$name = $this->name . '[{{index}}][' . $this->oldName . ']';
+
+			return $this->item->getMerger(new OkJust(
+					new ClientData([
+						$name => $data[0][$this->oldName]
+					], null)
+				))->bind(function($x) {
+					$x = current($x);
+					return new OkJust(
+						[$this->name=>[0=>[$this->oldName=>$x]]]
+					);
+				})
+				->bind_err(function($x) {
+
+					$x = current($x);
+					$name = $this->name . '[0][' . $this->oldName . ']';
+					return new Err([$name=>$x]);
+				});
 		});
 	}
 }
 
 class Group extends GroupComponent {
-	
+
 	function __construct($args) {
 		$this->items = $args['fields'];
 		parent::__construct($args);
@@ -848,7 +897,7 @@ class FormElem extends GroupComponent {
 
 }
 
-class Page extends InputComponent {
+class Page extends GroupComponent {
 	function __construct($args) {
 		$this->form = $args['fields'];
 		$this->title = isset($args['title']) ? $args['title'] : 'Form';
@@ -900,14 +949,13 @@ class Page extends InputComponent {
 			->end
 		->end;
 	}
-	function validate($against) {
-		$res = $this->form->validate($against);
-		$res = $res->innerBind(function($r) {
-			$r['_timestamp'] = new DateTimeImmutable();
-			$r['_ip'] = $_SERVER['REMOTE_ADDR'];	
-			return new OkJust($r);
-		});
-		return $res;
+	protected function validate($against) {
+		return $this->form->getMerger($against)
+			->innerBind(function($r) {
+				$r['_timestamp'] = new DateTimeImmutable();
+				$r['_ip'] = $_SERVER['REMOTE_ADDR'];
+				return new OkJust($r);
+			});
 	}
 }
 
