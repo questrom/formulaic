@@ -956,7 +956,7 @@ class Page extends GroupComponent {
 						->button->type('button')->class('ui primary button')->t('OK')->end
 					->end
 				->end
-				->script->src('http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.js')->end
+				->script->src('vendor/components/jquery/jquery.min.js')->end
 				->script->src('vendor/robinherbots/jquery.inputmask/dist/jquery.inputmask.bundle.js')->end
 				->script->src('vendor/semantic/ui/dist/semantic.js')->end
 				->script->src('client.js')->end
