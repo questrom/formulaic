@@ -747,25 +747,16 @@ class Notice extends BaseNotice {
 
 class ListComponent extends NamedLabeledComponent {
 	function __construct($args) {
-
 		// Only handles case in which there is just one child
-		// Probably shouldn't tamper with $this->item->name
-		// Using {{index}} at all is kind of a hack...
-
 		$this->item = $args['item'];
-
 		parent::__construct($args);
-
-		$this->oldName = $this->item->name;
-		$this->item->name = $this->name . '[{{index}}][' . $this->item->name . ']';
-
 	}
 	function get($h) {
 
 		// May produce "sparse" arrays
 
 		return $h
-		->div->class('ui field not-validation-root list-component')->data('count','0')
+		->div->class('ui field not-validation-root list-component')->data('count','0')->data('group-name', $this->name)
 			->h5->class('top attached ui header')->t($this->label)->end
 			->div->data('validation-name', $this->name)->class('validation-root ui bottom attached segment list-items')
 				->script->type('text/template')
@@ -801,25 +792,65 @@ class ListComponent extends NamedLabeledComponent {
 				]);;
 			}
 		})
-		->innerBind(function($data) {
-			$name = $this->name . '[{{index}}][' . $this->oldName . ']';
+		->innerBind(function($list) {
 
-			return $this->item->getMerger(new OkJust(
-					new ClientData([
-						$name => $data[0][$this->oldName]
-					], null)
-				))->bind(function($x) {
-					$x = current($x);
-					return new OkJust(
-						[$this->name=>[0=>[$this->oldName=>$x]]]
-					);
-				})
-				->bind_err(function($x) {
+			$result = new OkJust([]);
+			foreach ($list as $index => $value) {
+				$validationResult = $this->item->getMerger(
+					new OkJust(
+						new ClientData($value, null)
+					)
+				);
+				// echo "\n\n\n";
+				// var_dump($validationResult);
+				// echo "\n\n\n";
 
-					$x = current($x);
-					$name = $this->name . '[0][' . $this->oldName . ']';
-					return new Err([$name=>$x]);
+				$result = $result
+					->innerBind(function($soFar) use($validationResult, $index) {
+						return $validationResult
+							->innerBind(function($fieldResult) use($soFar, $index, $validationResult) {
+								// var_dump($fieldResult);
+								$soFar[$index] = $fieldResult;
+								return new OkJust($soFar);
+							})
+							->bind_err(function($fieldError) {
+								return new Err([]);
+							});
+					})
+					->bind_err(function($errorSoFar) use($validationResult, $index) {
+						return $validationResult
+							->bind_err(function($fieldError) use($errorSoFar, $index, $validationResult) {
+								// var_dump($validationResult);
+								// var_dump($this->name . '[' . $index . '][' . $this->item->name . ']');
+								$errorSoFar[ $this->name . '[' . $index . '][' . $this->item->name . ']'  ] = current($fieldError);
+								return new Err($errorSoFar);
+							})
+							->innerBind(function($fieldResult) use($errorSoFar) {
+								return new Err($errorSoFar);
+							});
+
+					});
+			}
+			$result = $result
+				->innerBind(function($x) {
+					return new OkJust([$this->name => array_values($x)]);
 				});
+			// var_dump($result);
+			return $result;
+			// return $this->item->getMerger(new OkJust(
+			// 		new ClientData($data[0], null)
+			// 	))->bind(function($x) {
+			// 		$x = current($x);
+			// 		return new OkJust(
+			// 			[$this->name=>[0=>[$this->item->name=>$x]]]
+			// 		);
+			// 	})
+			// 	->bind_err(function($x) {
+
+			// 		$x = current($x);
+			// 		$name = $this->name . '[0][' . $this->item->name . ']';
+			// 		return new Err([$name=>$x]);
+			// 	});
 		});
 	}
 }

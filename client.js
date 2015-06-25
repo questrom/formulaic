@@ -64,9 +64,12 @@ $(function() {
 		var num = listCo.data('count');
 		listCo.data('count', num + 1);
 
-		template = template.replace(/\{\{index\}\}/g, num);
-
 		var item = $(template);
+
+		item.find('input[name]').attr('name', function() {
+			return listCo.data('group-name') + '[' + num + '][' + $(this).attr('name') + ']';
+		});
+
 		item.insertBefore($this.closest('.segment'));
 		item.find('.delete-btn').click(function() {
 			$(this).closest('.segment').remove();
