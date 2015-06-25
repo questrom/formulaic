@@ -244,15 +244,7 @@ class DateTimePicker extends InputComponent {
 }
 
 
-class Textarea extends InputComponent {
-	function __construct($args) {
-		parent::__construct($args);
-
-		$this->maxLength = isset($args['max-length']) ? intval($args['max-length']) : INF;
-		$this->minLength = isset($args['min-length']) ? intval($args['min-length']) : 0;
-		$this->required = isset($args['required']);
-		$this->mustMatch = isset($args['must-match']) ? $args['must-match'] : null;
-	}
+class Textarea extends SpecialInput {
 	function get($h) {
 		return $h
 		->ins(fieldBox($h, $this->required, $this->showIf))
@@ -393,27 +385,9 @@ class Checkboxes extends InputComponent {
 	}
 }
 
-class Textbox extends InputComponent {
-	function __construct($args) {
-
-
-		parent::__construct($args);
-		$this->required  = isset($args['required']);
-
-
-		$this->maxLength = isset($args['max-length']) ? intval($args['max-length']) : INF;
-		$this->minLength = isset($args['min-length']) ? intval($args['min-length']) : 0;
-		$this->mustMatch = isset($args['must-match']) ? $args['must-match'] : null;
-
-	}
+class Textbox extends SpecialInput {
 	function get($h) {
-		return $h
-		->div->class('ui field ' . ($this->required ? 'required' : ''))->data('show-if',$this->showIf)
-			->ins(label($h, $this->label))
-			->div->class('ui input')
-				->input->type('text')->name($this->name)->end
-			->end
-		->end;
+        return $this->makeInput($h, 'text', null);
 	}
 	protected function validate($against) {
 		return $against
@@ -695,7 +669,7 @@ class Header extends EmptyComponent {
 	}
 }
 
-class BaseNotice extends EmptyComponent {
+abstract class BaseNotice extends EmptyComponent {
 	function __construct($args) {
 		$this->__args = $args; // Used by Group later on
 
@@ -922,7 +896,7 @@ class FormElem extends GroupComponent {
 
 }
 
-class Page extends GroupComponent {
+class Page extends Component {
 	function __construct($args) {
 		$this->form = $args['fields'];
 		$this->title = isset($args['title']) ? $args['title'] : 'Form';
@@ -974,7 +948,7 @@ class Page extends GroupComponent {
 			->end
 		->end;
 	}
-	protected function validate($against) {
+	function getMerger($against) {
 		return $this->form->getMerger($against)
 			->innerBind(function($r) {
 				$r['_timestamp'] = new DateTimeImmutable();

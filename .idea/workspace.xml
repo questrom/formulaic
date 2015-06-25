@@ -2,16 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="bcf5e309-763e-4097-bf92-0af3301b7b9c" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/deployment.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/formbuilder.iml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/scopes/scope_settings.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/HTMLGenerator.php" afterPath="$PROJECT_DIR$/include/HTMLGenerator.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/parts.php" afterPath="$PROJECT_DIR$/parts.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/Component.php" afterPath="$PROJECT_DIR$/include/Component.php" />
     </list>
     <ignored path="formbuilder.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -30,17 +21,279 @@
   <component name="DaemonCodeAnalyzer">
     <disable_hints />
   </component>
+  <component name="DockManager">
+    <window id="2">
+      <content type="file-editors">
+        <state>
+          <leaf>
+            <file leaf-file-name="PHP/\Notice" pinned="false" current-in-tab="true">
+              <entry file="uml://PHP/\Notice">
+                <provider selected="true" editor-type-id="UmlEditorProvider">
+                  <state>
+                    <ID>PHP</ID>
+                    <OriginalElement>\Notice</OriginalElement>
+                    <nodes>
+                      <node x="1506.0193247325387" y="192.8208632613974">\HTMLGeneratorAbstract</node>
+                      <node x="210.37068197637478" y="138.2160216495608">\BaseNotice</node>
+                      <node x="804.0843722333382" y="1374.1837077455461">\InputComponent</node>
+                      <node x="1318.773804636507" y="0.0">\HTMLDummyGenerator</node>
+                      <node x="317.2083094082619" y="1621.9766714100574">\SpecialInput</node>
+                      <node x="755.4133824577345" y="512.0608840281038">\GroupComponent</node>
+                      <node x="398.7585896520868" y="1911.2390524318187">\OkJust</node>
+                      <node x="242.75858965208684" y="2068.9741993385555">\MongoOutput</node>
+                      <node x="1660.2900169304735" y="620.5799804882388">\HTMLTagGenerator</node>
+                      <node x="402.90277448072237" y="2133.6875826028618">\Err</node>
+                      <node x="467.75744214594204" y="2033.5986332257812">\Validate</node>
+                      <node x="290.75968298800046" y="0.0">\Notice</node>
+                      <node x="972.6603295369497" y="468.93297640497786">\ListComponent</node>
+                      <node x="269.864893502712" y="320.457084997897">\EmptyComponent</node>
+                      <node x="285.76039784330334" y="670.6597782445949">\Page</node>
+                      <node x="897.4015204626853" y="1911.2390524318187">\NodeData</node>
+                      <node x="1327.7045031792286" y="364.24639749358687">\HTMLParentContext</node>
+                      <node x="1703.7215250748054" y="10.180394633793412">\HTMLParentlessContext</node>
+                      <node x="745.6157488977011" y="1029.2405161162542">\Dropdown</node>
+                      <node x="116.40145604457075" y="1733.9552889446932">\NumberInp</node>
+                      <node x="0.0" y="1911.239052431819">\SuperOutput</node>
+                      <node x="1109.804573665788" y="1169.635104608412">\TimeInput</node>
+                      <node x="159.30724774479972" y="1005.1389965103059">\FileInputComponent</node>
+                      <node x="279.2105477574851" y="1836.2390524318187">\Textarea</node>
+                      <node x="1147.4015204626853" y="1911.2390524318187">\Parser</node>
+                      <node x="546.8029279597563" y="1650.4510119066551">\Password</node>
+                      <node x="649.8899988205479" y="364.90628493463305">\FormElem</node>
+                      <node x="1029.4015204626853" y="1911.2390524318187">\FileInfo</node>
+                      <node x="385.00568273693995" y="893.8204906257681">\NamedLabeledComponent</node>
+                      <node x="1118.3456509114526" y="1564.6011370343879">\Checkbox</node>
+                      <node x="3.431718798085072" y="2177.3548921485503">\S3Output</node>
+                      <node x="93.95696297264902" y="2053.461859667985">\Output</node>
+                      <node x="1925.8961508692832" y="411.07695244690854">\HTMLContentGenerator</node>
+                      <node x="751.8166289160872" y="1702.9195961053185">\Radios</node>
+                      <node x="159.32609009617664" y="486.28402030840346">\GroupHeader</node>
+                      <node x="749.8030663213976" y="687.6684926904986">\Group</node>
+                      <node x="533.236105503622" y="1221.1183159069426">\Range</node>
+                      <node x="938.9905749950416" y="1722.9538419851674">\DateTimePicker</node>
+                      <node x="462.66023091609463" y="607.1579701833082">\Component</node>
+                      <node x="0.0" y="1090.5925531229936">\FileUpload</node>
+                      <node x="450.4188687137874" y="1809.8326505238836">\EmailAddr</node>
+                      <node x="949.2096448757571" y="1044.5287049595418">\DatePicker</node>
+                      <node x="121.43017776794932" y="1549.907608827063">\UrlInput</node>
+                      <node x="763.4015204626853" y="1911.2390524318187">\ClientData</node>
+                      <node x="444.4427703997577" y="1437.4322700963098">\Textbox</node>
+                      <node x="483.6114639459822" y="315.26187082172225">\Header</node>
+                      <node x="1176.773804636507" y="1367.4617830996085">\Checkboxes</node>
+                      <node x="618.4015204626853" y="2055.2585083061476">\EmptyResult</node>
+                      <node x="230.6604308550901" y="1391.8487115803428">\PhoneNumber</node>
+                      <node x="1684.1787672984256" y="384.4882396222742">\HTMLRealGenerator</node>
+                      <node x="46.802603108235246" y="59.509465949293144">\GroupNotice</node>
+                    </nodes>
+                    <notes />
+                    <edges>
+                      <edge source="\Group" target="\GroupComponent">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\Range" target="\InputComponent">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\BaseNotice" target="\EmptyComponent">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\HTMLParentContext" target="\HTMLGeneratorAbstract">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\Page" target="\Component">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\SpecialInput" target="\InputComponent">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\NumberInp" target="\SpecialInput">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\Radios" target="\InputComponent">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\EmptyComponent" target="\Component">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\FormElem" target="\GroupComponent">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\ListComponent" target="\GroupComponent">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\HTMLTagGenerator" target="\HTMLRealGenerator">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\Checkboxes" target="\InputComponent">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\OkJust" target="\Validate">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\GroupNotice" target="\BaseNotice">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\EmptyResult" target="\Validate">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\S3Output" target="\Output">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\GroupHeader" target="\EmptyComponent">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\Textarea" target="\SpecialInput">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\HTMLRealGenerator" target="\HTMLGeneratorAbstract">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\Notice" target="\BaseNotice">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\HTMLParentlessContext" target="\HTMLGeneratorAbstract">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\MongoOutput" target="\Output">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\FileUpload" target="\FileInputComponent">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\HTMLDummyGenerator" target="\HTMLGeneratorAbstract">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\FileInputComponent" target="\NamedLabeledComponent">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\TimeInput" target="\InputComponent">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\InputComponent" target="\NamedLabeledComponent">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\NamedLabeledComponent" target="\Component">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\Header" target="\EmptyComponent">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\Textbox" target="\SpecialInput">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\DateTimePicker" target="\InputComponent">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\Password" target="\SpecialInput">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\HTMLContentGenerator" target="\HTMLRealGenerator">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\UrlInput" target="\SpecialInput">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\EmailAddr" target="\SpecialInput">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\DatePicker" target="\InputComponent">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\Checkbox" target="\InputComponent">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\SuperOutput" target="\Output">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\Err" target="\Validate">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\Dropdown" target="\InputComponent">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\PhoneNumber" target="\SpecialInput">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                      <edge source="\GroupComponent" target="\Component">
+                        <point x="0.0" y="0.0" />
+                        <point x="0.0" y="0.0" />
+                      </edge>
+                    </edges>
+                    <settings layout="Hierarchic Group" zoom="0.8181571815718157" x="785.3686651209009" y="589.9612454455117" />
+                    <SelectedNodes />
+                    <Categories />
+                    <VISIBILITY>private</VISIBILITY>
+                  </state>
+                </provider>
+              </entry>
+            </file>
+          </leaf>
+        </state>
+      </content>
+    </window>
+  </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FavoritesManager">
     <favorites_list name="formbuilder" />
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="index.php" pinned="false" current-in-tab="false">
+      <file leaf-file-name="index.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/index.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.0" vertical-offset="0" max-vertical-offset="255">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="863">
               <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Component.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/include/Component.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-13.618182" vertical-offset="15537" max-vertical-offset="16422">
+              <caret line="958" column="1" selection-start-line="958" selection-start-column="1" selection-end-line="958" selection-end-column="1" />
               <folding />
             </state>
           </provider>
@@ -49,17 +302,17 @@
       <file leaf-file-name="parts.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/parts.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="319.23077" vertical-offset="14794" max-vertical-offset="15963">
-              <caret line="382" column="1" selection-start-line="382" selection-start-column="1" selection-end-line="382" selection-end-column="1" />
+            <state vertical-scroll-proportion="-5.230769" vertical-offset="0" max-vertical-offset="255">
+              <caret line="8" column="1" selection-start-line="8" selection-start-column="1" selection-end-line="8" selection-end-column="1" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="the.todo" pinned="false" current-in-tab="true">
+      <file leaf-file-name="the.todo" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/the.todo">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1292">
+            <state vertical-scroll-proportion="-0.0" vertical-offset="0" max-vertical-offset="1326">
               <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
@@ -78,6 +331,8 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/parts.php" />
+        <option value="$PROJECT_DIR$/the.todo" />
+        <option value="$PROJECT_DIR$/include/Component.php" />
       </list>
     </option>
   </component>
@@ -98,27 +353,7 @@
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
-      <profile-state>
-        <expanded-state>
-          <State>
-            <id />
-          </State>
-          <State>
-            <id>PHP</id>
-          </State>
-          <State>
-            <id>Portability issues</id>
-          </State>
-          <State>
-            <id>Spelling</id>
-          </State>
-        </expanded-state>
-        <selected-state>
-          <State>
-            <id>Spelling</id>
-          </State>
-        </selected-state>
-      </profile-state>
+      <profile-state />
     </entry>
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
@@ -144,6 +379,7 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -162,14 +398,27 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="formbuilder" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="formbuilder" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="include" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="options.lastSelected" value="Errors" />
+    <property name="options.lastSelected" value="reference.settings.ide.settings.uml" />
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="options.splitter.details.proportions" value="0.2" />
     <property name="FullScreen" value="false" />
@@ -189,10 +438,16 @@
       <BehatRunner />
       <method />
     </configuration>
-    <configuration default="true" type="PhpUnitRemoteRunConfigurationType" factoryName="PHPUnit on Server">
+    <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
+      <node-options />
+      <gulpfile />
+      <tasks />
+      <arguments />
+      <pass-parent-envs>true</pass-parent-envs>
+      <envs />
       <method />
     </configuration>
-    <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
+    <configuration default="true" type="PhpUnitRemoteRunConfigurationType" factoryName="PHPUnit on Server" server_id="20a6563f-e21a-4964-905d-061f77738216" server_name="Apache">
       <method />
     </configuration>
     <list size="0" />
@@ -212,23 +467,23 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1696" height="1026" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20595238" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3293348" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.21130952" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -256,19 +511,9 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/client.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2329">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/index.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="889">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="100">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
@@ -276,9 +521,27 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/parts.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="319.23077" vertical-offset="14794" max-vertical-offset="15963">
+        <state vertical-scroll-proportion="0.0" vertical-offset="14794" max-vertical-offset="15963">
           <caret line="382" column="1" selection-start-line="382" selection-start-column="1" selection-end-line="382" selection-end-column="1" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/the.todo">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="100">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+      <provider editor-type-id="com.intellij.database.editor.CsvTableFileEditorProvider">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2329">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -291,6 +554,287 @@
       </provider>
       <provider editor-type-id="com.intellij.database.editor.CsvTableFileEditorProvider">
         <state />
+      </provider>
+    </entry>
+    <entry file="uml://PHP/\Component">
+      <provider selected="true" editor-type-id="UmlEditorProvider">
+        <state>
+          <ID>PHP</ID>
+          <OriginalElement>\Component</OriginalElement>
+          <nodes>
+            <node x="" y="">\Component</node>
+          </nodes>
+          <notes />
+          <edges />
+          <settings layout="Hierarchic Group" zoom="0.9" x="49.0" y="14.999999999999943" />
+          <SelectedNodes />
+          <Categories />
+          <VISIBILITY>private</VISIBILITY>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/parts.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-5.230769" vertical-offset="0" max-vertical-offset="255">
+          <caret line="8" column="1" selection-start-line="8" selection-start-column="1" selection-end-line="8" selection-end-column="1" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/Component.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-13.618182" vertical-offset="15537" max-vertical-offset="16422">
+          <caret line="958" column="1" selection-start-line="958" selection-start-column="1" selection-end-line="958" selection-end-column="1" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="889">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="uml://PHP/\Notice">
+      <provider selected="true" editor-type-id="UmlEditorProvider">
+        <state>
+          <ID>PHP</ID>
+          <OriginalElement>\Notice</OriginalElement>
+          <nodes>
+            <node x="1506.0193247325387" y="192.8208632613974">\HTMLGeneratorAbstract</node>
+            <node x="210.37068197637478" y="138.2160216495608">\BaseNotice</node>
+            <node x="804.0843722333382" y="1374.1837077455461">\InputComponent</node>
+            <node x="1318.773804636507" y="0.0">\HTMLDummyGenerator</node>
+            <node x="317.2083094082619" y="1621.9766714100574">\SpecialInput</node>
+            <node x="755.4133824577345" y="512.0608840281038">\GroupComponent</node>
+            <node x="398.7585896520868" y="1911.2390524318187">\OkJust</node>
+            <node x="242.75858965208684" y="2068.9741993385555">\MongoOutput</node>
+            <node x="1660.2900169304735" y="620.5799804882388">\HTMLTagGenerator</node>
+            <node x="402.90277448072237" y="2133.6875826028618">\Err</node>
+            <node x="467.75744214594204" y="2033.5986332257812">\Validate</node>
+            <node x="290.75968298800046" y="0.0">\Notice</node>
+            <node x="972.6603295369497" y="468.93297640497786">\ListComponent</node>
+            <node x="269.864893502712" y="320.457084997897">\EmptyComponent</node>
+            <node x="285.76039784330334" y="670.6597782445949">\Page</node>
+            <node x="897.4015204626853" y="1911.2390524318187">\NodeData</node>
+            <node x="1327.7045031792286" y="364.24639749358687">\HTMLParentContext</node>
+            <node x="1703.7215250748054" y="10.180394633793412">\HTMLParentlessContext</node>
+            <node x="745.6157488977011" y="1029.2405161162542">\Dropdown</node>
+            <node x="116.40145604457075" y="1733.9552889446932">\NumberInp</node>
+            <node x="0.0" y="1911.239052431819">\SuperOutput</node>
+            <node x="1109.804573665788" y="1169.635104608412">\TimeInput</node>
+            <node x="159.30724774479972" y="1005.1389965103059">\FileInputComponent</node>
+            <node x="279.2105477574851" y="1836.2390524318187">\Textarea</node>
+            <node x="1147.4015204626853" y="1911.2390524318187">\Parser</node>
+            <node x="546.8029279597563" y="1650.4510119066551">\Password</node>
+            <node x="649.8899988205479" y="364.90628493463305">\FormElem</node>
+            <node x="1029.4015204626853" y="1911.2390524318187">\FileInfo</node>
+            <node x="385.00568273693995" y="893.8204906257681">\NamedLabeledComponent</node>
+            <node x="1118.3456509114526" y="1564.6011370343879">\Checkbox</node>
+            <node x="3.431718798085072" y="2177.3548921485503">\S3Output</node>
+            <node x="93.95696297264902" y="2053.461859667985">\Output</node>
+            <node x="1925.8961508692832" y="411.07695244690854">\HTMLContentGenerator</node>
+            <node x="751.8166289160872" y="1702.9195961053185">\Radios</node>
+            <node x="159.32609009617664" y="486.28402030840346">\GroupHeader</node>
+            <node x="749.8030663213976" y="687.6684926904986">\Group</node>
+            <node x="533.236105503622" y="1221.1183159069426">\Range</node>
+            <node x="938.9905749950416" y="1722.9538419851674">\DateTimePicker</node>
+            <node x="462.66023091609463" y="607.1579701833082">\Component</node>
+            <node x="0.0" y="1090.5925531229936">\FileUpload</node>
+            <node x="450.4188687137874" y="1809.8326505238836">\EmailAddr</node>
+            <node x="949.2096448757571" y="1044.5287049595418">\DatePicker</node>
+            <node x="121.43017776794932" y="1549.907608827063">\UrlInput</node>
+            <node x="763.4015204626853" y="1911.2390524318187">\ClientData</node>
+            <node x="444.4427703997577" y="1437.4322700963098">\Textbox</node>
+            <node x="483.6114639459822" y="315.26187082172225">\Header</node>
+            <node x="1176.773804636507" y="1367.4617830996085">\Checkboxes</node>
+            <node x="618.4015204626853" y="2055.2585083061476">\EmptyResult</node>
+            <node x="230.6604308550901" y="1391.8487115803428">\PhoneNumber</node>
+            <node x="1684.1787672984256" y="384.4882396222742">\HTMLRealGenerator</node>
+            <node x="46.802603108235246" y="59.509465949293144">\GroupNotice</node>
+          </nodes>
+          <notes />
+          <edges>
+            <edge source="\Group" target="\GroupComponent">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\Range" target="\InputComponent">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\BaseNotice" target="\EmptyComponent">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\HTMLParentContext" target="\HTMLGeneratorAbstract">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\Page" target="\Component">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\SpecialInput" target="\InputComponent">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\NumberInp" target="\SpecialInput">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\Radios" target="\InputComponent">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\EmptyComponent" target="\Component">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\FormElem" target="\GroupComponent">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\ListComponent" target="\GroupComponent">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\HTMLTagGenerator" target="\HTMLRealGenerator">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\Checkboxes" target="\InputComponent">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\OkJust" target="\Validate">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\GroupNotice" target="\BaseNotice">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\EmptyResult" target="\Validate">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\S3Output" target="\Output">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\GroupHeader" target="\EmptyComponent">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\Textarea" target="\SpecialInput">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\HTMLRealGenerator" target="\HTMLGeneratorAbstract">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\Notice" target="\BaseNotice">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\HTMLParentlessContext" target="\HTMLGeneratorAbstract">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\MongoOutput" target="\Output">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\FileUpload" target="\FileInputComponent">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\HTMLDummyGenerator" target="\HTMLGeneratorAbstract">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\FileInputComponent" target="\NamedLabeledComponent">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\TimeInput" target="\InputComponent">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\InputComponent" target="\NamedLabeledComponent">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\NamedLabeledComponent" target="\Component">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\Header" target="\EmptyComponent">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\Textbox" target="\SpecialInput">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\DateTimePicker" target="\InputComponent">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\Password" target="\SpecialInput">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\HTMLContentGenerator" target="\HTMLRealGenerator">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\UrlInput" target="\SpecialInput">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\EmailAddr" target="\SpecialInput">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\DatePicker" target="\InputComponent">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\Checkbox" target="\InputComponent">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\SuperOutput" target="\Output">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\Err" target="\Validate">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\Dropdown" target="\InputComponent">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\PhoneNumber" target="\SpecialInput">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+            <edge source="\GroupComponent" target="\Component">
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
+            </edge>
+          </edges>
+          <settings layout="Hierarchic Group" zoom="0.8181571815718157" x="785.3686651209009" y="589.9612454455117" />
+          <SelectedNodes />
+          <Categories />
+          <VISIBILITY>private</VISIBILITY>
+        </state>
       </provider>
     </entry>
   </component>
