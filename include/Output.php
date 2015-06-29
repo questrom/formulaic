@@ -13,7 +13,7 @@ class MongoOutput implements Output {
 	function run($data) {
 // echo 'RUN MONGO';
 		$oldData = $data;
-		
+
 		$data = array_map(function($x) {
 			if($x instanceof DateTimeImmutable) {
 				return new MongoDate($x->getTimestamp());
@@ -21,7 +21,7 @@ class MongoOutput implements Output {
 				return $x;
 			}
 		}, $data);
-		
+
 		$collection = (new MongoClient($this->server))
 			->selectDB($this->database)
 			->selectCollection($this->collection);
@@ -41,11 +41,29 @@ class S3Output implements Output {
 		// echo 'RUN S3';
 		$data = array_map(function($x) {
 			if($x instanceof FileInfo) {
-				$x = $x->value;
-				$name = 'test.abc';
-				$ret = $this->s3->putObject(S3::inputFile($x['tmp_name'], false), $this->bucket, $name, S3::ACL_PUBLIC_READ);
-				return $name;
-				// var_dump($ret);
+
+
+				$ret = $this->s3->putObject(
+					S3::inputFile($x->file['tmp_name'], false),
+					$this->bucket,
+					$x->filename,
+					$x->permissions,
+					[],
+					[
+						'Content-Type' => $x->mime
+					]
+				);
+
+				// Based on code from amazon-s3-php-class
+				$url = 'https://s3.amazonaws.com/' . $this->bucket . '/' . rawurlencode($x->filename);
+
+				return [
+					'url' => $url,
+					'bucket' => $this->bucket,
+					'name' => $x->filename,
+					'originalName' => $x->file['name'],
+					'mime' => $x->mime
+				];
 			} else {
 				return $x;
 			}

@@ -3,9 +3,9 @@ form(name='Example Form', title='Example Form', debug=true, success-message='Lor
     header Example Form
     header(size=4) HTML Escaping &lt;works&gt;
     header(icon='plug', size=4, show-if='existence') Hello world
-    file(label='Upload a file...', name='upload_file', max-size='100000')
-      allow(ext='docx')
-      allow(ext='jpg')
+    file(label='Upload a file...', name='upload_file', max-size='100000', permissions='public-read')
+      allow(ext='docx', mime='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+      allow(ext='jpg', mime='image/jpeg')
     datetime(label='Start at', name='start_datetime', min='01/01/2015 11:11 AM', max='01/01/2016 11:11 AM', step='10')
     time(label='Start time', name='start_time', min='1:00 AM', step='5', max='1:00 PM')
     range(label='Volume', name='volume', min='3', max='5', default='4', step='0.5')

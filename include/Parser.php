@@ -73,11 +73,12 @@ $parsers =  [
 		return new S3Output($v->attrs);
 	},
 	'file' => function($v) {
-		$v->attrs['allowed-extensions'] = $v->children;
+		$aext = array_reduce($v->children, 'array_merge', []);
+		$v->attrs['allowed-extensions'] = $aext;
 		return new FileUpload($v->attrs);
 	},
 	'allow' => function($v) {
-		return $v->attrs['ext'];
+		return [$v->attrs['ext'] => $v->attrs['mime']];
 	},
 	'option' => function($v) {
 		return $v->children[0] . '';
@@ -126,9 +127,9 @@ class Parser {
 		$arr = new NodeData();
 		$arr->tag = $elem->tagName;
 
-		$arr->attrs = array_map(function($v) {
-			return $v->value;
-		}, iterator_to_array($elem->attributes));
+		foreach($elem->attributes as $k => $v) {
+			$arr->attrs[$k] = $v->value;
+		}
 
 		foreach ($elem->childNodes as $child) {
 			if($child instanceof DOMElement) {
@@ -139,36 +140,20 @@ class Parser {
 				}
 			}
 		}
+
 		return $parsers[$arr->tag]($arr);
 	}
 
 	static function parse_jade($file) {
-
-		// $jade = new Jade(
-		// 	new Everzet\Jade\Parser(new Everzet\Jade\Lexer\Lexer()),
-		// 	new Everzet\Jade\Dumper\PHPDumper()
-		// );
-		echo '<pre>';
-		$start = microtime(true);
 		$file = "!!! xml\n" . file_get_contents($file);
-		echo 'File: ' . (microtime(true) - $start) . "\n";
 
-		$start = microtime(true);
-		for($i = 0; $i < 100; $i++) {
-			$parsed = (new Everzet\Jade\Parser(new Everzet\Jade\Lexer\Lexer()))->parse($file);
-		}
-		echo 'Parse: ' . (microtime(true) - $start)  . "\n";
-
-		$start = microtime(true);
+		$parsed = (new Everzet\Jade\Parser(new Everzet\Jade\Lexer\Lexer()))->parse($file);
 		$xml = (new Everzet\Jade\Dumper\PHPDumper())->dump($parsed);
-		echo 'Dump: ' . (microtime(true) - $start)  . "\n";
 
-		$start = microtime(true);
 		$doc = new DOMDocument();
 		$doc->loadXML($xml);
 		$root = $doc->documentElement;
 		$page = self::domToArray($root);
-		echo 'Process: ' . (microtime(true) - $start)  . "\n";
 
 
 		return $page;

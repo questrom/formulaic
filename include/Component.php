@@ -76,8 +76,11 @@ abstract class FileInputComponent extends NamedLabeledComponent {
 }
 
 class FileInfo {
-	function __construct($value) {
-		$this->value = $value;
+	function __construct($value, $filename, $mime, $permissions) {
+		$this->file = $value;
+		$this->filename = $filename;
+		$this->mime = $mime;
+		$this->permissions = $permissions;
 	}
 }
 
@@ -406,6 +409,7 @@ class FileUpload extends FileInputComponent {
 		$this->required  = isset($args['required']);
 		$this->allowedExtensions = $args['allowed-extensions'];
 		$this->maxSize = intval($args['max-size']);
+		$this->permissions = $args['permissions'];
 
 	}
 	function get($h) {
@@ -420,8 +424,11 @@ class FileUpload extends FileInputComponent {
 	protected function validate($against) {
 		return $against
 			->innerBind(function($val) {
-				if(!is_array($val) || !isset($val['error'])) {
+				// See http://php.net/manual/en/features.file-upload.php
+				if(!is_array($val) || !isset($val['error']) || is_array($val['error'])) {
 					return new Err('Invalid data.');
+				} else if($val['error'] === UPLOAD_ERR_INI_SIZE || $val['error'] === UPLOAD_ERR_FORM_SIZE) {
+					return new Err('File size exceeds server or form limit.');
 				} else if($val['error'] === UPLOAD_ERR_NO_FILE) {
 					return new EmptyResult(null);
 				} else if($val['error'] === UPLOAD_ERR_OK) {
@@ -432,22 +439,35 @@ class FileUpload extends FileInputComponent {
 			})
 			->requiredMaybe($this->required)
 			->innerBind(function($file) {
-				$ext = substr(strrchr($file['name'], '.'),1);
-
-				if(!in_array($ext, $this->allowedExtensions)) {
-					$exts = implode(', ', array_map('htmlspecialchars', $this->allowedExtensions));
-					return new Err('Invalid file extension. Supported extensions are: ' . $exts . '.');
-				}
-				return new OkJust($file);
-			})
-			->innerBind(function($file) {
 				if($file['size'] > $this->maxSize) {
 					return new Err('File must be under ' . $this->maxSize . ' bytes in size.');
+				} else {
+					return new OkJust($file);
 				}
-				return new OkJust($file);
 			})
 			->innerBind(function($file) {
-				return new OkJust(new FileInfo($file));
+
+				$finfo = new finfo(FILEINFO_MIME_TYPE);
+				$mime = $finfo->file($file['tmp_name']);
+
+				$ext = array_search(
+					$mime,
+					$this->allowedExtensions,
+					true
+				);
+
+				if($ext === false) {
+					return new Err('Invalid file type or wrong MIME type. Allowed extensions are: ' . implode(', ', array_keys($this->allowedExtensions)) . '.');
+				}
+
+				if(!is_uploaded_file($file['tmp_name'])) {
+					return new Err('Security error.');
+				}
+
+
+				$filename = sha1_file($file['tmp_name']) . '-' . floor(microtime(true)) . '.' . $ext;
+
+				return new OkJust(new FileInfo($file, $filename, $mime, $this->permissions));
 			});
 	}
 }
