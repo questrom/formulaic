@@ -104,6 +104,10 @@ $parsers =  [
 	'list' => function($v) {
 		$v->attrs['items'] = $v->children;
 		return new ListComponent($v->attrs);
+	},
+	'show-if' => function($v) {
+		$v->attrs['item'] = $v->children[0];
+		return new ShowIfComponent($v->attrs);
 	}
 ];
 

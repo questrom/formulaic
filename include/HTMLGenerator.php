@@ -75,9 +75,9 @@ class HTMLContentGenerator extends HTMLRealGenerator {
 // Generates the inside of an HTML element
 class HTMLTagGenerator extends HTMLRealGenerator {
 	function __construct( $tagless, $tag, $attrs) {
+		$this->tagless = $tagless;
 		$this->tag = $tag;
 		$this->attrs = $attrs;
-		$this->tagless = $tagless;
 	}
 
 	function __call($name, $args) {
@@ -102,11 +102,15 @@ class HTMLTagGenerator extends HTMLRealGenerator {
 	}
 
 
-	function __get($name) { return new HTMLTagGenerator( new HTMLContentGenerator(), $name, [] ); }
+	function __get($name) {
+		return new HTMLTagGenerator( new HTMLContentGenerator(), $name, [] );
+	}
 
 
 	// Helper for "if" statements
-	function hif($cond) { return $cond ? new HTMLContentGenerator() : new HTMLDummyGenerator(); }
+	function hif($cond) {
+		return $cond ? new HTMLContentGenerator() : new HTMLDummyGenerator();
+	}
 }
 
 class HTMLParentContext extends HTMLGeneratorAbstract {

@@ -8,21 +8,29 @@ class ClientData {
 }
 
 abstract class Component {
-	function __construct($args) {
-		$this->showIf = isset($args['show-if']) ? $args['show-if'] : null;
-	}
+	function __construct($args) { }
 	abstract function get($h);
 	abstract function getMerger($val);
+}
 
-	function getIfShown($valHolder) {
-		return $valHolder->bind(function($val) {
+class ShowIfComponent extends Component {
+	function __construct($args) {
+		$this->item = $args['item'];
+		$this->cond = $args['cond'];
+	}
+	function get($h) {
+		return $h
+			->div->data('show-if', $this->cond)
+				->add($this->item)
+			->end;
+	}
+	function getMerger($val) {
+		return $val->bind(function($val) {
 			$post_value = $val->post;
-			if($this->showIf !== null &&
-				!(isset($post_value[$this->showIf]) ? $post_value[$this->showIf] === "on" : false)
-			) {
+			if(!(isset($post_value[$this->cond]) ? $post_value[$this->cond] === "on" : false)) {
 				return new OkJust([]);
 			} else {
-				return $this->getMerger( new OkJust( $val  ) );
+				return $this->item->getMerger( new OkJust( $val  ) );
 			}
 		});
 	}
@@ -95,7 +103,7 @@ abstract class GroupComponent extends Component {
 		return $against->innerBind(function($val)  {
 			return array_reduce($this->items, function($total, $x) use($val) {
 
-				$result = $x->getIfShown( new OkJust( $val  ) );
+				$result = $x->getMerger( new OkJust( $val  ) );
 
 				$mergeM = $result
 					->bind(function($r) {
@@ -149,7 +157,7 @@ abstract class SpecialInput extends InputComponent {
 	}
 	protected function makeInput($h, $type, $icon) {
 		return $h
-		->div->class('ui field ' . ($this->required ? 'required' : ''))->data('show-if',$this->showIf)
+		->div->class('ui field ' . ($this->required ? 'required' : ''))
 			->ins(label($h, $this->label))
 			->div->class($icon ? 'ui left icon input' : 'ui input')
 				->hif($icon)
@@ -172,7 +180,7 @@ class Checkbox extends InputComponent {
 	}
 	function get($h) {
 		return $h
-		->div->class('field ' . ($this->mustCheck ? 'required' : ''))->data('show-if',$this->showIf)
+		->div->class('field ' . ($this->mustCheck ? 'required' : ''))
 			->div->class('ui checkbox')
 				->input->type('checkbox')->name($this->name)->end
 				->ins(label($h, $this->label))
@@ -198,7 +206,7 @@ class TimeInput extends InputComponent {
 	}
 	function get($h) {
 		return $h
-		->div->class('field ' . ($this->required ? ' required' : ''))->data('show-if',$this->showIf)
+		->div->class('field ' . ($this->required ? ' required' : ''))
 			->ins(label($h, $this->label))
 			->div->class('ui left icon input')
 				->i->class('clock icon')->end
@@ -228,7 +236,7 @@ class DateTimePicker extends InputComponent {
 	}
 	function get($h) {
 		return $h
-		->div->class('field ' . ($this->required ? ' required' : ''))->data('show-if',$this->showIf)
+		->div->class('field ' . ($this->required ? ' required' : ''))
 			->ins(label($h, $this->label))
 			->div->class('ui left icon input')
 				->i->class('calendar icon')->end
@@ -250,7 +258,7 @@ class DateTimePicker extends InputComponent {
 class Textarea extends SpecialInput {
 	function get($h) {
 		return $h
-		->ins(fieldBox($h, $this->required, $this->showIf))
+		->ins(fieldBox($h, $this->required))
 			->ins(label($h, $this->label))
 			->textarea->name($this->name)->end
 		->end;
@@ -265,8 +273,8 @@ class Textarea extends SpecialInput {
 	}
 }
 
-function fieldBox($h, $required, $showIf) {
-	return $h->div->class('field ' . ($required ? ' required' : ''))->data('show-if',$showIf);
+function fieldBox($h, $required) {
+	return $h->div->class('field ' . ($required ? ' required' : ''));
 }
 function label($h, $label) {
 	return $h
@@ -288,7 +296,7 @@ class Dropdown extends InputComponent {
 		$this->required = isset($args['required']);
 	}
 	function get($h) {
-		return fieldBox($h, $this->required, $this->showIf)
+		return fieldBox($h, $this->required)
 			->ins(label($h, $this->label))
 			->hif(!$this->required)->t('test')->end
 			->ins(dropdownDiv($h))
@@ -325,7 +333,7 @@ class Radios extends InputComponent {
 	}
 	function get($h) {
 		return $h
-		->div->class('grouped fields validation-root ' . ($this->required ? 'required' : ''))->data('show-if',$this->showIf)
+		->div->class('grouped fields validation-root ' . ($this->required ? 'required' : ''))
 			->ins(label($h, $this->label))
 			->add(
 				array_map(
@@ -362,7 +370,7 @@ class Checkboxes extends InputComponent {
 	}
 	function get($h) {
 		return $h
-		->div->class('grouped fields validation-root ' . ($this->required ? 'required' : ''))->data('show-if',$this->showIf)
+		->div->class('grouped fields validation-root ' . ($this->required ? 'required' : ''))
 			->ins(label($h, $this->label))
 			->add(
 				array_map(
@@ -414,7 +422,7 @@ class FileUpload extends FileInputComponent {
 	}
 	function get($h) {
 		return $h
-		->div->class('ui field ' . ($this->required ? 'required' : ''))->data('show-if',$this->showIf)
+		->div->class('ui field ' . ($this->required ? 'required' : ''))
 			->ins(label($h, $this->label))
 			->div->class('ui input')
 				->input->type('file')->name($this->name)->end
@@ -489,7 +497,7 @@ class Range extends InputComponent {
 	}
 	function get($h) {
 		return $h
-		->div->class('ui field')->data('show-if',$this->showIf)
+		->div->class('ui field')
 			->ins(label($h, $this->label))
 			->div
 				->input
@@ -628,7 +636,7 @@ class DatePicker extends InputComponent {
 	}
 	function get($h) {
 		return $h
-		->div->class('field ' . ($this->required ? ' required' : ''))->data('show-if',$this->showIf)
+		->div->class('field ' . ($this->required ? ' required' : ''))
 			->ins(label($h, $this->label))
 			->div->class('ui left icon input')
 				->i->class('calendar icon')->end
@@ -652,7 +660,7 @@ class GroupHeader extends EmptyComponent {
 	}
 	function get($h) {
 		return $h
-		->h5->class('ui header attached ')->data('show-if', $this->showIf)
+		->h5->class('ui header attached ')
 			->t($this->text)
 		->end;
 	}
@@ -675,7 +683,7 @@ class Header extends EmptyComponent {
 					->div->class('sub header')->t($this->subhead)->end
 				->end;
 		return $h
-		->{'h' . $this->size}->class('ui header')->data('show-if', $this->showIf)
+		->{'h' . $this->size}->class('ui header')
 			->hif($this->icon !== null)
 				->i->class($this->icon . ' icon')->end
 				->div->class('content')
@@ -730,7 +738,7 @@ class GroupNotice extends BaseNotice {
 	function get($h) {
 		return
 		$h
-		->div->class('ui message attached ' . ($this->icon === null ? '' : ' icon') . ($this->type ? ' ' . $this->type : ''))->data('show-if', $this->showIf)
+		->div->class('ui message attached ' . ($this->icon === null ? '' : ' icon') . ($this->type ? ' ' . $this->type : ''))
 			->add(parent::get($h))
 		->end;
 	}
@@ -740,7 +748,7 @@ class Notice extends BaseNotice {
 	function get($h) {
 		return
 		$h
-		->div->class('ui message floating ' . ($this->icon === null ? '' : ' icon') . ($this->type ? ' ' . $this->type : ''))->data('show-if', $this->showIf)
+		->div->class('ui message floating ' . ($this->icon === null ? '' : ' icon') . ($this->type ? ' ' . $this->type : ''))
 			->add(parent::get($h))
 		->end;
 	}
@@ -760,7 +768,7 @@ class ListComponent extends GroupComponent {
 
 
 		return $h
-		->div->class('ui field not-validation-root list-component')->data('count','0')->data('group-name', $this->name)->data('show-if', $this->showIf)
+		->div->class('ui field not-validation-root list-component')->data('count','0')->data('group-name', $this->name)
 			->h5->class('top attached ui message')->t($this->label)->end
 			->div->data('validation-name', $this->name)->class('validation-root ui bottom attached segment list-items')
 				->script->type('text/template')
@@ -862,7 +870,7 @@ class Group extends GroupComponent {
 		}, $this->items);
 
 		return $h
-		->div->class('group')->data('show-if', $this->showIf)
+		->div->class('group')
 			->add(array_map(function($value) use ($h) {
 					if(is_array($value)) {
 						return $h->div->class('ui segment attached')
