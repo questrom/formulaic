@@ -298,7 +298,6 @@ class Dropdown extends InputComponent {
 	function get($h) {
 		return fieldBox($h, $this->required)
 			->ins(label($h, $this->label))
-			->hif(!$this->required)->t('test')->end
 			->ins(dropdownDiv($h))
 				->input->name($this->name)->type('hidden')->value('')->end
 				->div->class('default text')->t('Please choose an option...')->end
@@ -370,7 +369,7 @@ class Checkboxes extends InputComponent {
 	}
 	function get($h) {
 		return $h
-		->div->class('grouped fields validation-root ' . ($this->required ? 'required' : ''))
+		->div->class('grouped fields validation-root ' . ($this->required ? 'required' : ''))->data('validation-name', $this->name)
 			->ins(label($h, $this->label))
 			->add(
 				array_map(

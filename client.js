@@ -3,7 +3,6 @@
 
 function addPrompt(name, prompt) {
 	$(document.getElementsByName(name))
-		.add($(document.getElementsByName(name + '[]')))
 		.add($('[data-validation-name="' + name + '"]'))
 		.closest('.field:not(.not-validation-root), .validation-root')
 		.addClass('error')
@@ -67,9 +66,6 @@ function handleBox() {
 
 function enableFormControls(root) {
 
-
-	root.find('input[type=range]').on('input', handleRange).each(handleRange);
-
 	root.find('.add-item').click(function() {
 		var $this = $(this);
 		var template = $this.closest('.list-items').find('> script').text();
@@ -95,21 +91,11 @@ function enableFormControls(root) {
 		enableFormControls(item);
 	});
 
-	root.find('.ui.dropdown').dropdown({
-		metadata: {
-			defaultText: 'abc',
-			defaultValue: 'null'
-		}
-	});
-
-
+	root.find('input[type=range]').on('input', handleRange).each(handleRange);
+	root.find('.ui.dropdown').dropdown();
 	root.find('input[type=checkbox]').on('change', handleBox).each(handleBox);
-
 	root.find('.checkbox').checkbox();
-
-
 	root.find("[data-inputmask]").inputmask();
-
 }
 
 
