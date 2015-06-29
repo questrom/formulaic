@@ -13,7 +13,7 @@ use Everzet\Jade\Exception\Exception;
  */
 
 /**
- * Jade Lexer. 
+ * Jade Lexer.
  */
 class Lexer implements LexerInterface
 {
@@ -24,8 +24,8 @@ class Lexer implements LexerInterface
     protected $stash            = array();
 
     /**
-     * Set lexer input. 
-     * 
+     * Set lexer input.
+     *
      * @param   string  $input  input string
      */
     public function setInput($input)
@@ -38,8 +38,8 @@ class Lexer implements LexerInterface
     }
 
     /**
-     * Return next token or previously stashed one. 
-     * 
+     * Return next token or previously stashed one.
+     *
      * @return  Object
      */
     public function getAdvancedToken()
@@ -52,8 +52,8 @@ class Lexer implements LexerInterface
     }
 
     /**
-     * Return current line number. 
-     * 
+     * Return current line number.
+     *
      * @return  integer
      */
     public function getCurrentLine()
@@ -62,8 +62,8 @@ class Lexer implements LexerInterface
     }
 
     /**
-     * Defer token. 
-     * 
+     * Defer token.
+     *
      * @param   Object   $token  token to defer
      */
     public function deferToken(\stdClass $token)
@@ -72,8 +72,8 @@ class Lexer implements LexerInterface
     }
 
     /**
-     * Predict for number of tokens. 
-     * 
+     * Predict for number of tokens.
+     *
      * @param   integer     $number number of tokens to predict
      *
      * @return  Object              predicted token
@@ -86,12 +86,12 @@ class Lexer implements LexerInterface
             $this->stash[] = $this->getNextToken();
         }
 
-        return $this->stash[--$number];
+        return $this->stash[$number - 1];
     }
 
     /**
-     * Construct token with specified parameters. 
-     * 
+     * Construct token with specified parameters.
+     *
      * @param   string  $type   token type
      * @param   string  $value  token value
      *
@@ -107,8 +107,8 @@ class Lexer implements LexerInterface
     }
 
     /**
-     * Return stashed token. 
-     * 
+     * Return stashed token.
+     *
      * @return  Object|boolean   token if has stashed, false otherways
      */
     protected function getStashedToken()
@@ -117,8 +117,8 @@ class Lexer implements LexerInterface
     }
 
     /**
-     * Return deferred token. 
-     * 
+     * Return deferred token.
+     *
      * @return  Object|boolean   token if has deferred, false otherways
      */
     protected function getDeferredToken()
@@ -127,39 +127,52 @@ class Lexer implements LexerInterface
     }
 
     /**
-     * Return next token. 
-     * 
+     * Return next token.
+     *
      * @return  Object
      */
     protected function getNextToken()
     {
-        $scanners = array(
-            'getDeferredToken'
-          , 'scanEOS'
-          , 'scanTag'
-          , 'scanFilter'
-          , 'scanCode'
-          , 'scanDoctype'
-          , 'scanId'
-          , 'scanClass'
-          , 'scanAttributes'
-          , 'scanIndentation'
-          , 'scanComment'
-          , 'scanText'
-        );
+          $token = $this->getDeferredToken();
+          if(null !== $token && $token) { return $token; }
 
-        foreach ($scanners as $scan) {
-            $token = $this->$scan();
+          $token = $this->scanEOS();
+          if(null !== $token && $token) { return $token; }
 
-            if (null !== $token && $token) {
-                return $token;
-            }
-        }
+          $token = $this->scanTag();
+          if(null !== $token && $token) { return $token; }
+
+          $token = $this->scanFilter();
+          if(null !== $token && $token) { return $token; }
+
+          $token = $this->scanCode();
+          if(null !== $token && $token) { return $token; }
+
+          $token = $this->scanDoctype();
+          if(null !== $token && $token) { return $token; }
+
+          $token = $this->scanId();
+          if(null !== $token && $token) { return $token; }
+
+          $token = $this->scanClass();
+          if(null !== $token && $token) { return $token; }
+
+          $token = $this->scanAttributes();
+          if(null !== $token && $token) { return $token; }
+
+          $token = $this->scanIndentation();
+          if(null !== $token && $token) { return $token; }
+
+          $token = $this->scanComment();
+          if(null !== $token && $token) { return $token; }
+
+          $token = $this->scanText();
+          if(null !== $token && $token) { return $token; }
     }
 
     /**
-     * Consume input. 
-     * 
+     * Consume input.
+     *
      * @param   integer $length length of input to consume
      */
     protected function consumeInput($length)
@@ -168,8 +181,8 @@ class Lexer implements LexerInterface
     }
 
     /**
-     * Scan for token with specified regex. 
-     * 
+     * Scan for token with specified regex.
+     *
      * @param   string  $regex  regular expression
      * @param   string  $type   expected token type
      *
@@ -178,7 +191,7 @@ class Lexer implements LexerInterface
     protected function scanInput($regex, $type)
     {
         $matches = array();
-        if (preg_match($regex, $this->input, $matches)) {
+        if (preg_match($regex . 'S', $this->input, $matches)) {
             $this->consumeInput(mb_strlen($matches[0]));
 
             return $this->takeToken($type, $matches[1]);
@@ -187,7 +200,7 @@ class Lexer implements LexerInterface
 
     /**
      * Scan EOS from input & return it if found.
-     * 
+     *
      * @return  Object|null
      */
     protected function scanEOS()
@@ -200,8 +213,8 @@ class Lexer implements LexerInterface
     }
 
     /**
-     * Scan comment from input & return it if found. 
-     * 
+     * Scan comment from input & return it if found.
+     *
      * @return  Object|null
      */
     protected function scanComment()
@@ -218,8 +231,8 @@ class Lexer implements LexerInterface
     }
 
     /**
-     * Scan tag from input & return it if found. 
-     * 
+     * Scan tag from input & return it if found.
+     *
      * @return  Object|null
      */
     protected function scanTag()
@@ -228,8 +241,8 @@ class Lexer implements LexerInterface
     }
 
     /**
-     * Scan tag from input & return it if found. 
-     * 
+     * Scan tag from input & return it if found.
+     *
      * @return  Object|null
      */
     protected function scanFilter()
@@ -238,8 +251,8 @@ class Lexer implements LexerInterface
     }
 
     /**
-     * Scan doctype from input & return it if found. 
-     * 
+     * Scan doctype from input & return it if found.
+     *
      * @return  Object|null
      */
     protected function scanDoctype()
@@ -248,8 +261,8 @@ class Lexer implements LexerInterface
     }
 
     /**
-     * Scan id from input & return it if found. 
-     * 
+     * Scan id from input & return it if found.
+     *
      * @return  Object|null
      */
     protected function scanId()
@@ -258,8 +271,8 @@ class Lexer implements LexerInterface
     }
 
     /**
-     * Scan class from input & return it if found. 
-     * 
+     * Scan class from input & return it if found.
+     *
      * @return  Object|null
      */
     protected function scanClass()
@@ -268,8 +281,8 @@ class Lexer implements LexerInterface
     }
 
     /**
-     * Scan text from input & return it if found. 
-     * 
+     * Scan text from input & return it if found.
+     *
      * @return  Object|null
      */
     protected function scanText()
@@ -278,8 +291,8 @@ class Lexer implements LexerInterface
     }
 
     /**
-     * Scan code from input & return it if found. 
-     * 
+     * Scan code from input & return it if found.
+     *
      * @return  Object|null
      */
     protected function scanCode()
@@ -298,8 +311,8 @@ class Lexer implements LexerInterface
     }
 
     /**
-     * Scan attributes from input & return them if found. 
-     * 
+     * Scan attributes from input & return them if found.
+     *
      * @return  Object|null
      */
     protected function scanAttributes()
@@ -360,8 +373,8 @@ class Lexer implements LexerInterface
     }
 
     /**
-     * Scan indentation from input & return it if found. 
-     * 
+     * Scan indentation from input & return it if found.
+     *
      * @return  Object|null
      */
     protected function scanIndentation()
@@ -408,8 +421,8 @@ class Lexer implements LexerInterface
     }
 
     /**
-     * Return the index of begin/end delimiters. 
-     * 
+     * Return the index of begin/end delimiters.
+     *
      * @param   string  $begin  befin delimiter
      * @param   string  $end    end delimiter
      *

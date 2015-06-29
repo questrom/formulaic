@@ -107,8 +107,6 @@ $parsers =  [
 ];
 
 
-// Modified Jade from original...
-$jade = new Jade(new Everzet\Jade\Parser(new Everzet\Jade\Lexer\Lexer()), new Everzet\Jade\Dumper\PHPDumper());
 
 
 class NodeData {
@@ -146,17 +144,31 @@ class Parser {
 
 	static function parse_jade($file) {
 
-		global $jade;
+		// $jade = new Jade(
+		// 	new Everzet\Jade\Parser(new Everzet\Jade\Lexer\Lexer()),
+		// 	new Everzet\Jade\Dumper\PHPDumper()
+		// );
+		echo '<pre>';
+		$start = microtime(true);
+		$file = "!!! xml\n" . file_get_contents($file);
+		echo 'File: ' . (microtime(true) - $start) . "\n";
 
-		$xml = $jade->render($file);
+		$start = microtime(true);
+		for($i = 0; $i < 100; $i++) {
+			$parsed = (new Everzet\Jade\Parser(new Everzet\Jade\Lexer\Lexer()))->parse($file);
+		}
+		echo 'Parse: ' . (microtime(true) - $start)  . "\n";
 
+		$start = microtime(true);
+		$xml = (new Everzet\Jade\Dumper\PHPDumper())->dump($parsed);
+		echo 'Dump: ' . (microtime(true) - $start)  . "\n";
+
+		$start = microtime(true);
 		$doc = new DOMDocument();
 		$doc->loadXML($xml);
-
 		$root = $doc->documentElement;
-
-
 		$page = self::domToArray($root);
+		echo 'Process: ' . (microtime(true) - $start)  . "\n";
 
 
 		return $page;

@@ -23,15 +23,15 @@ use Everzet\Jade\Node\TextNode;
  */
 
 /**
- * Jade Parser. 
+ * Jade Parser.
  */
 class Parser
 {
     protected $lexer;
 
     /**
-     * Initialize Parser. 
-     * 
+     * Initialize Parser.
+     *
      * @param   LexerInterface  $lexer  lexer object
      */
     public function __construct(LexerInterface $lexer)
@@ -40,8 +40,8 @@ class Parser
     }
 
     /**
-     * Parse input returning block node. 
-     * 
+     * Parse input returning block node.
+     *
      * @param   string          $input  jade document
      *
      * @return  BlockNode
@@ -64,8 +64,8 @@ class Parser
     }
 
     /**
-     * Expect given type or throw Exception. 
-     * 
+     * Expect given type or throw Exception.
+     *
      * @param   string  $type   type
      */
     protected function expectTokenType($type)
@@ -76,10 +76,10 @@ class Parser
             throw new Exception(sprintf('Expected %s, but got %s', $type, $this->lexer->predictToken()->type));
         }
     }
-    
+
     /**
-     * Accept given type. 
-     * 
+     * Accept given type.
+     *
      * @param   string  $type   type
      */
     protected function acceptTokenType($type)
@@ -90,8 +90,8 @@ class Parser
     }
 
     /**
-     * Parse current expression & return Node. 
-     * 
+     * Parse current expression & return Node.
+     *
      * @return  Node
      */
     protected function parseExpression()
@@ -120,8 +120,8 @@ class Parser
     }
 
     /**
-     * Parse next text token. 
-     * 
+     * Parse next text token.
+     *
      * @return  TextNode
      */
     protected function parseText($trim = false)
@@ -133,8 +133,8 @@ class Parser
     }
 
     /**
-     * Parse next code token. 
-     * 
+     * Parse next code token.
+     *
      * @return  CodeNode
      */
     protected function parseCode()
@@ -155,8 +155,8 @@ class Parser
     }
 
     /**
-     * Parse next commend token. 
-     * 
+     * Parse next commend token.
+     *
      * @return  CommentNode
      */
     protected function parseComment()
@@ -177,8 +177,8 @@ class Parser
     }
 
     /**
-     * Parse next doctype token. 
-     * 
+     * Parse next doctype token.
+     *
      * @return  DoctypeNode
      */
     protected function parseDoctype()
@@ -189,8 +189,8 @@ class Parser
     }
 
     /**
-     * Parse next filter token. 
-     * 
+     * Parse next filter token.
+     *
      * @return  FilterNode
      */
     protected function parseFilter()
@@ -214,8 +214,8 @@ class Parser
     }
 
     /**
-     * Parse next indented? text token. 
-     * 
+     * Parse next indented? text token.
+     *
      * @return  TextToken
      */
     protected function parseTextBlock()
@@ -236,8 +236,8 @@ class Parser
     }
 
     /**
-     * Parse indented block token. 
-     * 
+     * Parse indented block token.
+     *
      * @return  BlockNode
      */
     protected function parseBlock()
@@ -258,8 +258,8 @@ class Parser
     }
 
     /**
-     * Parse tag token. 
-     * 
+     * Parse tag token.
+     *
      * @return  TagNode
      */
     protected function parseTag()
