@@ -7,6 +7,14 @@ margin: 20px auto;
 border-radius: 3px !important;
 }
 
+.ui.page.grid.wide-page {
+    max-width:1080px !important;
+}
+
+.table-view {
+    table-layout: fixed;
+}
+
 .ui.form input[type=file] {
     width: 100%;
     vertical-align: top;
@@ -81,4 +89,20 @@ input[type=range]::-moz-focus-outer {
 
 .list-component > .segment {
     padding: 0 15px;
+}
+
+/* Remove hover styles */
+
+.ui.celled.table tr.negative:hover td, .ui.celled.table tr:hover td.negative {
+background: #FFF0F0 none repeat scroll 0% 0% !important;
+color: #CD2929 !important;
+}
+
+.ui.celled.table tr.positive:hover td, .ui.celled.table tr:hover td.positive {
+    background: #EEFFE7 none repeat scroll 0% 0% !important;
+    color: #3C763D !important;
+}
+
+.table-view li {
+    padding: 0 !important;
 }

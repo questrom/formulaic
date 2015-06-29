@@ -98,7 +98,8 @@ $parsers =  [
 			'title' => $v->attrs['title'],
 			'success-message' => $v->attrs['success-message'],
 			'debug' => isset($v->attrs['debug']),
-			'outputs' => $v->byTag['outputs']
+			'outputs' => $v->byTag['outputs'],
+			'views' => $v->byTag['views']
 		]);
 	},
 	'list' => function($v) {
@@ -108,6 +109,16 @@ $parsers =  [
 	'show-if' => function($v) {
 		$v->attrs['item'] = $v->children[0];
 		return new ShowIfComponent($v->attrs);
+	},
+	'views' => function($v) {
+		return $v->children;
+	},
+	'table-view' => function($v) {
+		$v->attrs['cols'] = $v->children;
+		return new TableView($v->attrs);
+	},
+	'col' => function($v) {
+		return new Column($v->attrs);
 	}
 ];
 

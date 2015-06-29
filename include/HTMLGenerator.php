@@ -48,7 +48,7 @@ class HTMLContentGenerator extends HTMLRealGenerator {
 			$arr = [$arr];
 		}
 		$arr = array_map(function($item) {
-			if($item instanceof Component) {
+			if($item instanceof Component || $item instanceof ValueCell) {
 				return $item->get(new HTMLParentlessContext());
 			} else if(is_string($item)) {
 				return htmlspecialchars($item);

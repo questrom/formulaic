@@ -8,3 +8,4 @@ require('include/Validate.php');
 require('include/Output.php');
 require('include/Component.php');
 require('include/Parser.php');
+require('include/View.php');

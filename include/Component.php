@@ -8,7 +8,7 @@ class ClientData {
 }
 
 abstract class Component {
-	function __construct($args) { }
+	abstract function __construct($args);
 	abstract function get($h);
 	abstract function getMerger($val);
 }
@@ -46,13 +46,13 @@ abstract class NamedLabeledComponent extends Component {
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
-		parent::__construct($args);
 	}
+    abstract protected function validate($against);
 }
 
 abstract class InputComponent extends NamedLabeledComponent {
 
-	abstract protected function validate($against);
+
 	function getMerger($val) {
 		$val = $val->innerBind(function($v) {
 			return new OkJust(isset($v->post[$this->name]) ? $v->post[$this->name] : null);
@@ -68,7 +68,7 @@ abstract class InputComponent extends NamedLabeledComponent {
 }
 
 abstract class FileInputComponent extends NamedLabeledComponent {
-	abstract protected function validate($against);
+
 	function getMerger($val) {
 		$val = $val->innerBind(function($v) {
 			return new OkJust(isset($v->files[$this->name]) ? $v->files[$this->name] : null);
@@ -666,7 +666,6 @@ abstract class BaseHeader extends EmptyComponent {
 		$this->subhead = isset($args['subhead']) ? $args['subhead'] : null;
 		$this->icon = isset($args['icon']) ? $args['icon'] : null;
 		$this->size = isset($args['size']) ? intval($args['size']) : null;
-		parent::__construct($args);
 	}
 	function get($h) {
 		$inside = $h->t($this->text)
@@ -715,7 +714,6 @@ abstract class BaseNotice extends EmptyComponent {
 		$this->icon = isset($args['icon']) ? $args['icon'] : null;
 		$this->list = isset($args['list']) ? $args['list'] : null;
 		$this->type = isset($args['type']) ? $args['type'] : null;
-		parent::__construct($args);
 	}
 	function get($h) {
 		return $h
@@ -771,7 +769,6 @@ class ListComponent extends GroupComponent {
 		$this->name = $args['name'];
 		$this->label = $args['label'];
 		$this->addText = isset($args['add-text']) ? $args['add-text'] : 'Add an item';
-		parent::__construct($args);
 	}
 	function get($h) {
 
@@ -864,7 +861,6 @@ class Group extends GroupComponent {
 
 	function __construct($args) {
 		$this->items = $args['fields'];
-		parent::__construct($args);
 	}
 	function get($h) {
 
@@ -940,6 +936,7 @@ class Page extends Component {
 		$this->successMessage = isset($args['success-message']) ? $args['success-message'] : 'The form was submitted successfully.';
 		$this->debug = isset($args['debug']);
 		$this->outputs = $args['outputs'];
+		$this->views = $args['views'];
 	}
 	function get($h) {
 		return $h

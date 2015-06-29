@@ -51,7 +51,7 @@ form(name='Example Form', title='Example Form', debug=true, success-message='Lor
             generated with PHP's password_hash
             in prod, don't store this in plaintext
         password(label='Password', name='password', match-hash='$2y$10$FeVuAyjk82DNDflP6LevxOG7GCWm11bJ7R48Kx7wHH6a9PP7Z1Aki')
-    checkboxes(label='What are your favorite colors?', name='fave_colors', required=true)
+    checkboxes(label='What are your favorite colors?', name='fave_colors')
       option Red
       option Orange
       option Yellow
@@ -62,3 +62,10 @@ form(name='Example Form', title='Example Form', debug=true, success-message='Lor
   outputs
     s3(bucket='form-builder-uploads')
     mongo(server='mongodb://localhost:27017', database='forms', collection='example_form')
+  views
+    table-view(server='mongodb://localhost:27017', database='forms', collection='example_form', title='Main view')
+      col(name='name', header='Name', width=1)
+      col(name='volume', header='Volume', width=1)
+      col(name='username', header='Username', width=1)
+      col(name='existence', header='I exist', width=1)
+      col(name='_timestamp', header='Timestamp', width=1)
