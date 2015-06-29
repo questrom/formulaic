@@ -52,324 +52,248 @@
               <ID>PHP</ID>
               <OriginalElement>\GroupHeader</OriginalElement>
               <nodes>
-                <node x="346.5" y="425.0">\HTMLGeneratorAbstract</node>
-                <node x="274.25000000000006" y="160.0">\BaseNotice</node>
-                <node x="979.875" y="160.0">\InputComponent</node>
-                <node x="437.75" y="505.0">\HTMLDummyGenerator</node>
-                <node x="632.875" y="260.0">\SpecialInput</node>
-                <node x="1191.375" y="80.0">\GroupComponent</node>
-                <node x="502.0" y="740.0">\OkJust</node>
-                <node x="226.0" y="740.0">\MongoOutput</node>
-                <node x="182.00000000000003" y="585.0">\HTMLTagGenerator</node>
-                <node x="591.0" y="740.0">\Err</node>
-                <node x="339.00000000000006" y="260.0">\Notice</node>
-                <node x="1320.875" y="160.0">\ListComponent</node>
-                <node x="498.5" y="660.0">\Validate</node>
-                <node x="42.25" y="160.0">\BaseHeader</node>
-                <node x="114.12009803921569" y="80.0">\EmptyComponent</node>
-                <node x="590.4431372549021" y="80.0">\Page</node>
-                <node x="0.0" y="815.0">\NodeData</node>
-                <node x="619.75" y="505.0">\HTMLParentContext</node>
-                <node x="256.75" y="505.0">\HTMLParentlessContext</node>
-                <node x="1107.875" y="260.0">\Dropdown</node>
-                <node x="940.375" y="350.0">\NumberInp</node>
-                <node x="104.0" y="740.0">\SuperOutput</node>
-                <node x="751.875" y="260.0">\TimeInput</node>
-                <node x="408.875" y="160.0">\FileInputComponent</node>
-                <node x="643.375" y="350.0">\Textarea</node>
-                <node x="250.0" y="815.0">\Parser</node>
-                <node x="836.375" y="350.0">\Password</node>
-                <node x="436.4431372549021" y="80.0">\ShowIfComponent</node>
-                <node x="1212.875" y="160.0">\FormElem</node>
-                <node x="132.0" y="815.0">\FileInfo</node>
-                <node x="678.193137254902" y="80.0">\NamedLabeledComponent</node>
-                <node x="1217.875" y="260.0">\Checkbox</node>
-                <node x="0.0" y="740.0">\S3Output</node>
-                <node x="119.0" y="660.0">\Output</node>
-                <node x="0.0" y="585.0">\HTMLContentGenerator</node>
-                <node x="1440.875" y="260.0">\Radios</node>
-                <node x="92.0" y="260.0">\GroupHeader</node>
-                <node x="1125.875" y="160.0">\Group</node>
-                <node x="545.875" y="260.0">\Range</node>
-                <node x="860.875" y="260.0">\DateTimePicker</node>
-                <node x="566.125" y="0.0">\Component</node>
-                <node x="435.87500000000006" y="260.0">\FileUpload</node>
-                <node x="437.37500000000006" y="350.0">\EmailAddr</node>
-                <node x="997.875" y="260.0">\DatePicker</node>
-                <node x="546.375" y="350.0">\UrlInput</node>
-                <node x="741.375" y="350.0">\Textbox</node>
-                <node x="684.0" y="660.0">\ClientData</node>
-                <node x="0.0" y="260.0">\Header</node>
-                <node x="1323.875" y="260.0">\Checkboxes</node>
-                <node x="382.0" y="740.0">\EmptyResult</node>
-                <node x="305.37500000000006" y="350.0">\PhoneNumber</node>
-                <node x="95.75" y="505.0">\HTMLRealGenerator</node>
-                <node x="217.0" y="260.0">\GroupNotice</node>
+                <node x="183.0" y="1495.0">\HTMLGeneratorAbstract</node>
+                <node x="1200.0" y="779.0">\BaseNotice</node>
+                <node x="456.0" y="497.0">\InputComponent</node>
+                <node x="233.0" y="220.0">\SpecialInput</node>
+                <node x="199.0" y="1630.0">\HTMLDummyGenerator</node>
+                <node x="752.0" y="1031.0">\GroupComponent</node>
+                <node x="1109.0" y="1453.0">\OkJust</node>
+                <node x="678.0" y="1496.0">\MongoOutput</node>
+                <node x="353.0" y="1271.0">\HTMLTagGenerator</node>
+                <node x="1185.0" y="1271.0">\Err</node>
+                <node x="1492.0" y="851.0">\Notice</node>
+                <node x="1110.0" y="1370.0">\Validate</node>
+                <node x="513.0" y="1039.0">\ListComponent</node>
+                <node x="1119.0" y="503.0">\BaseHeader</node>
+                <node x="990.0" y="749.0">\EmptyComponent</node>
+                <node x="951.0" y="922.0">\Page</node>
+                <node x="1527.0" y="1271.0">\NodeData</node>
+                <node x="0.0" y="1517.0">\HTMLParentContext</node>
+                <node x="92.0" y="1344.0">\HTMLParentlessContext</node>
+                <node x="281.0" y="415.0">\Dropdown</node>
+                <node x="12.0" y="18.0">\NumberInp</node>
+                <node x="841.0" y="1364.0">\SuperOutput</node>
+                <node x="442.0" y="730.0">\TimeInput</node>
+                <node x="848.0" y="564.0">\FileInputComponent</node>
+                <node x="114.0" y="228.0">\Textarea</node>
+                <node x="0.0" y="1705.0">\Parser</node>
+                <node x="641.0" y="889.0">\ShowIfComponent</node>
+                <node x="0.0" y="315.0">\Password</node>
+                <node x="871.0" y="1150.0">\FormElem</node>
+                <node x="661.0" y="640.0">\NamedLabeledComponent</node>
+                <node x="1332.0" y="1271.0">\FileInfo</node>
+                <node x="267.0" y="684.0">\Checkbox</node>
+                <node x="619.0" y="1271.0">\S3Output</node>
+                <node x="728.0" y="1408.0">\Output</node>
+                <node x="412.0" y="1505.0">\HTMLContentGenerator</node>
+                <node x="457.0" y="382.0">\Radios</node>
+                <node x="1382.0" y="532.0">\GroupHeader</node>
+                <node x="717.0" y="1174.0">\Group</node>
+                <node x="453.0" y="571.0">\Range</node>
+                <node x="505.0" y="223.0">\DateTimePicker</node>
+                <node x="827.0" y="824.0">\Component</node>
+                <node x="919.0" y="286.0">\FileUpload</node>
+                <node x="240.0" y="0.0">\EmailAddr</node>
+                <node x="251.0" y="530.0">\DatePicker</node>
+                <node x="92.0" y="448.0">\UrlInput</node>
+                <node x="1707.0" y="1271.0">\ClientData</node>
+                <node x="467.0" y="152.0">\Textbox</node>
+                <node x="1273.0" y="370.0">\Header</node>
+                <node x="655.0" y="405.0">\Checkboxes</node>
+                <node x="1001.0" y="1277.0">\EmptyResult</node>
+                <node x="419.0" y="37.0">\PhoneNumber</node>
+                <node x="302.0" y="1424.0">\HTMLRealGenerator</node>
+                <node x="1363.0" y="1052.0">\GroupNotice</node>
               </nodes>
               <notes />
               <edges>
                 <edge source="\Group" target="\GroupComponent">
-                  <point x="0.0" y="-15.0" />
-                  <point x="1159.375" y="135.0" />
-                  <point x="1213.2083333333333" y="135.0" />
-                  <point x="-43.66666666666674" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\Range" target="\InputComponent">
-                  <point x="0.0" y="-15.0" />
-                  <point x="579.375" y="210.0" />
-                  <point x="986.875" y="210.0" />
-                  <point x="-56.0" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\BaseNotice" target="\EmptyComponent">
-                  <point x="0.0" y="-15.0" />
-                  <point x="320.75000000000006" y="135.0" />
-                  <point x="213.1200980392157" y="135.0" />
-                  <point x="33.0" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\HTMLParentContext" target="\HTMLGeneratorAbstract">
-                  <point x="0.0" y="-15.0" />
-                  <point x="690.75" y="475.0" />
-                  <point x="489.125" y="475.0" />
-                  <point x="61.125" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\Page" target="\Component">
-                  <point x="0.0" y="-15.0" />
-                  <point x="620.4431372549021" y="60.0" />
-                  <point x="615.125" y="60.0" />
-                  <point x="0.0" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\SpecialInput" target="\InputComponent">
-                  <point x="0.0" y="-15.0" />
-                  <point x="682.375" y="220.0" />
-                  <point x="1000.875" y="220.0" />
-                  <point x="-42.0" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\NumberInp" target="\SpecialInput">
-                  <point x="0.0" y="-15.0" />
-                  <point x="987.875" y="310.0" />
-                  <point x="724.8035714285714" y="310.0" />
-                  <point x="42.428571428571445" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\EmptyComponent" target="\Component">
-                  <point x="0.0" y="-15.0" />
-                  <point x="180.1200980392157" y="50.0" />
-                  <point x="575.925" y="50.0" />
-                  <point x="-39.200000000000045" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\Radios" target="\InputComponent">
-                  <point x="0.0" y="-15.0" />
-                  <point x="1475.375" y="210.0" />
-                  <point x="1098.875" y="210.0" />
-                  <point x="56.0" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\FormElem" target="\GroupComponent">
-                  <point x="0.0" y="-15.0" />
-                  <point x="0.0" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\ListComponent" target="\GroupComponent">
-                  <point x="0.0" y="-15.0" />
-                  <point x="1378.875" y="135.0" />
-                  <point x="1300.5416666666667" y="135.0" />
-                  <point x="43.66666666666674" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\HTMLTagGenerator" target="\HTMLRealGenerator">
-                  <point x="-2.8421709430404007E-14" y="-15.0" />
-                  <point x="251.5" y="560.0" />
-                  <point x="201.5" y="560.0" />
-                  <point x="35.25" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\GroupNotice" target="\BaseNotice">
-                  <point x="0.0" y="-15.0" />
-                  <point x="268.0" y="240.0" />
-                  <point x="297.50000000000006" y="240.0" />
-                  <point x="-23.25" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\OkJust" target="\Validate">
-                  <point x="0.0" y="-15.0" />
-                  <point x="0.0" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\Checkboxes" target="\InputComponent">
-                  <point x="0.0" y="-15.0" />
-                  <point x="1372.375" y="220.0" />
-                  <point x="1084.875" y="220.0" />
-                  <point x="42.0" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\ShowIfComponent" target="\Component">
-                  <point x="0.0" y="-15.0" />
-                  <point x="503.4431372549021" y="60.0" />
-                  <point x="595.5250000000001" y="60.0" />
-                  <point x="-19.600000000000023" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\EmptyResult" target="\Validate">
-                  <point x="0.0" y="-15.0" />
-                  <point x="432.0" y="715.0" />
-                  <point x="511.1666666666667" y="715.0" />
-                  <point x="-25.333333333333314" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\S3Output" target="\Output">
-                  <point x="0.0" y="-15.0" />
-                  <point x="42.0" y="715.0" />
-                  <point x="131.0" y="715.0" />
-                  <point x="-24.0" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\Textarea" target="\SpecialInput">
-                  <point x="0.0" y="-15.0" />
-                  <point x="0.0" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\HTMLRealGenerator" target="\HTMLGeneratorAbstract">
-                  <point x="0.0" y="-15.0" />
-                  <point x="166.25" y="475.0" />
-                  <point x="366.875" y="475.0" />
-                  <point x="-61.125" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\Notice" target="\BaseNotice">
-                  <point x="0.0" y="-15.0" />
-                  <point x="373.50000000000006" y="240.0" />
-                  <point x="344.00000000000006" y="240.0" />
-                  <point x="23.25" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\HTMLParentlessContext" target="\HTMLGeneratorAbstract">
-                  <point x="0.0" y="-15.0" />
-                  <point x="337.25" y="485.0" />
-                  <point x="407.625" y="485.0" />
-                  <point x="-20.375" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\MongoOutput" target="\Output">
-                  <point x="0.0" y="-15.0" />
-                  <point x="281.5" y="715.0" />
-                  <point x="179.0" y="715.0" />
-                  <point x="24.0" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\FileUpload" target="\FileInputComponent">
-                  <point x="-5.6843418860808015E-14" y="-15.0" />
-                  <point x="0.0" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\HTMLDummyGenerator" target="\HTMLGeneratorAbstract">
-                  <point x="0.0" y="-15.0" />
-                  <point x="518.75" y="485.0" />
-                  <point x="448.375" y="485.0" />
-                  <point x="20.375" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\GroupHeader" target="\BaseHeader">
-                  <point x="0.0" y="-15.0" />
-                  <point x="144.5" y="240.0" />
-                  <point x="114.25" y="240.0" />
-                  <point x="24.0" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\FileInputComponent" target="\NamedLabeledComponent">
-                  <point x="-5.6843418860808015E-14" y="-15.0" />
-                  <point x="480.87499999999994" y="135.0" />
-                  <point x="722.693137254902" y="135.0" />
-                  <point x="-44.5" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\TimeInput" target="\InputComponent">
-                  <point x="0.0" y="-15.0" />
-                  <point x="796.375" y="230.0" />
-                  <point x="1014.875" y="230.0" />
-                  <point x="-28.0" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\InputComponent" target="\NamedLabeledComponent">
-                  <point x="0.0" y="-15.0" />
-                  <point x="1042.875" y="135.0" />
-                  <point x="811.693137254902" y="135.0" />
-                  <point x="44.5" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\NamedLabeledComponent" target="\Component">
-                  <point x="0.0" y="-15.0" />
-                  <point x="767.193137254902" y="60.0" />
-                  <point x="634.7250000000001" y="60.0" />
-                  <point x="19.600000000000023" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\DateTimePicker" target="\InputComponent">
-                  <point x="0.0" y="-15.0" />
-                  <point x="919.375" y="240.0" />
-                  <point x="1028.875" y="240.0" />
-                  <point x="-14.0" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\Textbox" target="\SpecialInput">
-                  <point x="0.0" y="-15.0" />
-                  <point x="778.875" y="330.0" />
-                  <point x="696.5178571428571" y="330.0" />
-                  <point x="14.14285714285711" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\UrlInput" target="\SpecialInput">
-                  <point x="0.0" y="-15.0" />
-                  <point x="584.875" y="330.0" />
-                  <point x="668.2321428571429" y="330.0" />
-                  <point x="-14.14285714285711" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\Password" target="\SpecialInput">
-                  <point x="0.0" y="-15.0" />
-                  <point x="878.375" y="320.0" />
-                  <point x="710.6607142857143" y="320.0" />
-                  <point x="28.285714285714334" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\HTMLContentGenerator" target="\HTMLRealGenerator">
-                  <point x="0.0" y="-15.0" />
-                  <point x="81.0" y="560.0" />
-                  <point x="131.0" y="560.0" />
-                  <point x="-35.25" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\Header" target="\BaseHeader">
-                  <point x="0.0" y="-15.0" />
-                  <point x="36.0" y="240.0" />
-                  <point x="66.25" y="240.0" />
-                  <point x="-24.0" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\EmailAddr" target="\SpecialInput">
-                  <point x="-5.6843418860808015E-14" y="-15.0" />
-                  <point x="481.875" y="320.0" />
-                  <point x="654.0892857142857" y="320.0" />
-                  <point x="-28.285714285714334" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\Checkbox" target="\InputComponent">
-                  <point x="0.0" y="-15.0" />
-                  <point x="1260.875" y="230.0" />
-                  <point x="1070.875" y="230.0" />
-                  <point x="28.0" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\DatePicker" target="\InputComponent">
-                  <point x="0.0" y="-15.0" />
-                  <point x="0.0" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\SuperOutput" target="\Output">
-                  <point x="0.0" y="-15.0" />
-                  <point x="0.0" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\Err" target="\Validate">
-                  <point x="0.0" y="-15.0" />
-                  <point x="615.0" y="715.0" />
-                  <point x="561.8333333333334" y="715.0" />
-                  <point x="25.33333333333337" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\Dropdown" target="\InputComponent">
-                  <point x="0.0" y="-15.0" />
-                  <point x="1152.875" y="240.0" />
-                  <point x="1056.875" y="240.0" />
-                  <point x="14.0" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\PhoneNumber" target="\SpecialInput">
-                  <point x="0.0" y="-15.0" />
-                  <point x="361.37500000000006" y="310.0" />
-                  <point x="639.9464285714286" y="310.0" />
-                  <point x="-42.428571428571445" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\BaseHeader" target="\EmptyComponent">
-                  <point x="0.0" y="-15.0" />
-                  <point x="90.25" y="135.0" />
-                  <point x="147.1200980392157" y="135.0" />
-                  <point x="-33.0" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
                 <edge source="\GroupComponent" target="\Component">
-                  <point x="0.0" y="-15.0" />
-                  <point x="1256.875" y="50.0" />
-                  <point x="654.325" y="50.0" />
-                  <point x="39.200000000000045" y="15.0" />
+                  <point x="0.0" y="0.0" />
+                  <point x="0.0" y="0.0" />
                 </edge>
               </edges>
-              <settings layout="Hierarchic Group" zoom="1.0" x="755.5" y="423.0" />
+              <settings layout="Hierarchic Group" zoom="1.0" x="751.5" y="749.0" />
               <SelectedNodes />
-              <Categories />
+              <Categories>
+                <Category>Fields</Category>
+              </Categories>
               <VISIBILITY>private</VISIBILITY>
             </state>
           </provider>
@@ -918,324 +842,248 @@
           <ID>PHP</ID>
           <OriginalElement>\GroupHeader</OriginalElement>
           <nodes>
-            <node x="346.5" y="425.0">\HTMLGeneratorAbstract</node>
-            <node x="274.25000000000006" y="160.0">\BaseNotice</node>
-            <node x="979.875" y="160.0">\InputComponent</node>
-            <node x="437.75" y="505.0">\HTMLDummyGenerator</node>
-            <node x="632.875" y="260.0">\SpecialInput</node>
-            <node x="1191.375" y="80.0">\GroupComponent</node>
-            <node x="502.0" y="740.0">\OkJust</node>
-            <node x="226.0" y="740.0">\MongoOutput</node>
-            <node x="182.00000000000003" y="585.0">\HTMLTagGenerator</node>
-            <node x="591.0" y="740.0">\Err</node>
-            <node x="339.00000000000006" y="260.0">\Notice</node>
-            <node x="1320.875" y="160.0">\ListComponent</node>
-            <node x="498.5" y="660.0">\Validate</node>
-            <node x="42.25" y="160.0">\BaseHeader</node>
-            <node x="114.12009803921569" y="80.0">\EmptyComponent</node>
-            <node x="590.4431372549021" y="80.0">\Page</node>
-            <node x="0.0" y="815.0">\NodeData</node>
-            <node x="619.75" y="505.0">\HTMLParentContext</node>
-            <node x="256.75" y="505.0">\HTMLParentlessContext</node>
-            <node x="1107.875" y="260.0">\Dropdown</node>
-            <node x="940.375" y="350.0">\NumberInp</node>
-            <node x="104.0" y="740.0">\SuperOutput</node>
-            <node x="751.875" y="260.0">\TimeInput</node>
-            <node x="408.875" y="160.0">\FileInputComponent</node>
-            <node x="643.375" y="350.0">\Textarea</node>
-            <node x="250.0" y="815.0">\Parser</node>
-            <node x="836.375" y="350.0">\Password</node>
-            <node x="436.4431372549021" y="80.0">\ShowIfComponent</node>
-            <node x="1212.875" y="160.0">\FormElem</node>
-            <node x="132.0" y="815.0">\FileInfo</node>
-            <node x="678.193137254902" y="80.0">\NamedLabeledComponent</node>
-            <node x="1217.875" y="260.0">\Checkbox</node>
-            <node x="0.0" y="740.0">\S3Output</node>
-            <node x="119.0" y="660.0">\Output</node>
-            <node x="0.0" y="585.0">\HTMLContentGenerator</node>
-            <node x="1440.875" y="260.0">\Radios</node>
-            <node x="92.0" y="260.0">\GroupHeader</node>
-            <node x="1125.875" y="160.0">\Group</node>
-            <node x="545.875" y="260.0">\Range</node>
-            <node x="860.875" y="260.0">\DateTimePicker</node>
-            <node x="566.125" y="0.0">\Component</node>
-            <node x="435.87500000000006" y="260.0">\FileUpload</node>
-            <node x="437.37500000000006" y="350.0">\EmailAddr</node>
-            <node x="997.875" y="260.0">\DatePicker</node>
-            <node x="546.375" y="350.0">\UrlInput</node>
-            <node x="741.375" y="350.0">\Textbox</node>
-            <node x="684.0" y="660.0">\ClientData</node>
-            <node x="0.0" y="260.0">\Header</node>
-            <node x="1323.875" y="260.0">\Checkboxes</node>
-            <node x="382.0" y="740.0">\EmptyResult</node>
-            <node x="305.37500000000006" y="350.0">\PhoneNumber</node>
-            <node x="95.75" y="505.0">\HTMLRealGenerator</node>
-            <node x="217.0" y="260.0">\GroupNotice</node>
+            <node x="183.0" y="1495.0">\HTMLGeneratorAbstract</node>
+            <node x="1200.0" y="779.0">\BaseNotice</node>
+            <node x="456.0" y="497.0">\InputComponent</node>
+            <node x="233.0" y="220.0">\SpecialInput</node>
+            <node x="199.0" y="1630.0">\HTMLDummyGenerator</node>
+            <node x="752.0" y="1031.0">\GroupComponent</node>
+            <node x="1109.0" y="1453.0">\OkJust</node>
+            <node x="678.0" y="1496.0">\MongoOutput</node>
+            <node x="353.0" y="1271.0">\HTMLTagGenerator</node>
+            <node x="1185.0" y="1271.0">\Err</node>
+            <node x="1492.0" y="851.0">\Notice</node>
+            <node x="1110.0" y="1370.0">\Validate</node>
+            <node x="513.0" y="1039.0">\ListComponent</node>
+            <node x="1119.0" y="503.0">\BaseHeader</node>
+            <node x="990.0" y="749.0">\EmptyComponent</node>
+            <node x="951.0" y="922.0">\Page</node>
+            <node x="1527.0" y="1271.0">\NodeData</node>
+            <node x="0.0" y="1517.0">\HTMLParentContext</node>
+            <node x="92.0" y="1344.0">\HTMLParentlessContext</node>
+            <node x="281.0" y="415.0">\Dropdown</node>
+            <node x="12.0" y="18.0">\NumberInp</node>
+            <node x="841.0" y="1364.0">\SuperOutput</node>
+            <node x="442.0" y="730.0">\TimeInput</node>
+            <node x="848.0" y="564.0">\FileInputComponent</node>
+            <node x="114.0" y="228.0">\Textarea</node>
+            <node x="0.0" y="1705.0">\Parser</node>
+            <node x="641.0" y="889.0">\ShowIfComponent</node>
+            <node x="0.0" y="315.0">\Password</node>
+            <node x="871.0" y="1150.0">\FormElem</node>
+            <node x="661.0" y="640.0">\NamedLabeledComponent</node>
+            <node x="1332.0" y="1271.0">\FileInfo</node>
+            <node x="267.0" y="684.0">\Checkbox</node>
+            <node x="619.0" y="1271.0">\S3Output</node>
+            <node x="728.0" y="1408.0">\Output</node>
+            <node x="412.0" y="1505.0">\HTMLContentGenerator</node>
+            <node x="457.0" y="382.0">\Radios</node>
+            <node x="1382.0" y="532.0">\GroupHeader</node>
+            <node x="717.0" y="1174.0">\Group</node>
+            <node x="453.0" y="571.0">\Range</node>
+            <node x="505.0" y="223.0">\DateTimePicker</node>
+            <node x="827.0" y="824.0">\Component</node>
+            <node x="919.0" y="286.0">\FileUpload</node>
+            <node x="240.0" y="0.0">\EmailAddr</node>
+            <node x="251.0" y="530.0">\DatePicker</node>
+            <node x="92.0" y="448.0">\UrlInput</node>
+            <node x="1707.0" y="1271.0">\ClientData</node>
+            <node x="467.0" y="152.0">\Textbox</node>
+            <node x="1273.0" y="370.0">\Header</node>
+            <node x="655.0" y="405.0">\Checkboxes</node>
+            <node x="1001.0" y="1277.0">\EmptyResult</node>
+            <node x="419.0" y="37.0">\PhoneNumber</node>
+            <node x="302.0" y="1424.0">\HTMLRealGenerator</node>
+            <node x="1363.0" y="1052.0">\GroupNotice</node>
           </nodes>
           <notes />
           <edges>
             <edge source="\Group" target="\GroupComponent">
-              <point x="0.0" y="-15.0" />
-              <point x="1159.375" y="135.0" />
-              <point x="1213.2083333333333" y="135.0" />
-              <point x="-43.66666666666674" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\Range" target="\InputComponent">
-              <point x="0.0" y="-15.0" />
-              <point x="579.375" y="210.0" />
-              <point x="986.875" y="210.0" />
-              <point x="-56.0" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\BaseNotice" target="\EmptyComponent">
-              <point x="0.0" y="-15.0" />
-              <point x="320.75000000000006" y="135.0" />
-              <point x="213.1200980392157" y="135.0" />
-              <point x="33.0" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\HTMLParentContext" target="\HTMLGeneratorAbstract">
-              <point x="0.0" y="-15.0" />
-              <point x="690.75" y="475.0" />
-              <point x="489.125" y="475.0" />
-              <point x="61.125" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\Page" target="\Component">
-              <point x="0.0" y="-15.0" />
-              <point x="620.4431372549021" y="60.0" />
-              <point x="615.125" y="60.0" />
-              <point x="0.0" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\SpecialInput" target="\InputComponent">
-              <point x="0.0" y="-15.0" />
-              <point x="682.375" y="220.0" />
-              <point x="1000.875" y="220.0" />
-              <point x="-42.0" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\NumberInp" target="\SpecialInput">
-              <point x="0.0" y="-15.0" />
-              <point x="987.875" y="310.0" />
-              <point x="724.8035714285714" y="310.0" />
-              <point x="42.428571428571445" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\EmptyComponent" target="\Component">
-              <point x="0.0" y="-15.0" />
-              <point x="180.1200980392157" y="50.0" />
-              <point x="575.925" y="50.0" />
-              <point x="-39.200000000000045" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\Radios" target="\InputComponent">
-              <point x="0.0" y="-15.0" />
-              <point x="1475.375" y="210.0" />
-              <point x="1098.875" y="210.0" />
-              <point x="56.0" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\FormElem" target="\GroupComponent">
-              <point x="0.0" y="-15.0" />
-              <point x="0.0" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\ListComponent" target="\GroupComponent">
-              <point x="0.0" y="-15.0" />
-              <point x="1378.875" y="135.0" />
-              <point x="1300.5416666666667" y="135.0" />
-              <point x="43.66666666666674" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\HTMLTagGenerator" target="\HTMLRealGenerator">
-              <point x="-2.8421709430404007E-14" y="-15.0" />
-              <point x="251.5" y="560.0" />
-              <point x="201.5" y="560.0" />
-              <point x="35.25" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\GroupNotice" target="\BaseNotice">
-              <point x="0.0" y="-15.0" />
-              <point x="268.0" y="240.0" />
-              <point x="297.50000000000006" y="240.0" />
-              <point x="-23.25" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\OkJust" target="\Validate">
-              <point x="0.0" y="-15.0" />
-              <point x="0.0" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\Checkboxes" target="\InputComponent">
-              <point x="0.0" y="-15.0" />
-              <point x="1372.375" y="220.0" />
-              <point x="1084.875" y="220.0" />
-              <point x="42.0" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\ShowIfComponent" target="\Component">
-              <point x="0.0" y="-15.0" />
-              <point x="503.4431372549021" y="60.0" />
-              <point x="595.5250000000001" y="60.0" />
-              <point x="-19.600000000000023" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\EmptyResult" target="\Validate">
-              <point x="0.0" y="-15.0" />
-              <point x="432.0" y="715.0" />
-              <point x="511.1666666666667" y="715.0" />
-              <point x="-25.333333333333314" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\S3Output" target="\Output">
-              <point x="0.0" y="-15.0" />
-              <point x="42.0" y="715.0" />
-              <point x="131.0" y="715.0" />
-              <point x="-24.0" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\Textarea" target="\SpecialInput">
-              <point x="0.0" y="-15.0" />
-              <point x="0.0" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\HTMLRealGenerator" target="\HTMLGeneratorAbstract">
-              <point x="0.0" y="-15.0" />
-              <point x="166.25" y="475.0" />
-              <point x="366.875" y="475.0" />
-              <point x="-61.125" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\Notice" target="\BaseNotice">
-              <point x="0.0" y="-15.0" />
-              <point x="373.50000000000006" y="240.0" />
-              <point x="344.00000000000006" y="240.0" />
-              <point x="23.25" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\HTMLParentlessContext" target="\HTMLGeneratorAbstract">
-              <point x="0.0" y="-15.0" />
-              <point x="337.25" y="485.0" />
-              <point x="407.625" y="485.0" />
-              <point x="-20.375" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\MongoOutput" target="\Output">
-              <point x="0.0" y="-15.0" />
-              <point x="281.5" y="715.0" />
-              <point x="179.0" y="715.0" />
-              <point x="24.0" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\FileUpload" target="\FileInputComponent">
-              <point x="-5.6843418860808015E-14" y="-15.0" />
-              <point x="0.0" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\HTMLDummyGenerator" target="\HTMLGeneratorAbstract">
-              <point x="0.0" y="-15.0" />
-              <point x="518.75" y="485.0" />
-              <point x="448.375" y="485.0" />
-              <point x="20.375" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\GroupHeader" target="\BaseHeader">
-              <point x="0.0" y="-15.0" />
-              <point x="144.5" y="240.0" />
-              <point x="114.25" y="240.0" />
-              <point x="24.0" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\FileInputComponent" target="\NamedLabeledComponent">
-              <point x="-5.6843418860808015E-14" y="-15.0" />
-              <point x="480.87499999999994" y="135.0" />
-              <point x="722.693137254902" y="135.0" />
-              <point x="-44.5" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\TimeInput" target="\InputComponent">
-              <point x="0.0" y="-15.0" />
-              <point x="796.375" y="230.0" />
-              <point x="1014.875" y="230.0" />
-              <point x="-28.0" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\InputComponent" target="\NamedLabeledComponent">
-              <point x="0.0" y="-15.0" />
-              <point x="1042.875" y="135.0" />
-              <point x="811.693137254902" y="135.0" />
-              <point x="44.5" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\NamedLabeledComponent" target="\Component">
-              <point x="0.0" y="-15.0" />
-              <point x="767.193137254902" y="60.0" />
-              <point x="634.7250000000001" y="60.0" />
-              <point x="19.600000000000023" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\DateTimePicker" target="\InputComponent">
-              <point x="0.0" y="-15.0" />
-              <point x="919.375" y="240.0" />
-              <point x="1028.875" y="240.0" />
-              <point x="-14.0" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\Textbox" target="\SpecialInput">
-              <point x="0.0" y="-15.0" />
-              <point x="778.875" y="330.0" />
-              <point x="696.5178571428571" y="330.0" />
-              <point x="14.14285714285711" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\UrlInput" target="\SpecialInput">
-              <point x="0.0" y="-15.0" />
-              <point x="584.875" y="330.0" />
-              <point x="668.2321428571429" y="330.0" />
-              <point x="-14.14285714285711" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\Password" target="\SpecialInput">
-              <point x="0.0" y="-15.0" />
-              <point x="878.375" y="320.0" />
-              <point x="710.6607142857143" y="320.0" />
-              <point x="28.285714285714334" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\HTMLContentGenerator" target="\HTMLRealGenerator">
-              <point x="0.0" y="-15.0" />
-              <point x="81.0" y="560.0" />
-              <point x="131.0" y="560.0" />
-              <point x="-35.25" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\Header" target="\BaseHeader">
-              <point x="0.0" y="-15.0" />
-              <point x="36.0" y="240.0" />
-              <point x="66.25" y="240.0" />
-              <point x="-24.0" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\EmailAddr" target="\SpecialInput">
-              <point x="-5.6843418860808015E-14" y="-15.0" />
-              <point x="481.875" y="320.0" />
-              <point x="654.0892857142857" y="320.0" />
-              <point x="-28.285714285714334" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\Checkbox" target="\InputComponent">
-              <point x="0.0" y="-15.0" />
-              <point x="1260.875" y="230.0" />
-              <point x="1070.875" y="230.0" />
-              <point x="28.0" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\DatePicker" target="\InputComponent">
-              <point x="0.0" y="-15.0" />
-              <point x="0.0" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\SuperOutput" target="\Output">
-              <point x="0.0" y="-15.0" />
-              <point x="0.0" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\Err" target="\Validate">
-              <point x="0.0" y="-15.0" />
-              <point x="615.0" y="715.0" />
-              <point x="561.8333333333334" y="715.0" />
-              <point x="25.33333333333337" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\Dropdown" target="\InputComponent">
-              <point x="0.0" y="-15.0" />
-              <point x="1152.875" y="240.0" />
-              <point x="1056.875" y="240.0" />
-              <point x="14.0" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\PhoneNumber" target="\SpecialInput">
-              <point x="0.0" y="-15.0" />
-              <point x="361.37500000000006" y="310.0" />
-              <point x="639.9464285714286" y="310.0" />
-              <point x="-42.428571428571445" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\BaseHeader" target="\EmptyComponent">
-              <point x="0.0" y="-15.0" />
-              <point x="90.25" y="135.0" />
-              <point x="147.1200980392157" y="135.0" />
-              <point x="-33.0" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
             <edge source="\GroupComponent" target="\Component">
-              <point x="0.0" y="-15.0" />
-              <point x="1256.875" y="50.0" />
-              <point x="654.325" y="50.0" />
-              <point x="39.200000000000045" y="15.0" />
+              <point x="0.0" y="0.0" />
+              <point x="0.0" y="0.0" />
             </edge>
           </edges>
-          <settings layout="Hierarchic Group" zoom="1.0" x="755.5" y="423.0" />
+          <settings layout="Hierarchic Group" zoom="1.0" x="751.5" y="749.0" />
           <SelectedNodes />
-          <Categories />
+          <Categories>
+            <Category>Fields</Category>
+          </Categories>
           <VISIBILITY>private</VISIBILITY>
         </state>
       </provider>
