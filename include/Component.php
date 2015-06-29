@@ -76,8 +76,8 @@ abstract class FileInputComponent extends NamedLabeledComponent {
 }
 
 class FileInfo {
-	function __construct($value, $filename, $mime, $permissions) {
-		$this->file = $value;
+	function __construct($file, $filename, $mime, $permissions) {
+		$this->file = $file;
 		$this->filename = $filename;
 		$this->mime = $mime;
 		$this->permissions = $permissions;

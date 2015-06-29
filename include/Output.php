@@ -17,6 +17,8 @@ class MongoOutput implements Output {
 		$data = array_map(function($x) {
 			if($x instanceof DateTimeImmutable) {
 				return new MongoDate($x->getTimestamp());
+			} else if($x instanceof FileInfo) {
+				throw new Exception('Unexpected file!');
 			} else {
 				return $x;
 			}
