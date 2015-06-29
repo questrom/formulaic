@@ -38,7 +38,8 @@ input[type=range]::-moz-focus-outer {
 
 .ui.top.attached.header { margin-top:0 !important; }
 
-.ui.icon.message > .icon:not(.close) { vertical-align:top; }
+.ui.icon.message > .icon:not(.close),
+.ui.header.attached > .icon { vertical-align:top; }
 
 .red.prompt { display: table; }
 

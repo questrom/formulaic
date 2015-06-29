@@ -652,37 +652,28 @@ class DatePicker extends InputComponent {
 	}
 }
 
-class GroupHeader extends EmptyComponent {
-	function __construct($args) {
-		$this->text = $args['text'];
-		parent::__construct($args);
-	}
-	function get($h) {
-		return $h
-		->h5->class('ui header attached ')
-			->t($this->text)
-		->end;
-	}
-}
 
-class Header extends EmptyComponent {
+
+abstract class BaseHeader extends EmptyComponent {
 	function __construct($args) {
 		if(is_string($args)) {
 			$args = ['text' => $args];
 		}
+
+		$this->__args = $args;
+
 		$this->text = $args['text'];
 		$this->subhead = isset($args['subhead']) ? $args['subhead'] : null;
 		$this->icon = isset($args['icon']) ? $args['icon'] : null;
-		$this->size = isset($args['size']) ? intval($args['size']) : 1;
+		$this->size = isset($args['size']) ? intval($args['size']) : null;
 		parent::__construct($args);
 	}
-	function get($h) { //this->size
+	function get($h) {
 		$inside = $h->t($this->text)
-				->hif($this->subhead !== null)
-					->div->class('sub header')->t($this->subhead)->end
-				->end;
+		->hif($this->subhead !== null)
+			->div->class('sub header')->t($this->subhead)->end
+		->end;
 		return $h
-		->{'h' . $this->size}->class('ui header')
 			->hif($this->icon !== null)
 				->i->class($this->icon . ' icon')->end
 				->div->class('content')
@@ -691,7 +682,26 @@ class Header extends EmptyComponent {
 			->end
 			->hif($this->icon === null)
 				->add($inside)
-			->end
+			->end;
+	}
+}
+
+class Header extends BaseHeader {
+	function get($h) { //this->size
+		$size = ($this->size === null) ? 1 : $this->size;
+		return $h
+		->{'h' . $size}->class('ui header')
+			->add(parent::get($h))
+		->end;
+	}
+}
+
+class GroupHeader extends BaseHeader {
+	function get($h) {
+		$size = ($this->size === null) ? 5 : $this->size;
+		return $h
+		->{'h' . $size}->class('ui header attached')
+			->add(parent::get($h))
 		->end;
 	}
 }
@@ -860,7 +870,7 @@ class Group extends GroupComponent {
 
 		$items = array_map(function($item) {
 			if($item instanceof Header) {
-				return new GroupHeader(['text' => $item->text]);
+				return new GroupHeader($item->__args);
 			} else if($item instanceof Notice) {
 				return new GroupNotice($item->__args);
 			} else {
