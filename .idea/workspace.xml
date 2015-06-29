@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="bcf5e309-763e-4097-bf92-0af3301b7b9c" name="Default" comment="" />
+    <list default="true" id="bcf5e309-763e-4097-bf92-0af3301b7b9c" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/composer.json" afterPath="$PROJECT_DIR$/composer.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/composer.lock" afterPath="$PROJECT_DIR$/composer.lock" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mailtest.php" afterPath="$PROJECT_DIR$/mailtest.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+    </list>
     <ignored path="formbuilder.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path=".idea/dataSources.local.xml" />
@@ -39,13 +45,13 @@
         <entry file="file://$PROJECT_DIR$/include/Component.php">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="-9.384615" vertical-offset="4941" max-vertical-offset="17051">
-              <caret line="305" column="5" selection-start-line="305" selection-start-column="4" selection-end-line="305" selection-end-column="4" />
+              <caret line="305" column="4" selection-start-line="305" selection-start-column="4" selection-end-line="305" selection-end-column="4" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="PHP/\GroupHeader" pinned="false" current-in-tab="true">
+      <file leaf-file-name="PHP/\GroupHeader" pinned="false" current-in-tab="false">
         <entry file="uml://PHP/\GroupHeader">
           <provider selected="true" editor-type-id="UmlEditorProvider">
             <state>
@@ -68,7 +74,7 @@
                 <node x="1119.0" y="503.0">\BaseHeader</node>
                 <node x="990.0" y="749.0">\EmptyComponent</node>
                 <node x="951.0" y="922.0">\Page</node>
-                <node x="1527.0" y="1271.0">\NodeData</node>
+                <node x="1519.0" y="1271.0">\NodeData</node>
                 <node x="0.0" y="1517.0">\HTMLParentContext</node>
                 <node x="92.0" y="1344.0">\HTMLParentlessContext</node>
                 <node x="281.0" y="415.0">\Dropdown</node>
@@ -95,7 +101,7 @@
                 <node x="827.0" y="824.0">\Component</node>
                 <node x="919.0" y="286.0">\FileUpload</node>
                 <node x="240.0" y="0.0">\EmailAddr</node>
-                <node x="251.0" y="530.0">\DatePicker</node>
+                <node x="243.0" y="530.0">\DatePicker</node>
                 <node x="92.0" y="448.0">\UrlInput</node>
                 <node x="1707.0" y="1271.0">\ClientData</node>
                 <node x="467.0" y="152.0">\Textbox</node>
@@ -289,12 +295,32 @@
                   <point x="0.0" y="0.0" />
                 </edge>
               </edges>
-              <settings layout="Hierarchic Group" zoom="1.0" x="751.5" y="749.0" />
+              <settings layout="Hierarchic Group" zoom="1.0" x="220.0" y="278.0" />
               <SelectedNodes />
               <Categories>
                 <Category>Fields</Category>
               </Categories>
               <VISIBILITY>private</VISIBILITY>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="mailtest.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/mailtest.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.35457706" vertical-offset="0" max-vertical-offset="863">
+              <caret line="18" column="40" selection-start-line="18" selection-start-column="40" selection-end-line="18" selection-end-column="40" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="password.txt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/password.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="102">
+              <caret line="0" column="8" selection-start-line="0" selection-start-column="8" selection-end-line="0" selection-end-column="8" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -312,7 +338,7 @@
       <file leaf-file-name="the.todo" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/the.todo">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1207">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1224">
               <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
@@ -333,6 +359,9 @@
         <option value="$PROJECT_DIR$/parts.php" />
         <option value="$PROJECT_DIR$/the.todo" />
         <option value="$PROJECT_DIR$/include/Component.php" />
+        <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/password.txt" />
+        <option value="$PROJECT_DIR$/mailtest.php" />
       </list>
     </option>
   </component>
@@ -696,7 +725,7 @@
     <entry file="file://$PROJECT_DIR$/include/Component.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-9.384615" vertical-offset="4941" max-vertical-offset="17051">
-          <caret line="305" column="5" selection-start-line="305" selection-start-column="4" selection-end-line="305" selection-end-column="4" />
+          <caret line="305" column="4" selection-start-line="305" selection-start-column="4" selection-end-line="305" selection-end-column="4" />
           <folding />
         </state>
       </provider>
@@ -858,7 +887,7 @@
             <node x="1119.0" y="503.0">\BaseHeader</node>
             <node x="990.0" y="749.0">\EmptyComponent</node>
             <node x="951.0" y="922.0">\Page</node>
-            <node x="1527.0" y="1271.0">\NodeData</node>
+            <node x="1519.0" y="1271.0">\NodeData</node>
             <node x="0.0" y="1517.0">\HTMLParentContext</node>
             <node x="92.0" y="1344.0">\HTMLParentlessContext</node>
             <node x="281.0" y="415.0">\Dropdown</node>
@@ -885,7 +914,7 @@
             <node x="827.0" y="824.0">\Component</node>
             <node x="919.0" y="286.0">\FileUpload</node>
             <node x="240.0" y="0.0">\EmailAddr</node>
-            <node x="251.0" y="530.0">\DatePicker</node>
+            <node x="243.0" y="530.0">\DatePicker</node>
             <node x="92.0" y="448.0">\UrlInput</node>
             <node x="1707.0" y="1271.0">\ClientData</node>
             <node x="467.0" y="152.0">\Textbox</node>
@@ -1079,12 +1108,52 @@
               <point x="0.0" y="0.0" />
             </edge>
           </edges>
-          <settings layout="Hierarchic Group" zoom="1.0" x="751.5" y="749.0" />
+          <settings layout="Hierarchic Group" zoom="1.0" x="220.0" y="278.0" />
           <SelectedNodes />
           <Categories>
             <Category>Fields</Category>
           </Categories>
           <VISIBILITY>private</VISIBILITY>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/submit.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.11819235" vertical-offset="0" max-vertical-offset="863">
+          <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.09837963" vertical-offset="0" max-vertical-offset="864">
+          <caret line="5" column="12" selection-start-line="5" selection-start-column="12" selection-end-line="5" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/password.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="889">
+          <caret line="0" column="8" selection-start-line="0" selection-start-column="8" selection-end-line="0" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vendor/autoload.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="889">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mailtest.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.35457706" vertical-offset="0" max-vertical-offset="863">
+          <caret line="18" column="40" selection-start-line="18" selection-start-column="40" selection-end-line="18" selection-end-column="40" />
+          <folding />
         </state>
       </provider>
     </entry>

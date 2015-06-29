@@ -1,14 +1,24 @@
 <?php
 
+require('vendor/autoload.php');
+require('parts.php');
 
-$to = 'perljason@gmail.com';
-$subject = 'HTML email test';
+use Nette\Mail\Message;
 
-$headers = 'From: smgforms@bu.edu\r\n';
-$headers .= 'MIME-Version: 1.0\r\n';
-$headers .= 'Content-Type: text/html; charset=ISO-8859-1\r\n';
-$message = '<html><body><h1>Test</h1></body></html>';
+$mail = new Message();
+$mail->setFrom('Form Builder <perljason@gmail.com>')
+    ->addTo('perljason@gmail.com')
+    ->addTo('jhansel@bu.edu')
+    ->setSubject('Hello world!')
+    ->setHTMLBody('<b>SampleHTML</b>');
 
-mail($to, $subject, $message, $headers);
+use Nette\Mail\SmtpMailer;
 
-// test
+$mailer = new SmtpMailer([
+    'host' => 'smtp.gmail.com',
+    'username' => 'perljason@gmail.com',
+    'password' => file_get_contents('password.txt'),
+    'secure' => 'ssl'
+]);
+
+$mailer->send($mail);
