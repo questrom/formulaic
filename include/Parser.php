@@ -125,7 +125,7 @@ class NodeData {
 
 class Parser {
 
-	static function domToArray($elem){
+	static protected function domToArray($elem){
 		global $parsers;
 
 		$arr = new NodeData();
