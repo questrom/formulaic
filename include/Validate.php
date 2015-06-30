@@ -280,7 +280,6 @@ abstract class Validate {
 		});
 	}
 	function minMaxDateTime($min, $max) {
-
 		return $this->innerBind(function($x) use($min, $max) {
 			if($min !== null && $min->diff($x)->invert === 1) {
 				return new Err('Date must be after ' . $min->format('m/d/Y g:i a') . '.');
@@ -295,10 +294,7 @@ abstract class Validate {
 		if($step === 'any') {
 			return $this;
 		} else {
-
-				// var_dump($step);
 			return $this->innerBind(function($x) use ($step) {
-
 				// Avoid floating point rounding errors
 				$x = $step * round($x / $step);
 

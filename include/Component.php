@@ -515,7 +515,6 @@ class Range extends InputComponent {
 	protected function validate($against) {
 		return $against
 			->filterString()
-			->maybeString() // So we end up with a Maybe<> if not required
 			->filterNumber(false)
 			->minMaxNumber($this->min, $this->max)
 			->stepNumber($this->step);
@@ -542,7 +541,7 @@ class Password extends SpecialInput {
 	}
 	function getMerger($val) {
 		return parent::getMerger($val)
-			->bind(function($x) {
+			->innerBind(function($x) {
 				// Avoid storing passwords.
 				return new OkJust([]);
 			});
