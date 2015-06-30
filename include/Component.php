@@ -87,7 +87,6 @@ class TimeInput extends PostInputComponent {
 			->div->class('ui left icon input')
 				->i->class('clock icon')->end
 				->input->type('text')->name($this->name)->data('inputmask', " 'alias': 'h:s t', 'placeholder': 'hh:mm am' ")->end
-				->end
 			->end
 		->end;
 	}
@@ -529,7 +528,6 @@ class DatePicker extends PostInputComponent {
 			->div->class('ui left icon input')
 				->i->class('calendar icon')->end
 				->input->type('text')->name($this->name)->data('inputmask', " 'alias': 'mm/dd/yyyy' ")->end
-				->end
 			->end
 		->end;
 	}
