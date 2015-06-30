@@ -25,14 +25,16 @@ class ShowIfComponent extends Component {
 			->end;
 	}
 	function getMerger($val) {
-		return $val->bind(function($val) {
-			$post_value = $val->post;
-			if(!(isset($post_value[$this->cond]) ? $post_value[$this->cond] === "on" : false)) {
-				return new OkJust([]);
-			} else {
-				return $this->item->getMerger( new OkJust( $val  ) );
-			}
-		});
+		return $val
+			->collapse()
+			->innerBind(function($val) {
+				$post_value = $val->post;
+				if(!(isset($post_value[$this->cond]) ? $post_value[$this->cond] === "on" : false)) {
+					return new OkJust([]);
+				} else {
+					return $this->item->getMerger( new OkJust( $val  ) );
+				}
+			});
 	}
 }
 
@@ -58,7 +60,8 @@ abstract class InputComponent extends NamedLabeledComponent {
 			return new OkJust(isset($v->post[$this->name]) ? $v->post[$this->name] : null);
 		});
 		return $this->validate($val)
-			->bind(function($r) {
+			->collapse()
+			->innerBind(function($r) {
 				return new OkJust([$this->name => $r]);
 			})
 			->bind_err(function($r) {
@@ -74,7 +77,8 @@ abstract class FileInputComponent extends NamedLabeledComponent {
 			return new OkJust(isset($v->files[$this->name]) ? $v->files[$this->name] : null);
 		});
 		return $this->validate($val)
-			->bind(function($r) {
+			->collapse()
+			->innerBind(function($r) {
 				return new OkJust([$this->name => $r]);
 			})
 			->bind_err(function($r) {
@@ -106,7 +110,8 @@ abstract class GroupComponent extends Component {
 				$result = $x->getMerger( new OkJust( $val  ) );
 
 				$mergeM = $result
-					->bind(function($r) {
+					->collapse()
+					->innerBind(function($r) {
 						return new OkJust(function($total) use ($r) {
 							return array_merge($r, $total);
 						});

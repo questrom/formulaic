@@ -343,9 +343,7 @@ class Err extends Validate {
 	function __construct($value) {
 		$this->value = $value;
 	}
-	function bind(callable $x) {
-		return $this;
-	}
+
 	function bind_err(callable $x) {
 		return $x($this->value);
 	}
@@ -354,6 +352,9 @@ class Err extends Validate {
 	}
 
 	function bindNothing(callable $x) {
+		return $this;
+	}
+	function collapse() {
 		return $this;
 	}
 }
@@ -363,9 +364,7 @@ class EmptyResult extends Validate {
 	function __construct($value) {
 		$this->value = $value;
 	}
-	function bind(callable $x) {
-		return $x($this->value);
-	}
+
 	function bind_err(callable $x) {
 		return $this;
 	}
@@ -375,6 +374,9 @@ class EmptyResult extends Validate {
 	}
 	function bindNothing(callable $x) {
 		return $x($this->value);
+	}
+	function collapse() {
+		return new OkJust($this->value);
 	}
 }
 
@@ -383,9 +385,7 @@ class OkJust  extends Validate {
 	function __construct($value) {
 		$this->value = $value;
 	}
-	function bind(callable $x) {
-		return $x($this->value);
-	}
+
 	function bind_err(callable $x) {
 		return $this;
 	}
@@ -393,6 +393,9 @@ class OkJust  extends Validate {
 		return $x($this->value);
 	}
 	function bindNothing(callable $x) {
+		return $this;
+	}
+	function collapse() {
 		return $this;
 	}
 }
