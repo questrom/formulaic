@@ -582,11 +582,9 @@ class ListComponent extends GroupComponent {
 	}
 	function getMerger($val) {
 
-
-		$val = $val->innerBind(function($v) {
+		return $val->innerBind(function($v) {
 			return Result::ok(isset($v->post[$this->name]) ? $v->post[$this->name] : null);
 		});
-		return $val
 		->innerBind(function($data) {
 			if($data === null) {
 				return Result::ok([]);
@@ -595,7 +593,7 @@ class ListComponent extends GroupComponent {
 			} else {
 				return Result::error([
 					$this->name => 'Invalid data'
-				]);;
+				]);
 			}
 		})
 		->innerBind(function($list) {
