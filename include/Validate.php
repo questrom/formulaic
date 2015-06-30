@@ -7,20 +7,20 @@ abstract class Validate {
 			$value = filter_var($x, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
 
 			if($value === true) {
-				return new OkJust(true);
+				return okJust(true);
 			} else if($value === false) {
-				return new OkJust(false);
+				return okJust(false);
 			} else {
-				return new Err('Invalid data!');
+				return new Failure('Invalid data!');
 			}
 		});
 	}
 	function filterString() {
 		return $this->innerBind(function($x) {
 			if(is_string($x)) {
-				return new OkJust($x);
+				return okJust($x);
 			} else {
-				return new Err('Invalid data!');
+				return new Failure('Invalid data!');
 			}
 		});
 	}
@@ -28,31 +28,31 @@ abstract class Validate {
 		return $this->innerBind(function($x) use ($cons, $msg) {
 			$addr = filter_var($x, $cons);
 			if($addr !== false) {
-				return new OkJust($addr);
+				return okJust($addr);
 			} else {
-				return new Err($msg);
+				return new Failure($msg);
 			}
 		});
 	}
 	function filterChosenFromOptions($options) {
 		return $this->innerBind(function($x) use($options) {
 				if($x === '' || $x === null) {
-					return new EmptyResult(null);
+					return emptyResult(null);
 				} else if(in_array($x, $options, TRUE)) {
-					return new OkJust($x);
+					return okJust($x);
 				} else {
-					return new Err('Invalid data!');
+					return new Failure('Invalid data!');
 				}
 			});
 	}
 	function filterManyChosenFromOptions($options) {
 		return $this->innerBind(function($x) use($options) {
 			if($x === null) {
-				return new OkJust([]);
+				return okJust([]);
 			} else if(is_array($x) && count(array_diff($x, $options)) === 0 ) {
-				return new OkJust($x);
+				return okJust($x);
 			} else {
-				return new Err('Invalid data!');
+				return new Failure('Invalid data!');
 			}
 		});
 	}
@@ -60,7 +60,7 @@ abstract class Validate {
 		return $this->innerBind(function($x) {
 
 				if(trim($x) == '') {
-					return new EmptyResult(null);
+					return emptyResult(null);
 				}
 
 				$date = DateTimeImmutable::createFromFormat('m/d/Y', $x);
@@ -68,9 +68,9 @@ abstract class Validate {
 
 				if($date !== false) {
 					$date = $date->setTime(0, 0, 0);
-					return new OkJust($date);
+					return okJust($date);
 				} else {
-					return new Err('Invalid date!');
+					return new Failure('Invalid date!');
 				}
 			});
 	}
@@ -84,16 +84,16 @@ abstract class Validate {
 		return $this->innerBind(function($x) {
 
 			if(trim($x) == '') {
-				return new EmptyResult(null);
+				return emptyResult(null);
 			}
 
 			$date = DateTimeImmutable::createFromFormat('g:i a', $x);
 
 			if($date !== false) {
 				$seconds = ($date->format('G') * 3600) + ($date->format('i') * 60);
-				return new OkJust($seconds);
+				return okJust($seconds);
 			} else {
-				return new Err('Invalid time!');
+				return new Failure('Invalid time!');
 			}
 		});
 	}
@@ -101,15 +101,15 @@ abstract class Validate {
 		return $this->innerBind(function($x) {
 
 			if(trim($x) == '') {
-				return new EmptyResult(null);
+				return emptyResult(null);
 			}
 
 			$date = DateTimeImmutable::createFromFormat('m/d/Y g:i a', $x);
 
 			if($date !== false) {
-				return new OkJust($date);
+				return okJust($date);
 			} else {
-				return new Err('Invalid time!');
+				return new Failure('Invalid time!');
 			}
 		});
 	}
@@ -117,9 +117,9 @@ abstract class Validate {
 		return $this->innerBind(function($x) {
 			$phn = preg_replace('/[^x+0-9]/', '', $x);
 			if(strlen($phn) >= 10 || $x === '') {
-				return new OkJust($phn);
+				return okJust($phn);
 			} else {
-				return new Err('Invalid phone number.');
+				return new Failure('Invalid phone number.');
 			}
 		});
 	}
@@ -133,36 +133,36 @@ abstract class Validate {
 			}
 
 			if($num !== false) {
-				return new OkJust($num);
+				return okJust($num);
 			} else {
-				return new Err('Invalid number.');
+				return new Failure('Invalid number.');
 			}
 		});
 	}
 	function filterEmptyString() {
 		return $this->innerBind(function($x) {
 			if(trim($x) === '') {
-				return new EmptyResult($x);
+				return emptyResult($x);
 			} else {
-				return new OkJust($x);
+				return okJust($x);
 			}
 		});
 	}
 	function filterNoChoices() {
 		return $this->innerBind(function($x) {
 				if(count($x) === 0) {
-					return new EmptyResult($x);
+					return emptyResult($x);
 				}
-				return new OkJust($x);
+				return okJust($x);
 			});
 	}
 	// Required checkers
 	function requiredMaybe($enable) {
 		return $this->bindNothing(function($x) use ($enable) {
 			if($enable) {
-				return new Err('This field is required.');
+				return new Failure('This field is required.');
 			} else {
-				return new EmptyResult($x);
+				return emptyResult($x);
 			}
 		});
 	}
@@ -170,9 +170,9 @@ abstract class Validate {
 	function mustBeTrue($enable) {
 		return $this->innerBind(function($x) use ($enable) {
 			if($enable && !$x) {
-				return new Err('Please check this box before submitting the form.');
+				return new Failure('Please check this box before submitting the form.');
 			}
-			return new OkJust($x);
+			return okJust($x);
 		});
 	}
 	function mustHaveDomain($checkDomain) {
@@ -184,80 +184,80 @@ abstract class Validate {
 				$domain = array_pop($domain);
 
 				if($domain !== $checkDomain) {
-					return new Err('Domain must equal: ' . $checkDomain . '.');
+					return new Failure('Domain must equal: ' . $checkDomain . '.');
 				}
 			}
-			return new OkJust($x);
+			return okJust($x);
 		});
 	}
 	function minMaxDate($minDate, $maxDate) {
 		return $this->innerBind(function($x) use ($minDate, $maxDate) {
 				if($minDate !== null && $minDate > $x) {
-					return new Err('Please enter a date starting at ' . $minDate->format('Y-m-d'));
+					return new Failure('Please enter a date starting at ' . $minDate->format('Y-m-d'));
 				} else if($maxDate !== null && $maxDate < $x) {
-					return new Err('Please enter a date ending at ' . $maxDate->format('Y-m-d'));
+					return new Failure('Please enter a date ending at ' . $maxDate->format('Y-m-d'));
 				} else {
-					return new OkJust($x);
+					return okJust($x);
 				}
 			});
 	}
 	function minMaxLength($minLength, $maxLength) {
 		return $this->innerBind(function($x) use ($minLength, $maxLength) {
 			if(strlen($x) > $maxLength) {
-				return new Err('The input is too long. Maximum is ' . $maxLength . ' characters.');
+				return new Failure('The input is too long. Maximum is ' . $maxLength . ' characters.');
 			} else if(strlen($x) < $minLength) {
-				return new Err('The input is too short. Minimum is ' . $minLength . ' characters.');
+				return new Failure('The input is too short. Minimum is ' . $minLength . ' characters.');
 			} else {
-				return new OkJust($x);
+				return okJust($x);
 			}
 		});
 	}
 	function matchRegex($regex) {
 		return $this->innerBind(function($x) use ($regex) {
 			if($regex !== null && preg_match($regex, $x) === 0) {
-				return new Err('Invalid input!');
+				return new Failure('Invalid input!');
 			}
-			return new OkJust($x);
+			return okJust($x);
 		});
 	}
 	function matchHash($hash) {
 		return $this->innerBind(function($x) use ($hash) {
 			if($hash !== null) {
 				if(password_verify($x, $hash)) {
-					return new OkJust(null);
+					return okJust(null);
 				} else {
-					return new Err('Password incorrect!');
+					return new Failure('Password incorrect!');
 				}
 			}
 
-			return new OkJust($x);
+			return okJust($x);
 		});
 	}
 	function minMaxChoices($min, $max) {
 		return $this->innerBind(function($x) use($min, $max) {
 				if(count($x) < $min) {
-					return new Err('Please choose at least ' . $min . ' options.');
+					return new Failure('Please choose at least ' . $min . ' options.');
 				} else if(count($x) > $max) {
-					return new Err('At most ' . $max . ' choices are allowed.');
+					return new Failure('At most ' . $max . ' choices are allowed.');
 				}
-				return new OkJust($x);
+				return okJust($x);
 			});
 	}
 	function maybeString() {
 		return $this->innerBind(function($x) {
 				if(trim($x) === '') {
-					return new EmptyResult($x);
+					return emptyResult($x);
 				} else {
-					return new OkJust($x);
+					return okJust($x);
 				}
 			});
 	}
 	function minMaxNumber($min, $max) {
 		return $this->innerBind(function($x) use($min, $max) {
 			if($x < $min || $x > $max) {
-				return new Err('Number must be between ' . $min . ' and ' . $max . '.');
+				return new Failure('Number must be between ' . $min . ' and ' . $max . '.');
 			}
-			return new OkJust($x);
+			return okJust($x);
 		});
 	}
 	function minMaxTime($min, $max) {
@@ -274,20 +274,20 @@ abstract class Validate {
 
 		return $this->innerBind(function($x) use($min, $max, $compmin, $compmax) {
 			if($x < $compmin || $x > $compmax) {
-				return new Err('Time must be between ' . $min . ' and ' . $max . '.');
+				return new Failure('Time must be between ' . $min . ' and ' . $max . '.');
 			}
-			return new OkJust($x);
+			return okJust($x);
 		});
 	}
 	function minMaxDateTime($min, $max) {
 		return $this->innerBind(function($x) use($min, $max) {
 			if($min !== null && $min->diff($x)->invert === 1) {
-				return new Err('Date must be after ' . $min->format('m/d/Y g:i a') . '.');
+				return new Failure('Date must be after ' . $min->format('m/d/Y g:i a') . '.');
 			}
 			if($max !== null && $x->diff($max)->invert === 1) {
-				return new Err('Date must be before ' . $max->format('m/d/Y g:i a') . '.');
+				return new Failure('Date must be before ' . $max->format('m/d/Y g:i a') . '.');
 			}
-			return new OkJust($x);
+			return okJust($x);
 		});
 	}
 	function stepNumber($step) {
@@ -298,7 +298,7 @@ abstract class Validate {
 				// Avoid floating point rounding errors
 				$x = $step * round($x / $step);
 
-				return new OkJust($x);
+				return okJust($x);
 			});
 		}
 	}
@@ -310,9 +310,9 @@ abstract class Validate {
 			return $this->innerBind(function($x) use ($step) {
 
 				if(($x % ( 60 * $step)) === 0) {
-					return new OkJust($x);
+					return okJust($x);
 				} else {
-					return new Err('Time must be a multiple of ' . $step . ' minutes.');
+					return new Failure('Time must be a multiple of ' . $step . ' minutes.');
 				}
 
 			});
@@ -327,75 +327,71 @@ abstract class Validate {
 				$seconds = ($date->format('G') * 3600) + ($date->format('i') * 60);
 
 				if(($seconds % ( 60 * $step)) === 0) {
-					return new OkJust($date);
+					return okJust($date);
 				} else {
-					return new Err('Time must be a multiple of ' . $step . ' minutes.');
+					return new Failure('Time must be a multiple of ' . $step . ' minutes.');
 				}
 
 			});
 		}
 	}
+
+	// Utility methods
+	function collapse() {
+		return $this->bindNothing(function($x) {
+			return new Success(new Success($x));
+		});
+	}
+	function innerBind(callable $x) {
+		return $this->bind(function($val) use($x) {
+			if($val instanceof Failure) {
+				return new Success($val);
+			} else {
+				return $val->bind($x);
+			}
+		});
+	}
+	function bindNothing(callable $x) {
+		return $this->bind(function($val) use($x) {
+
+			if($val instanceof Failure) {
+				return $val->bind_err($x);
+			} else {
+				return new Success($val);
+			}
+		});
+	}
 }
 
 
-class Err extends Validate {
-	private $value;
+class Success extends Validate {
 	function __construct($value) {
 		$this->value = $value;
 	}
-
-	function bind_err(callable $x) {
+	function bind(callable $x) {
 		return $x($this->value);
 	}
-	function innerBind(callable $x) {
-		return $this;
-	}
-
-	function bindNothing(callable $x) {
-		return $this;
-	}
-	function collapse() {
+	function bind_err(callable $x) {
 		return $this;
 	}
 }
 
-class EmptyResult extends Validate {
-	private $value;
+class Failure extends Validate  {
 	function __construct($value) {
 		$this->value = $value;
 	}
-
+	function bind(callable $x) {
+		return $this;
+	}
 	function bind_err(callable $x) {
-		return $this;
-	}
-
-	function innerBind(callable $x) {
-		return $this;
-	}
-	function bindNothing(callable $x) {
 		return $x($this->value);
-	}
-	function collapse() {
-		return new OkJust($this->value);
 	}
 }
 
-class OkJust  extends Validate {
-	private $value;
-	function __construct($value) {
-		$this->value = $value;
-	}
+function okJust($x) {
+	return new Success(new Success($x));
+}
 
-	function bind_err(callable $x) {
-		return $this;
-	}
-	function innerBind(callable $x) {
-		return $x($this->value);
-	}
-	function bindNothing(callable $x) {
-		return $this;
-	}
-	function collapse() {
-		return $this;
-	}
+function emptyResult($x) {
+	return new Success(new Failure($x));
 }

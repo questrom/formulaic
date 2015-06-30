@@ -130,6 +130,8 @@ $(function() {
 			try {
 				x = JSON.parse(x);
 			} catch(e) {
+				$('.ui.form').append($('<p>').html(x));
+
 				console.log(x);
 				doFail();
 				return;

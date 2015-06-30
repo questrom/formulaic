@@ -7,9 +7,9 @@ $page = Parser::parse_jade('forms/test.jade');
 
 
 $data = $page
-	->getMerger(new OkJust(new ClientData($_POST, $_FILES)))
+	->getMerger(okJust(new ClientData($_POST, $_FILES)))
 	->bind_err(function($val) {
-		return new Err(json_encode([
+		return new Failure(json_encode([
 			'success' => false,
 			'errors' =>  $val
 		]));
@@ -21,13 +21,13 @@ $data = $page
 			var_dump($val);
 		$out = ob_get_clean();
 
-		return new OkJust(json_encode([
+		return okJust(json_encode([
 			'success' => true,
 			'debugOutput' => $page->debug ? $out : ''
 		]));
 	})
 	->bind_err(function($val) {
-		return new OkJust($val);
+		return okJust($val);
 	})
 	->innerBind(function($output) {
 		echo $output;
