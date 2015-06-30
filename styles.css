@@ -39,6 +39,8 @@ input[type=range]::-moz-focus-outer {
     margin-top: 0;
 }
 
+.pagination { text-align: center; line-height:37px; }
+
 .ui.checkbox + .ui.red.label.visible { float:left; margin-right: 1000px;}
 
 .ui.form .required > label:after,

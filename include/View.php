@@ -60,13 +60,27 @@ class TableView {
 		$sortBy['_id'] = -1; // Ensure determinism so we don't break pagination
 
 		$this->sortBy = $sortBy;
+
+		$this->perPage = isset($args['per-page']) ? $args['per-page'] : null;
 	}
-	function query() {
+	function query($getData) {
+
+		$this->page = (isset($getData['page']) ? $getData['page'] : 1) - 1;
+
+
 		$client = (new MongoClient($this->server))
 			->selectDB($this->database)
 			->selectCollection($this->collection);
 
 		$cursor = $client->find()->sort($this->sortBy);
+
+		$this->max = intval(floor($cursor->count() / $this->perPage)); // Need intval for the comparison below to work
+
+		if($this->perPage !== null) {
+			$cursor->skip($this->page * $this->perPage);
+			$cursor->limit($this->perPage);
+		}
+
 		$this->data = iterator_to_array($cursor);
 	}
 	function setPage($page) {
@@ -117,6 +131,21 @@ class TableView {
 									}, $this->cols))
 								->end;
 							}, $this->data))
+						->end
+						->hif($this->perPage)
+							->div->class('pagination')
+								->a->class('ui left floated primary labeled icon button ' . ($this->page === 0 ? 'disabled' : ''))
+									->href('?page=' . ($this->page))
+									->i->class('left chevron icon')->end
+									->t('Previous')
+								->end
+								->t('Page ' . ($this->page + 1) . ' of ' . ($this->max + 1))
+								->a->class('ui right floated primary right labeled icon button ' . (($this->page === $this->max) ? 'disabled' : ''))
+									->href('?page=' . ($this->page + 2))
+									->i->class('right chevron icon')->end
+									->t('Next')
+								->end
+							->end
 						->end
 					->end
 				->end
