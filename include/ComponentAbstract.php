@@ -131,7 +131,7 @@ abstract class NamedLabeledComponent implements YAMLPart, HTMLComponent, Validat
 	}
 }
 
-abstract class InputComponent extends NamedLabeledComponent {
+abstract class PostInputComponent extends NamedLabeledComponent {
 	function getMerger($val) {
 		return parent::getMerger(
 			$val->innerBind(function($x) {
@@ -208,7 +208,7 @@ abstract class GroupComponent implements YAMLPart, HTMLComponent, Validatable {
 	}
 }
 
-abstract class SpecialInput extends InputComponent {
+abstract class SpecialInput extends PostInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
 

@@ -41,7 +41,7 @@ class Label extends EmptyComponent {
 	}
 }
 
-class Checkbox extends InputComponent {
+class Checkbox extends PostInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
 		$this->mustCheck = isset($args['must-check']);
@@ -70,7 +70,7 @@ class Checkbox extends InputComponent {
 	}
 }
 
-class TimeInput extends InputComponent {
+class TimeInput extends PostInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -100,7 +100,7 @@ class TimeInput extends InputComponent {
 	}
 }
 
-class DateTimePicker extends InputComponent {
+class DateTimePicker extends PostInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -158,7 +158,7 @@ class Textarea extends SpecialInput {
 
 
 
-class Dropdown extends InputComponent {
+class Dropdown extends PostInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -194,7 +194,7 @@ class Dropdown extends InputComponent {
 
 }
 
-class Radios extends InputComponent {
+class Radios extends PostInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -229,7 +229,7 @@ class Radios extends InputComponent {
 }
 
 
-class Checkboxes extends InputComponent {
+class Checkboxes extends PostInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
 		$this->options = $args['options'];
@@ -365,7 +365,7 @@ class FileUpload extends FileInputComponent {
 	}
 }
 
-class Range extends InputComponent {
+class Range extends PostInputComponent {
 	function __construct($args) {
 
 		parent::__construct($args);
@@ -513,7 +513,7 @@ class NumberInp extends SpecialInput {
 	}
 }
 
-class DatePicker extends InputComponent {
+class DatePicker extends PostInputComponent {
 
 	function __construct($args) {
 		parent::__construct($args);
