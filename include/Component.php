@@ -38,6 +38,15 @@ class ShowIfComponent extends Component {
 	}
 }
 
+class Label extends EmptyComponent {
+	function __construct($label) {
+		$this->label = $label;
+	}
+	function get($h) {
+		return $h->label->t($this->label)->end;
+	}
+}
+
 abstract class EmptyComponent extends Component {
 	function getMerger($val) {
 		return Result::ok([]);
@@ -48,6 +57,9 @@ abstract class NamedLabeledComponent extends Component {
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
+	}
+	protected function getLabel() {
+		return new Label($this->label);
 	}
     abstract protected function validate($against);
     function getMerger($val) {
@@ -156,7 +168,7 @@ abstract class SpecialInput extends InputComponent {
 	protected function makeInput($h, $type, $icon) {
 		return $h
 		->div->class('ui field ' . ($this->required ? 'required' : ''))
-			->ins(label($h, $this->label))
+			->add($this->getLabel())
 			->div->class($icon ? 'ui left icon input' : 'ui input')
 				->hif($icon)
 					->i->class('icon ' . $icon)->end
@@ -181,7 +193,7 @@ class Checkbox extends InputComponent {
 		->div->class('field ' . ($this->mustCheck ? 'required' : ''))
 			->div->class('ui checkbox')
 				->input->type('checkbox')->name($this->name)->end
-				->ins(label($h, $this->label))
+				->add($this->getLabel())
 			->end
 		->end;
 	}
@@ -205,7 +217,7 @@ class TimeInput extends InputComponent {
 	function get($h) {
 		return $h
 		->div->class('field ' . ($this->required ? ' required' : ''))
-			->ins(label($h, $this->label))
+			->add($this->getLabel())
 			->div->class('ui left icon input')
 				->i->class('clock icon')->end
 				->input->type('text')->name($this->name)->data('inputmask', " 'alias': 'h:s t', 'placeholder': 'hh:mm am' ")->end
@@ -235,7 +247,7 @@ class DateTimePicker extends InputComponent {
 	function get($h) {
 		return $h
 		->div->class('field ' . ($this->required ? ' required' : ''))
-			->ins(label($h, $this->label))
+			->add($this->getLabel())
 			->div->class('ui left icon input')
 				->i->class('calendar icon')->end
 				->input->type('text')->name($this->name)->data('inputmask', " 'alias': 'proper-datetime' ")->end
@@ -257,7 +269,7 @@ class Textarea extends SpecialInput {
 	function get($h) {
 		return $h
 		->ins(fieldBox($h, $this->required))
-			->ins(label($h, $this->label))
+			->add($this->getLabel())
 			->textarea->name($this->name)->end
 		->end;
 	}
@@ -274,12 +286,7 @@ class Textarea extends SpecialInput {
 function fieldBox($h, $required) {
 	return $h->div->class('field ' . ($required ? ' required' : ''));
 }
-function label($h, $label) {
-	return $h
-	->label
-		->t($label)
-	->end;
-}
+
 
 function dropdownDiv($h) {
 	return $h->div->class('ui fluid dropdown selection');
@@ -295,7 +302,7 @@ class Dropdown extends InputComponent {
 	}
 	function get($h) {
 		return fieldBox($h, $this->required)
-			->ins(label($h, $this->label))
+			->add($this->getLabel())
 			->ins(dropdownDiv($h))
 				->input->name($this->name)->type('hidden')->value('')->end
 				->div->class('default text')->t('Please choose an option...')->end
@@ -331,7 +338,7 @@ class Radios extends InputComponent {
 	function get($h) {
 		return $h
 		->div->class('grouped fields validation-root ' . ($this->required ? 'required' : ''))
-			->ins(label($h, $this->label))
+			->add($this->getLabel())
 			->add(
 				array_map(
 					function($v) use($h) {
@@ -368,7 +375,7 @@ class Checkboxes extends InputComponent {
 	function get($h) {
 		return $h
 		->div->class('grouped fields validation-root ' . ($this->required ? 'required' : ''))->data('validation-name', $this->name)
-			->ins(label($h, $this->label))
+			->add($this->getLabel())
 			->add(
 				array_map(
 					function($v) use($h) {
@@ -420,7 +427,7 @@ class FileUpload extends FileInputComponent {
 	function get($h) {
 		return $h
 		->div->class('ui field ' . ($this->required ? 'required' : ''))
-			->ins(label($h, $this->label))
+			->add($this->getLabel())
 			->div->class('ui input')
 				->input->type('file')->name($this->name)->end
 			->end
@@ -495,7 +502,7 @@ class Range extends InputComponent {
 	function get($h) {
 		return $h
 		->div->class('ui field')
-			->ins(label($h, $this->label))
+			->add($this->getLabel())
 			->div
 				->input
 					->type('range')
@@ -633,7 +640,7 @@ class DatePicker extends InputComponent {
 	function get($h) {
 		return $h
 		->div->class('field ' . ($this->required ? ' required' : ''))
-			->ins(label($h, $this->label))
+			->add($this->getLabel())
 			->div->class('ui left icon input')
 				->i->class('calendar icon')->end
 				->input->type('text')->name($this->name)->data('inputmask', " 'alias': 'mm/dd/yyyy' ")->end

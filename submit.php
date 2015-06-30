@@ -6,7 +6,7 @@ require('parts.php');
 $page = Parser::parse_jade('forms/test.jade');
 
 
-$data = $page
+$page
 	->getMerger(Result::ok(new ClientData($_POST, $_FILES)))
 	->ifError(function($val) {
 		return Result::error(json_encode([
