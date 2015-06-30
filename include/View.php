@@ -43,9 +43,6 @@ class ValueCell {
 class TableView {
 	function __construct($args) {
 
-		$this->server = $args['server'];
-		$this->database = $args['database'];
-		$this->collection = $args['collection'];
 		$this->title = $args['title'];
 		$this->cols = $args['cols'];
 
@@ -74,7 +71,11 @@ class TableView {
 
 		$cursor = $client->find()->sort($this->sortBy);
 
-		$this->max = intval(floor($cursor->count() / $this->perPage)); // Need intval for the comparison below to work
+		if($this->perPage !== null) {
+			$this->max = intval(floor($cursor->count() / $this->perPage)); // Need intval for the comparison below to work
+		} else {
+			$this->max = 1;
+		}
 
 		if($this->perPage !== null) {
 			$cursor->skip($this->page * $this->perPage);
@@ -85,6 +86,17 @@ class TableView {
 	}
 	function setPage($page) {
 		$this->form = $page->form;
+
+		$mongo = null;
+		foreach($page->outputs->outputs as $output) {
+			if($output instanceof MongoOutput) {
+				$mongo = $output;
+			}
+		}
+		$this->mongo = $mongo;
+		$this->server = $mongo->server;
+		$this->database = $mongo->database;
+		$this->collection = $mongo->collection;
 	}
 	function get($h) {
 		return

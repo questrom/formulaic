@@ -64,7 +64,7 @@ form(name='Example Form', title='Example Form', debug=true, success-message='Lor
     s3(bucket='form-builder-uploads')
     mongo(server='mongodb://localhost:27017', database='forms', collection='example_form')
   views
-    table-view(server='mongodb://localhost:27017', database='forms', collection='example_form', title='Main view', per-page=10)
+    table-view(title='Main view', per-page=10)
       col(name='name', header='Name', width=1)
       col(name='username', header='Username', width=1)
       col(name='num_attendees', header='Attendees', width=1)
