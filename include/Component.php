@@ -1,5 +1,8 @@
 <?php
 
+// Misc. Helpers
+// =============
+
 class ClientData {
 	function __construct($post, $files) {
 		$this->post = $post;
@@ -7,49 +10,97 @@ class ClientData {
 	}
 }
 
+
+class FileInfo {
+	function __construct($file, $filename, $mime, $permissions) {
+		$this->file = $file;
+		$this->filename = $filename;
+		$this->mime = $mime;
+		$this->permissions = $permissions;
+	}
+}
+
+
+// Abstract component classes
+// ==========================
+
 abstract class Component {
 	abstract function __construct($args);
 	abstract function get($h);
 	abstract function getMerger($val);
 }
 
-class ShowIfComponent extends Component {
-	function __construct($args) {
-		$this->item = $args['item'];
-		$this->cond = $args['cond'];
-	}
-	function get($h) {
-		return $h
-			->div->data('show-if', $this->cond)
-				->add($this->item)
-			->end;
-	}
-	function getMerger($val) {
-		return $val
-			->collapse()
-			->innerBind(function($val) {
-				$post_value = $val->post;
-				if(!(isset($post_value[$this->cond]) ? $post_value[$this->cond] === "on" : false)) {
-					return Result::ok([]);
-				} else {
-					return $this->item->getMerger( Result::ok( $val  ) );
-				}
-			});
-	}
-}
-
-class Label extends EmptyComponent {
-	function __construct($label) {
-		$this->label = $label;
-	}
-	function get($h) {
-		return $h->label->t($this->label)->end;
-	}
-}
 
 abstract class EmptyComponent extends Component {
 	function getMerger($val) {
 		return Result::ok([]);
+	}
+}
+
+abstract class BaseHeader extends EmptyComponent {
+	function __construct($args) {
+		if(is_string($args)) {
+			$args = ['text' => $args];
+		}
+
+		$this->__args = $args;
+
+		$this->text = $args['text'];
+		$this->subhead = isset($args['subhead']) ? $args['subhead'] : null;
+		$this->icon = isset($args['icon']) ? $args['icon'] : null;
+		$this->size = isset($args['size']) ? intval($args['size']) : null;
+	}
+	function get($h) {
+		$inside = $h->t($this->text)
+		->hif($this->subhead !== null)
+			->div->class('sub header')->t($this->subhead)->end
+		->end;
+		return $h
+			->hif($this->icon !== null)
+				->i->class($this->icon . ' icon')->end
+				->div->class('content')
+					->add($inside)
+				->end
+			->end
+			->hif($this->icon === null)
+				->add($inside)
+			->end;
+	}
+}
+
+abstract class BaseNotice extends EmptyComponent {
+	function __construct($args) {
+		$this->__args = $args; // Used by Group later on
+
+		$this->text = $args['text'];
+		$this->header = isset($args['header']) ? $args['header'] : null;
+		$this->icon = isset($args['icon']) ? $args['icon'] : null;
+		$this->list = isset($args['list']) ? $args['list'] : null;
+		$this->type = isset($args['type']) ? $args['type'] : null;
+	}
+	function get($h) {
+		return $h
+		->hif($this->icon !== null)
+			->i->class($this->icon . ' icon')->end
+		->end
+		->div->class('content')
+			->hif($this->header !== null)
+				->div->class('header')
+					->t($this->header)
+				->end
+			->end
+			->p
+				->t($this->text)
+			->end
+			->hif($this->list !== null)
+			  ->ul->class('list')
+			    ->add(array_map(function($item) use($h) {
+			    	// var_dump($this->list);
+			    	return $h->li->t($item)->end;
+			    }, $this->list === null ? [] : $this->list ))
+			  ->end
+			->end
+		->end;
 	}
 }
 
@@ -88,7 +139,6 @@ abstract class InputComponent extends NamedLabeledComponent {
 }
 
 abstract class FileInputComponent extends NamedLabeledComponent {
-
 	function getMerger($val) {
 		return parent::getMerger(
 			$val->innerBind(function($x) {
@@ -98,17 +148,6 @@ abstract class FileInputComponent extends NamedLabeledComponent {
 	}
 }
 
-class FileInfo {
-	function __construct($file, $filename, $mime, $permissions) {
-		$this->file = $file;
-		$this->filename = $filename;
-		$this->mime = $mime;
-		$this->permissions = $permissions;
-	}
-}
-
-
-// Abstract components
 
 abstract class GroupComponent extends Component {
 	function getMerger($val) {
@@ -150,11 +189,6 @@ abstract class GroupComponent extends Component {
 	}
 }
 
-
-
-
-
-
 abstract class SpecialInput extends InputComponent {
 	function __construct($args) {
 		parent::__construct($args);
@@ -179,9 +213,56 @@ abstract class SpecialInput extends InputComponent {
 	}
 }
 
+// Helper functions
+// ================
+
+function fieldBox($h, $required) {
+	return $h->div->class('field ' . ($required ? ' required' : ''));
+}
 
 
-// Specific components
+function midpoint($a, $b) {
+	return $a + (($b - $a) / 2);
+}
+
+
+// Full components
+// ===============
+
+
+class ShowIfComponent extends Component {
+	function __construct($args) {
+		$this->item = $args['item'];
+		$this->cond = $args['cond'];
+	}
+	function get($h) {
+		return $h
+			->div->data('show-if', $this->cond)
+				->add($this->item)
+			->end;
+	}
+	function getMerger($val) {
+		return $val
+			->collapse()
+			->innerBind(function($val) {
+				$post_value = $val->post;
+				if(!(isset($post_value[$this->cond]) ? $post_value[$this->cond] === "on" : false)) {
+					return Result::ok([]);
+				} else {
+					return $this->item->getMerger( Result::ok( $val  ) );
+				}
+			});
+	}
+}
+
+class Label extends EmptyComponent {
+	function __construct($label) {
+		$this->label = $label;
+	}
+	function get($h) {
+		return $h->label->t($this->label)->end;
+	}
+}
 
 class Checkbox extends InputComponent {
 	function __construct($args) {
@@ -283,14 +364,6 @@ class Textarea extends SpecialInput {
 	}
 }
 
-function fieldBox($h, $required) {
-	return $h->div->class('field ' . ($required ? ' required' : ''));
-}
-
-
-function dropdownDiv($h) {
-	return $h->div->class('ui fluid dropdown selection');
-}
 
 
 class Dropdown extends InputComponent {
@@ -303,7 +376,7 @@ class Dropdown extends InputComponent {
 	function get($h) {
 		return fieldBox($h, $this->required)
 			->add($this->getLabel())
-			->ins(dropdownDiv($h))
+			->div->class('ui fluid dropdown selection')
 				->input->name($this->name)->type('hidden')->value('')->end
 				->div->class('default text')->t('Please choose an option...')->end
 				->i->class('dropdown icon')->end
@@ -484,11 +557,6 @@ class FileUpload extends FileInputComponent {
 	}
 }
 
-
-function midpoint($a, $b) {
-	return $a + (($b - $a) / 2);
-}
-
 class Range extends InputComponent {
 	function __construct($args) {
 
@@ -658,36 +726,8 @@ class DatePicker extends InputComponent {
 
 
 
-abstract class BaseHeader extends EmptyComponent {
-	function __construct($args) {
-		if(is_string($args)) {
-			$args = ['text' => $args];
-		}
 
-		$this->__args = $args;
 
-		$this->text = $args['text'];
-		$this->subhead = isset($args['subhead']) ? $args['subhead'] : null;
-		$this->icon = isset($args['icon']) ? $args['icon'] : null;
-		$this->size = isset($args['size']) ? intval($args['size']) : null;
-	}
-	function get($h) {
-		$inside = $h->t($this->text)
-		->hif($this->subhead !== null)
-			->div->class('sub header')->t($this->subhead)->end
-		->end;
-		return $h
-			->hif($this->icon !== null)
-				->i->class($this->icon . ' icon')->end
-				->div->class('content')
-					->add($inside)
-				->end
-			->end
-			->hif($this->icon === null)
-				->add($inside)
-			->end;
-	}
-}
 
 class Header extends BaseHeader {
 	function get($h) { //this->size
@@ -709,41 +749,6 @@ class GroupHeader extends BaseHeader {
 	}
 }
 
-abstract class BaseNotice extends EmptyComponent {
-	function __construct($args) {
-		$this->__args = $args; // Used by Group later on
-
-		$this->text = $args['text'];
-		$this->header = isset($args['header']) ? $args['header'] : null;
-		$this->icon = isset($args['icon']) ? $args['icon'] : null;
-		$this->list = isset($args['list']) ? $args['list'] : null;
-		$this->type = isset($args['type']) ? $args['type'] : null;
-	}
-	function get($h) {
-		return $h
-		->hif($this->icon !== null)
-			->i->class($this->icon . ' icon')->end
-		->end
-		->div->class('content')
-			->hif($this->header !== null)
-				->div->class('header')
-					->t($this->header)
-				->end
-			->end
-			->p
-				->t($this->text)
-			->end
-			->hif($this->list !== null)
-			  ->ul->class('list')
-			    ->add(array_map(function($item) use($h) {
-			    	// var_dump($this->list);
-			    	return $h->li->t($item)->end;
-			    }, $this->list === null ? [] : $this->list ))
-			  ->end
-			->end
-		->end;
-	}
-}
 
 class GroupNotice extends BaseNotice {
 	function get($h) {
