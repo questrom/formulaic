@@ -7,6 +7,7 @@ $page = Parser::parse_jade('forms/test.jade');
 
 $view = $page->views[0];
 
+$view->setPage($page);
 $view->query();
 
 echo '<!DOCTYPE html>' . $view->get(new HTMLParentlessContext());

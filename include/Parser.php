@@ -115,6 +115,7 @@ $parsers =  [
 	},
 	'table-view' => function($v) {
 		$v->attrs['cols'] = $v->children;
+
 		return new TableView($v->attrs);
 	},
 	'col' => function($v) {

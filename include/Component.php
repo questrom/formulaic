@@ -60,6 +60,14 @@ class Checkbox extends InputComponent {
 			->filterBoolean()
 			->mustBeTrue($this->mustCheck);
 	}
+	function asTableCell($h, $value) {
+		return $value->innerBind(function($v) use ($h) {
+			return Result::ok($h
+			->td->class($v ? 'positive' : 'negative')
+				->t($v ? 'Yes' : 'No')
+			->end);
+		});
+	}
 }
 
 class TimeInput extends InputComponent {
@@ -176,6 +184,7 @@ class Dropdown extends InputComponent {
 			->filterChosenFromOptions($this->options)
 			->requiredMaybe($this->required);
 	}
+
 }
 
 class Radios extends InputComponent {
@@ -247,6 +256,21 @@ class Checkboxes extends InputComponent {
 			->minMaxChoices($this->minChoices, $this->maxChoices)
 			->filterNoChoices()
 			->requiredMaybe($this->required);
+	}
+	function asTableCell($h, $value) {
+		return $value->innerBind(function($v) use ($h) {
+			if(count($v) === 0) {
+				return Result::none(null);
+			}
+			return Result::ok($h
+			->td
+				->ul->class('ui list')
+					->add(array_map(function($x) use ($h) {
+						return $h->li->t($x)->end;
+					}, $v))
+				->end
+			->end);
+		});
 	}
 }
 
@@ -582,9 +606,12 @@ class ListComponent extends GroupComponent {
 	}
 	function getMerger($val) {
 
-		return $val->innerBind(function($v) {
-			return Result::ok(isset($v->post[$this->name]) ? $v->post[$this->name] : null);
-		});
+		return $val
+		->innerBind(function($v) {
+			return Result::ok(
+				isset($v->post[$this->name]) ? $v->post[$this->name] : null
+			);
+		})
 		->innerBind(function($data) {
 			if($data === null) {
 				return Result::ok([]);

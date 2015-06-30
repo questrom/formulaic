@@ -107,6 +107,14 @@ abstract class NamedLabeledComponent extends Component {
 				return Result::error([$this->name => $r]);
 			});
     }
+    function asTableCell($h, $value) {
+		return $value->innerBind(function($v) use ($h) {
+			return Result::ok($h
+			->td
+				->t($v)
+			->end);
+		});
+	}
 }
 
 abstract class InputComponent extends NamedLabeledComponent {
@@ -131,6 +139,22 @@ abstract class FileInputComponent extends NamedLabeledComponent {
 
 
 abstract class GroupComponent extends Component {
+	function getByName($name) {
+		foreach($this->items as $item) {
+			if($item instanceof ShowIfComponent) {
+				$item = $item->item;
+			}
+			if($item instanceof NamedLabeledComponent && $item->name === $name) {
+				return $item;
+			} else if($item instanceof GroupComponent && !($item instanceof ListComponent)) {
+				$get = $item->getByName($name);
+				if($get) {
+					return $get;
+				}
+			}
+		}
+		return null;
+	}
 	function getMerger($val) {
 		return $this->validate($val);
 	}

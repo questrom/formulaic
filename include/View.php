@@ -9,19 +9,36 @@ class Column {
 }
 
 class ValueCell {
-	function __construct($value) {
+	function __construct($value, $component) {
+		if($value instanceof MongoDate) {
+			$value = DateTimeImmutable::createFromFormat('U', $value->sec)->setTimezone(new DateTimeZone('America/New_York'));
+		}
 		$this->value = $value;
+		$this->component = $component;
 	}
 	function get($h) {
 
-		$disabled = is_null($this->value) || ( is_array($this->value) && count($this->value) === 0 );
+
+		if($this->component instanceof NamedLabeledComponent) {
+			return $this->component->asTableCell($h, $this->value === null ? Result::none(null) : Result::ok($this->value))
+				->bindNothing(function($x) use ($h){
+					return Result::ok(
+						$h
+						->td->class('disabled')
+							->i->class('ban icon')->end
+						->end
+					);
+				})
+				->innerBind(function($x) {
+					return $x;
+				});
+		}
+
+		$disabled = ($this->value === null);
 
 		return $h
 			->td->class(
-				($disabled ? 'disabled' : '') .
-				(is_bool($this->value) ?
-					($this->value ? 'positive' : 'negative')
-				: '')
+				($disabled ? 'disabled' : '')
 			)
 				->hif(is_string($this->value) || is_numeric($this->value))
 					->t($this->value)
@@ -29,19 +46,9 @@ class ValueCell {
 				->hif($disabled)
 					->i->class('ban icon')->end
 				->end
-				->hif(is_bool($this->value))
-					->t($this->value ? 'Yes' : 'No')
-				->end
-				->hif(is_array($this->value) && count($this->value) > 0 && is_string($this->value[0]))
-					->ul->class('ui list')
-						->add(is_array($this->value) ? array_map(function($x) use ($h) {
-							return $h->li->t($x)->end;
-						}, $this->value) : null)
-					->end
-				->end
-				->hif($this->value instanceof MongoDate)
-					->t($this->value instanceof MongoDate ?
-						DateTimeImmutable::createFromFormat('U', $this->value->sec)->setTimezone(new DateTimeZone('America/New_York'))->format('n/j/Y g:i A')
+				->hif($this->value instanceof DateTimeImmutable)
+					->t($this->value instanceof DateTimeImmutable ?
+						$this->value->format('n/j/Y g:i A')
 						: '')
 				->end
 			->end;
@@ -50,6 +57,7 @@ class ValueCell {
 
 class TableView {
 	function __construct($args) {
+
 		$this->server = $args['server'];
 		$this->database = $args['database'];
 		$this->collection = $args['collection'];
@@ -62,6 +70,9 @@ class TableView {
 			->selectCollection($this->collection);
 		$cursor = $client->find();
 		$this->data = iterator_to_array($cursor);
+	}
+	function setPage($page) {
+		$this->form = $page->form;
 	}
 	function get($h) {
 		return
@@ -83,7 +94,7 @@ class TableView {
 							->colgroup
 								->add(array_map(function($x) use($h) {
 									return $h
-									->col->style('width: ' . $x->width . '%;')
+										->col->style('width: ' . $x->width . '%;')
 									->end;
 								}, $this->cols))
 							->end
@@ -101,7 +112,7 @@ class TableView {
 								return $h
 								->tr
 									->add(array_map(function($col) use($h, $row) {
-											return new ValueCell( isset($row[$col->name]) ? $row[$col->name] : null );
+											return new ValueCell( isset($row[$col->name]) ? $row[$col->name] : null, $this->form->getByName($col->name) );
 									}, $this->cols))
 								->end;
 							}, $this->data))
