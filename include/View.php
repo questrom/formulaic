@@ -34,7 +34,7 @@ class ValueCell implements HTMLComponent {
 					return $x;
 				});
 		} else {
-			throw new Exception('Other component times not yet supported...');
+			throw new Exception('Invalid column!');
 		}
 
 	}
@@ -85,7 +85,7 @@ class TableView implements YAMLPart, HTMLComponent {
 		$this->data = iterator_to_array($cursor);
 	}
 	function setPage($page) {
-		$this->form = $page->form;
+		$this->pageData = $page;
 
 		$mongo = null;
 		foreach($page->outputs->outputs as $output) {
@@ -93,7 +93,6 @@ class TableView implements YAMLPart, HTMLComponent {
 				$mongo = $output;
 			}
 		}
-		$this->mongo = $mongo;
 		$this->server = $mongo->server;
 		$this->database = $mongo->database;
 		$this->collection = $mongo->collection;
@@ -139,7 +138,7 @@ class TableView implements YAMLPart, HTMLComponent {
 								return $h
 								->tr
 									->add(array_map(function($col) use($h, $row) {
-											return new ValueCell( isset($row[$col->name]) ? $row[$col->name] : null, $this->form->getByName($col->name) );
+											return new ValueCell( isset($row[$col->name]) ? $row[$col->name] : null, $this->pageData->getByName($col->name) );
 									}, $this->cols))
 								->end;
 							}, $this->data))

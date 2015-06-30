@@ -762,6 +762,32 @@ class FormElem extends GroupComponent {
 
 }
 
+
+
+class IPField implements Cellable {
+	function asTableCell($h, $value) {
+		return $value->innerBind(function($v) use($h) {
+			return Result::ok($h
+				->td
+					->t($v)
+				->end
+			);
+		});
+	}
+}
+
+class TimestampField implements Cellable {
+	function asTableCell($h, $value) {
+		return $value->innerBind(function($v) use($h) {
+			return Result::ok($h
+				->td
+					->t($v->format('n/j/Y g:i A'))
+				->end
+			);
+		});
+	}
+}
+
 class Page implements Component {
 	function __construct($args) {
 		$this->form = $args['fields'];
@@ -822,6 +848,14 @@ class Page implements Component {
 				$r['_ip'] = $_SERVER['REMOTE_ADDR'];
 				return Result::ok($r);
 			});
+	}
+	function getByName($name) {
+		if($name === '_timestamp') {
+			 return new TimestampField();
+		} else if($name === '_ip') {
+			return new IPField();
+		}
+		return $this->form->getByName($name);
 	}
 }
 
