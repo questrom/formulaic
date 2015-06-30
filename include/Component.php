@@ -50,14 +50,9 @@ abstract class NamedLabeledComponent extends Component {
 		$this->name = $args['name'];
 	}
     abstract protected function validate($against);
-}
-
-abstract class InputComponent extends NamedLabeledComponent {
-
-
-	function getMerger($val) {
-		$val = $val->innerBind(function($v) {
-			return Result::ok(isset($v->post[$this->name]) ? $v->post[$this->name] : null);
+    function getMerger($val) {
+    	$val = $val->innerBind(function($v) {
+			return Result::ok(isset($v[$this->name]) ? $v[$this->name] : null);
 		});
 		return $this->validate($val)
 			->collapse()
@@ -67,23 +62,27 @@ abstract class InputComponent extends NamedLabeledComponent {
 			->ifError(function($r) {
 				return Result::error([$this->name => $r]);
 			});
+    }
+}
+
+abstract class InputComponent extends NamedLabeledComponent {
+	function getMerger($val) {
+		return parent::getMerger(
+			$val->innerBind(function($x) {
+				return Result::ok($x->post);
+			})
+		);
 	}
 }
 
 abstract class FileInputComponent extends NamedLabeledComponent {
 
 	function getMerger($val) {
-		$val = $val->innerBind(function($v) {
-			return Result::ok(isset($v->files[$this->name]) ? $v->files[$this->name] : null);
-		});
-		return $this->validate($val)
-			->collapse()
-			->innerBind(function($r) {
-				return Result::ok([$this->name => $r]);
+		return parent::getMerger(
+			$val->innerBind(function($x) {
+				return Result::ok($x->files);
 			})
-			->ifError(function($r) {
-				return Result::error([$this->name => $r]);
-			});
+		);
 	}
 }
 
@@ -104,26 +103,21 @@ abstract class GroupComponent extends Component {
 		return $this->validate($val);
 	}
 	protected function validate($against) {
-		return $against->innerBind(function($val)  {
-			return array_reduce($this->items, function($total, $x) use($val) {
-
-				$result = $x->getMerger( Result::ok( $val  ) );
-
-				$mergeM = $result
+		return $against->innerBind(function($val) {
+			return array_reduce($this->items, function($total, $field) use($val) {
+				return $field
+					->getMerger(Result::ok($val))
 					->collapse()
 					->innerBind(function($r) {
 						return Result::ok(function($total) use ($r) {
 							return array_merge($r, $total);
 						});
 					})
-					->ifError(function($r) use($x) {
+					->ifError(function($r) {
 						return Result::error(function($total) use ($r) {
 							return array_merge($r, $total);
 						});
-					});
-
-
-				return $mergeM
+					})
 					->ifError(function($merge) use($total) {
 						return $total
 							->innerBind(function($x) {
@@ -139,7 +133,6 @@ abstract class GroupComponent extends Component {
 								return Result::ok($merge($x));
 							});
 					});
-
 			}, Result::ok([]));
 		});
 	}
