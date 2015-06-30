@@ -18,15 +18,13 @@ interface Validatable {
 	public function getMerger($val);
 }
 
-
-abstract class Component implements YAMLPart, HTMLComponent, Validatable {
-	abstract function __construct($args);
-	abstract function get($h);
-	abstract function getMerger($val);
+interface Cellable {
+	public function asTableCell($h, $value);
 }
 
+interface Component extends YAMLPart, HTMLComponent, Validatable {}
 
-abstract class EmptyComponent implements YAMLPart, HTMLComponent, Validatable {
+abstract class EmptyComponent implements Component {
 	function getMerger($val) {
 		return Result::ok([]);
 	}
@@ -34,10 +32,6 @@ abstract class EmptyComponent implements YAMLPart, HTMLComponent, Validatable {
 
 abstract class BaseHeader extends EmptyComponent {
 	function __construct($args) {
-		if(is_string($args)) {
-			$args = ['text' => $args];
-		}
-
 		$this->__args = $args;
 
 		$this->text = $args['text'];
@@ -99,7 +93,7 @@ abstract class BaseNotice extends EmptyComponent {
 	}
 }
 
-abstract class NamedLabeledComponent implements YAMLPart, HTMLComponent, Validatable {
+abstract class NamedLabeledComponent implements Component, Cellable {
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
@@ -152,7 +146,7 @@ abstract class FileInputComponent extends NamedLabeledComponent {
 }
 
 
-abstract class GroupComponent implements YAMLPart, HTMLComponent, Validatable {
+abstract class GroupComponent implements Component {
 	function getByName($name) {
 		foreach($this->items as $item) {
 			if($item instanceof ShowIfComponent) {

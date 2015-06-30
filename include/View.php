@@ -20,7 +20,7 @@ class ValueCell implements HTMLComponent {
 	function get($h) {
 
 
-		if($this->component instanceof NamedLabeledComponent) {
+		if($this->component instanceof Cellable) {
 			return $this->component->asTableCell($h, $this->value === null ? Result::none(null) : Result::ok($this->value))
 				->bindNothing(function($x) use ($h){
 					return Result::ok(

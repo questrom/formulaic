@@ -7,7 +7,7 @@
 // ===============
 
 
-class ShowIfComponent implements YAMLPart, HTMLComponent, Validatable {
+class ShowIfComponent implements Component {
 	function __construct($args) {
 		$this->item = $args['item'];
 		$this->cond = $args['cond'];
@@ -764,7 +764,7 @@ class FormElem extends GroupComponent {
 
 }
 
-class Page implements YAMLPart, HTMLComponent, Validatable {
+class Page implements Component {
 	function __construct($args) {
 		$this->form = $args['fields'];
 		$this->title = isset($args['title']) ? $args['title'] : 'Form';
