@@ -344,27 +344,37 @@ abstract class Validate {
 	}
 	function innerBind(callable $x) {
 		return $this->bind(function($val) use($x) {
-			if($val instanceof Failure) {
-				return new Success($val);
-			} else {
-				return $val->bind($x);
-			}
+			return $val
+				->bind(function($data) use($val, $x) {
+					return new Success($val->bind($x));
+				})
+				->bind_err(function($data) {
+					return new Success(new Success(new Failure($data)));
+				})
+				->bind(function($data) {
+					return $data;
+				});
 		});
 	}
 	function bindNothing(callable $x) {
 		return $this->bind(function($val) use($x) {
-
-			if($val instanceof Failure) {
-				return $val->bind_err($x);
-			} else {
-				return new Success($val);
-			}
+			return $val
+				->bind(function($data) {
+					return new Success(new Success(new Success($data)));
+				})
+				->bind_err(function($data) use($val, $x) {
+					return new Success($val->bind_err($x));
+				})
+				->bind(function($data) {
+					return $data;
+				});
 		});
 	}
 }
 
 
 class Success extends Validate {
+	private $value;
 	function __construct($value) {
 		$this->value = $value;
 	}
@@ -377,6 +387,7 @@ class Success extends Validate {
 }
 
 class Failure extends Validate  {
+	private $value;
 	function __construct($value) {
 		$this->value = $value;
 	}
