@@ -117,7 +117,6 @@ class DateTimePicker extends InputComponent {
 			->div->class('ui left icon input')
 				->i->class('calendar icon')->end
 				->input->type('text')->name($this->name)->data('inputmask', " 'alias': 'proper-datetime' ")->end
-				->end
 			->end
 		->end;
 	}
@@ -127,6 +126,14 @@ class DateTimePicker extends InputComponent {
 			->requiredMaybe($this->required)
 			->minMaxDateTime($this->min, $this->max)
 			->stepDateTime($this->step);
+	}
+	function asTableCell($h, $value) {
+		return parent::asTableCell(
+			$h,
+			$value->innerBind(function($v) {
+				return Result::ok($v->format('n/j/Y g:i A'));
+			})
+		);
 	}
 }
 
@@ -420,6 +427,15 @@ class Password extends SpecialInput {
 				return Result::ok([]);
 			});
 	}
+	function asTableCell($h, $value) {
+		return Result::ok($h
+		->td
+			->abbr->title('Passwords are not saved in the database')
+				->t('N/A')
+			->end
+		->end);
+
+	}
 }
 
 class PhoneNumber extends SpecialInput {
@@ -522,6 +538,14 @@ class DatePicker extends InputComponent {
 			->filterDate()
 			->requiredMaybe($this->required)
 			->minMaxDate($this->min, $this->max);
+	}
+	function asTableCell($h, $value) {
+		return parent::asTableCell(
+			$h,
+			$value->innerBind(function($v) {
+				return Result::ok($v->format('n/j/Y'));
+			})
+		);
 	}
 }
 

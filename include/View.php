@@ -32,26 +32,10 @@ class ValueCell {
 				->innerBind(function($x) {
 					return $x;
 				});
+		} else {
+			throw new Exception('Other component times not yet supported...');
 		}
 
-		$disabled = ($this->value === null);
-
-		return $h
-			->td->class(
-				($disabled ? 'disabled' : '')
-			)
-				->hif(is_string($this->value) || is_numeric($this->value))
-					->t($this->value)
-				->end
-				->hif($disabled)
-					->i->class('ban icon')->end
-				->end
-				->hif($this->value instanceof DateTimeImmutable)
-					->t($this->value instanceof DateTimeImmutable ?
-						$this->value->format('n/j/Y g:i A')
-						: '')
-				->end
-			->end;
 	}
 }
 
