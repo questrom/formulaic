@@ -33,6 +33,8 @@ input[type=range]::-moz-focus-outer {
     border:0 !important;
 }
 
+
+.ui.sortable.table thead th { cursor:auto; }
 .ui.header {
     margin-top: 0;
 }

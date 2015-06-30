@@ -5,6 +5,7 @@ class Column {
 		$this->name = $args['name'];
 		$this->header = $args['header'];
 		$this->width = intval($args['width']);
+		$this->sort = isset($args['sort']) ? $args['sort'] : null;
 	}
 }
 
@@ -47,12 +48,25 @@ class TableView {
 		$this->collection = $args['collection'];
 		$this->title = $args['title'];
 		$this->cols = $args['cols'];
+
+		$sortBy = [];
+
+		foreach($this->cols as $col) {
+			if($col->sort !== null) {
+				$sortBy[$col->name] = ($col->sort === 'asc' ? 1 : -1);
+			}
+		}
+		$sortBy['_timestamp'] = -1;
+		$sortBy['_id'] = -1; // Ensure determinism so we don't break pagination
+
+		$this->sortBy = $sortBy;
 	}
 	function query() {
 		$client = (new MongoClient($this->server))
 			->selectDB($this->database)
 			->selectCollection($this->collection);
-		$cursor = $client->find();
+
+		$cursor = $client->find()->sort($this->sortBy);
 		$this->data = iterator_to_array($cursor);
 	}
 	function setPage($page) {
@@ -74,7 +88,7 @@ class TableView {
 						->h1
 							->t($this->title)
 						->end
-						->table->class('ui celled striped compact table table-view')
+						->table->class('ui celled striped compact table table-view sortable')
 							->colgroup
 								->add(array_map(function($x) use($h) {
 									return $h
@@ -86,7 +100,10 @@ class TableView {
 								->tr
 									->add(array_map(function($x) use($h) {
 										return $h
-										->th
+										->th->class(
+											$x->sort === null ? '' :
+											($x->sort === 'asc' ? 'sorted ascending' : 'sorted descending')
+										)
 											->t($x->header)
 										->end;
 									}, $this->cols))

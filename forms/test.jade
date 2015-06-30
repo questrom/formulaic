@@ -67,5 +67,5 @@ form(name='Example Form', title='Example Form', debug=true, success-message='Lor
     table-view(server='mongodb://localhost:27017', database='forms', collection='example_form', title='Main view')
       col(name='name', header='Name', width=1)
       col(name='start_date', header='Start Date', width=1)
-      col(name='start_datetime', header='Date/time', width=1)
+      col(name='start_datetime', header='Date/time', width=1, sort='desc')
       col(name='password', header='Password', width=1)
