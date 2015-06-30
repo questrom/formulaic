@@ -5,14 +5,28 @@
 // Abstract component classes
 // ==========================
 
-abstract class Component {
+
+interface YAMLPart {
+	public function __construct($args);
+}
+
+interface HTMLComponent {
+	public function get($h);
+}
+
+interface Validatable {
+	public function getMerger($val);
+}
+
+
+abstract class Component implements YAMLPart, HTMLComponent, Validatable {
 	abstract function __construct($args);
 	abstract function get($h);
 	abstract function getMerger($val);
 }
 
 
-abstract class EmptyComponent extends Component {
+abstract class EmptyComponent implements YAMLPart, HTMLComponent, Validatable {
 	function getMerger($val) {
 		return Result::ok([]);
 	}
@@ -85,7 +99,7 @@ abstract class BaseNotice extends EmptyComponent {
 	}
 }
 
-abstract class NamedLabeledComponent extends Component {
+abstract class NamedLabeledComponent implements YAMLPart, HTMLComponent, Validatable {
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
@@ -138,7 +152,7 @@ abstract class FileInputComponent extends NamedLabeledComponent {
 }
 
 
-abstract class GroupComponent extends Component {
+abstract class GroupComponent implements YAMLPart, HTMLComponent, Validatable {
 	function getByName($name) {
 		foreach($this->items as $item) {
 			if($item instanceof ShowIfComponent) {

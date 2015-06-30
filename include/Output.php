@@ -1,5 +1,5 @@
 <?php
-interface Output {
+interface Output extends YAMLPart {
 	function __construct($args);
 	function run($data);
 }

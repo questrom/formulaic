@@ -1,6 +1,6 @@
 <?php
 
-class Column {
+class Column implements YAMLPart {
 	function __construct($args) {
 		$this->name = $args['name'];
 		$this->header = $args['header'];
@@ -9,7 +9,7 @@ class Column {
 	}
 }
 
-class ValueCell {
+class ValueCell implements HTMLComponent {
 	function __construct($value, $component) {
 		if($value instanceof MongoDate) {
 			$value = DateTimeImmutable::createFromFormat('U', $value->sec)->setTimezone(new DateTimeZone('America/New_York'));
@@ -40,7 +40,7 @@ class ValueCell {
 	}
 }
 
-class TableView {
+class TableView implements YAMLPart, HTMLComponent {
 	function __construct($args) {
 
 		$this->title = $args['title'];
