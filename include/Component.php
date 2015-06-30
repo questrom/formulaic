@@ -30,9 +30,9 @@ class ShowIfComponent extends Component {
 			->innerBind(function($val) {
 				$post_value = $val->post;
 				if(!(isset($post_value[$this->cond]) ? $post_value[$this->cond] === "on" : false)) {
-					return okJust([]);
+					return Result::ok([]);
 				} else {
-					return $this->item->getMerger( okJust( $val  ) );
+					return $this->item->getMerger( Result::ok( $val  ) );
 				}
 			});
 	}
@@ -40,7 +40,7 @@ class ShowIfComponent extends Component {
 
 abstract class EmptyComponent extends Component {
 	function getMerger($val) {
-		return okJust([]);
+		return Result::ok([]);
 	}
 }
 
@@ -57,15 +57,15 @@ abstract class InputComponent extends NamedLabeledComponent {
 
 	function getMerger($val) {
 		$val = $val->innerBind(function($v) {
-			return okJust(isset($v->post[$this->name]) ? $v->post[$this->name] : null);
+			return Result::ok(isset($v->post[$this->name]) ? $v->post[$this->name] : null);
 		});
 		return $this->validate($val)
 			->collapse()
 			->innerBind(function($r) {
-				return okJust([$this->name => $r]);
+				return Result::ok([$this->name => $r]);
 			})
-			->bind_err(function($r) {
-				return new Failure([$this->name => $r]);
+			->ifError(function($r) {
+				return Result::error([$this->name => $r]);
 			});
 	}
 }
@@ -74,15 +74,15 @@ abstract class FileInputComponent extends NamedLabeledComponent {
 
 	function getMerger($val) {
 		$val = $val->innerBind(function($v) {
-			return okJust(isset($v->files[$this->name]) ? $v->files[$this->name] : null);
+			return Result::ok(isset($v->files[$this->name]) ? $v->files[$this->name] : null);
 		});
 		return $this->validate($val)
 			->collapse()
 			->innerBind(function($r) {
-				return okJust([$this->name => $r]);
+				return Result::ok([$this->name => $r]);
 			})
-			->bind_err(function($r) {
-				return new Failure([$this->name => $r]);
+			->ifError(function($r) {
+				return Result::error([$this->name => $r]);
 			});
 	}
 }
@@ -107,40 +107,40 @@ abstract class GroupComponent extends Component {
 		return $against->innerBind(function($val)  {
 			return array_reduce($this->items, function($total, $x) use($val) {
 
-				$result = $x->getMerger( okJust( $val  ) );
+				$result = $x->getMerger( Result::ok( $val  ) );
 
 				$mergeM = $result
 					->collapse()
 					->innerBind(function($r) {
-						return okJust(function($total) use ($r) {
+						return Result::ok(function($total) use ($r) {
 							return array_merge($r, $total);
 						});
 					})
-					->bind_err(function($r) use($x) {
-						return new Failure(function($total) use ($r) {
+					->ifError(function($r) use($x) {
+						return Result::error(function($total) use ($r) {
 							return array_merge($r, $total);
 						});
 					});
 
 
 				return $mergeM
-					->bind_err(function($merge) use($total) {
+					->ifError(function($merge) use($total) {
 						return $total
 							->innerBind(function($x) {
-								return new Failure([]);
+								return Result::error([]);
 							})
-							->bind_err(function($x) use ($merge) {
-								return new Failure($merge($x));
+							->ifError(function($x) use ($merge) {
+								return Result::error($merge($x));
 							});
 					})
 					->innerBind(function($merge) use($total) {
 						return $total
 							->innerBind(function($x) use ($merge) {
-								return okJust($merge($x));
+								return Result::ok($merge($x));
 							});
 					});
 
-			}, okJust([]));
+			}, Result::ok([]));
 		});
 	}
 }
@@ -438,23 +438,23 @@ class FileUpload extends FileInputComponent {
 			->innerBind(function($val) {
 				// See http://php.net/manual/en/features.file-upload.php
 				if(!is_array($val) || !isset($val['error']) || is_array($val['error'])) {
-					return new Failure('Invalid data.');
+					return Result::error('Invalid data.');
 				} else if($val['error'] === UPLOAD_ERR_INI_SIZE || $val['error'] === UPLOAD_ERR_FORM_SIZE) {
-					return new Failure('File size exceeds server or form limit.');
+					return Result::error('File size exceeds server or form limit.');
 				} else if($val['error'] === UPLOAD_ERR_NO_FILE) {
-					return emptyResult(null);
+					return Result::none(null);
 				} else if($val['error'] === UPLOAD_ERR_OK) {
-					return okJust($val);
+					return Result::ok($val);
 				} else {
-					return new Failure('Error uploading file.');
+					return Result::error('Error uploading file.');
 				}
 			})
 			->requiredMaybe($this->required)
 			->innerBind(function($file) {
 				if($file['size'] > $this->maxSize) {
-					return new Failure('File must be under ' . $this->maxSize . ' bytes in size.');
+					return Result::error('File must be under ' . $this->maxSize . ' bytes in size.');
 				} else {
-					return okJust($file);
+					return Result::ok($file);
 				}
 			})
 			->innerBind(function($file) {
@@ -469,17 +469,17 @@ class FileUpload extends FileInputComponent {
 				);
 
 				if($ext === false) {
-					return new Failure('Invalid file type or wrong MIME type. Allowed extensions are: ' . implode(', ', array_keys($this->allowedExtensions)) . '.');
+					return Result::error('Invalid file type or wrong MIME type. Allowed extensions are: ' . implode(', ', array_keys($this->allowedExtensions)) . '.');
 				}
 
 				if(!is_uploaded_file($file['tmp_name'])) {
-					return new Failure('Security error.');
+					return Result::error('Security error.');
 				}
 
 
 				$filename = sha1_file($file['tmp_name']) . '-' . floor(microtime(true)) . '.' . $ext;
 
-				return okJust(new FileInfo($file, $filename, $mime, $this->permissions));
+				return Result::ok(new FileInfo($file, $filename, $mime, $this->permissions));
 			});
 	}
 }
@@ -548,7 +548,7 @@ class Password extends SpecialInput {
 		return parent::getMerger($val)
 			->innerBind(function($x) {
 				// Avoid storing passwords.
-				return okJust([]);
+				return Result::ok([]);
 			});
 	}
 }
@@ -802,26 +802,26 @@ class ListComponent extends GroupComponent {
 
 
 		$val = $val->innerBind(function($v) {
-			return okJust(isset($v->post[$this->name]) ? $v->post[$this->name] : null);
+			return Result::ok(isset($v->post[$this->name]) ? $v->post[$this->name] : null);
 		});
 		return $val
 		->innerBind(function($data) {
 			if($data === null) {
-				return okJust([]);
+				return Result::ok([]);
 			} else if(is_array($data)) {
-				return okJust($data);
+				return Result::ok($data);
 			} else {
-				return new Failure([
+				return Result::error([
 					$this->name => 'Invalid data'
 				]);;
 			}
 		})
 		->innerBind(function($list) {
 
-			$result = okJust([]);
+			$result = Result::ok([]);
 			foreach ($list as $index => $value) {
 				$validationResult = parent::getMerger(
-					okJust(
+					Result::ok(
 						new ClientData($value, null)
 					)
 				);
@@ -831,30 +831,30 @@ class ListComponent extends GroupComponent {
 						return $validationResult
 							->innerBind(function($fieldResult) use($soFar, $index) {
 								$soFar[$index] = $fieldResult;
-								return okJust($soFar);
+								return Result::ok($soFar);
 							})
-							->bind_err(function($fieldError) {
-								return new Failure([]);
+							->ifError(function($fieldError) {
+								return Result::error([]);
 							});
 					})
-					->bind_err(function($errorSoFar) use($validationResult, $index) {
+					->ifError(function($errorSoFar) use($validationResult, $index) {
 						return $validationResult
-							->bind_err(function($fieldError) use($errorSoFar, $index) {
+							->ifError(function($fieldError) use($errorSoFar, $index) {
 								foreach($fieldError as $k => $v) {
 									$errorSoFar[ $this->name . '[' . $index . '][' . $k . ']'  ] = $v;
 								}
 
-								return new Failure($errorSoFar);
+								return Result::error($errorSoFar);
 							})
 							->innerBind(function($fieldResult) use($errorSoFar) {
-								return new Failure($errorSoFar);
+								return Result::error($errorSoFar);
 							});
 
 					});
 			}
 			$result = $result
 				->innerBind(function($x) {
-					return okJust([$this->name => array_values($x)]);
+					return Result::ok([$this->name => array_values($x)]);
 				});
 			return $result;
 		});
@@ -991,7 +991,7 @@ class Page extends Component {
 			->innerBind(function($r) {
 				$r['_timestamp'] = new DateTimeImmutable();
 				$r['_ip'] = $_SERVER['REMOTE_ADDR'];
-				return okJust($r);
+				return Result::ok($r);
 			});
 	}
 }
