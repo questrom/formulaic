@@ -7,24 +7,21 @@ use Everzet\Jade\Jade;
 abstract class ConfigElement implements Sabre\Xml\XmlDeserializable {
 	abstract public function __construct($args);
 	static function xmlDeserialize(Sabre\Xml\Reader $reader) {
-		$arr = new NodeData();
+		$attrs = [];
 
-
-		$arr->attrs = $reader->parseAttributes();
+		$attrs = $reader->parseAttributes();
 		$tree = $reader->parseInnerTree();
 
 		if(is_array($tree)) {
-			$arr->children = array_map(function($x) use(&$arr) {
-				return $arr->byTag[substr($x['name'],2)] = $x['value'];
-			}, $tree);
+			$attrs['children'] = array_map(
+				function($x) { return $x['value']; },
+				$tree
+			);
 		} else if(is_string($tree)) {
-			$arr->text = $tree;
+			$attrs['innerText'] = $tree;
 		}
 
-		$arr->attrs['children'] = $arr->children;
-		$arr->attrs['innerText'] = $arr->text;
-		$arr->attrs['byTag'] = $arr->byTag;
-		return new static($arr->attrs);
+		return new static($attrs);
 	}
 }
 

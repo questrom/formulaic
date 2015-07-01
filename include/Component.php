@@ -902,22 +902,15 @@ class TimestampField implements Cellable {
 	}
 }
 
-class Page extends ConfigElement implements Component {
+class Page implements Component, Sabre\Xml\XmlDeserializable  {
 	function __construct($args) {
-		$args = [
-			'fields' => $args['byTag']['fields'],
-			'title' => $args['title'],
-			'success-message' => $args['success-message'],
-			'debug' => isset($args['debug']),
-			'outputs' => $args['byTag']['outputs'],
-			'views' => $args['byTag']['views']
-		];
-		$this->form = $args['fields'];
+
+		$this->form = $args['byTag']['{}fields'];
 		$this->title = isset($args['title']) ? $args['title'] : 'Form';
 		$this->successMessage = isset($args['success-message']) ? $args['success-message'] : 'The form was submitted successfully.';
 		$this->debug = isset($args['debug']);
-		$this->outputs = $args['outputs'];
-		$this->views = $args['views'];
+		$this->outputs = $args['byTag']['{}outputs'];
+		$this->views = $args['byTag']['{}views'];
 	}
 	function get($h) {
 		return $h
@@ -978,6 +971,11 @@ class Page extends ConfigElement implements Component {
 			return new IPField();
 		}
 		return $this->form->getByName($name);
+	}
+	static function xmlDeserialize(Sabre\Xml\Reader $reader) {
+		$attrs = $reader->parseAttributes();
+		$attrs['byTag'] = Sabre\Xml\Element\KeyValue::xmlDeserialize($reader);
+		return new static($attrs);
 	}
 }
 
