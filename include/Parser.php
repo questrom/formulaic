@@ -9,7 +9,6 @@ abstract class ConfigElement implements Sabre\Xml\XmlDeserializable {
 	static function xmlDeserialize(Sabre\Xml\Reader $reader) {
 		$arr = new NodeData();
 
-		$arr->tag = substr($reader->getClark(), 2);
 
 		$arr->attrs = $reader->parseAttributes();
 		$tree = $reader->parseInnerTree();
@@ -51,7 +50,6 @@ class ChildElem implements Sabre\Xml\XmlDeserializable  {
 	static function xmlDeserialize(Sabre\Xml\Reader $reader) {
 		$arr = new NodeData();
 
-		$arr->tag = substr($reader->getClark(), 2);
 
 		$arr->attrs = $reader->parseAttributes();
 		$tree = $reader->parseInnerTree();
@@ -78,7 +76,7 @@ class AllowElem extends ConfigElement {
 
 class NodeData {
 	function __construct() {
-		$this->tag = '';
+
 		$this->attrs = [];
 		$this->children = [];
 		$this->byTag = [];
