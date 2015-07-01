@@ -14,6 +14,7 @@
         "tpyo/amazon-s3-php-class": "^0.5.1",
         "phpmailer/phpmailer": "^5.2",
         "components/jquery": "^2.1",
-        "nette/mail": "^2.3"
+        "nette/mail": "^2.3",
+        "sabre/xml": "^1.1"
     }
 }

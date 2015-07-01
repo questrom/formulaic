@@ -7,6 +7,9 @@ class Column implements YAMLPart {
 		$this->width = intval($args['width']);
 		$this->sort = isset($args['sort']) ? $args['sort'] : null;
 	}
+	static function fromYaml($elem) {
+		return new static($elem->attrs);
+	}
 }
 
 class ValueCell implements HTMLComponent {
@@ -60,6 +63,10 @@ class TableView implements YAMLPart, HTMLComponent {
 		$this->sortBy = $sortBy;
 
 		$this->perPage = isset($args['per-page']) ? $args['per-page'] : null;
+	}
+	static function fromYaml($v) {
+		$v->attrs['cols'] = $v->children;
+		return new static($v->attrs);
 	}
 	function query($getData) {
 

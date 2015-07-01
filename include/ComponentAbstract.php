@@ -8,6 +8,7 @@
 
 interface YAMLPart {
 	public function __construct($args);
+	// Should also implement 'static function fromYaml($elem)'
 }
 
 interface HTMLComponent {
@@ -104,6 +105,9 @@ abstract class NamedLabeledComponent implements Component, Cellable {
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
+	}
+	static function fromYaml($elem) {
+		return new static($elem->attrs);
 	}
 	protected function getLabel() {
 		return new Label($this->label);

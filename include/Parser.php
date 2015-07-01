@@ -4,15 +4,9 @@ require('jade/autoload.php.dist');
 use Everzet\Jade\Jade;
 
 $parsers =  [
-	'checkbox' => function($v) {
-		return new Checkbox($v->attrs);
-	},
-	'textbox' => function($v) {
-		return new Textbox($v->attrs);
-	},
-	'password' => function($v) {
-		return new Password($v->attrs);
-	},
+	'checkbox' => ['Checkbox', 'fromYaml'],
+	'textbox' => ['Textbox', 'fromYaml'],
+	'password' => ['Password', 'fromYaml'],
 	'dropdown' => function($v) {
 		$v->attrs['options'] = $v->children;
 		return new Dropdown($v->attrs);
@@ -25,37 +19,20 @@ $parsers =  [
 		$v->attrs['options'] = $v->children;
 		return new Checkboxes($v->attrs);
 	},
-	'textarea' => function($v) {
-		return new Textarea($v->attrs);
-	},
+	'textarea' => ['TextArea', 'fromYaml'],
 	'range' => function($v) {
-		return new Range($v->attrs);
+		return Range::fromYaml($v);
 	},
 	'time' => function($v) {
-		return new TimeInput($v->attrs);
+		return TimeInput::fromYaml($v);
 	},
-	'group' => function($v) {
-		$v->attrs['fields'] = $v->children;
-		return new Group($v->attrs);
-	},
-	'date' => function($v) {
-		return new DatePicker($v->attrs);
-	},
-	'phonenumber' => function($v) {
-		return new PhoneNumber($v->attrs);
-	},
-	'email' => function($v) {
-		return new EmailAddr($v->attrs);
-	},
-	'url' => function($v) {
-		return new UrlInput($v->attrs);
-	},
-	'number' => function($v) {
-		return new NumberInp($v->attrs);
-	},
-	'mongo' => function($v) {
-		return new MongoOutput($v->attrs);
-	},
+	'group' => ['Group', 'fromYaml'],
+	'date' => ['DatePicker', 'fromYaml'],
+	'phonenumber' => ['PhoneNumber','fromYaml'],
+	'email' => ['EmailAddr','fromYaml'],
+	'url' => ['UrlInput','fromYaml'],
+	'number' => ['NumberInp','fromYaml'],
+	'mongo' => ['MongoOutput', 'fromYaml'],
 	'notice' => function($v) {
 		if(count($v->children)) {
 			$v->attrs['list'] = $v->children;
@@ -66,15 +43,10 @@ $parsers =  [
 		$v->attrs['text'] = $v->children[0];
 		return new Header($v->attrs);
 	},
-	'datetime' => function($v) {
-		return new DateTimePicker($v->attrs);
-	},
-	's3' => function($v) {
-		return new S3Output($v->attrs);
-	},
+	'datetime' => ['DateTimePicker', 'fromYaml'],
+	's3' => ['S3Output', 'fromYaml'],
 	'file' => function($v) {
-		$aext = array_reduce($v->children, 'array_merge', []);
-		$v->attrs['allowed-extensions'] = $aext;
+		$v->attrs['allowed-extensions'] = array_reduce($v->children, 'array_merge', []);
 		return new FileUpload($v->attrs);
 	},
 	'allow' => function($v) {
@@ -83,15 +55,11 @@ $parsers =  [
 	'option' => function($v) {
 		return $v->children[0] . '';
 	},
-	'fields' => function($v) {
-		return new FormElem($v->children);
-	},
+	'fields' => ['FormElem', 'fromYaml'],
 	'li' => function($v) {
 		return $v->children[0] . '';
 	},
-	'outputs' => function($v) {
-		return new SuperOutput($v->children);
-	},
+	'outputs' => ['SuperOutput', 'fromYaml'],
 	'form' => function($v) {
 		return new Page([
 			'fields' => $v->byTag['fields'],
@@ -102,10 +70,7 @@ $parsers =  [
 			'views' => $v->byTag['views']
 		]);
 	},
-	'list' => function($v) {
-		$v->attrs['items'] = $v->children;
-		return new ListComponent($v->attrs);
-	},
+	'list' => ['ListComponent', 'fromYaml'],
 	'show-if' => function($v) {
 		$v->attrs['item'] = $v->children[0];
 		return new ShowIfComponent($v->attrs);
@@ -113,14 +78,8 @@ $parsers =  [
 	'views' => function($v) {
 		return $v->children;
 	},
-	'table-view' => function($v) {
-		$v->attrs['cols'] = $v->children;
-
-		return new TableView($v->attrs);
-	},
-	'col' => function($v) {
-		return new Column($v->attrs);
-	}
+	'table-view' => ['TableView', 'fromYaml'],
+	'col' => ['Column', 'fromYaml']
 ];
 
 

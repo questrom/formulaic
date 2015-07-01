@@ -31,6 +31,9 @@ class MongoOutput implements Output {
 
 		return $oldData;
 	}
+	static function fromYaml($elem) {
+		return new static($elem->attrs);
+	}
 }
 
 class S3Output implements Output {
@@ -72,6 +75,9 @@ class S3Output implements Output {
 		}, $data);
 		return $data;
 	}
+	static function fromYaml($elem) {
+		return new static($elem->attrs);
+	}
 }
 
 class SuperOutput implements Output {
@@ -83,5 +89,8 @@ class SuperOutput implements Output {
 			$data = $output->run($data);
 		}
 		return $data;
+	}
+	static function fromYaml($elem) {
+		return new static($elem->children);
 	}
 }

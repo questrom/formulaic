@@ -681,6 +681,10 @@ class ListComponent extends GroupComponent implements Cellable {
 		$this->label = $args['label'];
 		$this->addText = isset($args['add-text']) ? $args['add-text'] : 'Add an item';
 	}
+	static function fromYaml($elem) {
+		$elem->attrs['items'] = $elem->children;
+		return new static($elem->attrs);
+	}
 	function getByName($name) {
 		return ($this->name === $name) ? $this : null;
 	}
@@ -792,6 +796,10 @@ class Group extends GroupComponent {
 	function __construct($args) {
 		$this->items = $args['fields'];
 	}
+	static function fromYaml($v) {
+		$v->attrs['fields'] = $v->children;
+		return new static($v->attrs);
+	}
 	function get($h) {
 
 		$items = array_map(function($item) {
@@ -836,6 +844,9 @@ class FormElem extends GroupComponent {
 
 	function __construct($args) {
 		$this->items = $args;
+	}
+	static function fromYaml($elem) {
+		return new static($elem->children);
 	}
 	function get($h) {
 		return $h
