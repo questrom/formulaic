@@ -30,6 +30,9 @@ class ShowIfComponent implements Component {
 				}
 			});
 	}
+	function getByName($name) {
+		return ($this->item instanceof NameMatcher) ? $this->item->getByName($name) : null;
+	}
 }
 
 class Label extends EmptyComponent {
@@ -678,6 +681,9 @@ class ListComponent extends GroupComponent implements Cellable {
 		$this->label = $args['label'];
 		$this->addText = isset($args['add-text']) ? $args['add-text'] : 'Add an item';
 	}
+	function getByName($name) {
+		return ($this->name === $name) ? $this : null;
+	}
 	function get($h) {
 
 
@@ -856,6 +862,9 @@ class FormElem extends GroupComponent {
 
 
 class IPField implements Cellable {
+	function __construct() {
+		$this->name = '_ip';
+	}
 	function asTableCell($h, $value) {
 		return $value->innerBind(function($v) use($h) {
 			return Result::ok($h
@@ -865,9 +874,15 @@ class IPField implements Cellable {
 			);
 		});
 	}
+	function getByName($name) {
+		return ($this->name === $name) ? $this : null;
+	}
 }
 
 class TimestampField implements Cellable {
+	function __construct() {
+		$this->name = '_timestamp';
+	}
 	function asTableCell($h, $value) {
 		return $value->innerBind(function($v) use($h) {
 			return Result::ok($h
@@ -876,6 +891,9 @@ class TimestampField implements Cellable {
 				->end
 			);
 		});
+	}
+	function getByName($name) {
+		return ($this->name === $name) ? $this : null;
 	}
 }
 

@@ -18,15 +18,22 @@ interface Validatable {
 	public function getMerger($val);
 }
 
-interface Cellable {
+interface NameMatcher {
+	public function getByName($name);
+}
+
+interface Cellable extends NameMatcher {
 	public function asTableCell($h, $value);
 }
 
-interface Component extends YAMLPart, HTMLComponent, Validatable {}
+interface Component extends YAMLPart, HTMLComponent, Validatable, NameMatcher {}
 
 abstract class EmptyComponent implements Component {
 	function getMerger($val) {
 		return Result::ok([]);
+	}
+	function getByName($name) {
+		return null;
 	}
 }
 
@@ -101,6 +108,9 @@ abstract class NamedLabeledComponent implements Component, Cellable {
 	protected function getLabel() {
 		return new Label($this->label);
 	}
+	function getByName($name) {
+		return ($this->name === $name) ? $this : null;
+	}
     abstract protected function validate($against);
     function getMerger($val) {
     	$val = $val->innerBind(function($v) {
@@ -148,20 +158,16 @@ abstract class FileInputComponent extends NamedLabeledComponent {
 
 abstract class GroupComponent implements Component {
 	function getByName($name) {
+		$result = null;
 		foreach($this->items as $item) {
-			if($item instanceof ShowIfComponent) {
-				$item = $item->item;
-			}
-			if($item instanceof Cellable && $item->name === $name) {
-				return $item;
-			} else if($item instanceof GroupComponent) {
-				$get = $item->getByName($name);
-				if($get) {
-					return $get;
+			if($item instanceof NameMatcher) {
+				$result = $item->getByName($name);
+				if($result) {
+					return $result;
 				}
 			}
 		}
-		return null;
+		return $result;
 	}
 	function getMerger($val) {
 		return $this->validate($val);
