@@ -107,12 +107,11 @@ class TableView extends ConfigElement implements HTMLComponent {
 			->head
 				->meta->charset('utf-8')->end
 				->title->t($this->title)->end
-				->link->rel("stylesheet")->href("vendor/semantic/ui/dist/semantic.css")->end
+				->link->rel("stylesheet")->href("semantic-ui/semantic.css")->end
 				->link->rel("stylesheet")->href("styles.css")->end
 			->end
 			->body
-				->div->class('ui page grid wide-page')
-					->div->class('sixteen wide column')
+				->div->class('ui container wide-page')
 						->h1
 							->t($this->title)
 						->end
@@ -160,12 +159,12 @@ class TableView extends ConfigElement implements HTMLComponent {
 									->t('Next')
 								->end
 							->end
-						->end
+
 					->end
 				->end
 				->script->src('vendor/components/jquery/jquery.min.js')->end
 				->script->src('vendor/robinherbots/jquery.inputmask/dist/jquery.inputmask.bundle.js')->end
-				->script->src('vendor/semantic/ui/dist/semantic.js')->end
+				->script->src('semantic-ui/dist/semantic.js')->end
 				->script->src('client.js')->end
 			->end
 		->end;

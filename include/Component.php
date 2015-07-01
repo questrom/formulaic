@@ -918,14 +918,12 @@ class Page implements Component {
 			->head
 				->meta->charset('utf-8')->end
 				->title->t($this->title)->end
-				->link->rel("stylesheet")->href("vendor/semantic/ui/dist/semantic.css")->end
-				->link->rel("stylesheet")->href("styles.css")->end
+				->link->rel('stylesheet')->href('semantic-ui/semantic.css')->end
+				->link->rel('stylesheet')->href('styles.css')->end
 			->end
 			->body
-				->div->class('ui page grid')
-					->div->class('sixteen wide column')
-						->add($this->form)
-					->end
+				->div->class('ui text container')
+					->add($this->form)
 				->end
 				->div->class('success-modal ui small modal')
 					->div->class('header')
@@ -935,7 +933,7 @@ class Page implements Component {
 						->p->t($this->successMessage)->end
 					->end
 					->div->class('actions')
-						->button->type('button')->class('ui primary button')->t('OK')->end
+						->button->type('button')->class('ui primary button approve')->t('OK')->end
 					->end
 				->end
 				->div->class('failure-modal ui small modal')
@@ -946,12 +944,12 @@ class Page implements Component {
 						->p->t('The server encountered an error when processing your request. Please try again.')->end
 					->end
 					->div->class('actions')
-						->button->type('button')->class('ui primary button')->t('OK')->end
+						->button->type('button')->class('ui primary button approve')->t('OK')->end
 					->end
 				->end
 				->script->src('vendor/components/jquery/jquery.min.js')->end
 				->script->src('vendor/robinherbots/jquery.inputmask/dist/jquery.inputmask.bundle.js')->end
-				->script->src('vendor/semantic/ui/dist/semantic.js')->end
+				->script->src('semantic-ui/semantic.js')->end
 				->script->src('client.js')->end
 			->end
 		->end;

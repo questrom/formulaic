@@ -7,12 +7,9 @@
         }
     ],
     "require": {
-        "semantic/ui": "1.12.3",
         "moment/moment": "^2.10",
         "robinherbots/jquery.inputmask": "^3.1",
-        "aws/aws-sdk-php": "^3.0",
         "tpyo/amazon-s3-php-class": "^0.5.1",
-        "phpmailer/phpmailer": "^5.2",
         "components/jquery": "^2.1",
         "nette/mail": "^2.3",
         "sabre/xml": "^1.1"

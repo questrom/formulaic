@@ -94,7 +94,7 @@ function enableFormControls(root) {
 	root.find('input[type=range]').on('input', handleRange).each(handleRange);
 	root.find('.ui.dropdown').dropdown();
 	root.find('input[type=checkbox]').on('change', handleBox).each(handleBox);
-	root.find('.checkbox').checkbox();
+	// root.find('.checkbox').checkbox();
 	root.find("[data-inputmask]").inputmask();
 }
 
