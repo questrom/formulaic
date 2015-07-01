@@ -23,7 +23,7 @@ interface Cellable extends NameMatcher {
 	public function asTableCell($h, $value);
 }
 
-interface Component extends HTMLComponent, Validatable, NameMatcher {}
+interface Component extends HTMLComponent, Validatable, NameMatcher, Sabre\Xml\XmlDeserializable {}
 
 abstract class EmptyComponent extends ConfigElement implements Component {
 	function getMerger($val) {

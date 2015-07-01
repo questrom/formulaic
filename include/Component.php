@@ -902,7 +902,7 @@ class TimestampField implements Cellable {
 	}
 }
 
-class Page implements Component, Sabre\Xml\XmlDeserializable  {
+class Page implements Component {
 	function __construct($args) {
 
 		$this->form = $args['byTag']['{}fields'];
