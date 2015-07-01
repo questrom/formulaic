@@ -17,6 +17,7 @@ interface Validatable {
 
 interface NameMatcher {
 	public function getByName($name);
+	public function getAllFields();
 }
 
 interface Cellable extends NameMatcher {
@@ -103,6 +104,9 @@ abstract class NamedLabeledComponent extends ConfigElement implements HTMLCompon
 		$this->label = $args['label'];
 		$this->name = $args['name'];
 	}
+	function getAllFields() {
+		return [ $this ];
+	}
 	protected function getLabel() {
 		return new Label($this->label);
 	}
@@ -155,6 +159,15 @@ abstract class FileInputComponent extends NamedLabeledComponent {
 
 
 abstract class GroupComponent extends ConfigElement implements HTMLComponent, Validatable, NameMatcher, Sabre\Xml\XmlDeserializable {
+	function getAllFields() {
+		$arr = [];
+		foreach($this->items as $item) {
+			if($item instanceof NameMatcher) {
+				$arr = array_merge($arr, $item->getAllFields());
+			}
+		}
+		return $arr;
+	}
 	function getByName($name) {
 		$result = null;
 		foreach($this->items as $item) {

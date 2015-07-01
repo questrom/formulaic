@@ -33,7 +33,7 @@ class ValueCell implements HTMLComponent {
 					);
 				})
 				->innerBind(function($x) {
-					return $x;
+			return $x;
 				});
 		} else {
 			throw new Exception('Invalid column!');
@@ -120,9 +120,10 @@ class TableView extends ConfigElement implements HTMLComponent {
 							->colgroup
 								->add(array_map(function($x) use($h) {
 									return $h
-										->col->style('width: ' . $x->width . '%;')
+										->col->style('width: ' . ($x->width * 100) . '%;')
 									->end;
 								}, $this->cols))
+								->col->style('width:90px;')->end
 							->end
 							->thead
 								->tr
@@ -135,6 +136,7 @@ class TableView extends ConfigElement implements HTMLComponent {
 											->t($x->header)
 										->end;
 									}, $this->cols))
+									->th->end
 								->end
 							->end
 							->add(array_map(function($row) use ($h) {
@@ -143,6 +145,11 @@ class TableView extends ConfigElement implements HTMLComponent {
 									->add(array_map(function($col) use($h, $row) {
 											return new ValueCell( isset($row[$col->name]) ? $row[$col->name] : null, $this->pageData->getByName($col->name) );
 									}, $this->cols))
+									->td->class('center aligned nowrap unpadded-cell')
+										->a->class('ui no-margin compact button')->href('details.php?id=' . $row['_id'])
+											->t('Details')
+										->end
+									->end
 								->end;
 							}, $this->data))
 						->end

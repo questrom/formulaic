@@ -30,6 +30,9 @@ input[type=range]::-moz-focus-outer { border:0 !important; }
 .ui.icon.message > .icon:not(.close) { align-self: flex-start; }
 .ui.header.attached > .icon { vertical-align: top; }
 .red.prompt { display: table; }
+.nowrap { white-space:nowrap;}
+
+.no-margin { margin:0 !important;}
 
 .group > :first-child.attached {
 	margin-top: 0px !important;

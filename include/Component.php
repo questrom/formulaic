@@ -875,6 +875,7 @@ class FormElem extends GroupComponent {
 class IPField implements Cellable, Validatable {
 	function __construct() {
 		$this->name = '_ip';
+		$this->label = 'IP Address';
 	}
 	function asTableCell($h, $value) {
 		return $value->innerBind(function($v) use($h) {
@@ -891,12 +892,16 @@ class IPField implements Cellable, Validatable {
 	function getMerger($val) {
 		return Result::ok(['_ip' => $_SERVER['REMOTE_ADDR']]);
 	}
+	function getAllFields() {
+		return [ $this ];
+	}
 
 }
 
 class TimestampField implements Cellable, Validatable {
 	function __construct() {
 		$this->name = '_timestamp';
+		$this->label = 'Timestamp';
 	}
 	function asTableCell($h, $value) {
 		return $value->innerBind(function($v) use($h) {
@@ -912,6 +917,9 @@ class TimestampField implements Cellable, Validatable {
 	}
 	function getMerger($val) {
 		return Result::ok(['_timestamp' => new DateTimeImmutable()]);
+	}
+	function getAllFields() {
+		return [ $this ];
 	}
 }
 

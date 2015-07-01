@@ -21,3 +21,4 @@ require('include/Output.php');
 
 // Views
 require('include/TableView.php');
+require('include/DetailsView.php');
