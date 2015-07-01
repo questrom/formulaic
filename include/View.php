@@ -8,9 +8,6 @@ class Column extends ConfigElement {
 		$this->width = intval($args['width']);
 		$this->sort = isset($args['sort']) ? $args['sort'] : null;
 	}
-	static function fromYaml($elem) {
-		return new static($elem->attrs);
-	}
 }
 
 class ValueCell implements HTMLComponent {
@@ -50,7 +47,7 @@ class TableView extends ConfigElement implements HTMLComponent {
 	function __construct($args) {
 
 		$this->title = $args['title'];
-		$this->cols = $args['cols'];
+		$this->cols = $args['children'];
 
 		$sortBy = [];
 
@@ -65,10 +62,6 @@ class TableView extends ConfigElement implements HTMLComponent {
 		$this->sortBy = $sortBy;
 
 		$this->perPage = isset($args['per-page']) ? $args['per-page'] : null;
-	}
-	static function fromYaml($v) {
-		$v->attrs['cols'] = $v->children;
-		return new static($v->attrs);
 	}
 	function query($getData) {
 

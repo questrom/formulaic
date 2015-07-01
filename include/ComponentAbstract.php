@@ -102,9 +102,6 @@ abstract class NamedLabeledComponent extends ConfigElement implements Component,
 		$this->label = $args['label'];
 		$this->name = $args['name'];
 	}
-	static function fromYaml($elem) {
-		return new static($elem->attrs);
-	}
 	protected function getLabel() {
 		return new Label($this->label);
 	}

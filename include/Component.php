@@ -9,7 +9,7 @@
 
 class ShowIfComponent extends ConfigElement implements Component {
 	function __construct($args) {
-		$this->item = $args['item'];
+		$this->item = $args['children'][0];
 		$this->cond = $args['cond'];
 	}
 	function get($h) {
@@ -32,10 +32,6 @@ class ShowIfComponent extends ConfigElement implements Component {
 	}
 	function getByName($name) {
 		return ($this->item instanceof NameMatcher) ? $this->item->getByName($name) : null;
-	}
-	static function fromYaml($v) {
-		$v->attrs['item'] = $v->children[0];
-		return new static($v->attrs);
 	}
 }
 
@@ -198,7 +194,7 @@ class Dropdown extends PostInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
 
-		$this->options = $args['options'];
+		$this->options = $args['children'];
 		$this->required = isset($args['required']);
 	}
 	function get($h) {
@@ -226,10 +222,6 @@ class Dropdown extends PostInputComponent {
 		return $against
 			->filterChosenFromOptions($this->options)
 			->requiredMaybe($this->required);
-	}
-	static function fromYaml($v) {
-		$v->attrs['options'] = $v->children;
-		return new static($v->attrs);
 	}
 }
 
@@ -824,12 +816,7 @@ class Group extends GroupComponent {
 
 	function __construct($args) {
 
-		$this->items = $args['fields'];
-	}
-	static function fromYaml($v) {
-
-		$v->attrs['fields'] = $v->children;
-		return new static($v->attrs);
+		$this->items = $args['children'];
 	}
 	function get($h) {
 
@@ -874,10 +861,7 @@ class FormElem extends GroupComponent {
 
 
 	function __construct($args) {
-		$this->items = $args;
-	}
-	static function fromYaml($elem) {
-		return new static($elem->children);
+		$this->items = $args['children'];
 	}
 	function get($h) {
 		return $h

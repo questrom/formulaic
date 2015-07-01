@@ -25,6 +25,10 @@ abstract class ConfigElement implements Sabre\Xml\XmlDeserializable {
 
 		return static::fromYaml($arr);
 	}
+	static function fromYaml($v) {
+		$v->attrs['children'] = $v->children;
+		return new static($v->attrs);
+	}
 }
 
 require('ComponentAbstract.php');
@@ -71,8 +75,12 @@ class Parser {
 
 		$file = "!!! xml\n" . file_get_contents($file);
 
-		$parsed = (new Everzet\Jade\Parser(new Everzet\Jade\Lexer\Lexer()))->parse($file);
-		$xml = (new Everzet\Jade\Dumper\PHPDumper())->dump($parsed);
+		$jade = new Everzet\Jade\Jade(
+			new Everzet\Jade\Parser(new Everzet\Jade\Lexer\Lexer()),
+			new Everzet\Jade\Dumper\PHPDumper()
+		);
+
+		$xml = $jade->render($file);
 
 
 		$reader = new Sabre\Xml\Reader();

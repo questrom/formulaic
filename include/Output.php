@@ -11,7 +11,6 @@ class MongoOutput extends ConfigElement implements Output {
 		$this->collection = $args['collection'];
 	}
 	function run($data) {
-// echo 'RUN MONGO';
 		$oldData = $data;
 
 		$data = array_map(function($x) {
@@ -43,8 +42,7 @@ class S3Output extends ConfigElement implements Output {
 		$this->bucket = $args['bucket'];
 	}
 	function run($data) {
-		// echo 'RUN S3';
-		$data = array_map(function($x) {
+		return array_map(function($x) {
 			if($x instanceof FileInfo) {
 
 
@@ -73,7 +71,6 @@ class S3Output extends ConfigElement implements Output {
 				return $x;
 			}
 		}, $data);
-		return $data;
 	}
 	static function fromYaml($elem) {
 		return new static($elem->attrs);
