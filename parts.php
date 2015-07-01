@@ -1,17 +1,23 @@
 <?php
 
-
 date_default_timezone_set('America/New_York');
 
+// Config parsing
+require('include/Parser.php');
 
-
-require('include/ComponentHelpers.php');
-// require('include/ComponentAbstract.php');
-require('include/Parser.php'); // requires ComponentAbstract
-
+// HTML generation
 require('include/HTMLGenerator.php');
+
+// Form valdation
 require('include/Validate.php');
-require('include/Output.php');
+
+// Components
+require('include/ComponentHelpers.php');
+require('include/ComponentAbstract.php');
 require('include/Component.php');
 
+// Outputs
+require('include/Output.php');
+
+// Views
 require('include/View.php');

@@ -25,8 +25,6 @@ abstract class ConfigElement implements Sabre\Xml\XmlDeserializable {
 	}
 }
 
-require('ComponentAbstract.php');
-
 
 class TextElem implements Sabre\Xml\XmlDeserializable {
 	static function xmlDeserialize(Sabre\Xml\Reader $reader) {
