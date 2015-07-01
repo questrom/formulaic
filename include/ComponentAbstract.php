@@ -23,9 +23,7 @@ interface Cellable extends NameMatcher {
 	public function asTableCell($h, $value);
 }
 
-interface Component extends HTMLComponent, Validatable, NameMatcher, Sabre\Xml\XmlDeserializable {}
-
-abstract class EmptyComponent extends ConfigElement implements Component {
+abstract class EmptyComponent extends ConfigElement implements HTMLComponent, Sabre\Xml\XmlDeserializable {
 	function getMerger($val) {
 		return Result::ok([]);
 	}
@@ -100,7 +98,7 @@ abstract class BaseNotice extends EmptyComponent {
 	}
 }
 
-abstract class NamedLabeledComponent extends ConfigElement implements Component, Cellable {
+abstract class NamedLabeledComponent extends ConfigElement implements HTMLComponent, Validatable, NameMatcher, Sabre\Xml\XmlDeserializable, Cellable {
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
@@ -156,7 +154,7 @@ abstract class FileInputComponent extends NamedLabeledComponent {
 }
 
 
-abstract class GroupComponent extends ConfigElement implements Component {
+abstract class GroupComponent extends ConfigElement implements HTMLComponent, Validatable, NameMatcher, Sabre\Xml\XmlDeserializable {
 	function getByName($name) {
 		$result = null;
 		foreach($this->items as $item) {

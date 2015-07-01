@@ -7,15 +7,17 @@
 // ===============
 
 
-class ShowIfComponent extends ConfigElement implements Component {
+class ShowIfComponent extends GroupComponent {
 	function __construct($args) {
-		$this->item = $args['children'][0];
+		$this->items = [
+			$args['children'][0]
+		];
 		$this->cond = $args['cond'];
 	}
 	function get($h) {
 		return $h
 			->div->data('show-if', $this->cond)
-				->add($this->item)
+				->add($this->items[0])
 			->end;
 	}
 	function getMerger($val) {
@@ -23,15 +25,14 @@ class ShowIfComponent extends ConfigElement implements Component {
 			->collapse()
 			->innerBind(function($val) {
 				$post_value = $val->post;
-				if(!(isset($post_value[$this->cond]) ? $post_value[$this->cond] === "on" : false)) {
+				if(
+					!(isset($post_value[$this->cond]) ? $post_value[$this->cond] === "on" : false)
+				) {
 					return Result::ok([]);
 				} else {
-					return $this->item->getMerger( Result::ok( $val  ) );
+					return parent::getMerger( Result::ok( $val  ) );
 				}
 			});
-	}
-	function getByName($name) {
-		return ($this->item instanceof NameMatcher) ? $this->item->getByName($name) : null;
 	}
 }
 
