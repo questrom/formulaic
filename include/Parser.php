@@ -6,7 +6,6 @@ use Everzet\Jade\Jade;
 
 abstract class ConfigElement implements Sabre\Xml\XmlDeserializable {
 	abstract public function __construct($args);
-	// Should also implement 'static function fromYaml($elem)'
 	static function xmlDeserialize(Sabre\Xml\Reader $reader) {
 		$arr = new NodeData();
 
@@ -23,12 +22,10 @@ abstract class ConfigElement implements Sabre\Xml\XmlDeserializable {
 			$arr->text = $tree;
 		}
 
-		return static::fromYaml($arr);
-	}
-	static function fromYaml($v) {
-		$v->attrs['children'] = $v->children;
-		$v->attrs['innerText'] = $v->text;
-		return new static($v->attrs);
+		$arr->attrs['children'] = $arr->children;
+		$arr->attrs['innerText'] = $arr->text;
+		$arr->attrs['byTag'] = $arr->byTag;
+		return new static($arr->attrs);
 	}
 }
 

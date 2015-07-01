@@ -38,7 +38,7 @@ abstract class BaseHeader extends EmptyComponent {
 	function __construct($args) {
 		$this->__args = $args;
 
-		$this->text = $args['text'];
+		$this->text = $args['innerText'];
 		$this->subhead = isset($args['subhead']) ? $args['subhead'] : null;
 		$this->icon = isset($args['icon']) ? $args['icon'] : null;
 		$this->size = isset($args['size']) ? intval($args['size']) : null;

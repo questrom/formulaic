@@ -263,7 +263,7 @@ class Radios extends PostInputComponent {
 class Checkboxes extends PostInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
-		$this->options = $args['options'];
+		$this->options = $args['children'];
 
 		$this->required = isset($args['required']);
 		$this->minChoices = isset($args['min-choices']) ? intval($args['min-choices']) : 0;
@@ -309,10 +309,6 @@ class Checkboxes extends PostInputComponent {
 				->end
 			->end);
 		});
-	}
-	static function fromYaml($v) {
-		$v->attrs['options'] = $v->children;
-		return new static($v->attrs);
 	}
 }
 
@@ -647,10 +643,6 @@ class Header extends BaseHeader {
 			->add(parent::get($h))
 		->end;
 	}
-	static function fromYaml($v) {
-		$v->attrs['text'] = $v->text;
-		return new static($v->attrs);
-	}
 }
 
 class GroupHeader extends BaseHeader {
@@ -912,6 +904,14 @@ class TimestampField implements Cellable {
 
 class Page extends ConfigElement implements Component {
 	function __construct($args) {
+		$args = [
+			'fields' => $args['byTag']['fields'],
+			'title' => $args['title'],
+			'success-message' => $args['success-message'],
+			'debug' => isset($args['debug']),
+			'outputs' => $args['byTag']['outputs'],
+			'views' => $args['byTag']['views']
+		];
 		$this->form = $args['fields'];
 		$this->title = isset($args['title']) ? $args['title'] : 'Form';
 		$this->successMessage = isset($args['success-message']) ? $args['success-message'] : 'The form was submitted successfully.';
@@ -978,16 +978,6 @@ class Page extends ConfigElement implements Component {
 			return new IPField();
 		}
 		return $this->form->getByName($name);
-	}
-	static function fromYaml($v) {
-		return new static([
-			'fields' => $v->byTag['fields'],
-			'title' => $v->attrs['title'],
-			'success-message' => $v->attrs['success-message'],
-			'debug' => isset($v->attrs['debug']),
-			'outputs' => $v->byTag['outputs'],
-			'views' => $v->byTag['views']
-		]);
 	}
 }
 
