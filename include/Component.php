@@ -33,6 +33,10 @@ class ShowIfComponent implements Component {
 	function getByName($name) {
 		return ($this->item instanceof NameMatcher) ? $this->item->getByName($name) : null;
 	}
+	static function fromYaml($v) {
+		$v->attrs['item'] = $v->children[0];
+		return new static($v->attrs);
+	}
 }
 
 class Label extends EmptyComponent {
@@ -223,7 +227,10 @@ class Dropdown extends PostInputComponent {
 			->filterChosenFromOptions($this->options)
 			->requiredMaybe($this->required);
 	}
-
+	static function fromYaml($v) {
+		$v->attrs['options'] = $v->children;
+		return new static($v->attrs);
+	}
 }
 
 class Radios extends PostInputComponent {
@@ -257,6 +264,10 @@ class Radios extends PostInputComponent {
 		return $against
 			->filterChosenFromOptions($this->options)
 			->requiredMaybe($this->required);
+	}
+	static function fromYaml($v) {
+		$v->attrs['options'] = $v->children;
+		return new static($v->attrs);
 	}
 }
 
@@ -310,6 +321,10 @@ class Checkboxes extends PostInputComponent {
 				->end
 			->end);
 		});
+	}
+	static function fromYaml($v) {
+		$v->attrs['options'] = $v->children;
+		return new static($v->attrs);
 	}
 }
 
@@ -405,6 +420,10 @@ class FileUpload extends FileInputComponent {
 				->end
 			->end);
 		});
+	}
+	static function fromYaml($v) {
+		$v->attrs['allowed-extensions'] = array_reduce($v->children, 'array_merge', []);
+		return new static($v->attrs);
 	}
 }
 
@@ -639,6 +658,10 @@ class Header extends BaseHeader {
 			->add(parent::get($h))
 		->end;
 	}
+	static function fromYaml($v) {
+		$v->attrs['text'] = $v->text;
+		return new static($v->attrs);
+	}
 }
 
 class GroupHeader extends BaseHeader {
@@ -669,6 +692,12 @@ class Notice extends BaseNotice {
 		->div->class('ui message floating ' . ($this->icon === null ? '' : ' icon') . ($this->type ? ' ' . $this->type : ''))
 			->add(parent::get($h))
 		->end;
+	}
+	static function fromYaml($v) {
+		if(count($v->children)) {
+			$v->attrs['list'] = $v->children;
+		}
+		return new static($v->attrs);
 	}
 }
 
@@ -978,6 +1007,16 @@ class Page implements Component {
 			return new IPField();
 		}
 		return $this->form->getByName($name);
+	}
+	static function fromYaml($v) {
+		return new static([
+			'fields' => $v->byTag['fields'],
+			'title' => $v->attrs['title'],
+			'success-message' => $v->attrs['success-message'],
+			'debug' => isset($v->attrs['debug']),
+			'outputs' => $v->byTag['outputs'],
+			'views' => $v->byTag['views']
+		]);
 	}
 }
 
