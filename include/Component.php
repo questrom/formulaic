@@ -794,9 +794,11 @@ class ListComponent extends GroupComponent implements Cellable {
 class Group extends GroupComponent {
 
 	function __construct($args) {
+
 		$this->items = $args['fields'];
 	}
 	static function fromYaml($v) {
+
 		$v->attrs['fields'] = $v->children;
 		return new static($v->attrs);
 	}
