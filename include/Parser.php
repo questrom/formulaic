@@ -32,9 +32,6 @@ require('ComponentAbstract.php');
 
 
 class TextElem implements Sabre\Xml\XmlDeserializable {
-	function __construct($args) {
-
-	}
 	static function xmlDeserialize(Sabre\Xml\Reader $reader) {
 		$tree = $reader->parseInnerTree();
 
