@@ -20,4 +20,4 @@ require('include/Component.php');
 require('include/Output.php');
 
 // Views
-require('include/View.php');
+require('include/TableView.php');
