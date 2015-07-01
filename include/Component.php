@@ -401,9 +401,14 @@ class FileUpload extends FileInputComponent {
 	}
 	function asTableCell($h, $value) {
 		return $value->innerBind(function($v) use ($h) {
+			if(is_string($v) || !isset($v['url'])) {
+				// From old version
+				return Result::none(null);
+			}
+
 			return Result::ok($h
-			->td
-				->a->href($v['url'])->class('ui compact labeled icon button')
+			->td->class('unpadded-cell')
+				->a->href($v['url'])->class('ui attached labeled icon button')
 					->i->class('download icon')->end
 					->t('Download')
 				->end
@@ -923,7 +928,9 @@ class Page implements Component {
 			->end
 			->body
 				->div->class('ui text container')
-					->add($this->form)
+					->div->class('ui segment')
+						->add($this->form)
+					->end
 				->end
 				->div->class('success-modal ui small modal')
 					->div->class('header')

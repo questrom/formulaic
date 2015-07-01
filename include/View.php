@@ -62,10 +62,11 @@ class TableView extends ConfigElement implements HTMLComponent {
 		$this->sortBy = $sortBy;
 
 		$this->perPage = isset($args['per-page']) ? $args['per-page'] : null;
+		// $this->perPage = null;
 	}
 	function query($getData) {
 
-		$this->page = (isset($getData['page']) ? $getData['page'] : 1) - 1;
+		$this->page = intval(isset($getData['page']) ? $getData['page'] : 1);
 
 
 		$client = (new MongoClient($this->server))
@@ -81,7 +82,7 @@ class TableView extends ConfigElement implements HTMLComponent {
 		}
 
 		if($this->perPage !== null) {
-			$cursor->skip($this->page * $this->perPage);
+			$cursor->skip(($this->page - 1) * $this->perPage);
 			$cursor->limit($this->perPage);
 		}
 
@@ -146,17 +147,23 @@ class TableView extends ConfigElement implements HTMLComponent {
 							}, $this->data))
 						->end
 						->hif($this->perPage)
-							->div->class('pagination')
-								->a->class('ui left floated primary labeled icon button ' . ($this->page === 0 ? 'disabled' : ''))
-									->href('?page=' . ($this->page))
-									->i->class('left chevron icon')->end
-									->t('Previous')
+							->div->class('ui text menu')
+								->div->class('item')
+									->a->class('ui left floated primary labeled icon button ' . ($this->page === 1 ? 'disabled' : ''))
+										->href('?page=' . ($this->page - 1))
+										->i->class('left chevron icon')->end
+										->t('Previous')
+									->end
 								->end
-								->t('Page ' . ($this->page + 1) . ' of ' . ($this->max + 1))
-								->a->class('ui right floated primary right labeled icon button ' . (($this->page === $this->max) ? 'disabled' : ''))
-									->href('?page=' . ($this->page + 2))
-									->i->class('right chevron icon')->end
-									->t('Next')
+								->div->class('item pagenumber')
+									->t('Page ' . ($this->page) . ' of ' . ($this->max + 1))
+								->end
+								->div->class('right item')
+									->a->class('ui right floated primary right labeled icon button ' . ((($this->page - 1) === $this->max) ? 'disabled' : ''))
+										->href('?page=' . ($this->page + 1))
+										->i->class('right chevron icon')->end
+										->t('Next')
+									->end
 								->end
 							->end
 
