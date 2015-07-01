@@ -229,7 +229,7 @@ class Radios extends PostInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
 
-		$this->options = $args['options'];
+		$this->options = $args['children'];
 		$this->required = isset($args['required']);
 	}
 	function get($h) {
@@ -256,10 +256,6 @@ class Radios extends PostInputComponent {
 		return $against
 			->filterChosenFromOptions($this->options)
 			->requiredMaybe($this->required);
-	}
-	static function fromYaml($v) {
-		$v->attrs['options'] = $v->children;
-		return new static($v->attrs);
 	}
 }
 
@@ -339,7 +335,12 @@ class FileUpload extends FileInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
 		$this->required  = isset($args['required']);
-		$this->allowedExtensions = $args['allowed-extensions'];
+		$this->allowedExtensions = array_reduce(
+			array_map(function($x) {
+				return [$x->ext => $x->mime];
+			}, $args['children']),
+		'array_merge', []);
+
 		$this->maxSize = intval($args['max-size']);
 		$this->permissions = $args['permissions'];
 
@@ -412,10 +413,6 @@ class FileUpload extends FileInputComponent {
 				->end
 			->end);
 		});
-	}
-	static function fromYaml($v) {
-		$v->attrs['allowed-extensions'] = array_reduce($v->children, 'array_merge', []);
-		return new static($v->attrs);
 	}
 }
 
@@ -685,26 +682,16 @@ class Notice extends BaseNotice {
 			->add(parent::get($h))
 		->end;
 	}
-	static function fromYaml($v) {
-		if(count($v->children)) {
-			$v->attrs['list'] = $v->children;
-		}
-		return new static($v->attrs);
-	}
 }
 
 
 
 class ListComponent extends GroupComponent implements Cellable {
 	function __construct($args) {
-		$this->items = $args['items'];
+		$this->items = $args['children'];
 		$this->name = $args['name'];
 		$this->label = $args['label'];
 		$this->addText = isset($args['add-text']) ? $args['add-text'] : 'Add an item';
-	}
-	static function fromYaml($elem) {
-		$elem->attrs['items'] = $elem->children;
-		return new static($elem->attrs);
 	}
 	function getByName($name) {
 		return ($this->name === $name) ? $this : null;

@@ -30,9 +30,6 @@ class MongoOutput extends ConfigElement implements Output {
 
 		return $oldData;
 	}
-	static function fromYaml($elem) {
-		return new static($elem->attrs);
-	}
 }
 
 class S3Output extends ConfigElement implements Output {
@@ -72,22 +69,16 @@ class S3Output extends ConfigElement implements Output {
 			}
 		}, $data);
 	}
-	static function fromYaml($elem) {
-		return new static($elem->attrs);
-	}
 }
 
 class SuperOutput extends ConfigElement implements Output {
 	function __construct($args) {
-		$this->outputs = $args;
+		$this->outputs = $args['children'];
 	}
 	function run($data) {
 		foreach ($this->outputs as $output) {
 			$data = $output->run($data);
 		}
 		return $data;
-	}
-	static function fromYaml($elem) {
-		return new static($elem->children);
 	}
 }

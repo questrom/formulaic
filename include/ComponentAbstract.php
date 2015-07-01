@@ -68,7 +68,10 @@ abstract class BaseNotice extends EmptyComponent {
 		$this->text = $args['text'];
 		$this->header = isset($args['header']) ? $args['header'] : null;
 		$this->icon = isset($args['icon']) ? $args['icon'] : null;
-		$this->list = isset($args['list']) ? $args['list'] : null;
+		$this->list = isset($args['children']) ? $args['children'] : null;
+		if(isset($args['children']) && count($args['children']) === 0) {
+			$this->list = null;
+		}
 		$this->type = isset($args['type']) ? $args['type'] : null;
 	}
 	function get($h) {

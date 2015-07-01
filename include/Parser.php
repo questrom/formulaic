@@ -27,6 +27,7 @@ abstract class ConfigElement implements Sabre\Xml\XmlDeserializable {
 	}
 	static function fromYaml($v) {
 		$v->attrs['children'] = $v->children;
+		$v->attrs['innerText'] = $v->text;
 		return new static($v->attrs);
 	}
 }
@@ -34,25 +35,44 @@ abstract class ConfigElement implements Sabre\Xml\XmlDeserializable {
 require('ComponentAbstract.php');
 
 
-class TextElem extends ConfigElement {
-	function __construct($args) {}
-	static function fromYaml($elem) {
-		return $elem->text;
+class TextElem implements Sabre\Xml\XmlDeserializable {
+	function __construct($args) {
+
+	}
+	static function xmlDeserialize(Sabre\Xml\Reader $reader) {
+		$tree = $reader->parseInnerTree();
+
+		if(is_string($tree)) {
+			return $tree;
+		} else {
+			return '';
+		}
 	}
 }
 
-class ChildElem extends ConfigElement {
-	function __construct($args) {}
-	static function fromYaml($elem) {
-		return $elem->children;
+class ChildElem implements Sabre\Xml\XmlDeserializable  {
+	static function xmlDeserialize(Sabre\Xml\Reader $reader) {
+		$arr = new NodeData();
+
+		$arr->tag = substr($reader->getClark(), 2);
+
+		$arr->attrs = $reader->parseAttributes();
+		$tree = $reader->parseInnerTree();
+
+		if(is_array($tree)) {
+			return array_map(function($x) use(&$arr) {
+				return $x['value'];
+			}, $tree);
+		} else {
+			return [];
+		}
 	}
 }
 
 class AllowElem extends ConfigElement {
-	function __construct($args) {}
-	static function fromYaml($elem) {
-		// var_dump($elem);
-		return [$elem->attrs['ext'] => $elem->attrs['mime']];
+	function __construct($args) {
+		$this->ext = $args['ext'];
+		$this->mime = $args['mime'];
 	}
 }
 
