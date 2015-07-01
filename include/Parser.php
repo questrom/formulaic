@@ -1,8 +1,6 @@
 <?php
 
 require('jade/autoload.php.dist');
-use Everzet\Jade\Jade;
-
 
 abstract class ConfigElement implements Sabre\Xml\XmlDeserializable {
 	abstract public function __construct($args);
