@@ -97,6 +97,26 @@ class TimeInput extends PostInputComponent {
 			->minMaxTime($this->min, $this->max)
 			->stepTime($this->step);
 	}
+	function asTableCell($h, $value) {
+		return $value->innerBind(function($v) use ($h) {
+			$hour = floor($v / 3600);
+			$minute = ($v % 3600) / 60;
+			$xm = 'am';
+			if($hour > 11) {
+				$xm = 'pm';
+				$hour -= 12;
+			}
+			if($hour === 0) {
+				$hour = 12;
+			}
+			return parent::asTableCell(
+				$h,
+				Result::ok(
+					sprintf("%d:%02d %s",$hour,$minute,$xm)
+				)
+			);
+		});
+	}
 }
 
 class DateTimePicker extends PostInputComponent {
@@ -152,6 +172,16 @@ class Textarea extends SpecialInput {
 			->matchRegex($this->mustMatch)
 			->filterEmptyString()
 			->requiredMaybe($this->required);
+	}
+	function asTableCell($h, $value) {
+		return $value->innerBind(function($v) use ($h) {
+			return Result::ok($h
+			->td
+				->pre
+					->t($v)
+				->end
+			->end);
+		});
 	}
 }
 
@@ -362,6 +392,17 @@ class FileUpload extends FileInputComponent {
 				return Result::ok(new FileInfo($file, $filename, $mime, $this->permissions));
 			});
 	}
+	function asTableCell($h, $value) {
+		return $value->innerBind(function($v) use ($h) {
+			return Result::ok($h
+			->td
+				->a->href($v['url'])->class('ui compact labeled icon button')
+					->i->class('download icon')->end
+					->t('Download')
+				->end
+			->end);
+		});
+	}
 }
 
 class Range extends PostInputComponent {
@@ -452,6 +493,21 @@ class PhoneNumber extends SpecialInput {
 			->requiredMaybe($this->required)
 			->filterPhone();
 	}
+	function asTableCell($h, $value) {
+		return $value->innerBind(function($v) use ($h) {
+			if(preg_match('/^[0-9]{10}$/', $v)) {
+				$showValue = '(' . substr($v, 0, 3) . ')' . json_decode('"\u2006"') . substr($v, 3, 3) . json_decode('"\u2006"') . substr($v, 6, 4);
+			} else {
+				$showValue = $v;
+			}
+			return Result::ok($h
+			->td
+				->a->href('tel:' . $v)
+					->t($showValue)
+				->end
+			->end);
+		});
+	}
 }
 
 class EmailAddr extends SpecialInput {
@@ -472,6 +528,16 @@ class EmailAddr extends SpecialInput {
 			->filterFilterVar(FILTER_VALIDATE_EMAIL, 'Invalid email address.')
 			->mustHaveDomain($this->mustHaveDomain);
 	}
+	 function asTableCell($h, $value) {
+		return $value->innerBind(function($v) use ($h) {
+			return Result::ok($h
+			->td
+				->a->href('mailto:' . $v)
+					->t($v)
+				->end
+			->end);
+		});
+	}
 }
 class UrlInput extends SpecialInput {
 	function __construct($args) {
@@ -488,6 +554,16 @@ class UrlInput extends SpecialInput {
 			->filterEmptyString()
 			->requiredMaybe($this->required)
 			->filterFilterVar(FILTER_VALIDATE_URL, 'Invalid URL.');
+	}
+	function asTableCell($h, $value) {
+		return $value->innerBind(function($v) use ($h) {
+			return Result::ok($h
+			->td
+				->a->href($v)->target('_blank')
+					->t($v)
+				->end
+			->end);
+		});
 	}
 }
 class NumberInp extends SpecialInput {
@@ -595,7 +671,7 @@ class Notice extends BaseNotice {
 
 
 
-class ListComponent extends GroupComponent {
+class ListComponent extends GroupComponent implements Cellable {
 	function __construct($args) {
 		$this->items = $args['items'];
 		$this->name = $args['name'];
@@ -686,6 +762,21 @@ class ListComponent extends GroupComponent {
 					return Result::ok([$this->name => array_values($x)]);
 				});
 			return $result;
+		});
+	}
+  function asTableCell($h, $value) {
+		return $value->innerBind(function($v) use ($h) {
+			// var_dump($v);
+			if(count($v) === 1) {
+				$showValue = '(1 item)';
+			} else {
+				$showValue = '(' . count($v) . ' items' . ')';
+			}
+
+			return Result::ok($h
+			->td
+				->t($showValue)
+			->end);
 		});
 	}
 }

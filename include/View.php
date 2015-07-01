@@ -11,6 +11,7 @@ class Column implements YAMLPart {
 
 class ValueCell implements HTMLComponent {
 	function __construct($value, $component) {
+		// var_dump($value);
 		if($value instanceof MongoDate) {
 			$value = DateTimeImmutable::createFromFormat('U', $value->sec)->setTimezone(new DateTimeZone('America/New_York'));
 		}
@@ -82,7 +83,7 @@ class TableView implements YAMLPart, HTMLComponent {
 			$cursor->limit($this->perPage);
 		}
 
-		$this->data = iterator_to_array($cursor);
+		$this->data = array_values(iterator_to_array($cursor));
 	}
 	function setPage($page) {
 		$this->pageData = $page;

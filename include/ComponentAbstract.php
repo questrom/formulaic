@@ -152,9 +152,9 @@ abstract class GroupComponent implements Component {
 			if($item instanceof ShowIfComponent) {
 				$item = $item->item;
 			}
-			if($item instanceof NamedLabeledComponent && $item->name === $name) {
+			if(($item instanceof NamedLabeledComponent || $item instanceof ListComponent) && $item->name === $name) {
 				return $item;
-			} else if($item instanceof GroupComponent && !($item instanceof ListComponent)) {
+			} else if($item instanceof GroupComponent) {
 				$get = $item->getByName($name);
 				if($get) {
 					return $get;
