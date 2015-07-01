@@ -173,38 +173,7 @@ abstract class GroupComponent extends ConfigElement implements Component {
 		return $this->validate($val);
 	}
 	protected function validate($against) {
-		return $against->innerBind(function($val) {
-			return array_reduce($this->items, function($total, $field) use($val) {
-				return $field
-					->getMerger(Result::ok($val))
-					->collapse()
-					->innerBind(function($r) {
-						return Result::ok(function($total) use ($r) {
-							return array_merge($r, $total);
-						});
-					})
-					->ifError(function($r) {
-						return Result::error(function($total) use ($r) {
-							return array_merge($r, $total);
-						});
-					})
-					->ifError(function($merge) use($total) {
-						return $total
-							->innerBind(function($x) {
-								return Result::error([]);
-							})
-							->ifError(function($x) use ($merge) {
-								return Result::error($merge($x));
-							});
-					})
-					->innerBind(function($merge) use($total) {
-						return $total
-							->innerBind(function($x) use ($merge) {
-								return Result::ok($merge($x));
-							});
-					});
-			}, Result::ok([]));
-		});
+		return $against->groupValidate($this->items);
 	}
 }
 
