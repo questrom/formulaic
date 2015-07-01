@@ -871,7 +871,7 @@ class FormElem extends GroupComponent {
 
 
 
-class IPField implements Cellable {
+class IPField implements Cellable, Validatable {
 	function __construct() {
 		$this->name = '_ip';
 	}
@@ -887,9 +887,13 @@ class IPField implements Cellable {
 	function getByName($name) {
 		return ($this->name === $name) ? $this : null;
 	}
+	function getMerger($val) {
+		return Result::ok(['_ip' => $_SERVER['REMOTE_ADDR']]);
+	}
+
 }
 
-class TimestampField implements Cellable {
+class TimestampField implements Cellable, Validatable {
 	function __construct() {
 		$this->name = '_timestamp';
 	}
@@ -905,12 +909,22 @@ class TimestampField implements Cellable {
 	function getByName($name) {
 		return ($this->name === $name) ? $this : null;
 	}
+	function getMerger($val) {
+		return Result::ok(['_timestamp' => new DateTimeImmutable()]);
+	}
 }
 
-class Page implements Component {
+class Page extends GroupComponent {
 	function __construct($args) {
 
 		$this->form = $args['byTag']['{}fields'];
+
+		$this->items = [
+			$this->form,
+			new TimestampField(),
+			new IPField()
+		];
+
 		$this->title = isset($args['title']) ? $args['title'] : 'Form';
 		$this->successMessage = isset($args['success-message']) ? $args['success-message'] : 'The form was submitted successfully.';
 		$this->debug = isset($args['debug']);
@@ -960,22 +974,6 @@ class Page implements Component {
 				->script->src('client.js')->end
 			->end
 		->end;
-	}
-	function getMerger($against) {
-		return $this->form->getMerger($against)
-			->innerBind(function($r) {
-				$r['_timestamp'] = new DateTimeImmutable();
-				$r['_ip'] = $_SERVER['REMOTE_ADDR'];
-				return Result::ok($r);
-			});
-	}
-	function getByName($name) {
-		if($name === '_timestamp') {
-			 return new TimestampField();
-		} else if($name === '_ip') {
-			return new IPField();
-		}
-		return $this->form->getByName($name);
 	}
 	static function xmlDeserialize(Sabre\Xml\Reader $reader) {
 		$attrs = $reader->parseAttributes();
