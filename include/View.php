@@ -1,6 +1,7 @@
 <?php
 
 class Column implements YAMLPart {
+	use NormalParse;
 	function __construct($args) {
 		$this->name = $args['name'];
 		$this->header = $args['header'];
@@ -45,6 +46,7 @@ class ValueCell implements HTMLComponent {
 }
 
 class TableView implements YAMLPart, HTMLComponent {
+	use NormalParse;
 	function __construct($args) {
 
 		$this->title = $args['title'];

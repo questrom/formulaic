@@ -106,6 +106,7 @@ abstract class NamedLabeledComponent implements Component, Cellable {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
 	}
+	use NormalParse;
 	static function fromYaml($elem) {
 		return new static($elem->attrs);
 	}

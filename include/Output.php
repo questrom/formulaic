@@ -31,6 +31,7 @@ class MongoOutput implements Output {
 
 		return $oldData;
 	}
+	use NormalParse;
 	static function fromYaml($elem) {
 		return new static($elem->attrs);
 	}
@@ -75,6 +76,7 @@ class S3Output implements Output {
 		}, $data);
 		return $data;
 	}
+	use NormalParse;
 	static function fromYaml($elem) {
 		return new static($elem->attrs);
 	}
@@ -90,6 +92,7 @@ class SuperOutput implements Output {
 		}
 		return $data;
 	}
+	use NormalParse;
 	static function fromYaml($elem) {
 		return new static($elem->children);
 	}

@@ -3,7 +3,34 @@
 require('jade/autoload.php.dist');
 use Everzet\Jade\Jade;
 
+
+trait NormalParse {
+	static function xmlDeserialize($reader) {
+		$arr = new NodeData();
+
+		$arr->tag = substr($reader->getClark(), 2);
+
+		$arr->attrs = $reader->parseAttributes();
+		$tree = $reader->parseInnerTree();
+
+		if(is_array($tree)) {
+			$arr->children = array_map(function($x) use(&$arr) {
+				return $arr->byTag[substr($x['name'],2)] = $x['value'];
+			}, $tree);
+		} else if(is_string($tree)) {
+			$arr->text = $tree;
+		}
+
+
+		return static::fromYaml($arr);
+	}
+}
+
+require('ComponentAbstract.php');
+
+
 class TextElem implements YAMLPart {
+	use NormalParse;
 	function __construct($args) {}
 	static function fromYaml($elem) {
 		return $elem->text;
@@ -11,6 +38,7 @@ class TextElem implements YAMLPart {
 }
 
 class ChildElem implements YAMLPart {
+	use NormalParse;
 	function __construct($args) {}
 	static function fromYaml($elem) {
 		return $elem->children;
@@ -18,49 +46,48 @@ class ChildElem implements YAMLPart {
 }
 
 class AllowElem implements YAMLPart {
+	use NormalParse;
 	function __construct($args) {}
 	static function fromYaml($elem) {
+		// var_dump($elem);
 		return [$elem->attrs['ext'] => $elem->attrs['mime']];
 	}
 }
 
 $parsers =  [
-	'checkbox' => ['Checkbox', 'fromYaml'],
-	'textbox' => ['Textbox', 'fromYaml'],
-	'password' => ['Password', 'fromYaml'],
-	'dropdown' => ['Dropdown', 'fromYaml'],
-	'radios' => ['Radios', 'fromYaml'],
-	'checkboxes' => ['Checkboxes', 'fromYaml'],
-	'textarea' => ['TextArea', 'fromYaml'],
-	'range' => ['Range', 'fromYaml'],
-	'time' => ['TimeInput', 'fromYaml'],
-	'group' => ['Group', 'fromYaml'],
-	'date' => ['DatePicker', 'fromYaml'],
-	'phonenumber' => ['PhoneNumber','fromYaml'],
-	'email' => ['EmailAddr','fromYaml'],
-	'url' => ['UrlInput','fromYaml'],
-	'number' => ['NumberInp','fromYaml'],
-	'mongo' => ['MongoOutput', 'fromYaml'],
-	'notice' => ['Notice', 'fromYaml'],
-	'header' => ['Header', 'fromYaml'],
-	'datetime' => ['DateTimePicker', 'fromYaml'],
-	's3' => ['S3Output', 'fromYaml'],
-	'file' => ['FileUpload', 'fromYaml'],
-	'allow' => ['AllowElem', 'fromYaml'],
-	'option' => ['TextElem', 'fromYaml'],
-	'fields' => ['FormElem', 'fromYaml'],
-	'li' => ['TextElem', 'fromYaml'],
-	'outputs' => ['SuperOutput', 'fromYaml'],
-	'form' => ['Page', 'fromYaml'],
-	'list' => ['ListComponent', 'fromYaml'],
-	'show-if' => ['ShowIfComponent', 'fromYaml'],
-	'views' => ['ChildElem', 'fromYaml'],
-	'table-view' => ['TableView', 'fromYaml'],
-	'col' => ['Column', 'fromYaml']
+	'checkbox' => 'Checkbox',
+	'textbox' => 'Textbox',
+	'password' => 'Password',
+	'dropdown' => 'Dropdown',
+	'radios' => 'Radios',
+	'checkboxes' => 'Checkboxes',
+	'textarea' => 'TextArea',
+	'range' => 'Range',
+	'time' => 'TimeInput',
+	'group' => 'Group',
+	'date' => 'DatePicker',
+	'phonenumber' => 'PhoneNumber',
+	'email' => 'EmailAddr',
+	'url' => 'UrlInput',
+	'number' => 'NumberInp',
+	'mongo' => 'MongoOutput',
+	'notice' => 'Notice',
+	'header' => 'Header',
+	'datetime' => 'DateTimePicker',
+	's3' => 'S3Output',
+	'file' => 'FileUpload',
+	'allow' => 'AllowElem',
+	'option' => 'TextElem',
+	'fields' => 'FormElem',
+	'li' => 'TextElem',
+	'outputs' => 'SuperOutput',
+	'form' => 'Page',
+	'list' => 'ListComponent',
+	'show-if' => 'ShowIfComponent',
+	'views' => 'ChildElem',
+	'table-view' => 'TableView',
+	'col' => 'Column'
 ];
-
-
-
 
 
 class NodeData {
@@ -90,25 +117,8 @@ class Parser {
 
 		foreach($parsers as $name => $parser) {
 			$reader->elementMap['{}' . $name] = function($reader) use ($parser) {
-					global $parsers;
-					$arr = new NodeData();
-					// var_dump($reader);
-
-					$arr->tag = substr($reader->getClark(), 2);
-
-					$arr->attrs = $reader->parseAttributes();
-					$tree = $reader->parseInnerTree();
-
-					if(is_array($tree)) {
-						$arr->children = array_map(function($x) use(&$arr) {
-							return $arr->byTag[substr($x['name'],2)] = $x['value'];
-						}, $tree);
-					} else if(is_string($tree)) {
-						$arr->text = $tree;
-					}
-
-					return $parser($arr);
-				};
+				return $parser::xmlDeserialize($reader);
+			};
 		}
 
 		// var_dump($reader->elementMap);
