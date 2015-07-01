@@ -6,10 +6,6 @@
 // ==========================
 
 
-interface YAMLPart {
-	public function __construct($args);
-	// Should also implement 'static function fromYaml($elem)'
-}
 
 interface HTMLComponent {
 	public function get($h);
@@ -27,9 +23,9 @@ interface Cellable extends NameMatcher {
 	public function asTableCell($h, $value);
 }
 
-interface Component extends YAMLPart, HTMLComponent, Validatable, NameMatcher {}
+interface Component extends HTMLComponent, Validatable, NameMatcher {}
 
-abstract class EmptyComponent implements Component {
+abstract class EmptyComponent extends ConfigElement implements Component {
 	function getMerger($val) {
 		return Result::ok([]);
 	}
@@ -101,12 +97,11 @@ abstract class BaseNotice extends EmptyComponent {
 	}
 }
 
-abstract class NamedLabeledComponent implements Component, Cellable {
+abstract class NamedLabeledComponent extends ConfigElement implements Component, Cellable {
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
 	}
-	use NormalParse;
 	static function fromYaml($elem) {
 		return new static($elem->attrs);
 	}
@@ -161,7 +156,7 @@ abstract class FileInputComponent extends NamedLabeledComponent {
 }
 
 
-abstract class GroupComponent implements Component {
+abstract class GroupComponent extends ConfigElement implements Component {
 	function getByName($name) {
 		$result = null;
 		foreach($this->items as $item) {

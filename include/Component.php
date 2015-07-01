@@ -7,7 +7,7 @@
 // ===============
 
 
-class ShowIfComponent implements Component {
+class ShowIfComponent extends ConfigElement implements Component {
 	function __construct($args) {
 		$this->item = $args['item'];
 		$this->cond = $args['cond'];
@@ -33,7 +33,6 @@ class ShowIfComponent implements Component {
 	function getByName($name) {
 		return ($this->item instanceof NameMatcher) ? $this->item->getByName($name) : null;
 	}
-	use NormalParse;
 	static function fromYaml($v) {
 		$v->attrs['item'] = $v->children[0];
 		return new static($v->attrs);
@@ -228,7 +227,6 @@ class Dropdown extends PostInputComponent {
 			->filterChosenFromOptions($this->options)
 			->requiredMaybe($this->required);
 	}
-	use NormalParse;
 	static function fromYaml($v) {
 		$v->attrs['options'] = $v->children;
 		return new static($v->attrs);
@@ -267,7 +265,6 @@ class Radios extends PostInputComponent {
 			->filterChosenFromOptions($this->options)
 			->requiredMaybe($this->required);
 	}
-	use NormalParse;
 	static function fromYaml($v) {
 		$v->attrs['options'] = $v->children;
 		return new static($v->attrs);
@@ -325,7 +322,6 @@ class Checkboxes extends PostInputComponent {
 			->end);
 		});
 	}
-	use NormalParse;
 	static function fromYaml($v) {
 		$v->attrs['options'] = $v->children;
 		return new static($v->attrs);
@@ -425,7 +421,6 @@ class FileUpload extends FileInputComponent {
 			->end);
 		});
 	}
-	use NormalParse;
 	static function fromYaml($v) {
 		$v->attrs['allowed-extensions'] = array_reduce($v->children, 'array_merge', []);
 		return new static($v->attrs);
@@ -663,7 +658,6 @@ class Header extends BaseHeader {
 			->add(parent::get($h))
 		->end;
 	}
-	use NormalParse;
 	static function fromYaml($v) {
 		$v->attrs['text'] = $v->text;
 		return new static($v->attrs);
@@ -699,7 +693,6 @@ class Notice extends BaseNotice {
 			->add(parent::get($h))
 		->end;
 	}
-	use NormalParse;
 	static function fromYaml($v) {
 		if(count($v->children)) {
 			$v->attrs['list'] = $v->children;
@@ -717,7 +710,6 @@ class ListComponent extends GroupComponent implements Cellable {
 		$this->label = $args['label'];
 		$this->addText = isset($args['add-text']) ? $args['add-text'] : 'Add an item';
 	}
-	use NormalParse;
 	static function fromYaml($elem) {
 		$elem->attrs['items'] = $elem->children;
 		return new static($elem->attrs);
@@ -834,7 +826,6 @@ class Group extends GroupComponent {
 
 		$this->items = $args['fields'];
 	}
-	use NormalParse;
 	static function fromYaml($v) {
 
 		$v->attrs['fields'] = $v->children;
@@ -885,7 +876,6 @@ class FormElem extends GroupComponent {
 	function __construct($args) {
 		$this->items = $args;
 	}
-	use NormalParse;
 	static function fromYaml($elem) {
 		return new static($elem->children);
 	}
@@ -949,7 +939,7 @@ class TimestampField implements Cellable {
 	}
 }
 
-class Page implements Component {
+class Page extends ConfigElement implements Component {
 	function __construct($args) {
 		$this->form = $args['fields'];
 		$this->title = isset($args['title']) ? $args['title'] : 'Form';
@@ -1018,7 +1008,6 @@ class Page implements Component {
 		}
 		return $this->form->getByName($name);
 	}
-	use NormalParse;
 	static function fromYaml($v) {
 		return new static([
 			'fields' => $v->byTag['fields'],

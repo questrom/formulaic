@@ -1,10 +1,10 @@
 <?php
-interface Output extends YAMLPart {
+interface Output {
 	function __construct($args);
 	function run($data);
 }
 
-class MongoOutput implements Output {
+class MongoOutput extends ConfigElement implements Output {
 	function __construct($args) {
 		$this->server = $args['server'];
 		$this->database = $args['database'];
@@ -31,13 +31,12 @@ class MongoOutput implements Output {
 
 		return $oldData;
 	}
-	use NormalParse;
 	static function fromYaml($elem) {
 		return new static($elem->attrs);
 	}
 }
 
-class S3Output implements Output {
+class S3Output extends ConfigElement implements Output {
 	function __construct($args) {
 		$this->secret = yaml_parse_file('./config/s3-secret.yml');
 		$this->s3 = new S3($this->secret['key-id'], $this->secret['key-secret']);
@@ -76,13 +75,12 @@ class S3Output implements Output {
 		}, $data);
 		return $data;
 	}
-	use NormalParse;
 	static function fromYaml($elem) {
 		return new static($elem->attrs);
 	}
 }
 
-class SuperOutput implements Output {
+class SuperOutput extends ConfigElement implements Output {
 	function __construct($args) {
 		$this->outputs = $args;
 	}
@@ -92,7 +90,6 @@ class SuperOutput implements Output {
 		}
 		return $data;
 	}
-	use NormalParse;
 	static function fromYaml($elem) {
 		return new static($elem->children);
 	}
