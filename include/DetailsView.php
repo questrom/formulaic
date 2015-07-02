@@ -13,7 +13,11 @@ class ValueRow implements HTMLComponent {
 
 
 		if($this->component instanceof Cellable) {
-			return $this->component->asTableCell($h, $this->value === null ? Result::none(null) : Result::ok($this->value), true )
+			return $this->component->asTableCell(
+				$h,
+				$this->value === null ? Result::none(null) : Result::ok($this->value),
+				true
+			)
 				->bindNothing(function($x) use ($h){
 					return Result::ok(
 						$h
@@ -45,6 +49,7 @@ class DetailsView implements HTMLComponent, XmlDeserializable {
 	function __construct($page) {
 
 		$this->title = $page->title;
+		$this->pageData = $page;
 
 	}
 	function query($getData) {
@@ -76,10 +81,6 @@ class DetailsView implements HTMLComponent, XmlDeserializable {
 		$data = fixMongoDates($data);
 
 		$this->data = $data;
-
-	}
-	function setPage($page) {
-		$this->pageData = $page;
 
 	}
 	function get($h) {
@@ -128,6 +129,51 @@ class DetailsView implements HTMLComponent, XmlDeserializable {
 				->script->src('vendor/robinherbots/jquery.inputmask/dist/jquery.inputmask.bundle.js')->end
 				->script->src('semantic-ui/dist/semantic.js')->end
 				->script->src('client.js')->end
+			->end
+		->end;
+	}
+}
+
+class EmailView extends DetailsView {
+	function get($h) {
+		$timestamp = $this->data['_timestamp'];
+
+		return
+		$h
+		->html
+			->head
+				->meta->charset('utf-8')->end
+				->title->t($this->title)->end
+			->end
+			->body
+				->div->class('ui container wide-page')
+					->h1
+						->t($this->title)
+					->end
+					->table->class('ui definition table')->border(1)
+						->tbody
+							->add(array_map(function($field) {
+								if($field instanceof Cellable && ($field instanceof HTMLComponent)) {
+									return new ValueRow( isget($this->data[$field->name]), $field );
+								} else {
+									return null;
+								}
+							}, $this->pageData->getAllFields() ))
+						->end
+						->tfoot->class('full-width')
+							->tr
+								->th->colspan('2')->align('left')
+									->strong->t('Timestamp:' . json_decode('"\u2002"'))->end
+									->t($timestamp->format('Y/m/d g:i A'))
+									->br->end
+
+									->strong->t('IP:' . json_decode('"\u2002"'))->end
+									->code->t($this->data['_ip'])->end
+								->end
+							->end
+						->end
+					->end
+				->end
 			->end
 		->end;
 	}

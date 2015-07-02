@@ -102,7 +102,7 @@ class TimeInput extends PostInputComponent {
 			->stepTime($this->step);
 	}
 	function asTableCell($h, $value, $details) {
-		return $value->innerBind(function($v) use ($h) {
+		return $value->innerBind(function($v) use ($h, $details) {
 			$hour = floor($v / 3600);
 			$minute = ($v % 3600) / 60;
 			$xm = 'am';
@@ -110,7 +110,7 @@ class TimeInput extends PostInputComponent {
 				$xm = 'pm';
 				$hour -= 12;
 			}
-			if($hour === 0) {
+			if(intval($hour) === 0) {
 				$hour = 12;
 			}
 			return parent::asTableCell(

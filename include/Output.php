@@ -101,8 +101,9 @@ class EmailOutput implements Output, XmlDeserializable {
 		$this->secret = yaml_parse_file('./config/s3-secret.yml');
 	}
 	function run($data, $page) {
-		$view = new DetailsView($page);
-		$view->setPage($page);
+
+		$view = new EmailView($page);
+		// $view->setPage($page);
 		$view->data = $data;
 		$html = '<!DOCTYPE html>' . $view->get(new HTMLParentlessContext());
 
