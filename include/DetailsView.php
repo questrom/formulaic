@@ -5,10 +5,7 @@ use Sabre\Xml\XmlDeserializable as XmlDeserializable;
 
 class ValueRow implements HTMLComponent {
 	function __construct($value, $component) {
-		// var_dump($value);
-		if($value instanceof MongoDate) {
-			$value = DateTimeImmutable::createFromFormat('U', $value->sec)->setTimezone(new DateTimeZone('America/New_York'));
-		}
+
 		$this->value = $value;
 		$this->component = $component;
 	}
@@ -41,6 +38,7 @@ class ValueRow implements HTMLComponent {
 	}
 }
 
+// Used by details.php and Output.php (For HTML email)
 class DetailsView implements HTMLComponent, XmlDeserializable {
 	use Configurable;
 
@@ -71,9 +69,13 @@ class DetailsView implements HTMLComponent, XmlDeserializable {
 			->selectCollection($this->collection);
 
 
-		$this->data = $client->findOne([
+		$data = $client->findOne([
 			'_id' => new MongoId($this->item)
 		]);
+
+		$data = fixMongoDates($data);
+
+		$this->data = $data;
 
 	}
 	function setPage($page) {
@@ -81,11 +83,8 @@ class DetailsView implements HTMLComponent, XmlDeserializable {
 
 	}
 	function get($h) {
-		if($this->data['_timestamp'] instanceof MongoDate) {
-			$timestamp = DateTimeImmutable::createFromFormat('U', $this->data['_timestamp']->sec)->setTimezone(new DateTimeZone('America/New_York'));
-		} else {
-			$timestamp = $this->data['_timestamp'];
-		}
+
+		$timestamp = $this->data['_timestamp'];
 
 		return
 		$h

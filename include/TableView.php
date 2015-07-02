@@ -14,10 +14,7 @@ class Column implements XmlDeserializable {
 
 class ValueCell implements HTMLComponent {
 	function __construct($value, $component) {
-		// var_dump($value);
-		if($value instanceof MongoDate) {
-			$value = DateTimeImmutable::createFromFormat('U', $value->sec)->setTimezone(new DateTimeZone('America/New_York'));
-		}
+
 		$this->value = $value;
 		$this->component = $component;
 	}
@@ -89,7 +86,7 @@ class TableView implements XmlDeserializable, HTMLComponent {
 			$cursor->limit($this->perPage);
 		}
 
-		$this->data = array_values(iterator_to_array($cursor));
+		$this->data = fixMongoDates(array_values(iterator_to_array($cursor)));
 	}
 	function setPage($page) {
 		$this->pageData = $page;
