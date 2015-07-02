@@ -65,7 +65,7 @@ form(name='Example Form', title='Example Form', debug=true, success-message='Lor
   outputs
     s3(bucket='form-builder-uploads')
     mongo(server='mongodb://localhost:27017', database='forms', collection='example_form')
-    email-to(address='perljason@gmail.com')
+    email-to(to='perljason@gmail.com', from='Form Builder <perljason@gmail.com>', subject = 'Test2')
   views
     table-view(title='Main view', per-page=10)
       col(name='name', header='Name', width=1)

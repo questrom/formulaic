@@ -95,7 +95,9 @@ use Nette\Mail\SmtpMailer;
 class EmailOutput implements Output, XmlDeserializable {
 	use Configurable;
 	function __construct($args) {
-		$this->to = $args['address'];
+		$this->to = $args['to'];
+		$this->from = $args['from'];
+		$this->subject = $args['subject'];
 		$this->secret = yaml_parse_file('./config/s3-secret.yml');
 	}
 	function run($data, $page) {
@@ -105,9 +107,10 @@ class EmailOutput implements Output, XmlDeserializable {
 		$html = '<!DOCTYPE html>' . $view->get(new HTMLParentlessContext());
 
 		$mail = new Message();
-		$mail->setFrom('Form Builder <perljason@gmail.com>')
+		$mail
+			->setFrom($this->from)
 		    ->addTo($this->to)
-		    ->setSubject('Hello world!')
+		    ->setSubject($this->subject)
 		    ->setHTMLBody($html);
 
 		$mailer = new SmtpMailer($this->secret['smtp']);
