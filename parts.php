@@ -2,6 +2,9 @@
 
 date_default_timezone_set('America/New_York');
 
+// Utils
+require ('include/utils.php');
+
 // Config parsing
 require('include/Parser.php');
 

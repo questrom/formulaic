@@ -64,7 +64,7 @@ class Checkbox extends PostInputComponent {
 			->filterBoolean()
 			->mustBeTrue($this->mustCheck);
 	}
-	function asTableCell($h, $value) {
+	function asTableCell($h, $value, $details) {
 		return $value->innerBind(function($v) use ($h) {
 			return Result::ok($h
 			->td->class($v ? 'positive' : 'negative')
@@ -101,7 +101,7 @@ class TimeInput extends PostInputComponent {
 			->minMaxTime($this->min, $this->max)
 			->stepTime($this->step);
 	}
-	function asTableCell($h, $value) {
+	function asTableCell($h, $value, $details) {
 		return $value->innerBind(function($v) use ($h) {
 			$hour = floor($v / 3600);
 			$minute = ($v % 3600) / 60;
@@ -117,7 +117,8 @@ class TimeInput extends PostInputComponent {
 				$h,
 				Result::ok(
 					sprintf("%d:%02d %s",$hour,$minute,$xm)
-				)
+				),
+				$details
 			);
 		});
 	}
@@ -150,12 +151,13 @@ class DateTimePicker extends PostInputComponent {
 			->minMaxDateTime($this->min, $this->max)
 			->stepDateTime($this->step);
 	}
-	function asTableCell($h, $value) {
+	function asTableCell($h, $value, $details) {
 		return parent::asTableCell(
 			$h,
 			$value->innerBind(function($v) {
 				return Result::ok($v->format('n/j/Y g:i A'));
-			})
+			}),
+			$details
 		);
 	}
 }
@@ -177,7 +179,7 @@ class Textarea extends SpecialInput {
 			->filterEmptyString()
 			->requiredMaybe($this->required);
 	}
-	function asTableCell($h, $value) {
+	function asTableCell($h, $value, $details) {
 		return $value->innerBind(function($v) use ($h) {
 			return Result::ok($h
 			->td
@@ -296,7 +298,7 @@ class Checkboxes extends PostInputComponent {
 			->filterNoChoices()
 			->requiredMaybe($this->required);
 	}
-	function asTableCell($h, $value) {
+	function asTableCell($h, $value, $details) {
 		return $value->innerBind(function($v) use ($h) {
 			if(count($v) === 0) {
 				return Result::none(null);
@@ -400,11 +402,23 @@ class FileUpload extends FileInputComponent {
 				return Result::ok(new FileInfo($file, $filename, $mime, $this->permissions));
 			});
 	}
-	function asTableCell($h, $value) {
-		return $value->innerBind(function($v) use ($h) {
+	function asTableCell($h, $value, $details) {
+		return $value->innerBind(function($v) use ($h, $details) {
+
 			if(is_string($v) || !isset($v['url'])) {
 				// From old version
 				return Result::none(null);
+			}
+
+			if($details) {
+				return Result::ok($h
+				->td
+					->div->class('ui list')
+						->div->class('item') ->strong->t('URL: ')->end->a->href($v['url'])->t($v['url'])->end							->end
+						->div->class('item') ->strong->t('Original Filename: ')->end->t($v['originalName'])	->end
+						->div->class('item') ->strong->t('Type: ')->end->t($v['mime'])						->end
+					->end
+				->end);
 			}
 
 			return Result::ok($h
@@ -480,7 +494,7 @@ class Password extends SpecialInput {
 				return Result::ok([]);
 			});
 	}
-	function asTableCell($h, $value) {
+	function asTableCell($h, $value, $details) {
 		return Result::ok($h
 		->td
 			->abbr->title('Passwords are not saved in the database')
@@ -506,7 +520,7 @@ class PhoneNumber extends SpecialInput {
 			->requiredMaybe($this->required)
 			->filterPhone();
 	}
-	function asTableCell($h, $value) {
+	function asTableCell($h, $value, $details) {
 		return $value->innerBind(function($v) use ($h) {
 			if(preg_match('/^[0-9]{10}$/', $v)) {
 				$showValue = '(' . substr($v, 0, 3) . ')' . json_decode('"\u2006"') . substr($v, 3, 3) . json_decode('"\u2006"') . substr($v, 6, 4);
@@ -541,7 +555,7 @@ class EmailAddr extends SpecialInput {
 			->filterFilterVar(FILTER_VALIDATE_EMAIL, 'Invalid email address.')
 			->mustHaveDomain($this->mustHaveDomain);
 	}
-	 function asTableCell($h, $value) {
+	 function asTableCell($h, $value, $details) {
 		return $value->innerBind(function($v) use ($h) {
 			return Result::ok($h
 			->td
@@ -568,7 +582,7 @@ class UrlInput extends SpecialInput {
 			->requiredMaybe($this->required)
 			->filterFilterVar(FILTER_VALIDATE_URL, 'Invalid URL.');
 	}
-	function asTableCell($h, $value) {
+	function asTableCell($h, $value, $details) {
 		return $value->innerBind(function($v) use ($h) {
 			return Result::ok($h
 			->td
@@ -626,12 +640,13 @@ class DatePicker extends PostInputComponent {
 			->requiredMaybe($this->required)
 			->minMaxDate($this->min, $this->max);
 	}
-	function asTableCell($h, $value) {
+	function asTableCell($h, $value, $details) {
 		return parent::asTableCell(
 			$h,
 			$value->innerBind(function($v) {
 				return Result::ok($v->format('n/j/Y'));
-			})
+			}),
+			$details
 		);
 	}
 }
@@ -780,7 +795,7 @@ class ListComponent extends GroupComponent implements Cellable {
 			return $result;
 		});
 	}
-  function asTableCell($h, $value) {
+  function asTableCell($h, $value, $details) {
 		return $value->innerBind(function($v) use ($h) {
 			// var_dump($v);
 			if(count($v) === 1) {
@@ -877,7 +892,7 @@ class IPField implements Cellable, Validatable {
 		$this->name = '_ip';
 		$this->label = 'IP Address';
 	}
-	function asTableCell($h, $value) {
+	function asTableCell($h, $value, $details) {
 		return $value->innerBind(function($v) use($h) {
 			return Result::ok($h
 				->td
@@ -903,7 +918,7 @@ class TimestampField implements Cellable, Validatable {
 		$this->name = '_timestamp';
 		$this->label = 'Timestamp';
 	}
-	function asTableCell($h, $value) {
+	function asTableCell($h, $value, $details) {
 		return $value->innerBind(function($v) use($h) {
 			return Result::ok($h
 				->td

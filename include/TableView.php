@@ -23,7 +23,7 @@ class ValueCell implements HTMLComponent {
 
 
 		if($this->component instanceof Cellable) {
-			return $this->component->asTableCell($h, $this->value === null ? Result::none(null) : Result::ok($this->value))
+			return $this->component->asTableCell($h, $this->value === null ? Result::none(null) : Result::ok($this->value), false)
 				->bindNothing(function($x) use ($h){
 					return Result::ok(
 						$h

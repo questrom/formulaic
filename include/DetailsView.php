@@ -13,7 +13,7 @@ class ValueRow implements HTMLComponent {
 
 
 		if($this->component instanceof Cellable) {
-			return $this->component->asTableCell($h, $this->value === null ? Result::none(null) : Result::ok($this->value))
+			return $this->component->asTableCell($h, $this->value === null ? Result::none(null) : Result::ok($this->value), true )
 				->bindNothing(function($x) use ($h){
 					return Result::ok(
 						$h
@@ -95,7 +95,7 @@ class DetailsView extends ConfigElement implements HTMLComponent {
 						->tbody
 							->add(array_map(function($field) {
 								if($field instanceof Cellable && ($field instanceof HTMLComponent)) {
-									return new ValueRow( isset($this->data[$field->name]) ? $this->data[$field->name] : null, $field );
+									return new ValueRow( isget($this->data[$field->name]), $field );
 								} else {
 									return null;
 								}

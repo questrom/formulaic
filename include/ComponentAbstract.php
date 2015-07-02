@@ -21,7 +21,7 @@ interface NameMatcher {
 }
 
 interface Cellable extends NameMatcher {
-	public function asTableCell($h, $value);
+	public function asTableCell($h, $value, $details);
 }
 
 abstract class EmptyComponent extends ConfigElement implements HTMLComponent, Sabre\Xml\XmlDeserializable {
@@ -127,7 +127,7 @@ abstract class NamedLabeledComponent extends ConfigElement implements HTMLCompon
 				return Result::error([$this->name => $r]);
 			});
     }
-    function asTableCell($h, $value) {
+    function asTableCell($h, $value, $details) {
 		return $value->innerBind(function($v) use ($h) {
 			return Result::ok($h
 			->td
