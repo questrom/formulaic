@@ -36,7 +36,7 @@ class ShowIfComponent extends GroupComponent {
 	}
 }
 
-class Label extends EmptyComponent {
+class Label implements HTMLComponent {
 	function __construct($label) {
 		$this->label = $label;
 	}

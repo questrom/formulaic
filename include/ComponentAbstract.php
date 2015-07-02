@@ -1,11 +1,10 @@
 <?php
 
+use Sabre\Xml\XmlDeserializable as XmlDeserializable;
 
 
 // Abstract component classes
 // ==========================
-
-
 
 interface HTMLComponent {
 	public function get($h);
@@ -24,16 +23,7 @@ interface Cellable extends NameMatcher {
 	public function asTableCell($h, $value, $details);
 }
 
-abstract class EmptyComponent extends ConfigElement implements HTMLComponent, Sabre\Xml\XmlDeserializable {
-	function getMerger($val) {
-		return Result::ok([]);
-	}
-	function getByName($name) {
-		return null;
-	}
-}
-
-abstract class BaseHeader extends EmptyComponent {
+abstract class BaseHeader extends ConfigElement implements HTMLComponent, XmlDeserializable {
 	function __construct($args) {
 		$this->__args = $args;
 
@@ -60,7 +50,7 @@ abstract class BaseHeader extends EmptyComponent {
 	}
 }
 
-abstract class BaseNotice extends EmptyComponent {
+abstract class BaseNotice extends ConfigElement implements HTMLComponent, XmlDeserializable {
 	function __construct($args) {
 		$this->__args = $args; // Used by Group later on
 
@@ -158,7 +148,9 @@ abstract class FileInputComponent extends NamedLabeledComponent {
 }
 
 
-abstract class GroupComponent extends ConfigElement implements HTMLComponent, Validatable, NameMatcher, Sabre\Xml\XmlDeserializable {
+
+abstract class GroupComponent extends ConfigElement implements HTMLComponent, Validatable, NameMatcher, XmlDeserializable {
+
 	function getAllFields() {
 		$arr = [];
 		foreach($this->items as $item) {
