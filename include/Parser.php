@@ -24,7 +24,7 @@ trait Configurable {
 }
 
 
-class TextElem implements Sabre\Xml\XmlDeserializable {
+class TextElem implements XmlDeserializable {
 	static function xmlDeserialize(Sabre\Xml\Reader $reader) {
 		$tree = $reader->parseInnerTree();
 
@@ -36,7 +36,7 @@ class TextElem implements Sabre\Xml\XmlDeserializable {
 	}
 }
 
-class ChildElem implements Sabre\Xml\XmlDeserializable  {
+class ChildElem implements XmlDeserializable  {
 	static function xmlDeserialize(Sabre\Xml\Reader $reader) {
 
 		$tree = $reader->parseInnerTree();
