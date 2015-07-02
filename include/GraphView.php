@@ -21,14 +21,15 @@ class GraphView implements XmlDeserializable, HTMLComponent {
 		$this->database = $mongo->database;
 		$this->collection = $mongo->collection;
 
-		foreach($this->graphs as $graph) {
-			$graph->setComponent($this->pageData->getByName($graph->name));
+		foreach($this->graphs as $index => $graph) {
+			$graph->setComponent($this->pageData->getByName($graph->name), $index);
 		}
 	}
 	function query($getArgs) {
 		$client = (new MongoClient($this->server))
 			->selectDB($this->database)
 			->selectCollection($this->collection);
+		$this->totalCount = $client->count();
 		foreach($this->graphs as $graph) {
 			$graph->query($client);
 		}
@@ -41,18 +42,24 @@ class GraphView implements XmlDeserializable, HTMLComponent {
 				->title->t($this->title)->end
 				->link->rel("stylesheet")->href("semantic-ui/semantic.css")->end
 				->link->rel("stylesheet")->href("styles.css")->end
+				->link->rel("stylesheet")->href("pizza-master/dist/css/pizza.css")->end
 			->end
 			->body
 				->div->class('ui container wide-page')
 						->h1
 							->t($this->title)
 						->end
+						->h3
+							->t($this->totalCount . ' total submissions')
+						->end
 						->add($this->graphs)
 				->end
 				->script->src('vendor/components/jquery/jquery.min.js')->end
 				->script->src('vendor/robinherbots/jquery.inputmask/dist/jquery.inputmask.bundle.js')->end
+				->script->src('pizza-master/dist/js/vendor/dependencies.js')->end
+				->script->src('pizza-master/dist/js/pizza.js')->end
 				->script->src('semantic-ui/dist/semantic.js')->end
-				->script->src('client.js')->end
+				->script->src('graphs.js')->end
 			->end
 		->end;
 	}
@@ -64,31 +71,81 @@ abstract class Graph implements XmlDeserializable, HTMLComponent  {
 		$this->name = $args['name'];
 		$this->label = $args['label'];
 	}
-	function setComponent($comp) {
+	function setComponent($comp, $index) {
 		$this->component = $comp;
+		$this->id = 'graph-' . $index;
 	}
 	function query($client) {
-		$results = $client->aggregate(
-			[
-				'$group' => [
-					'_id' => '$' . $this->name,
-					'count' => [ '$sum' => 1 ]
+		if($this->component instanceof Checkboxes) {
+			// to handle array case
+			$results = $client->aggregate([
+				['$unwind' => '$' . $this->name],
+				['$group'  => [
+					'_id' => '$' . $this->name, 'count' => [ '$sum' => 1 ] ]
 				]
-			]
-		);
-		echo $this->name;
-		var_dump($results);
+			]);
+		} else {
+			$results = $client->aggregate(
+				[
+					'$group' => [
+						'_id' => '$' . $this->name,
+						'count' => [ '$sum' => 1 ]
+					]
+				]
+			);
+		}
+		$results = $results['result'];
+		// $results = array_combine(
+		// 	array_map(function($result) {
+		// 		$key = $result['_id'];
+		// 		if($key === true) { $key = 'Yes'; }
+		// 		if($key === false) { $key = 'No'; }
+		// 		if($key === null) { $key = '(None)'; }
+		// 		return $key;
+		// 	}, $results),
+		// 	array_map(function($result) { return $result['count']; }, $results)
+		// );
+		$this->results = $results;
+
 	}
 }
 
 class PieChart extends Graph {
 	function get($h) {
-		return $h->div->t('pie')->end;
+		return $h
+			->h4->t($this->label)->end
+			->ul->data('pie-id', $this->id)
+				->add(array_map(function($result) use ($h) {
+					$key = $result['_id'];
+					if($key === true) { $key = 'Yes'; }
+					if($key === false) { $key = 'No'; }
+					if($key === null) { $key = '(None)'; }
+
+					return $h
+					->li->data('value', $result['count'])->t($key)->end;
+				}, $this->results))
+			->end
+			->div->id($this->id)->end;
+			// ->div->t(implode('<br>', $this->results))->end;
+
 	}
 }
 
 class BarGraph extends Graph {
 	function get($h) {
-		return $h->div->t('bar')->end;
+		return $h
+			->h4->t($this->label)->end
+			->ul->data('bar-id', $this->id)
+				->add(array_map(function($result) use ($h) {
+					$key = $result['_id'];
+					if($key === true) { $key = 'Yes'; }
+					if($key === false) { $key = 'No'; }
+					if($key === null) { $key = '(None)'; }
+
+					return $h
+					->li->data('value', $result['count'])->t($key)->end;
+				}, $this->results))
+			->end
+			->div->id($this->id)->end;
 	}
 }

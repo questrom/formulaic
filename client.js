@@ -1,5 +1,5 @@
 /* jshint undef: true, unused: true */
-/* globals $, document, FormData */
+/* globals $, document, FormData, Pizza */
 
 function addPrompt(name, prompt) {
 	$(document.getElementsByName(name))
@@ -48,7 +48,9 @@ $.extend($.inputmask.defaults.aliases, {
     }
 });
 
-$.fn.modal.settings.transition='scale';
+if('modal' in $.fn) {
+	$.fn.modal.settings.transition='scale';
+}
 
 function handleRange() {
 	$(this).parent().find('span.range-value').text($(this).val());
