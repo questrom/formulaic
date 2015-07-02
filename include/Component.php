@@ -316,6 +316,7 @@ class Checkboxes extends PostInputComponent {
 }
 
 class Textbox extends SpecialInput {
+	use InputField;
 	function get($h) {
         return $this->makeInput($h, 'text', null);
 	}
@@ -471,6 +472,7 @@ class Range extends PostInputComponent {
 
 
 class Password extends SpecialInput {
+	use InputField;
 	function __construct($args) {
 		parent::__construct($args);
 		$this->matchHash = isset($args['match-hash']) ? $args['match-hash'] : null;
@@ -506,6 +508,7 @@ class Password extends SpecialInput {
 }
 
 class PhoneNumber extends SpecialInput {
+	use InputField;
 	function __construct($args) {
 		parent::__construct($args);
 		$this->required = isset($args['required']);
@@ -538,6 +541,7 @@ class PhoneNumber extends SpecialInput {
 }
 
 class EmailAddr extends SpecialInput {
+	use InputField;
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -567,6 +571,7 @@ class EmailAddr extends SpecialInput {
 	}
 }
 class UrlInput extends SpecialInput {
+	use InputField;
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -594,6 +599,7 @@ class UrlInput extends SpecialInput {
 	}
 }
 class NumberInp extends SpecialInput {
+	use InputField;
 	function __construct($args) {
 		parent::__construct($args);
 

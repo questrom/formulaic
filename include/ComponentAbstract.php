@@ -193,6 +193,10 @@ abstract class SpecialInput extends PostInputComponent {
 		$this->mustMatch = isset($args['must-match']) ? $args['must-match'] : null;
 
 	}
+
+}
+
+trait InputField {
 	protected function makeInput($h, $type, $icon) {
 		return $h
 		->div->class('ui field ' . ($this->required ? 'required' : ''))
