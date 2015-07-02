@@ -45,7 +45,7 @@ class GraphView implements XmlDeserializable, HTMLComponent {
 				->link->rel("stylesheet")->href("pizza-master/dist/css/pizza.css")->end
 			->end
 			->body
-				->div->class('ui container wide-page')
+				->div->class('ui text container')
 						->h1
 							->t($this->title)
 						->end
