@@ -51,6 +51,17 @@ class DetailsView implements HTMLComponent, XmlDeserializable {
 	}
 	function query($getData) {
 
+		$page = $this->pageData;
+
+		$mongo = null;
+		foreach($page->outputs->outputs as $output) {
+			if($output instanceof MongoOutput) {
+				$mongo = $output;
+			}
+		}
+		$this->server = $mongo->server;
+		$this->database = $mongo->database;
+		$this->collection = $mongo->collection;
 
 		$this->item = $getData['id'];
 
@@ -68,18 +79,13 @@ class DetailsView implements HTMLComponent, XmlDeserializable {
 	function setPage($page) {
 		$this->pageData = $page;
 
-		$mongo = null;
-		foreach($page->outputs->outputs as $output) {
-			if($output instanceof MongoOutput) {
-				$mongo = $output;
-			}
-		}
-		$this->server = $mongo->server;
-		$this->database = $mongo->database;
-		$this->collection = $mongo->collection;
 	}
 	function get($h) {
-		$timestamp = DateTimeImmutable::createFromFormat('U', $this->data['_timestamp']->sec)->setTimezone(new DateTimeZone('America/New_York'));
+		if($this->data['_timestamp'] instanceof MongoDate) {
+			$timestamp = DateTimeImmutable::createFromFormat('U', $this->data['_timestamp']->sec)->setTimezone(new DateTimeZone('America/New_York'));
+		} else {
+			$timestamp = $this->data['_timestamp'];
+		}
 
 		return
 		$h

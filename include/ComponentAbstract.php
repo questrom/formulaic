@@ -150,8 +150,6 @@ abstract class FileInputComponent extends NamedLabeledComponent {
 	}
 }
 
-
-
 abstract class GroupComponent implements HTMLComponent, Validatable, NameMatcher, XmlDeserializable {
 	use Configurable;
 	function getAllFields() {

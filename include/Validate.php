@@ -1,5 +1,7 @@
 <?php
 
+use Phamda\Phamda as P;
+
 abstract class Validate {
 	// Type filters
  	function filterBoolean() {

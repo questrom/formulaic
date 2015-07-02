@@ -16,7 +16,7 @@ $page
 	->innerBind(function($val) use ($page) {
 
 		ob_start();
-			$val = $page->outputs->run($val);
+			$val = $page->outputs->run($val, $page);
 			var_dump($val);
 		$out = ob_get_clean();
 

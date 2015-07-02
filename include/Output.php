@@ -4,7 +4,7 @@ use Sabre\Xml\XmlDeserializable as XmlDeserializable;
 
 interface Output {
 	function __construct($args);
-	function run($data);
+	function run($data, $page);
 }
 
 class MongoOutput implements Output, XmlDeserializable {
@@ -14,7 +14,7 @@ class MongoOutput implements Output, XmlDeserializable {
 		$this->database = $args['database'];
 		$this->collection = $args['collection'];
 	}
-	function run($data) {
+	function run($data, $page) {
 		$oldData = $data;
 
 		$data = array_map(function($x) {
@@ -43,7 +43,7 @@ class S3Output implements Output, XmlDeserializable {
 		$this->s3 = new S3($this->secret['key-id'], $this->secret['key-secret']);
 		$this->bucket = $args['bucket'];
 	}
-	function run($data) {
+	function run($data, $page) {
 		return array_map(function($x) {
 			if($x instanceof FileInfo) {
 
@@ -81,10 +81,39 @@ class SuperOutput implements Output, XmlDeserializable {
 	function __construct($args) {
 		$this->outputs = $args['children'];
 	}
-	function run($data) {
+	function run($data, $page) {
 		foreach ($this->outputs as $output) {
-			$data = $output->run($data);
+			$data = $output->run($data, $page);
 		}
+		return $data;
+	}
+}
+
+use Nette\Mail\Message;
+use Nette\Mail\SmtpMailer;
+
+class EmailOutput implements Output, XmlDeserializable {
+	use Configurable;
+	function __construct($args) {
+		$this->to = $args['address'];
+		$this->secret = yaml_parse_file('./config/s3-secret.yml');
+	}
+	function run($data, $page) {
+		$view = new DetailsView($page);
+		$view->setPage($page);
+		$view->data = $data;
+		$html = '<!DOCTYPE html>' . $view->get(new HTMLParentlessContext());
+
+		$mail = new Message();
+		$mail->setFrom('Form Builder <perljason@gmail.com>')
+		    ->addTo($this->to)
+		    ->setSubject('Hello world!')
+		    ->setHTMLBody($html);
+
+		$mailer = new SmtpMailer($this->secret['smtp']);
+
+		$mailer->send($mail);
+
 		return $data;
 	}
 }

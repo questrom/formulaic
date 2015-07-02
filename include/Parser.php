@@ -60,7 +60,6 @@ class AllowElem implements XmlDeserializable {
 }
 
 
-
 class Parser {
 	static function parse_jade($file) {
 
@@ -108,7 +107,8 @@ class Parser {
 			'{}show-if' => 'ShowIfComponent',
 			'{}views' => 'ChildElem',
 			'{}table-view' => 'TableView',
-			'{}col' => 'Column'
+			'{}col' => 'Column',
+			'{}email-to' => 'EmailOutput'
 		];
 
 		$reader->xml($xml);
