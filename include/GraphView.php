@@ -131,8 +131,28 @@ class PieChart extends Graph {
 	}
 }
 
+function kvmap(callable $fn, $array) {
+	$result = [];
+	foreach($array as $key => $value) {
+		$result[$key] = $fn($key, $value);
+	}
+	return $result;
+}
+
 class BarGraph extends Graph {
 	function get($h) {
+		// see http://bost.ocks.org/mike/bar/2/
+		// return $h
+		// 	->h4->t($this->label)->end
+		// 	->svg->width(420)->height(count($this->results) * 20)
+		// 		->add(kvmap(function($index, $result) use($h) {
+		// 			return $h
+		// 			->g->transform('translate(0, ' . ($index * 20) . ')')
+		// 				->rect->width( $result['count'] )->height(20)->end
+		// 			->end;
+		// 		}, $this->results))
+		// 	->end;
+
 		return $h
 			->h4->t($this->label)->end
 			->ul->data('bar-id', $this->id)
