@@ -32,7 +32,7 @@ class HTMLDummyGenerator extends HTMLGeneratorAbstract {
 	function __toString() { return ''; }
 	function append($text) { return $this; }
 	function hif($cond) { return $this; }
-	function data($key, $val) { return $this; }
+	function data($key, $val, $cond = true) { return $this; }
 	function __call($name, $args) { return $this; }
 }
 
@@ -81,9 +81,15 @@ class HTMLTagGenerator extends HTMLRealGenerator {
 	}
 
 	function __call($name, $args) {
+		if(isset($args[1]) && !$args[1]) {
+			return $this;
+		}
 		return new HTMLTagGenerator($this->tagless, $this->tag, array_merge($this->attrs, [ $name => $args[0] ] )  );
 	}
-	function data($key, $val) {
+	function data($key, $val, $cond = true) {
+		if(!$cond) {
+			return $this;
+		}
 		return new HTMLTagGenerator($this->tagless, $this->tag, array_merge($this->attrs, [  'data-' . $key => $val ] ));
 	}
 
@@ -125,7 +131,7 @@ class HTMLParentContext extends HTMLGeneratorAbstract {
 
 	function __call($name, $args) { return new HTMLParentContext( $this->parent, $this->generator->__call($name, $args)); }
 	function add($arr) { return new HTMLParentContext( $this->parent, $this->generator->add($arr)); }
-	function data($key, $val) { return new HTMLParentContext( $this->parent, $this->generator->data($key, $val)); }
+	function data($key, $val, $cond = true) { return new HTMLParentContext( $this->parent, $this->generator->data($key, $val, $cond)); }
 
 	function ins($gen) {
 		return new HTMLParentContext($this, $gen->generator);

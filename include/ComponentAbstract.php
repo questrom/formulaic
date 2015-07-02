@@ -197,7 +197,7 @@ abstract class SpecialInput extends PostInputComponent {
 }
 
 trait InputField {
-	protected function makeInput($h, $type, $icon = null) {
+	protected function makeInput($h, $type, $icon = null, $mask = null) {
 		return $h
 		->div->class('ui field ' . ($this->required ? 'required' : ''))
 			->add($this->getLabel())
@@ -205,7 +205,11 @@ trait InputField {
 				->hif($icon)
 					->i->class('icon ' . $icon)->end
 				->end
-				->input->type($type)->name($this->name)->end
+				->input
+					->type($type)
+					->name($this->name)
+					->data('inputmask', $mask, $mask !== null)
+				->end
 			->end
 		->end;
 	}

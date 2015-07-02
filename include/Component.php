@@ -617,23 +617,16 @@ class NumberInp extends PostInputComponent {
 }
 
 class DatePicker extends PostInputComponent {
-
+	use InputField;
 	function __construct($args) {
 		parent::__construct($args);
 
 		$this->required = isset($args['required']);
-		$this->min = isset($args['min']) ? DateTimeImmutable::createFromFormat('Y-m-d', $args['min']) : null;
-		$this->max = isset($args['max']) ? DateTimeImmutable::createFromFormat('Y-m-d', $args['max']) : null;
+		$this->min = isset($args['min']) ? DateTimeImmutable::createFromFormat('Y-m-d', $args['min'])->setTime(0,0,0) : null;
+		$this->max = isset($args['max']) ? DateTimeImmutable::createFromFormat('Y-m-d', $args['max'])->setTime(0,0,0) : null;
 	}
 	function get($h) {
-		return $h
-		->div->class('field ' . ($this->required ? ' required' : ''))
-			->add($this->getLabel())
-			->div->class('ui left icon input')
-				->i->class('calendar icon')->end
-				->input->type('text')->name($this->name)->data('inputmask', " 'alias': 'mm/dd/yyyy' ")->end
-			->end
-		->end;
+		return $this->makeInput($h, 'text', 'calendar', " 'alias': 'mm/dd/yyyy' ");
 	}
 	protected function validate($against) {
 		return $against
