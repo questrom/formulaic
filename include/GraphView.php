@@ -46,11 +46,15 @@ class GraphView implements XmlDeserializable, HTMLComponent {
 			->end
 			->body
 				->div->class('ui text container')
-						->h1
-							->t($this->title)
-						->end
-						->h3
-							->t($this->totalCount . ' total submissions')
+						->div
+
+							->h1->class('ui header')
+								->div->class('pull-right ui large label submit-count-label')
+									->t($this->totalCount)
+									->div->class('detail')->t('total submissions')->end
+								->end
+								->t($this->title)
+							->end
 						->end
 						->add($this->graphs)
 				->end
@@ -95,6 +99,11 @@ abstract class Graph implements XmlDeserializable, HTMLComponent  {
 			);
 		}
 		$results = $results['result'];
+
+		usort($results, function($a, $b) {
+			return $b['count'] - $a['count'];
+		});
+
 		// $results = array_combine(
 		// 	array_map(function($result) {
 		// 		$key = $result['_id'];
@@ -149,40 +158,45 @@ class BarGraph extends Graph {
 
 		// see http://bost.ocks.org/mike/bar/2/
 		return $h
-			->h4->t($this->label)->end
-			->svg->style('height: ' . count($this->results) * 30 . 'px; width: 100%;')
-				->add(kvmap(function($index, $result) use($h, $max) {
-					$key = $result['_id'];
-					$color = '#000';
-					if($key === true) { $key = 'Yes'; $color='#21ba45'; }
-					if($key === false) { $key = 'No'; $color='#db2828'; }
-					if($key === null) { $key = '(None)'; $color='#777'; }
+			->div->class('ui fluid card')
 
-					return $h
-					->g->transform('translate(0, ' . ($index * 30) . ')')
-						->text
-							->style('dominant-baseline:middle;text-anchor:end;')
-							->x(140)->y(15)
-							->t($key)
-						->end
-						->rect->width( ($result['count']/$max) * 100 )->y(5)->x(150)->height(20)->fill($color)->end
-					->end;
-				}, $this->results))
+				->div->class('content')
+					->div->class('header')->t($this->label)->end
+				->end
+				->div->class('content')
+					->svg->viewBox('0 0 700 ' . count($this->results) * 30 )->style('background:#fff')
+						->add(kvmap(function($index, $result) use($h, $max) {
+							$barWidth = ($result['count']/$max) * 500;
+							$labelAtRight = $barWidth < 40;
+
+							$key = $result['_id'];
+
+							$hue = floor( hexdec(substr(md5($key), 0, 2))  * (360/256) );
+
+							$color = 'hsl(' . $hue . ', 70%, 50%)';
+							if($key === true) { $key = 'Yes'; $color='#21ba45'; }
+							if($key === false) { $key = 'No'; $color='#db2828'; }
+							if($key === null) { $key = '(None)'; $color='#777'; }
+
+							return $h
+							->g->transform('translate(0, ' . ($index * 30) . ')')
+								->text
+									->style('dominant-baseline:middle;text-anchor:end;')
+									->x(140)->y(15)
+									->t($key)
+								->end
+								->rect->width( $barWidth )->y(5)->x(150)->height(20)->fill($color)->end
+								->text
+									->x(150 + $barWidth + ($labelAtRight ? 2 : -5))
+									->y(15)
+									->fill($labelAtRight ? 'black' : 'white')
+									->style('dominant-baseline:middle;text-anchor:' . ($labelAtRight ? 'start;' : 'end;'))
+									->t($result['count'])
+								->end
+							->end;
+						}, $this->results))
+					->end
+				->end
 			->end;
-
-		// return $h
-		// 	->h4->t($this->label)->end
-		// 	->ul->data('bar-id', $this->id)
-		// 		->add(array_map(function($result) use ($h) {
-		// 			$key = $result['_id'];
-		// 			if($key === true) { $key = 'Yes'; }
-		// 			if($key === false) { $key = 'No'; }
-		// 			if($key === null) { $key = '(None)'; }
-
-		// 			return $h
-		// 			->li->data('value', $result['count'])->t($key)->end;
-		// 		}, $this->results))
-		// 	->end
-		// 	->div->id($this->id)->end;
 	}
 }
