@@ -141,17 +141,34 @@ function kvmap(callable $fn, $array) {
 
 class BarGraph extends Graph {
 	function get($h) {
+
+		$max = max(array_map(function($result) {
+			return $result['count'];
+		}, $this->results));
+
+
 		// see http://bost.ocks.org/mike/bar/2/
-		// return $h
-		// 	->h4->t($this->label)->end
-		// 	->svg->width(420)->height(count($this->results) * 20)
-		// 		->add(kvmap(function($index, $result) use($h) {
-		// 			return $h
-		// 			->g->transform('translate(0, ' . ($index * 20) . ')')
-		// 				->rect->width( $result['count'] )->height(20)->end
-		// 			->end;
-		// 		}, $this->results))
-		// 	->end;
+		return $h
+			->h4->t($this->label)->end
+			->svg->style('height: ' . count($this->results) * 30 . 'px; width: 100%;')
+				->add(kvmap(function($index, $result) use($h, $max) {
+					$key = $result['_id'];
+					$color = '#000';
+					if($key === true) { $key = 'Yes'; $color='#21ba45'; }
+					if($key === false) { $key = 'No'; $color='#db2828'; }
+					if($key === null) { $key = '(None)'; $color='#777'; }
+
+					return $h
+					->g->transform('translate(0, ' . ($index * 30) . ')')
+						->text
+							->style('dominant-baseline:middle;text-anchor:end;')
+							->x(140)->y(15)
+							->t($key)
+						->end
+						->rect->width( ($result['count']/$max) * 100 )->y(5)->x(150)->height(20)->fill($color)->end
+					->end;
+				}, $this->results))
+			->end;
 
 		return $h
 			->h4->t($this->label)->end
