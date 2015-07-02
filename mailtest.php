@@ -1,6 +1,5 @@
 <?php
 
-require('vendor/autoload.php');
 require('parts.php');
 
 use Nette\Mail\Message;

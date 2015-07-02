@@ -1,7 +1,5 @@
 <?php
 
-require('jade/autoload.php.dist');
-
 abstract class ConfigElement implements Sabre\Xml\XmlDeserializable {
 	abstract public function __construct($args);
 	static function xmlDeserialize(Sabre\Xml\Reader $reader) {

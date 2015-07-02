@@ -1,6 +1,5 @@
 <?php
 
-require('vendor/autoload.php');
 require('parts.php');
 
 $cache_enabled = false;

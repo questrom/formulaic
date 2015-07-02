@@ -1,8 +1,10 @@
 <?php
 
+require('vendor/autoload.php');
+
 date_default_timezone_set('America/New_York');
 
-
+require('jade/autoload.php.dist');
 
 // Utils
 require ('include/utils.php');
