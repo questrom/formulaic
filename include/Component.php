@@ -332,6 +332,7 @@ class Textbox extends SpecialInput {
 
 
 class FileUpload extends FileInputComponent {
+	use InputField;
 	function __construct($args) {
 		parent::__construct($args);
 		$this->required  = isset($args['required']);
@@ -346,13 +347,7 @@ class FileUpload extends FileInputComponent {
 
 	}
 	function get($h) {
-		return $h
-		->div->class('ui field ' . ($this->required ? 'required' : ''))
-			->add($this->getLabel())
-			->div->class('ui input')
-				->input->type('file')->name($this->name)->end
-			->end
-		->end;
+		return $this->makeInput($h, 'file');
 	}
 	protected function validate($against) {
 		return $against
