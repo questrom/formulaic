@@ -170,19 +170,19 @@ class BarGraph extends Graph {
 				}, $this->results))
 			->end;
 
-		return $h
-			->h4->t($this->label)->end
-			->ul->data('bar-id', $this->id)
-				->add(array_map(function($result) use ($h) {
-					$key = $result['_id'];
-					if($key === true) { $key = 'Yes'; }
-					if($key === false) { $key = 'No'; }
-					if($key === null) { $key = '(None)'; }
+		// return $h
+		// 	->h4->t($this->label)->end
+		// 	->ul->data('bar-id', $this->id)
+		// 		->add(array_map(function($result) use ($h) {
+		// 			$key = $result['_id'];
+		// 			if($key === true) { $key = 'Yes'; }
+		// 			if($key === false) { $key = 'No'; }
+		// 			if($key === null) { $key = '(None)'; }
 
-					return $h
-					->li->data('value', $result['count'])->t($key)->end;
-				}, $this->results))
-			->end
-			->div->id($this->id)->end;
+		// 			return $h
+		// 			->li->data('value', $result['count'])->t($key)->end;
+		// 		}, $this->results))
+		// 	->end
+		// 	->div->id($this->id)->end;
 	}
 }
