@@ -706,8 +706,13 @@ class ListComponent extends GroupComponent implements Cellable {
 		$this->label = $args['label'];
 		$this->addText = isset($args['add-text']) ? $args['add-text'] : 'Add an item';
 	}
+
 	function getByName($name) {
+
 		return ($this->name === $name) ? $this : null;
+	}
+	function getAllFields() {
+		return [ $this ];
 	}
 	function get($h) {
 
@@ -796,8 +801,27 @@ class ListComponent extends GroupComponent implements Cellable {
 		});
 	}
   function asTableCell($h, $value, $details) {
-		return $value->innerBind(function($v) use ($h) {
-			// var_dump($v);
+
+		return $value->innerBind(function($v) use ($h, $details) {
+
+			if($details) {
+				return Result::ok($h
+					->td
+						->add(array_map(function($listitem) use($h) {
+							return $h->table->class('ui definition table')
+								->add(array_map(function($field) use ($listitem) {
+									if($field instanceof Cellable && $field instanceof HTMLComponent) {
+										return new ValueRow( isget($listitem[$field->name]), $field );
+									} else {
+										return null;
+									}
+								}, parent::getAllFields() ))
+							->end;
+						}, $v))
+					->end
+				);
+			}
+
 			if(count($v) === 1) {
 				$showValue = '(1 item)';
 			} else {
