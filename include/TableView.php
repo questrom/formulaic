@@ -1,6 +1,8 @@
 <?php
+use Sabre\Xml\XmlDeserializable as XmlDeserializable;
 
-class Column extends ConfigElement {
+class Column implements XmlDeserializable {
+	use Configurable;
 
 	function __construct($args) {
 		$this->name = $args['name'];
@@ -42,7 +44,8 @@ class ValueCell implements HTMLComponent {
 	}
 }
 
-class TableView extends ConfigElement implements HTMLComponent {
+class TableView implements XmlDeserializable, HTMLComponent {
+	use Configurable;
 
 	function __construct($args) {
 

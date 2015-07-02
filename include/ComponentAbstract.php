@@ -23,7 +23,8 @@ interface Cellable extends NameMatcher {
 	public function asTableCell($h, $value, $details);
 }
 
-abstract class BaseHeader extends ConfigElement implements HTMLComponent, XmlDeserializable {
+abstract class BaseHeader implements HTMLComponent, XmlDeserializable  {
+	use Configurable;
 	function __construct($args) {
 		$this->__args = $args;
 
@@ -50,7 +51,8 @@ abstract class BaseHeader extends ConfigElement implements HTMLComponent, XmlDes
 	}
 }
 
-abstract class BaseNotice extends ConfigElement implements HTMLComponent, XmlDeserializable {
+abstract class BaseNotice implements HTMLComponent, XmlDeserializable {
+	use Configurable;
 	function __construct($args) {
 		$this->__args = $args; // Used by Group later on
 
@@ -89,7 +91,8 @@ abstract class BaseNotice extends ConfigElement implements HTMLComponent, XmlDes
 	}
 }
 
-abstract class NamedLabeledComponent extends ConfigElement implements HTMLComponent, Validatable, NameMatcher, Sabre\Xml\XmlDeserializable, Cellable {
+abstract class NamedLabeledComponent implements HTMLComponent, Validatable, NameMatcher, XmlDeserializable, Cellable {
+	use Configurable;
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
@@ -149,8 +152,8 @@ abstract class FileInputComponent extends NamedLabeledComponent {
 
 
 
-abstract class GroupComponent extends ConfigElement implements HTMLComponent, Validatable, NameMatcher, XmlDeserializable {
-
+abstract class GroupComponent implements HTMLComponent, Validatable, NameMatcher, XmlDeserializable {
+	use Configurable;
 	function getAllFields() {
 		$arr = [];
 		foreach($this->items as $item) {

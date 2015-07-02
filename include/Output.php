@@ -1,10 +1,14 @@
 <?php
+
+use Sabre\Xml\XmlDeserializable as XmlDeserializable;
+
 interface Output {
 	function __construct($args);
 	function run($data);
 }
 
-class MongoOutput extends ConfigElement implements Output {
+class MongoOutput implements Output, XmlDeserializable {
+	use Configurable;
 	function __construct($args) {
 		$this->server = $args['server'];
 		$this->database = $args['database'];
@@ -32,7 +36,8 @@ class MongoOutput extends ConfigElement implements Output {
 	}
 }
 
-class S3Output extends ConfigElement implements Output {
+class S3Output implements Output, XmlDeserializable {
+	use Configurable;
 	function __construct($args) {
 		$this->secret = yaml_parse_file('./config/s3-secret.yml');
 		$this->s3 = new S3($this->secret['key-id'], $this->secret['key-secret']);
@@ -71,7 +76,8 @@ class S3Output extends ConfigElement implements Output {
 	}
 }
 
-class SuperOutput extends ConfigElement implements Output {
+class SuperOutput implements Output, XmlDeserializable {
+	use Configurable;
 	function __construct($args) {
 		$this->outputs = $args['children'];
 	}

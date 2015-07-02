@@ -1,6 +1,8 @@
 <?php
 
-abstract class ConfigElement implements Sabre\Xml\XmlDeserializable {
+use Sabre\Xml\XmlDeserializable;
+
+trait Configurable {
 	abstract public function __construct($args);
 	static function xmlDeserialize(Sabre\Xml\Reader $reader) {
 		$attrs = [];
@@ -19,6 +21,10 @@ abstract class ConfigElement implements Sabre\Xml\XmlDeserializable {
 
 		return new static($attrs);
 	}
+}
+
+abstract class ConfigElement implements XmlDeserializable  {
+	use Configurable;
 }
 
 
@@ -52,7 +58,8 @@ class ChildElem implements Sabre\Xml\XmlDeserializable  {
 	}
 }
 
-class AllowElem extends ConfigElement {
+class AllowElem implements XmlDeserializable {
+	use Configurable;
 	function __construct($args) {
 		$this->ext = $args['ext'];
 		$this->mime = $args['mime'];

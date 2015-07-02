@@ -1,5 +1,8 @@
 <?php
 
+use Sabre\Xml\XmlDeserializable as XmlDeserializable;
+
+
 class ValueRow implements HTMLComponent {
 	function __construct($value, $component) {
 		// var_dump($value);
@@ -38,7 +41,8 @@ class ValueRow implements HTMLComponent {
 	}
 }
 
-class DetailsView extends ConfigElement implements HTMLComponent {
+class DetailsView implements HTMLComponent, XmlDeserializable {
+	use Configurable;
 
 	function __construct($page) {
 
