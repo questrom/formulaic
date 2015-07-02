@@ -112,19 +112,31 @@ abstract class Graph implements XmlDeserializable, HTMLComponent  {
 class PieChart extends Graph {
 	function get($h) {
 		return $h
-			->h4->t($this->label)->end
-			->ul->data('pie-id', $this->id)
-				->add(array_map(function($result) use ($h) {
-					$key = $result['_id'];
-					if($key === true) { $key = 'Yes'; }
-					if($key === false) { $key = 'No'; }
-					if($key === null) { $key = '(None)'; }
+			->div->class('ui fluid card')
 
-					return $h
-					->li->data('value', $result['count'])->t($key)->end;
-				}, $this->results))
-			->end
-			->div->id($this->id)->end;
+				->div->class('content')
+					->div->class('header')->t($this->label)->end
+				->end
+				->div->class('content')
+					->ul->data('pie-id', $this->id)
+						->add(array_map(function($result) use ($h) {
+
+					$key = $result['_id'];
+
+									$hue = floor( hexdec(substr(md5($key), 0, 2))  * (360/256) );
+
+									$color = 'hsl(' . $hue . ', 70%, 50%)';
+									if($key === true) { $key = 'Yes'; $color='#21ba45'; }
+									if($key === false) { $key = 'No'; $color='#db2828'; }
+									if($key === null) { $key = '(None)'; $color='#777'; }
+
+							return $h
+							->li->data('value', $result['count'])->style('color: '. $color)->t($key)->end;
+						}, $this->results))
+					->end
+					->div->class('pie-chart')->id($this->id)->end
+				->end
+			->end;
 
 	}
 }

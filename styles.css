@@ -48,6 +48,29 @@ input[type=range]::-moz-focus-outer { border:0 !important; }
 .red.prompt { display: table; }
 .nowrap { white-space:nowrap;}
 
+
+ul[data-pie-id] {
+    position:absolute;
+    margin:0 !important;
+    left:25px;
+    text-align:left;
+}
+ul[data-pie-id] + div svg {
+    margin-left: 100px;
+    width: 300px !important;
+}
+
+ul[data-pie-id] li:before {
+    content: '\25a0\2002';
+    position:relative;
+    top: -1px;
+}
+
+
+.pie-chart text {
+    font-size: 30px !important;
+}
+
 .no-margin { margin:0 !important;}
 
 .group > :first-child.attached {
