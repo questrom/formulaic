@@ -23,10 +23,6 @@ trait Configurable {
 	}
 }
 
-abstract class ConfigElement implements XmlDeserializable  {
-	use Configurable;
-}
-
 
 class TextElem implements Sabre\Xml\XmlDeserializable {
 	static function xmlDeserialize(Sabre\Xml\Reader $reader) {
