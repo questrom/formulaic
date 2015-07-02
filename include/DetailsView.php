@@ -43,7 +43,7 @@ class ValueRow implements HTMLComponent {
 }
 
 // Used by details.php and Output.php (For HTML email)
-class DetailsView implements HTMLComponent, XmlDeserializable {
+class DetailsView implements HTMLComponent {
 	use Configurable;
 
 	function __construct($page) {

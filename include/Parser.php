@@ -108,7 +108,10 @@ class Parser {
 			'{}views' => 'ChildElem',
 			'{}table-view' => 'TableView',
 			'{}col' => 'Column',
-			'{}email-to' => 'EmailOutput'
+			'{}email-to' => 'EmailOutput',
+			'{}graph-view' => 'GraphView',
+			'{}bar' => 'BarGraph',
+			'{}pie' => 'PieChart'
 		];
 
 		$reader->xml($xml);

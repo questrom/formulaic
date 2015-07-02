@@ -80,3 +80,12 @@ form(name='Example Form', title='Example Form', debug=true, success-message='Lor
       //- col(name='start_time', header='Start Time', width=1)
       //- col(name='email', header='Email', width=1)
       col(name='_ip', header='IP', width=1)
+    graph-view(title='Graph view')
+      bar(name='fave_colors',label='Favorite colors')
+      bar(name='existence',label='Existence')
+      bar(name='choose_a_link',label='Link')
+      //- pie(name='fave_colors',label='Favorite colors')
+      //- Pie chart's dont make sense if you can choose>1 options
+      pie(name='existence',label='Existence')
+      pie(name='choose_a_link',label='Link')
+      //- pie()
