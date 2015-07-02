@@ -507,7 +507,7 @@ class Password extends SpecialInput {
 	}
 }
 
-class PhoneNumber extends SpecialInput {
+class PhoneNumber extends PostInputComponent {
 	use InputField;
 	function __construct($args) {
 		parent::__construct($args);
@@ -540,7 +540,7 @@ class PhoneNumber extends SpecialInput {
 	}
 }
 
-class EmailAddr extends SpecialInput {
+class EmailAddr extends PostInputComponent {
 	use InputField;
 	function __construct($args) {
 		parent::__construct($args);
@@ -570,7 +570,7 @@ class EmailAddr extends SpecialInput {
 		});
 	}
 }
-class UrlInput extends SpecialInput {
+class UrlInput extends PostInputComponent {
 	use InputField;
 	function __construct($args) {
 		parent::__construct($args);
@@ -598,7 +598,7 @@ class UrlInput extends SpecialInput {
 		});
 	}
 }
-class NumberInp extends SpecialInput {
+class NumberInp extends PostInputComponent {
 	use InputField;
 	function __construct($args) {
 		parent::__construct($args);
