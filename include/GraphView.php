@@ -104,16 +104,6 @@ abstract class Graph implements XmlDeserializable, HTMLComponent  {
 			return $b['count'] - $a['count'];
 		});
 
-		// $results = array_combine(
-		// 	array_map(function($result) {
-		// 		$key = $result['_id'];
-		// 		if($key === true) { $key = 'Yes'; }
-		// 		if($key === false) { $key = 'No'; }
-		// 		if($key === null) { $key = '(None)'; }
-		// 		return $key;
-		// 	}, $results),
-		// 	array_map(function($result) { return $result['count']; }, $results)
-		// );
 		$this->results = $results;
 
 	}
@@ -135,7 +125,6 @@ class PieChart extends Graph {
 				}, $this->results))
 			->end
 			->div->id($this->id)->end;
-			// ->div->t(implode('<br>', $this->results))->end;
 
 	}
 }
