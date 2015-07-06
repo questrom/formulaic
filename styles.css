@@ -18,22 +18,11 @@ input[type=range] { width: 150px; vertical-align: -5px; }
 /*http://stackoverflow.com/questions/18794026/remove-dotted-outline-from-range-input-element-in-firefox*/
 input[type=range]::-moz-focus-outer { border:0 !important; }
 
-.ui.massive.label, .ui.massive.labels .label {
-    font-size: 1.71429rem;
-}
-.ui.big.label, .ui.big.labels .label {
-    font-size: 1.28571rem;
-}
-.ui.large.label, .ui.large.labels .label {
-    font-size: 1rem;
-}
+.ui.large.label, .ui.large.labels .label { font-size: 1rem; }
 
-.submit-count-label {
-    margin-top: 2px !important;
-}
-.submit-count-label .detail {
-    margin-left: 0.65em !important;
-}
+.submit-count-label { margin-top: 2px !important; }
+
+.submit-count-label .detail { margin-left: 0.65em !important; }
 
 .ui.sortable.table thead th { cursor:auto; }
 .ui.header { margin-top: 0; }
@@ -47,35 +36,6 @@ input[type=range]::-moz-focus-outer { border:0 !important; }
 .ui.header.attached > .icon { vertical-align: top; }
 .red.prompt { display: table; }
 .nowrap { white-space:nowrap;}
-
-
-ul[data-pie-id] {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-ul[data-pie-id] {
-    position:absolute;
-    margin:0 !important;
-    left:25px;
-    text-align:left;
-}
-ul[data-pie-id] + div svg {
-    margin-left: 100px;
-    width: 300px !important;
-}
-
-ul[data-pie-id] li:before {
-    content: '\25a0\2002';
-    position:relative;
-    top: -1px;
-}
-
-
-.pie-chart text {
-    font-size: 30px !important;
-}
 
 .no-margin { margin:0 !important;}
 
