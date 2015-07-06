@@ -13,10 +13,9 @@ class ValueRow implements HTMLComponent {
 
 
 		if($this->component instanceof Cellable) {
-			return $this->component->asTableCell(
+			return $this->component->asDetailedTableCell(
 				$h,
-				$this->value === null ? Result::none(null) : Result::ok($this->value),
-				true
+				$this->value === null ? Result::none(null) : Result::ok($this->value)
 			)
 				->bindNothing(function($x) use ($h){
 					return Result::ok(

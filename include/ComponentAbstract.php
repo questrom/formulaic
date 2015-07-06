@@ -19,8 +19,11 @@ interface NameMatcher {
 	public function getAllFields();
 }
 
+
+
 interface Cellable extends NameMatcher {
-	public function asTableCell($h, $value, $details);
+	public function asTableCell($h, $value);
+	public function asDetailedTableCell($h, $value);
 }
 
 interface Enumerative {
@@ -96,6 +99,7 @@ abstract class BaseNotice implements HTMLComponent, XmlDeserializable {
 }
 
 abstract class NamedLabeledComponent implements HTMLComponent, Validatable, NameMatcher, XmlDeserializable, Cellable {
+	function asDetailedTableCell($h, $value) { return $this->asTableCell($h, $value); }
 	use Configurable;
 	function __construct($args) {
 		$this->label = $args['label'];
@@ -124,7 +128,7 @@ abstract class NamedLabeledComponent implements HTMLComponent, Validatable, Name
 				return Result::error([$this->name => $r]);
 			});
     }
-    function asTableCell($h, $value, $details) {
+    function asTableCell($h, $value) {
 		return $value->innerBind(function($v) use ($h) {
 			return Result::ok($h
 			->td
