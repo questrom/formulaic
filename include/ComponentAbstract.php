@@ -119,7 +119,6 @@ abstract class NamedLabeledComponent implements HTMLComponent, Validatable, Name
 	function getByName($name) {
 		return ($this->name === $name) ? $this : null;
 	}
-    abstract protected function validate($against);
     function getMerger($val) {
     	$val = $val->innerBind(function($v) {
 			return Result::ok(isset($v[$this->name]) ? $v[$this->name] : null);
