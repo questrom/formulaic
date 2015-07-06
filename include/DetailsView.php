@@ -58,8 +58,8 @@ class EmailValueRow implements HTMLComponent {
 				->bindNothing(function($x) use ($h){
 					return Result::ok(
 						$h
-						->td->class('disabled')
-							->i->class('ban icon')->end
+						->td->bgcolor('#ccc')
+							->t('(No value)')
 						->end
 					);
 				})
