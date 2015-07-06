@@ -441,6 +441,7 @@ class FileUpload extends FileInputComponent {
 
 		});
 	}
+	function asEmailTableCell($h, $value) { return $this->asDetailedTableCell($h, $value); }
 }
 
 class Range extends PostInputComponent {
@@ -834,7 +835,29 @@ class ListComponent extends GroupComponent implements Cellable {
 						->add(array_map(function($listitem) use($h) {
 							return $h->table->class('ui definition table')
 								->add(array_map(function($field) use ($listitem) {
-									if($field instanceof Cellable && $field instanceof HTMLComponent) {
+									if($field instanceof Cellable) {
+										return new ValueRow( isget($listitem[$field->name]), $field );
+									} else {
+										return null;
+									}
+								}, parent::getAllFields() ))
+							->end;
+						}, $v))
+					->end
+				);
+
+		});
+	}
+	function asEmailTableCell($h, $value) {
+
+		return $value->innerBind(function($v) use ($h) {
+
+				return Result::ok($h
+					->td
+						->add(array_map(function($listitem) use($h) {
+							return $h->table->border(1)
+								->add(array_map(function($field) use ($listitem) {
+									if($field instanceof Cellable) {
 										return new ValueRow( isget($listitem[$field->name]), $field );
 									} else {
 										return null;
@@ -924,8 +947,7 @@ class FormElem extends GroupComponent {
 
 
 
-class IPField implements Cellable, Validatable {
-	function asDetailedTableCell($h, $value) { return $this->asTableCell($h, $value, true); }
+class IPField implements TableCellable, Validatable {
 	function __construct() {
 		$this->name = '_ip';
 		$this->label = 'IP Address';
@@ -951,8 +973,7 @@ class IPField implements Cellable, Validatable {
 
 }
 
-class TimestampField implements Cellable, Validatable {
-	function asDetailedTableCell($h, $value) { return $this->asTableCell($h, $value, true); }
+class TimestampField implements TableCellable, Validatable {
 	function __construct() {
 		$this->name = '_timestamp';
 		$this->label = 'Timestamp';

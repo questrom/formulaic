@@ -21,7 +21,7 @@ class ValueCell implements HTMLComponent {
 	function get($h) {
 
 
-		if($this->component instanceof Cellable) {
+		if($this->component instanceof TableCellable) {
 			return $this->component->asTableCell($h, $this->value === null ? Result::none(null) : Result::ok($this->value), false)
 				->bindNothing(function($x) use ($h){
 					return Result::ok(
@@ -32,7 +32,7 @@ class ValueCell implements HTMLComponent {
 					);
 				})
 				->innerBind(function($x) {
-			return $x;
+					return $x;
 				});
 		} else {
 			throw new Exception('Invalid column!');

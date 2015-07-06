@@ -20,11 +20,15 @@ interface NameMatcher {
 }
 
 
-
-interface Cellable extends NameMatcher {
+interface TableCellable extends NameMatcher {
 	public function asTableCell($h, $value);
-	public function asDetailedTableCell($h, $value);
 }
+
+interface Cellable extends TableCellable {
+	public function asDetailedTableCell($h, $value);
+	public function asEmailTableCell($h, $value);
+}
+
 
 interface Enumerative {
 	public function getPossibleValues();
@@ -100,6 +104,7 @@ abstract class BaseNotice implements HTMLComponent, XmlDeserializable {
 
 abstract class NamedLabeledComponent implements HTMLComponent, Validatable, NameMatcher, XmlDeserializable, Cellable {
 	function asDetailedTableCell($h, $value) { return $this->asTableCell($h, $value); }
+	function asEmailTableCell($h, $value) { return $this->asDetailedTableCell($h, $value); }
 	use Configurable;
 	function __construct($args) {
 		$this->label = $args['label'];
