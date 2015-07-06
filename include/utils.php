@@ -15,3 +15,9 @@ function fixMongoDates($value) {
 		return $value;
 	}
 }
+
+use Yosymfony\Toml\Toml;
+
+function getConfig() {
+	return Toml::Parse('config/config.toml');
+}

@@ -13,6 +13,7 @@
         "components/jquery": "^2.1",
         "nette/mail": "^2.3",
         "sabre/xml": "^1.1",
-        "Gregwar/Cache": "^1.0"
+        "Gregwar/Cache": "^1.0",
+        "yosymfony/toml": "^0.3.2"
     }
 }

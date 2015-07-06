@@ -39,8 +39,8 @@ class MongoOutput implements Output, XmlDeserializable {
 class S3Output implements Output, XmlDeserializable {
 	use Configurable;
 	function __construct($args) {
-		$this->secret = yaml_parse_file('./config/s3-secret.yml');
-		$this->s3 = new S3($this->secret['key-id'], $this->secret['key-secret']);
+		$this->secret =getConfig();
+		$this->s3 = new S3($this->secret['s3']['key'], $this->secret['s3']['secret']);
 		$this->bucket = $args['bucket'];
 	}
 	function run($data, $page) {
@@ -98,7 +98,7 @@ class EmailOutput implements Output, XmlDeserializable {
 		$this->to = $args['to'];
 		$this->from = $args['from'];
 		$this->subject = $args['subject'];
-		$this->secret = yaml_parse_file('./config/s3-secret.yml');
+		$this->secret = getConfig();
 	}
 	function run($data, $page) {
 
