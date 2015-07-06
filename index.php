@@ -4,7 +4,7 @@ require('parts.php');
 
 use Gregwar\Cache\Cache;
 
-$time = microtime(true);
+// $time = microtime(true);
 
 $cache_enabled = false;
 
@@ -21,6 +21,6 @@ if($cache_enabled) {
 }
 
 
-echo (microtime(true) - $time);
+// echo (microtime(true) - $time);
 
 echo $html;
