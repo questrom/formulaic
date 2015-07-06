@@ -81,28 +81,119 @@ abstract class Graph implements XmlDeserializable, HTMLComponent  {
 	}
 	function query($client) {
 		if($this->component instanceof Checkboxes) {
+
+			// TODO: remove this...
+			$this->results = [];
+			return;
+
 			// to handle array case
 			$results = $client->aggregate([
-				['$unwind' => '$' . $this->name],
+				[
+					'$unwind' =>
+					'$' . $this->name
+				],
 				['$group'  => [
-					'_id' => '$' . $this->name, 'count' => [ '$sum' => 1 ] ]
+					'_id' => '$' . $this->name,
+					'count' => [ '$sum' => 1 ] ]
+				],
+				[
+					'$sort' => [
+						'count' => -1
+					]
 				]
 			]);
 		} else {
 			$results = $client->aggregate(
 				[
-					'$group' => [
-						'_id' => '$' . $this->name,
-						'count' => [ '$sum' => 1 ]
+					'$project' => [
+						'name' => '$' . $this->name,
+						'value' => [ '$literal' => 1]
 					]
-				]
+				],
+
+				[
+					'$group' => [
+						'_id' => '$name',
+						'count' => [ '$sum' => '$value' ]
+					]
+				],
+
+				[
+					'$group' => [
+						'_id' => null,
+						'array' => [ '$push' => '$$CURRENT' ],
+						'ids' => [
+							'$addToSet' => '$_id'
+						]
+					]
+				],
+				[
+					'$project' => [
+						'_id' => 0,
+						'array' => '$array',
+
+						'ids' => [ '$setDifference' => [ $this->component->getPossibleValues(), '$ids' ] ]
+					]
+				],
+				[
+					'$project' => [
+						'_id' => 0,
+						'array' => '$array',
+
+						'ids' => ['$map' => [
+							'input' => '$ids',
+							'as' => 'x',
+							'in' => [
+								'_id' => '$$x',
+								'count' => ['$literal'=>0]
+							]
+							// ]
+						]]
+					]
+				],
+				[
+					'$project' => [
+						'array' => [
+							'$setUnion' => [
+								'$array',
+								'$ids'
+							]
+						]
+					]
+				],
+				[
+					'$unwind' => '$array'
+				],
+				['$project' => [
+					'_id' => '$array._id',
+					'count' => '$array.count'
+				]],
+				[
+					'$sort' => [
+						'count' => -1
+					]
+				],
 			);
 		}
 		$results = $results['result'];
 
-		usort($results, function($a, $b) {
-			return $b['count'] - $a['count'];
-		});
+		// var_dump($results);
+
+		// foreach($this->component->getPossibleValues() as $value) {
+		// 	$found = false;
+		// 	foreach($results as $result) {
+		// 		if($result['_id'] === $value) {
+		// 			$found = true;
+		// 			break;
+		// 		}
+		// 	}
+		// 	if(!$found) {
+		// 		$results[] = [
+		// 			'_id' => $value,
+		// 			'count' => 0
+		// 		];
+		// 	}
+		// }
 
 		$this->results = $results;
 
@@ -152,9 +243,13 @@ function kvmap(callable $fn, $array) {
 class BarGraph extends Graph {
 	function get($h) {
 
-		$max = max(array_map(function($result) {
-			return $result['count'];
-		}, $this->results));
+		if(count($this->results) > 0) {
+			$max = max(array_map(function($result) {
+				return $result['count'];
+			}, $this->results));
+		} else {
+			$max = 0;
+		}
 
 
 		// see http://bost.ocks.org/mike/bar/2/

@@ -64,6 +64,9 @@ class Checkbox extends PostInputComponent {
 			->filterBoolean()
 			->mustBeTrue($this->mustCheck);
 	}
+	function getPossibleValues() {
+		return [true, false];
+	}
 	function asTableCell($h, $value, $details) {
 		return $value->innerBind(function($v) use ($h) {
 			return Result::ok($h
@@ -228,7 +231,7 @@ class Dropdown extends PostInputComponent {
 	}
 }
 
-class Radios extends PostInputComponent {
+class Radios extends PostInputComponent implements Enumerative {
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -255,6 +258,9 @@ class Radios extends PostInputComponent {
 			)
 		->end;
 	}
+	function getPossibleValues() {
+		return $this->options;
+	}
 	protected function validate($against) {
 		return $against
 			->filterChosenFromOptions($this->options)
@@ -263,7 +269,7 @@ class Radios extends PostInputComponent {
 }
 
 
-class Checkboxes extends PostInputComponent {
+class Checkboxes extends PostInputComponent implements Enumerative {
 	function __construct($args) {
 		parent::__construct($args);
 		$this->options = $args['children'];
@@ -290,6 +296,9 @@ class Checkboxes extends PostInputComponent {
 				)
 			)
 		->end;
+	}
+	function getPossibleValues() {
+		return $this->options;
 	}
 	protected function validate($against) {
 		return $against

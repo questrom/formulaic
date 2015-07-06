@@ -23,6 +23,10 @@ interface Cellable extends NameMatcher {
 	public function asTableCell($h, $value, $details);
 }
 
+interface Enumerative {
+	public function getPossibleValues();
+}
+
 abstract class BaseHeader implements HTMLComponent, XmlDeserializable  {
 	use Configurable;
 	function __construct($args) {
