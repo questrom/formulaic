@@ -50,6 +50,12 @@ input[type=range]::-moz-focus-outer { border:0 !important; }
 
 
 ul[data-pie-id] {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+ul[data-pie-id] {
     position:absolute;
     margin:0 !important;
     left:25px;

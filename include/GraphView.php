@@ -42,7 +42,6 @@ class GraphView implements XmlDeserializable, HTMLComponent {
 				->title->t($this->title)->end
 				->link->rel("stylesheet")->href("semantic-ui/semantic.css")->end
 				->link->rel("stylesheet")->href("styles.css")->end
-				->link->rel("stylesheet")->href("pizza-master/dist/css/pizza.css")->end
 			->end
 			->body
 				->div->class('ui text container')
@@ -81,11 +80,6 @@ abstract class Graph implements XmlDeserializable, HTMLComponent  {
 	}
 	function query($client) {
 		if($this->component instanceof Checkboxes) {
-
-			// TODO: remove this...
-			$this->results = [];
-			return;
-
 			// to handle array case
 			$results = $client->aggregate([
 				[
@@ -104,96 +98,31 @@ abstract class Graph implements XmlDeserializable, HTMLComponent  {
 			]);
 		} else {
 			$results = $client->aggregate(
-				[
-					'$project' => [
-						'name' => '$' . $this->name,
-						'value' => [ '$literal' => 1]
-					]
-				],
 
-				[
-					'$group' => [
-						'_id' => '$name',
-						'count' => [ '$sum' => '$value' ]
-					]
+				['$group'  => [
+					'_id' => '$' . $this->name,
+					'count' => [ '$sum' => 1 ] ]
 				],
-
-				[
-					'$group' => [
-						'_id' => null,
-						'array' => [ '$push' => '$$CURRENT' ],
-						'ids' => [
-							'$addToSet' => '$_id'
-						]
-					]
-				],
-				[
-					'$project' => [
-						'_id' => 0,
-						'array' => '$array',
-
-						'ids' => [ '$setDifference' => [ $this->component->getPossibleValues(), '$ids' ] ]
-					]
-				],
-				[
-					'$project' => [
-						'_id' => 0,
-						'array' => '$array',
-
-						'ids' => ['$map' => [
-							'input' => '$ids',
-							'as' => 'x',
-							'in' => [
-								'_id' => '$$x',
-								'count' => ['$literal'=>0]
-							]
-							// ]
-						]]
-					]
-				],
-				[
-					'$project' => [
-						'array' => [
-							'$setUnion' => [
-								'$array',
-								'$ids'
-							]
-						]
-					]
-				],
-				[
-					'$unwind' => '$array'
-				],
-				['$project' => [
-					'_id' => '$array._id',
-					'count' => '$array.count'
-				]],
 				[
 					'$sort' => [
 						'count' => -1
 					]
-				],
+				]
 			);
 		}
 		$results = $results['result'];
 
-		// var_dump($results);
+		$ids = array_map(function($x) { return $x['_id']; }, $results);
 
-		// foreach($this->component->getPossibleValues() as $value) {
-		// 	$found = false;
-		// 	foreach($results as $result) {
-		// 		if($result['_id'] === $value) {
-		// 			$found = true;
-		// 			break;
-		// 		}
-		// 	}
-		// 	if(!$found) {
-		// 		$results[] = [
-		// 			'_id' => $value,
-		// 			'count' => 0
-		// 		];
-		// 	}
-		// }
+
+
+		foreach(array_diff($this->component->getPossibleValues(), $ids) as $value) {
+			$results[] = [
+				'_id' => $value,
+				'count' => 0
+			];
+
+		}
 
 		$this->results = $results;
 
@@ -202,30 +131,63 @@ abstract class Graph implements XmlDeserializable, HTMLComponent  {
 
 class PieChart extends Graph {
 	function get($h) {
+
+		$total = array_sum(array_map(function($result) {
+				return $result['count'];
+			}, $this->results));
+
+		$lastAngle = -pi() / 2;
+
+
 		return $h
 			->div->class('ui fluid card')
-
 				->div->class('content')
 					->div->class('header')->t($this->label)->end
 				->end
 				->div->class('content')
-					->ul->data('pie-id', $this->id)
-						->add(array_map(function($result) use ($h) {
+					->svg->viewBox('-900 -600 1800 1200')->style('background:#fff')
+						->add(kvmap(function($index, $result) use($h, $total, &$lastAngle) {
 
-					$key = $result['_id'];
+							$key = $result['_id'];
 
-									$hue = floor( hexdec(substr(md5($key), 0, 2))  * (360/256) );
+							$percent = ($result['count'] / $total);
 
-									$color = 'hsl(' . $hue . ', 70%, 50%)';
-									if($key === true) { $key = 'Yes'; $color='#21ba45'; }
-									if($key === false) { $key = 'No'; $color='#db2828'; }
-									if($key === null) { $key = '(None)'; $color='#777'; }
+
+							$hue = floor( hexdec(substr(md5($key), 0, 2))  * (360/256) );
+
+							$color = 'hsl(' . $hue . ', 70%, 50%)';
+							if($key === true) { $key = 'Yes'; $color='#21ba45'; }
+							if($key === false) { $key = 'No'; $color='#db2828'; }
+							if($key === null) { $key = '(None)'; $color='#777'; }
+
+							$pct = ($result['count'] / $total) * 2 * pi() + $lastAngle;
+
+							$largeSweep = (($result['count'] / $total) >= 0.5) ? 1 : 0;
+
+							$startX = cos($lastAngle) * 600;
+							$startY = sin($lastAngle) * 600;
+							$endX = cos($pct) * 600;
+							$endY = sin($pct) * 600;
+
+							$path = "M 0 0 L $startX $startY A 600 600 0 $largeSweep 1 $endX $endY L 0 0";
+
+							$lastAngle = $pct;
 
 							return $h
-							->li->data('value', $result['count'])->style('color: '. $color)->t($key)->end;
+								->path->fill($color)->d($path)->end
+								->rect
+									->x(-900)->y(-600 + $index * 50 + 10)
+									->width(30)->height(30)
+									->fill($color)
+								->end
+								->text
+									->style('dominant-baseline:text-before-edge;text-anchor:start;font-size: 40px;')
+									->x(-900 + 40)->y(-600 + $index * 50)
+									->t($key . ' (' . floor($percent * 100) . '%)')
+								->end
+							;
 						}, $this->results))
 					->end
-					->div->class('pie-chart')->id($this->id)->end
 				->end
 			->end;
 
