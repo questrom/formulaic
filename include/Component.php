@@ -708,7 +708,7 @@ class Notice extends BaseNotice {
 
 
 
-class ListComponent extends GroupComponent implements Cellable {
+class ListComponent extends GroupComponent implements FieldListItem, FieldTableItem {
 	function __construct($args) {
 		$this->items = $args['children'];
 		$this->name = $args['name'];
@@ -835,7 +835,7 @@ class ListComponent extends GroupComponent implements Cellable {
 						->add(array_map(function($listitem) use($h) {
 							return $h->table->class('ui definition table')
 								->add(array_map(function($field) use ($listitem) {
-									if($field instanceof Cellable) {
+									if($field instanceof FieldListItem) {
 										return new ValueRow( isget($listitem[$field->name]), $field );
 									} else {
 										return null;
@@ -857,7 +857,7 @@ class ListComponent extends GroupComponent implements Cellable {
 						->add(array_map(function($listitem) use($h) {
 							return $h->table->border(1)
 								->add(array_map(function($field) use ($listitem) {
-									if($field instanceof Cellable) {
+									if($field instanceof FieldListItem) {
 										return new ValueRow( isget($listitem[$field->name]), $field );
 									} else {
 										return null;
@@ -947,7 +947,7 @@ class FormElem extends GroupComponent {
 
 
 
-class IPField implements TableCellable, Validatable {
+class IPField implements FieldTableItem, Validatable {
 	function __construct() {
 		$this->name = '_ip';
 		$this->label = 'IP Address';
@@ -973,7 +973,7 @@ class IPField implements TableCellable, Validatable {
 
 }
 
-class TimestampField implements TableCellable, Validatable {
+class TimestampField implements FieldTableItem, Validatable {
 	function __construct() {
 		$this->name = '_timestamp';
 		$this->label = 'Timestamp';

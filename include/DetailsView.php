@@ -12,7 +12,7 @@ class ValueRow implements HTMLComponent {
 	function get($h) {
 
 
-		if($this->component instanceof Cellable) {
+		if($this->component instanceof FieldListItem) {
 			return $this->component->asDetailedTableCell(
 				$h,
 				$this->value === null ? Result::none(null) : Result::ok($this->value)
@@ -50,7 +50,7 @@ class EmailValueRow implements HTMLComponent {
 	function get($h) {
 
 
-		if($this->component instanceof Cellable) {
+		if($this->component instanceof FieldListItem) {
 			return $this->component->asEmailTableCell(
 				$h,
 				$this->value === null ? Result::none(null) : Result::ok($this->value)
@@ -143,7 +143,7 @@ class DetailsView implements HTMLComponent {
 					->table->class('ui definition table')
 						->tbody
 							->add(array_map(function($field) {
-								if($field instanceof Cellable) {
+								if($field instanceof FieldListItem) {
 									return new ValueRow( isget($this->data[$field->name]), $field );
 								} else {
 									return null;
@@ -169,7 +169,15 @@ class DetailsView implements HTMLComponent {
 	}
 }
 
-class EmailView extends DetailsView {
+class EmailView implements HTMLComponent {
+	use Configurable;
+
+	function __construct($page) {
+
+		$this->title = $page->title;
+		$this->pageData = $page;
+
+	}
 	function get($h) {
 
 		$timestamp = $this->data['_timestamp'];
@@ -189,7 +197,7 @@ class EmailView extends DetailsView {
 					->table->border(1)
 						->tbody
 							->add(array_map(function($field) {
-								if($field instanceof Cellable) {
+								if($field instanceof FieldListItem) {
 									return new EmailValueRow( isget($this->data[$field->name]), $field );
 								} else {
 									return null;

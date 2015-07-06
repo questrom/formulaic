@@ -21,7 +21,7 @@ class ValueCell implements HTMLComponent {
 	function get($h) {
 
 
-		if($this->component instanceof TableCellable) {
+		if($this->component instanceof FieldTableItem) {
 			return $this->component->asTableCell($h, $this->value === null ? Result::none(null) : Result::ok($this->value), false)
 				->bindNothing(function($x) use ($h){
 					return Result::ok(
