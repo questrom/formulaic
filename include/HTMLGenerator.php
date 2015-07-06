@@ -50,7 +50,7 @@ class HTMLContentGenerator extends HTMLRealGenerator {
 		$arr = array_map(function($item) {
 			if($item instanceof HTMLComponent) {
 				return $item->get(new HTMLParentlessContext());
-			} else if(is_string($item)) {
+			} else if(is_scalar($item)) {
 				return htmlspecialchars($item);
 			} else {
 				return $item;
@@ -66,7 +66,10 @@ class HTMLContentGenerator extends HTMLRealGenerator {
 
 	function __toString() {
 		// Avoid errors caused by excess recursion by using iteration here...
+		// return implode($this->children);
+
 		return implode($this->children);
+
 	}
 
 

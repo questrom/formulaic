@@ -78,8 +78,12 @@ function enableFormControls(root) {
 
 		var item = $(template);
 
-		item.find('input[name]').attr('name', function() {
+		item.find('input[name], textarea[name]').attr('name', function() {
 			return listCo.data('group-name') + '[' + num + '][' + $(this).attr('name') + ']';
+		});
+
+		item.find('[data-validation-name]').attr('data-validation-name', function() {
+			return listCo.data('group-name') + '[' + num + '][' + $(this).attr('data-validation-name') + ']';
 		});
 
 		item.insertBefore($this.closest('.segment'));

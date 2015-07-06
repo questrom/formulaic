@@ -706,6 +706,19 @@ class Notice extends BaseNotice {
 	}
 }
 
+// see http://php.net/manual/en/reserved.variables.files.php
+function diverse_array($vector) {
+   $result = [];
+   foreach($vector as $part => $val) {
+   		foreach($val as $index => $ival) {
+   			foreach($ival as $name => $info) {
+   				$result[$index][$name][$part] = $info;
+   			}
+   		}
+   }
+   return $result;
+}
+
 
 
 class ListComponent extends GroupComponent implements FieldListItem, FieldTableItem {
@@ -752,27 +765,32 @@ class ListComponent extends GroupComponent implements FieldListItem, FieldTableI
 		return $val
 		->innerBind(function($v) {
 			return Result::ok(
-				isset($v->post[$this->name]) ? $v->post[$this->name] : null
+				[
+					isset($v->post[$this->name]) ? $v->post[$this->name] : null,
+					isset($v->files[$this->name]) ? $v->files[$this->name] : null
+				]
 			);
 		})
 		->innerBind(function($data) {
-			if($data === null) {
-				return Result::ok([]);
-			} else if(is_array($data)) {
-				return Result::ok($data);
-			} else {
-				return Result::error([
-					$this->name => 'Invalid data'
-				]);
-			}
+			return Result::ok([
+				is_array($data[0]) ? $data[0] : [],
+				diverse_array($data[1])
+			]);
 		})
 		->innerBind(function($list) {
 
 			$result = Result::ok([]);
-			foreach ($list as $index => $value) {
+			$number = max(count($list[0]), count($list[1]));
+
+			for($index = 0; $index < $number; $index++) {
+
+
 				$validationResult = parent::getMerger(
 					Result::ok(
-						new ClientData($value, null)
+						new ClientData(
+							isget($list[0][$index], []),
+							isget($list[1][$index], [])
+						)
 					)
 				);
 

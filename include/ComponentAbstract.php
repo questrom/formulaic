@@ -134,10 +134,7 @@ abstract class NamedLabeledComponent implements HTMLComponent, Validatable, Name
     }
     function asTableCell($h, $value) {
 		return $value->innerBind(function($v) use ($h) {
-			return Result::ok($h
-			->td
-				->t($v)
-			->end);
+			return Result::ok($h->td->t($v)->end);
 		});
 	}
 }
