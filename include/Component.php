@@ -45,7 +45,7 @@ class Label implements HTMLComponent {
 	}
 }
 
-class Checkbox extends PostInputComponent {
+class Checkbox extends PostInputComponent implements Enumerative {
 	function __construct($args) {
 		parent::__construct($args);
 		$this->mustCheck = isset($args['must-check']);
