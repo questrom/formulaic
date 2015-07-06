@@ -5,3 +5,5 @@ s3-secret.yml
 .idea
 password.txt
 cache/
+config/
+config.toml
