@@ -144,7 +144,7 @@ class DetailsView implements HTMLComponent {
 						->tbody
 							->add(array_map(function($field) {
 								if($field instanceof Cellable) {
-									return new EmailValueRow( isget($this->data[$field->name]), $field );
+									return new ValueRow( isget($this->data[$field->name]), $field );
 								} else {
 									return null;
 								}
@@ -164,10 +164,6 @@ class DetailsView implements HTMLComponent {
 						->end
 					->end
 				->end
-				->script->src('vendor/components/jquery/jquery.min.js')->end
-				->script->src('vendor/robinherbots/jquery.inputmask/dist/jquery.inputmask.bundle.js')->end
-				->script->src('semantic-ui/dist/semantic.js')->end
-				->script->src('client.js')->end
 			->end
 		->end;
 	}
