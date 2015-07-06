@@ -12,6 +12,7 @@
         "tpyo/amazon-s3-php-class": "^0.5.1",
         "components/jquery": "^2.1",
         "nette/mail": "^2.3",
-        "sabre/xml": "^1.1"
+        "sabre/xml": "^1.1",
+        "Gregwar/Cache": "^1.0"
     }
 }
