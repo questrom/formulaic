@@ -57,12 +57,6 @@ class GraphView implements XmlDeserializable, HTMLComponent {
 						->end
 						->add($this->graphs)
 				->end
-				->script->src('vendor/components/jquery/jquery.min.js')->end
-				->script->src('vendor/robinherbots/jquery.inputmask/dist/jquery.inputmask.bundle.js')->end
-				->script->src('pizza-master/dist/js/vendor/dependencies.js')->end
-				->script->src('pizza-master/dist/js/pizza.js')->end
-				->script->src('semantic-ui/dist/semantic.js')->end
-				->script->src('graphs.js')->end
 			->end
 		->end;
 	}
