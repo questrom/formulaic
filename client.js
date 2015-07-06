@@ -65,6 +65,11 @@ function handleBox() {
 	$('[data-show-if="' + name + '"]').toggle($this.is(':checked'));
 }
 
+function fixName(groupName, currentName, num) {
+	currentName = currentName.split('[');
+	var rest = currentName.length > 1 ? ('[' + currentName.slice(1).join('[')) : '';
+	return groupName + '[' + num + '][' + currentName[0] + ']' + rest;
+}
 
 function enableFormControls(root) {
 
@@ -79,11 +84,15 @@ function enableFormControls(root) {
 		var item = $(template);
 
 		item.find('input[name], textarea[name]').attr('name', function() {
-			return listCo.data('group-name') + '[' + num + '][' + $(this).attr('name') + ']';
+			return fixName(listCo.data('group-name'), $(this).attr('name'), num);
 		});
 
 		item.find('[data-validation-name]').attr('data-validation-name', function() {
-			return listCo.data('group-name') + '[' + num + '][' + $(this).attr('data-validation-name') + ']';
+			return fixName(listCo.data('group-name'), $(this).attr('data-validation-name'), num);
+		});
+
+		item.find('[data-show-if]').attr('data-show-if', function() {
+			return fixName(listCo.data('group-name'), $(this).attr('data-show-if'), num);
 		});
 
 		item.insertBefore($this.closest('.segment'));

@@ -307,6 +307,7 @@ class Checkboxes extends PostInputComponent implements Enumerative {
 	}
 	function asTableCell($h, $value) {
 		return $value->innerBind(function($v) use ($h) {
+
 			if(count($v) === 0) {
 				return Result::none(null);
 			}
@@ -778,6 +779,8 @@ class ListComponent extends GroupComponent implements FieldListItem, FieldTableI
 			]);
 		})
 		->innerBind(function($list) {
+
+			// var_dump($list);
 
 			$result = Result::ok([]);
 			$number = max(count($list[0]), count($list[1]));

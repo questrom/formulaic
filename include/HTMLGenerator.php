@@ -66,8 +66,6 @@ class HTMLContentGenerator extends HTMLRealGenerator {
 
 	function __toString() {
 		// Avoid errors caused by excess recursion by using iteration here...
-		// return implode($this->children);
-
 		return implode($this->children);
 
 	}

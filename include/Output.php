@@ -44,7 +44,7 @@ class S3Output implements Output, XmlDeserializable {
 		$this->bucket = $args['bucket'];
 	}
 	function run($data, $page) {
-		return array_map(function($x) {
+		return array_map(function($x) use ($page) {
 			if(is_array($x)) {
 				return $this->run($x, $page);
 			} else if($x instanceof FileInfo) {
