@@ -2,6 +2,9 @@
 
 require('include/all.php');
 
+$csrf = new \Riimu\Kit\CSRF\CSRFHandler();
+$csrf->validateRequest(true);
+
 $page = Parser::parse_jade('forms/test.jade');
 
 $config = Config::get();
@@ -9,10 +12,10 @@ $config = Config::get();
 $page
 	->getMerger(Result::ok(new ClientData($_POST, $_FILES)))
 	->ifError(function($val) {
-		return Result::error(json_encode([
+		return Result::error([
 			'success' => false,
 			'errors' =>  $val
-		]));
+		]);
 	})
 	->innerBind(function($val) use ($page, $config) {
 
@@ -21,14 +24,16 @@ $page
 			var_dump($val);
 		$out = ob_get_clean();
 
-		return Result::ok(json_encode([
+		return Result::ok([
 			'success' => true,
 			'debugOutput' => $config['debug'] ? $out : ''
-		]));
+		]);
 	})
 	->ifError(function($val) {
 		return Result::ok($val);
 	})
-	->innerBind(function($output) {
-		echo $output;
+	->innerBind(function($output) use ($csrf) {
+		echo json_encode([
+		 'data' => $output
+		]);
 	});

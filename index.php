@@ -4,8 +4,10 @@ require('include/all.php');
 
 use Gregwar\Cache\Cache;
 
-$config = Config::get();
+$csrf = new \Riimu\Kit\CSRF\CSRFHandler();
+$token = $csrf->getToken();
 
+$config = Config::get();
 if($config['cache-forms']) {
 	$cache = new Cache();
 	$cache->setPrefixSize(0);
@@ -17,5 +19,8 @@ if($config['cache-forms']) {
 	$page = Parser::parse_jade('forms/test.jade');
 	$html = '<!DOCTYPE html>' . generateString($page->get(new HTMLParentlessContext()));
 }
+
+// Do the replacement here so that it won't be cached...
+$html = str_replace('__{{CSRF__TOKEN}}__', htmlspecialchars($token), $html);
 
 echo $html;

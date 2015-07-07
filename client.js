@@ -150,11 +150,12 @@ $(function() {
 				x = JSON.parse(x);
 			} catch(e) {
 				$('.ui.form').append($('<p>').html(x));
-
 				console.log(x);
 				doFail();
 				return;
 			}
+			x = x.data;
+
 			if(x.errors) {
 				console.log(x.errors);
 				$('.validation-error-message').show();

@@ -984,6 +984,11 @@ class FormElem extends GroupComponent {
 		return $h
 		->form->class('ui form')->action('submit.php')->method('POST')
 			->addC($this->items)
+			->input
+				->type('hidden')
+				->name('csrf_token')
+				->value('__{{CSRF__TOKEN}}__')
+			->end
 			->div->class('ui floating error message validation-error-message')
 				->div->class('header')
 					->t('Error validating data')
