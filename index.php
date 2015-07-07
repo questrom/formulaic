@@ -1,5 +1,6 @@
 <?php
 
+session_start();
 require('include/all.php');
 
 use Gregwar\Cache\Cache;

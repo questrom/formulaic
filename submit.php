@@ -1,5 +1,6 @@
 <?php
 
+session_start();
 require('include/all.php');
 
 $csrf = new \Riimu\Kit\CSRF\CSRFHandler();

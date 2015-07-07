@@ -119,7 +119,8 @@ class Parser {
 			'{}email-to' => 'EmailOutput',
 			'{}graph-view' => 'GraphView',
 			'{}bar' => 'BarGraph',
-			'{}pie' => 'PieChart'
+			'{}pie' => 'PieChart',
+			'{}captcha' => 'Captcha'
 		];
 
 		$reader->xml($xml);

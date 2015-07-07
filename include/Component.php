@@ -342,6 +342,72 @@ class Checkboxes extends PostInputComponent implements Enumerative {
 	}
 }
 
+use Gregwar\Captcha\CaptchaBuilder;
+
+function makeCaptcha() {
+
+	$builder = new CaptchaBuilder;
+	$builder->build(290, 80);
+	if(!isset($_SESSION['phrases'])) {
+		$_SESSION['phrases'] = [];
+	}
+	$id = mt_rand();
+	$_SESSION['phrases'][$id] = $builder->getPhrase();
+
+	return [
+		'data' => $builder->inline(),
+		'id' => $id
+	];
+}
+
+class Captcha extends PostInputComponent {
+	function __construct($args) {
+		$this->name = '_captcha';
+		$this->label = 'CAPTCHA';
+	}
+	function get($h) {
+		$cc = makeCaptcha();
+        return $h
+		->div->class('ui field required')
+			->div->class('ui card')
+				->div->class('image')
+					->img
+						->src($cc['data'])
+					->end
+				->end
+				->div->class('content')->data('validation-name', '_captcha')
+					->p
+						->t('Please prove that you are not a robot by entering the above code into the box below.')
+					->end
+					->div->class('ui input')
+						->input->type('text')->name('_captcha[]')->placeholder('Enter code...')->end
+						->input->type('hidden')->name('_captcha[]')->value($cc['id'])->end
+					->end
+				->end
+			->end
+		->end;
+	}
+	protected function validate($against) {
+		return $against
+			->innerBind(function($x) {
+				$code = $x[0];
+				$id = intval($x[1]);
+				if(!isset($_SESSION['phrases'][$id])) {
+					return Result::error('Invalid data');
+				}
+
+				$isCorrect = (new CaptchaBuilder($_SESSION['phrases'][$id]))->testPhrase($code);
+				unset($_SESSION['phrases'][$id]); // So user can't just reuse one CAPTCHA/id pair
+
+				if($isCorrect) {
+					return Result::error('Incorrect phrase.');
+				}
+				return Result::ok(null);
+			});
+	}
+}
+
+
 class Textbox extends PostInputComponent {
 	use InputField;
 	function __construct($args) {

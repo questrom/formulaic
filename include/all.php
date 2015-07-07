@@ -1,7 +1,5 @@
 <?php
 
-
-
 // Load dependencies
 require('vendor/autoload.php');
 require('jade/autoload.php.dist');
