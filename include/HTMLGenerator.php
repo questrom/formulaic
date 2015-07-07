@@ -6,29 +6,6 @@ abstract class HTMLGeneratorAbstract {
 
 	abstract function addH($arr);
 
-	function addC($arr) {
-		if(!is_array($arr)) {
-			$arr = [$arr];
-
-		}
-		$arr = array_map(function($element) {
-
-			if($element === null) {
-				return null;
-			}
-
-			if(!($element instanceof HTMLComponent)) {
-				throw new Exception('Tried to addC a non-component');
-			}
-
-            return $element->get(new HTMLParentlessContext());
-
-		}, $arr);
-
-		return $this->addH($arr);
-	}
-
-
 	abstract function __get($name);
 	function t($text) {
 		return $this->addH($text);
@@ -58,7 +35,7 @@ function generateString($input) {
             $element = $input[$i];
 
             if ($element instanceof HTMLComponent) {
-            	var_dump($element);
+            	// var_dump($element);
             	throw new Exception('Tried to add a Component!');
             }
 

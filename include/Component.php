@@ -45,19 +45,29 @@ class Label implements HTMLComponent {
 	}
 }
 
+class CheckboxFormPart implements Renderable {
+	function __construct($field) {
+		$this->f = $field;
+		$this->h = new HTMLParentlessContext();
+	}
+	function render() {
+		return $this->h
+		->div->class('field ' . ($this->f->mustCheck ? 'required' : ''))
+			->div->class('ui checkbox')
+				->input->type('checkbox')->name($this->f->name)->end
+				->addH($this->f->getLabel())
+			->end
+		->end;
+	}
+}
+
 class Checkbox extends PostInputComponent implements Enumerative {
 	function __construct($args) {
 		parent::__construct($args);
 		$this->mustCheck = isset($args['must-check']);
 	}
-	function get($h) {
-		return $h
-		->div->class('field ' . ($this->mustCheck ? 'required' : ''))
-			->div->class('ui checkbox')
-				->input->type('checkbox')->name($this->name)->end
-				->addH($this->getLabel())
-			->end
-		->end;
+	function makeFormPart() {
+		return new CheckboxFormPart($this);
 	}
 	protected function validate($against) {
 		return $against

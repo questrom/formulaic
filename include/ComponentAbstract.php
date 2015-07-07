@@ -6,6 +6,10 @@ use Sabre\Xml\XmlDeserializable as XmlDeserializable;
 // Abstract component classes
 // ==========================
 
+interface Renderable {
+	public function render();
+}
+
 interface HTMLComponent {
 	public function get($h);
 }
@@ -126,8 +130,12 @@ abstract class NamedLabeledComponent implements HTMLComponent, Validatable, Name
 		$this->name = $args['name'];
 	}
 
+	function get($h) {
+		return $this->makeFormPart()->render();
+	}
+
 	final function getAllFields() { return [ $this ]; }
-	final protected function getLabel() { return (new Label($this->label))->get(new HTMLParentlessContext()); }
+	final function getLabel() { return (new Label($this->label))->get(new HTMLParentlessContext()); }
 	final function getByName($name) { return ($this->name === $name) ? $this : null; }
 
     function getMerger($val) {

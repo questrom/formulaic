@@ -64,7 +64,6 @@ class TableView implements XmlDeserializable, HTMLComponent {
 		$this->sortBy = $sortBy;
 
 		$this->perPage = isset($args['per-page']) ? $args['per-page'] : null;
-		// $this->perPage = null;
 	}
 	function query($getData) {
 
