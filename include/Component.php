@@ -17,7 +17,7 @@ class ShowIfComponent extends GroupComponent {
 	function get($h) {
 		return $h
 			->div->data('show-if', $this->cond)
-				->addC($this->items[0])
+				->addH($this->items[0]->get(new HTMLParentlessContext()))
 			->end;
 	}
 	function getMerger($val) {
@@ -55,7 +55,7 @@ class Checkbox extends PostInputComponent implements Enumerative {
 		->div->class('field ' . ($this->mustCheck ? 'required' : ''))
 			->div->class('ui checkbox')
 				->input->type('checkbox')->name($this->name)->end
-				-HaddC($this->getLabel())
+				->addH($this->getLabel())
 			->end
 		->end;
 	}
@@ -895,8 +895,9 @@ class ListComponent extends GroupComponent implements FieldListItem, FieldTableI
 
 				return Result::ok($h
 					->td
-						->addC(array_map(function($listitem) use($h) {
-							return new ValueTable(parent::getAllFields(), $listitem, false);
+						->addH(array_map(function($listitem) use($h) {
+							return (new ValueTable(parent::getAllFields(), $listitem, false))
+								->get(new HTMLParentlessContext());
 						}, $v))
 					->end
 				);
@@ -911,9 +912,10 @@ class ListComponent extends GroupComponent implements FieldListItem, FieldTableI
 					->td
 						->addH(array_map(function($listitem) use($h) {
 							return $h->table->border(1)
-								->addC(array_map(function($field) use ($listitem) {
+								->addH(array_map(function($field) use ($listitem) {
 									if($field instanceof FieldListItem) {
-										return new ValueRow( isget($listitem[$field->name]), $field );
+										return (new ValueRow( isget($listitem[$field->name]), $field ))
+											->get(new HTMLParentlessContext());
 									} else {
 										return null;
 									}
@@ -1081,7 +1083,7 @@ class Page extends GroupComponent {
 			->body
 				->div->class('ui text container')
 					->div->class('ui segment')
-						->addC($this->form)
+						->addH($this->form->get(new HTMLParentlessContext()))
 					->end
 				->end
 				->div->class('success-modal ui small modal')

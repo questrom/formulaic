@@ -50,9 +50,10 @@ class ValueTable implements HTMLComponent {
 	function get($h) {
 		return $h ->table->class('ui definition table')
 			->tbody
-				->addC(array_map(function($field) {
+				->addH(array_map(function($field) {
 					if($field instanceof FieldListItem) {
-						return new ValueRow( isget($this->data[$field->name], null), $field );
+						return (new ValueRow( isget($this->data[$field->name], null), $field ))
+							->get(new HTMLParentlessContext());
 					} else {
 						return null;
 					}
