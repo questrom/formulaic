@@ -30,3 +30,4 @@ require('include/Output.php');
 require('include/TableView.php');
 require('include/DetailsView.php');
 require('include/GraphView.php');
+require('include/EmailView.php');

@@ -1,9 +1,5 @@
 <?php
-
-use Sabre\Xml\XmlDeserializable as XmlDeserializable;
-
-
-class ValueRow implements HTMLComponent {
+class EmailValueRow implements HTMLComponent {
 	function __construct($value, $component) {
 
 		$this->value = $value;
@@ -13,15 +9,15 @@ class ValueRow implements HTMLComponent {
 
 
 		if($this->component instanceof FieldListItem) {
-			return $this->component->asDetailedTableCell(
+			return $this->component->asEmailTableCell(
 				$h,
 				$this->value === null ? Result::none(null) : Result::ok($this->value)
 			)
 				->bindNothing(function($x) use ($h){
 					return Result::ok(
 						$h
-						->td->class('disabled')
-							->i->class('ban icon')->end
+						->td->bgcolor('#ccc')
+							->t('(No value)')
 						->end
 					);
 				})
@@ -41,9 +37,7 @@ class ValueRow implements HTMLComponent {
 	}
 }
 
-
-// Used by details.php and Output.php (For HTML email)
-class DetailsView implements HTMLComponent {
+class EmailView implements HTMLComponent {
 	use Configurable;
 
 	function __construct($page) {
@@ -52,40 +46,7 @@ class DetailsView implements HTMLComponent {
 		$this->pageData = $page;
 
 	}
-	function query($getData) {
-
-		$page = $this->pageData;
-
-		$mongo = null;
-		foreach($page->outputs->outputs as $output) {
-			if($output instanceof MongoOutput) {
-				$mongo = $output;
-			}
-		}
-		$this->server = $mongo->server;
-		$this->database = $mongo->database;
-		$this->collection = $mongo->collection;
-
-		$this->item = $getData['id'];
-
-
-		$client = (new MongoClient($this->server))
-			->selectDB($this->database)
-			->selectCollection($this->collection);
-
-
-		$data = $client->findOne([
-			'_id' => new MongoId($this->item)
-		]);
-
-		$data = fixMongoDates($data);
-
-		$this->data = $data;
-
-	}
 	function get($h) {
-
-
 
 		$timestamp = $this->data['_timestamp'];
 
@@ -95,33 +56,30 @@ class DetailsView implements HTMLComponent {
 			->head
 				->meta->charset('utf-8')->end
 				->title->t($this->title)->end
-				->link->rel("stylesheet")->href("semantic-ui/semantic.css")->end
-				->link->rel("stylesheet")->href("styles.css")->end
 			->end
 			->body
 				->div->class('ui container wide-page')
 					->h1
 						->t($this->title)
 					->end
-					->table->class('ui definition table')
+					->table->border(1)
 						->tbody
 							->add(array_map(function($field) {
 								if($field instanceof FieldListItem) {
-									return new ValueRow( isget($this->data[$field->name]), $field );
+									return new EmailValueRow( isget($this->data[$field->name]), $field );
 								} else {
 									return null;
 								}
 							}, $this->pageData->getAllFields() ))
 						->end
-						->tfoot->class('full-width')
+						->tfoot
 							->tr
-								->th->colspan('2')
+								->td->colspan('2')->align('left')
 									->strong->t('Timestamp:' . json_decode('"\u2002"'))->end
 									->t($timestamp->format('Y/m/d g:i A'))
-									->p
-										->strong->t('IP:' . json_decode('"\u2002"'))->end
-										->code->t($this->data['_ip'])->end
-									->end
+									->br->end
+									->strong->t('IP:' . json_decode('"\u2002"'))->end
+									->code->t($this->data['_ip'])->end
 								->end
 							->end
 						->end
@@ -131,4 +89,3 @@ class DetailsView implements HTMLComponent {
 		->end;
 	}
 }
-
