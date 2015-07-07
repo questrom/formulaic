@@ -13,27 +13,12 @@ abstract class HTMLGeneratorAbstract {
 		}
 		$arr = array_map(function($element) {
 
-			if(!($element instanceof HTMLComponent)) {
-				throw new Exception('Tried to addC a non-component');
+			if($element === null) {
+				return null;
 			}
 
-            return $element->get(new HTMLParentlessContext());
-
-		}, $arr);
-
-		return $this->addH($arr);
-	}
-
-
-	function add($arr) {
-		if(!is_array($arr)) {
-			$arr = [$arr];
-
-		}
-		$arr = array_map(function($element) {
-
 			if(!($element instanceof HTMLComponent)) {
-				return $element;
+				throw new Exception('Tried to addC a non-component');
 			}
 
             return $element->get(new HTMLParentlessContext());

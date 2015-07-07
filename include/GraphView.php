@@ -55,7 +55,7 @@ class GraphView implements XmlDeserializable, HTMLComponent {
 								->t($this->title)
 							->end
 						->end
-						->add($this->graphs)
+						->addC($this->graphs)
 				->end
 			->end
 		->end;
@@ -140,7 +140,7 @@ class PieChart extends Graph {
 				->end
 				->div->class('content')
 					->svg->viewBox('-900 -600 1800 1200')->style('background:#fff')
-						->add(kvmap(function($index, $result) use($h, $total, &$lastAngle) {
+						->addH(kvmap(function($index, $result) use($h, $total, &$lastAngle) {
 
 							$key = $result['_id'];
 
@@ -217,7 +217,7 @@ class BarGraph extends Graph {
 				->end
 				->div->class('content')
 					->svg->viewBox('0 0 700 ' . count($this->results) * 30 )->style('background:#fff')
-						->add(kvmap(function($index, $result) use($h, $max) {
+						->addH(kvmap(function($index, $result) use($h, $max) {
 							$barWidth = ($result['count']/$max) * 500;
 							$labelAtRight = $barWidth < 40;
 

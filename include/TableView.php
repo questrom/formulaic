@@ -120,7 +120,7 @@ class TableView implements XmlDeserializable, HTMLComponent {
 						->end
 						->table->class('unstackable ui celled striped compact table table-view sortable')
 							->colgroup
-								->add(array_map(function($x) use($h) {
+								->addH(array_map(function($x) use($h) {
 									return $h
 										->col->style('width: ' . ($x->width * 100) . '%;')
 									->end;
@@ -129,7 +129,7 @@ class TableView implements XmlDeserializable, HTMLComponent {
 							->end
 							->thead
 								->tr
-									->add(array_map(function($x) use($h) {
+									->addH(array_map(function($x) use($h) {
 										return $h
 										->th->class(
 											$x->sort === null ? '' :
@@ -141,10 +141,10 @@ class TableView implements XmlDeserializable, HTMLComponent {
 									->th->end
 								->end
 							->end
-							->add(array_map(function($row) use ($h) {
+							->addH(array_map(function($row) use ($h) {
 								return $h
 								->tr
-									->add(array_map(function($col) use($h, $row) {
+									->addC(array_map(function($col) use($h, $row) {
 											return new ValueCell( isset($row[$col->name]) ? $row[$col->name] : null, $this->pageData->getByName($col->name) );
 									}, $this->cols))
 									->td->class('center aligned nowrap unpadded-cell')

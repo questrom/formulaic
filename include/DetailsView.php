@@ -50,7 +50,7 @@ class ValueTable implements HTMLComponent {
 	function get($h) {
 		return $h ->table->class('ui definition table')
 			->tbody
-				->add(array_map(function($field) {
+				->addC(array_map(function($field) {
 					if($field instanceof FieldListItem) {
 						return new ValueRow( isget($this->data[$field->name], null), $field );
 					} else {
@@ -134,7 +134,7 @@ class DetailsView implements HTMLComponent {
 					->h1
 						->t($this->title)
 					->end
-					->add(new ValueTable($this->pageData->getAllFields(), $this->data, true))
+					->addC(new ValueTable($this->pageData->getAllFields(), $this->data, true))
 				->end
 			->end
 		->end;
