@@ -81,11 +81,15 @@ function enableFormControls(root) {
 		var num = listCo.data('count');
 		listCo.data('count', num + 1);
 
-		var item = $(template);
+		var item = $($('<div>').html(template).text());
 
 		item.find('input[name], textarea[name]').attr('name', function() {
 			return fixName(listCo.data('group-name'), $(this).attr('name'), num);
 		});
+
+        item.find('[data-group-name]').attr('data-group-name', function() {
+            return fixName(listCo.data('group-name'), $(this).attr('data-group-name'), num);
+        });
 
 		item.find('[data-validation-name]').attr('data-validation-name', function() {
 			return fixName(listCo.data('group-name'), $(this).attr('data-validation-name'), num);

@@ -1,69 +1,69 @@
 form(name='Example Form', title='Example Form', debug=true, success-message='Lorem ipsum!')
   fields
-    list(name='all_list', label='AllList', add-text='Add an item')
-      header Example Form
-      header(size=4) HTML Escaping &lt;works&gt;
-      show-if(cond='existence')
-        header(icon='plug', size=4) Hello world
-      file(label='Upload a file...', name='upload_file', max-size='100000', permissions='public-read')
-        allow(ext='docx', mime='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-        allow(ext='jpg', mime='image/jpeg')
-      datetime(label='Start at', name='start_datetime')
-        //- , min='01/01/2015 11:11 AM', max='01/01/2016 11:11 AM', step='10')
-      time(label='Start time', name='start_time')
-      range(label='Volume', name='volume', min='3', max='5', default='4', step='0.5')
-      textbox(label='Your name', name='name')
-      notice(header='Wonderful!', text='Hello world!', type='info', icon='inbox')
-        li Alpha beta
-        li Gamma delta
-        li Epsilon zeta
-      //- list(name='phone_list', label='Clients', add-text='Add a client')
-      //-   group
-      //-     header Client Info
-      //-     phonenumber(label='Phone number', name='phone')
-      //-     url(label='Website',name='url',required=true)
-      //-   checkbox(label='An actual client', name='is_actual')
-      phonenumber(label='Phone number', name='phone')
-      url(label='Website',name='url',required=true)
-      email(label='Email address', name='email', must-have-domain='bu.edu')
-      date(label='Start date', name='start_date', min='2015-06-17', max='2015-06-20')
-      show-if(cond='existence')
-        number(label='How many attendees?', name='num_attendees', min='3', max='5', required=true)
-      checkbox(label='I agree to the terms and conditions', name='agree_to_terms', must-check=true)
-      checkbox(label='I exist', name='existence')
-      header abc
-      textarea(label='Additional notes', name='additional_notes')
-      radios(label='Choose a link...', name='choose_a_link')
-        option Career Center
-        option Student Link
-        option Tech Help
-        option BU Calendar
-        option Never Chosen
-      dropdown(label='Choose a school...', name='choose_a_school')
-        option College of Arts and Sciences
-        option Questrom School of Business
-        option College of General Studies
-      show-if(cond='existence')
-        group
-          header(icon='mail', subhead='hey') Login!
-          notice(text='Hello world!')
-            //- li Alpha beta
-            //- li Gamma delta
-            //- li Epsilon zeta
-          textbox(label='Username', name='username', max-length='20')
-            //
-              password is 595
-              generated with PHP's password_hash
-              in prod, don't store this in plaintext
-          password(label='Password', name='password', match-hash='$2y$10$FeVuAyjk82DNDflP6LevxOG7GCWm11bJ7R48Kx7wHH6a9PP7Z1Aki')
-      checkboxes(label='What are your favorite colors?', name='fave_colors', required=true)
-        option Red
-        option Orange
-        option Yellow
-        option Green
-        option Blue
-        option Hipster
-        option &#60;html&#62;
+    //- list(name='all_list', label='AllList', add-text='Add an item')
+    header Example Form
+    header(size=4) HTML Escaping &lt;works&gt;
+    show-if(cond='existence')
+      header(icon='plug', size=4) Hello world
+    file(label='Upload a file...', name='upload_file', max-size='100000', permissions='public-read')
+      allow(ext='docx', mime='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+      allow(ext='jpg', mime='image/jpeg')
+    datetime(label='Start at', name='start_datetime')
+      //- , min='01/01/2015 11:11 AM', max='01/01/2016 11:11 AM', step='10')
+    time(label='Start time', name='start_time')
+    range(label='Volume', name='volume', min='3', max='5', default='4', step='0.5')
+    textbox(label='Your name', name='name')
+    notice(header='Wonderful!', text='Hello world!', type='info', icon='inbox')
+      li Alpha beta
+      li Gamma delta
+      li Epsilon zeta
+    list(name='phone_list', label='Clients', add-text='Add a client')
+      group
+        header Client Info
+        phonenumber(label='Phone number', name='phone')
+        url(label='Website',name='url',required=true)
+      checkbox(label='An actual client', name='is_actual')
+    phonenumber(label='Phone number', name='phone')
+    url(label='Website',name='url',required=true)
+    email(label='Email address', name='email', must-have-domain='bu.edu')
+    date(label='Start date', name='start_date', min='2015-06-17', max='2015-06-20')
+    show-if(cond='existence')
+      number(label='How many attendees?', name='num_attendees', min='3', max='5', required=true)
+    checkbox(label='I agree to the terms and conditions', name='agree_to_terms', must-check=true)
+    checkbox(label='I exist', name='existence')
+    header abc
+    textarea(label='Additional notes', name='additional_notes')
+    radios(label='Choose a link...', name='choose_a_link')
+      option Career Center
+      option Student Link
+      option Tech Help
+      option BU Calendar
+      option Never Chosen
+    dropdown(label='Choose a school...', name='choose_a_school')
+      option College of Arts and Sciences
+      option Questrom School of Business
+      option College of General Studies
+    show-if(cond='existence')
+      group
+        header(icon='mail', subhead='hey') Login!
+        notice(text='Hello world!')
+          //- li Alpha beta
+          //- li Gamma delta
+          //- li Epsilon zeta
+        textbox(label='Username', name='username', max-length='20')
+          //
+            password is 595
+            generated with PHP's password_hash
+            in prod, don't store this in plaintext
+        password(label='Password', name='password', match-hash='$2y$10$FeVuAyjk82DNDflP6LevxOG7GCWm11bJ7R48Kx7wHH6a9PP7Z1Aki')
+    checkboxes(label='What are your favorite colors?', name='fave_colors', required=true)
+      option Red
+      option Orange
+      option Yellow
+      option Green
+      option Blue
+      option Hipster
+      option &#60;html&#62;
   outputs
     s3(bucket='form-builder-uploads')
     mongo(server='mongodb://localhost:27017', database='forms', collection='example_form')

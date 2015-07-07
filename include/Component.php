@@ -709,7 +709,8 @@ class Notice extends BaseNotice {
 
 // see http://php.net/manual/en/reserved.variables.files.php
 function diverse_array($vector) {
-   $result = [];
+//    var_dump($vector);
+       $result = [];
    foreach($vector as $part => $val) {
    		foreach($val as $index => $ival) {
    			foreach($ival as $name => $info) {
@@ -745,12 +746,19 @@ class ListComponent extends GroupComponent implements FieldListItem, FieldTableI
 			->h5->class('top attached ui message')->t($this->label)->end
 			->div->data('validation-name', $this->name)->class('validation-root ui bottom attached segment list-items')
 				->script->type('text/template')
-					->div->class('ui vertical segment close-item')
-							->div->class('content')
-								->add($this->items)
-							->end
-							->button->type('button')->class('ui compact negative icon button delete-btn')->i->class('trash icon')->end->end
-					->end
+					->add(
+                        // Forcibly HTML-encode things so that nested lists are generated properly...
+                        generateString(
+                            (new HTMLParentlessContext())->div->class('ui vertical segment close-item')
+                                ->div->class('content')
+                                    ->add($this->items)
+                                ->end
+                                ->button->type('button')->class('ui compact negative icon button delete-btn')
+                                    ->i->class('trash icon')->end
+                               ->end
+                            ->end
+                        )
+                    )
 				->end
 				->div->class('ui center aligned vertical segment')
 					->button->type('button')->class('ui primary labeled icon button add-item')
@@ -775,7 +783,7 @@ class ListComponent extends GroupComponent implements FieldListItem, FieldTableI
 		->innerBind(function($data) {
 			return Result::ok([
 				is_array($data[0]) ? $data[0] : [],
-				diverse_array($data[1])
+				is_array($data[1]) ? diverse_array($data[1] ) : []
 			]);
 		})
 		->innerBind(function($list) {
@@ -812,7 +820,14 @@ class ListComponent extends GroupComponent implements FieldListItem, FieldTableI
 						return $validationResult
 							->ifError(function($fieldError) use($errorSoFar, $index) {
 								foreach($fieldError as $k => $v) {
-									$errorSoFar[ $this->name . '[' . $index . '][' . $k . ']'  ] = $v;
+
+                                    $k = explode('[', $k);
+                                    $kStart = $k[0];
+                                    $kRest = (count($k) > 1) ?
+                                        '[' . implode('[', array_slice($k, 1)) :
+                                        '';
+
+									$errorSoFar[ $this->name . '[' . $index . '][' . $kStart . ']' . $kRest  ] = $v;
 								}
 
 								return Result::error($errorSoFar);
