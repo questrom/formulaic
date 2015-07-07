@@ -1,6 +1,7 @@
 <?php
 
 use Sabre\Xml\XmlDeserializable;
+use Gregwar\Cache\Cache;
 
 trait Configurable {
 	abstract public function __construct($args);
@@ -63,14 +64,29 @@ class AllowElem implements XmlDeserializable {
 class Parser {
 	static function parse_jade($file) {
 
-		$file = "!!! xml\n" . file_get_contents($file);
 
-		$jade = new Everzet\Jade\Jade(
-			new Everzet\Jade\Parser(new Everzet\Jade\Lexer\Lexer()),
-			new Everzet\Jade\Dumper\PHPDumper()
-		);
 
-		$xml = $jade->render($file);
+		$config = Config::get();
+
+		if($config['cache-xml']) {
+			$cache = new Cache();
+			$cache->setPrefixSize(0);
+			$xml = $cache->getOrCreate('xml-' . sha1_file($file), [], function() use ($file) {
+				$file = "!!! xml\n" . file_get_contents($file);
+				$jade = new Everzet\Jade\Jade(
+					new Everzet\Jade\Parser(new Everzet\Jade\Lexer\Lexer()),
+					new Everzet\Jade\Dumper\PHPDumper()
+				);
+				return $jade->render($file);
+			});
+		} else {
+			$file = "!!! xml\n" . file_get_contents($file);
+			$jade = new Everzet\Jade\Jade(
+				new Everzet\Jade\Parser(new Everzet\Jade\Lexer\Lexer()),
+				new Everzet\Jade\Dumper\PHPDumper()
+			);
+			$xml = $jade->render($file);
+		}
 
 
 		$reader = new Sabre\Xml\Reader();

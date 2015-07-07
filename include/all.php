@@ -1,13 +1,17 @@
 <?php
 
-require('vendor/autoload.php');
-
-date_default_timezone_set('America/New_York');
-
-require('jade/autoload.php.dist');
-
 // Utils
 require ('utils.php');
+
+
+// Load dependencies
+require('vendor/autoload.php');
+require('jade/autoload.php.dist');
+
+// Misc settings
+date_default_timezone_set(Config::get()['time-zone']);
+
+
 
 // Config parsing
 require('Parser.php');

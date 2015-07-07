@@ -4,7 +4,7 @@ require('include/all.php');
 
 $page = Parser::parse_jade('forms/test.jade');
 
-$config = getConfig();
+$config = Config::get();
 
 $page
 	->getMerger(Result::ok(new ClientData($_POST, $_FILES)))

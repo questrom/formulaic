@@ -39,7 +39,7 @@ class MongoOutput implements Output, XmlDeserializable {
 class S3Output implements Output, XmlDeserializable {
 	use Configurable;
 	function __construct($args) {
-		$this->secret =getConfig();
+		$this->secret =Config::get();
 		$this->s3 = new S3($this->secret['s3']['key'], $this->secret['s3']['secret']);
 		$this->bucket = $args['bucket'];
 	}
@@ -100,7 +100,7 @@ class EmailOutput implements Output, XmlDeserializable {
 		$this->to = $args['to'];
 		$this->from = $args['from'];
 		$this->subject = $args['subject'];
-		$this->secret = getConfig();
+		$this->secret = Config::get();
 	}
 	function run($data, $page) {
 
