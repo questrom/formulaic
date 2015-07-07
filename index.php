@@ -4,11 +4,9 @@ require('include/all.php');
 
 use Gregwar\Cache\Cache;
 
-// $time = microtime(true);
+$config = getConfig();
 
-$cache_enabled = false;
-
-if($cache_enabled) {
+if($config['cache-forms']) {
 	$cache = new Cache();
 	$cache->setPrefixSize(0);
 	$html = $cache->getOrCreate(sha1_file('forms/test.jade'), [], function() {
@@ -19,8 +17,5 @@ if($cache_enabled) {
 	$page = Parser::parse_jade('forms/test.jade');
 	$html = '<!DOCTYPE html>' . generateString($page->get(new HTMLParentlessContext()));
 }
-
-
-// echo (microtime(true) - $time);
 
 echo $html;

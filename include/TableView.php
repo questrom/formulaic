@@ -118,7 +118,7 @@ class TableView implements XmlDeserializable, HTMLComponent {
 						->h1
 							->t($this->title)
 						->end
-						->table->class('ui celled striped compact table table-view sortable')
+						->table->class('unstackable ui celled striped compact table table-view sortable')
 							->colgroup
 								->add(array_map(function($x) use($h) {
 									return $h

@@ -4,6 +4,7 @@ require('include/all.php');
 
 $page = Parser::parse_jade('forms/test.jade');
 
+$config = getConfig();
 
 $page
 	->getMerger(Result::ok(new ClientData($_POST, $_FILES)))
@@ -13,7 +14,7 @@ $page
 			'errors' =>  $val
 		]));
 	})
-	->innerBind(function($val) use ($page) {
+	->innerBind(function($val) use ($page, $config) {
 
 		ob_start();
 			$val = $page->outputs->run($val, $page);
@@ -22,7 +23,7 @@ $page
 
 		return Result::ok(json_encode([
 			'success' => true,
-			'debugOutput' => $page->debug ? $out : ''
+			'debugOutput' => $config['debug'] ? $out : ''
 		]));
 	})
 	->ifError(function($val) {

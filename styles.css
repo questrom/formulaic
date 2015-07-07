@@ -15,11 +15,10 @@ div[data-show-if] > .ui.header:last-child { margin: calc(2rem - 0.14285em) 0em 1
 
 input[type=range] { width: 150px; vertical-align: -5px; }
 
-/*http://stackoverflow.com/questions/18794026/remove-dotted-outline-from-range-input-element-in-firefox*/
+/* See http://stackoverflow.com/questions/18794026/ */
 input[type=range]::-moz-focus-outer { border:0 !important; }
 
 .submit-count-label { margin-top: 2px !important; }
-
 .submit-count-label .detail { margin-left: 0.65em !important; }
 
 .ui.sortable.table thead th { cursor:auto; }
@@ -33,20 +32,21 @@ input[type=range]::-moz-focus-outer { border:0 !important; }
 .ui.icon.message > .icon:not(.close) { align-self: flex-start; }
 .ui.header.attached > .icon { vertical-align: top; }
 .red.prompt { display: table; }
+
+/* Utility classes */
 .nowrap { white-space:nowrap;}
-
 .no-margin { margin:0 !important;}
+.pull-right { float:right;}
 
+
+/* Simpler styling for groups */
 .group > :first-child.attached {
-	margin-top: 0px !important;
+    margin-top: 0px !important;
     margin-bottom: 0em !important;
     border-bottom: medium none !important;
     border-radius: 0.3125rem 0.3125rem 0em 0em !important;
     border-top: 1px solid #D4D4D5 !important;
 }
-
-.pull-right { float:right;}
-
 .group > :last-child.attached {
 	margin-bottom: 1em  !important;
     top: 0px  !important;
@@ -55,33 +55,25 @@ input[type=range]::-moz-focus-outer { border:0 !important; }
     border-radius: 0em 0em 0.2857rem 0.2857rem !important;
     border-bottom: 1px solid #D4D4D5 !important;
 }
-
-
-/* Only child */
-.group > :first-child:last-child.attached { border-radius: 0.3125rem 0.3125rem 0.2857rem 0.2857rem !important; }
+.group > :first-child:last-child.attached {
+    border-radius: 0.3125rem 0.3125rem 0.2857rem 0.2857rem !important;
+}
 
 .close-item { display:flex; align-items: flex-start; }
 .close-item > .content { flex: 1; margin-right: 15px; }
 .close-item > button { margin-top:5px !important; }
 .list-component > .segment { padding: 0 15px; }
 
-.ui.celled.table tr.negative td, .ui.celled.table tr td.negative {
-    background: #FFE7E7 none repeat scroll 0% 0% !important;
-    color: #943634 !important;
-}
-
-.ui.celled.table tr.positive td, .ui.celled.table tr td.positive {
-    background: #F7FFE6 none repeat scroll 0% 0% !important;
-    color: #275B28 !important;
-}
+/* Improve contrast within tables */
+.ui.celled.table tr.negative td, .ui.celled.table tr td.negative { background-color: #FFE7E7 !important; }
+.ui.celled.table tr.positive td, .ui.celled.table tr td.positive { background-color: #F7FFE6 !important; }
 
 .table-view li {
     padding: 0 !important;
 }
 
-.ui.sortable.table thead th:hover {
-    background: #F9FAFB;
-}
+/* Remove hover effect*/
+.ui.sortable.table thead th:hover { background: #F9FAFB; }
 
 .unpadded-cell { padding:0 !important; }
 .unpadded-cell > .ui.icon.button { padding-top:10px !important; padding-bottom:10px !important; }

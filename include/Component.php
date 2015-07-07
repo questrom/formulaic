@@ -1047,7 +1047,6 @@ class Page extends GroupComponent {
 
 		$this->title = isset($args['title']) ? $args['title'] : 'Form';
 		$this->successMessage = isset($args['success-message']) ? $args['success-message'] : 'The form was submitted successfully.';
-		$this->debug = isset($args['debug']);
 		$this->outputs = $args['byTag']['{}outputs'];
 		$this->views = $args['byTag']['{}views'];
 	}
