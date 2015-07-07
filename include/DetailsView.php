@@ -52,7 +52,7 @@ class ValueTable implements HTMLComponent {
 			->tbody
 				->addH(array_map(function($field) {
 					if($field instanceof FieldListItem) {
-						return (new ValueRow( isget($this->data[$field->name], null), $field ))
+						return (new ValueRow( isget($this->data[$field->name]), $field ))
 							->get(new HTMLParentlessContext());
 					} else {
 						return null;
