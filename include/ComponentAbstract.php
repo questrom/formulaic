@@ -110,15 +110,11 @@ abstract class NamedLabeledComponent implements HTMLComponent, Validatable, Name
 		$this->label = $args['label'];
 		$this->name = $args['name'];
 	}
-	function getAllFields() {
-		return [ $this ];
-	}
-	protected function getLabel() {
-		return new Label($this->label);
-	}
-	function getByName($name) {
-		return ($this->name === $name) ? $this : null;
-	}
+
+	final function getAllFields() { return [ $this ]; }
+	final protected function getLabel() { return new Label($this->label); }
+	final function getByName($name) { return ($this->name === $name) ? $this : null; }
+
     function getMerger($val) {
     	$val = $val->innerBind(function($v) {
 			return Result::ok(isset($v[$this->name]) ? $v[$this->name] : null);
