@@ -1,6 +1,6 @@
 <?php
 
-require('parts.php');
+require('include/all.php');
 
 use Gregwar\Cache\Cache;
 

@@ -1,6 +1,6 @@
 <?php
 
-require('parts.php');
+require('include/all.php');
 
 $page = Parser::parse_jade('forms/test.jade');
 

@@ -1088,8 +1088,8 @@ class Page extends GroupComponent {
 						->button->type('button')->class('ui primary button approve')->t('OK')->end
 					->end
 				->end
-				->script->src('vendor/components/jquery/jquery.min.js')->end
-				->script->src('vendor/robinherbots/jquery.inputmask/dist/jquery.inputmask.bundle.js')->end
+				->script->src('lib/jquery.js')->end
+				->script->src('lib/jquery.inputmask.bundle.js')->end
 				->script->src('lib/semantic.js')->end
 				->script->src('client.js')->end
 			->end
