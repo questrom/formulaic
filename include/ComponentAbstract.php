@@ -190,19 +190,6 @@ abstract class GroupComponent implements HTMLComponent, Validatable, NameMatcher
 	}
 }
 
-abstract class SpecialInput extends PostInputComponent {
-	function __construct($args) {
-		parent::__construct($args);
-
-		$this->maxLength = isset($args['max-length']) ? intval($args['max-length']) : INF;
-		$this->minLength = isset($args['min-length']) ? intval($args['min-length']) : 0;
-		$this->required  = isset($args['required']);
-		$this->mustMatch = isset($args['must-match']) ? $args['must-match'] : null;
-
-	}
-
-}
-
 trait InputField {
 	protected function makeInput($h, $type, $icon = null, $mask = null) {
 		return $h

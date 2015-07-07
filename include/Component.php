@@ -164,7 +164,16 @@ class DateTimePicker extends PostInputComponent {
 }
 
 
-class Textarea extends SpecialInput {
+class Textarea extends PostInputComponent {
+	function __construct($args) {
+		parent::__construct($args);
+
+		$this->maxLength = isset($args['max-length']) ? intval($args['max-length']) : INF;
+		$this->minLength = isset($args['min-length']) ? intval($args['min-length']) : 0;
+		$this->required  = isset($args['required']);
+		$this->mustMatch = isset($args['must-match']) ? $args['must-match'] : null;
+
+	}
 	function get($h) {
 		return $h
 		->ins(fieldBox($h, $this->required))
@@ -323,8 +332,17 @@ class Checkboxes extends PostInputComponent implements Enumerative {
 	}
 }
 
-class Textbox extends SpecialInput {
+class Textbox extends PostInputComponent {
 	use InputField;
+	function __construct($args) {
+		parent::__construct($args);
+
+		$this->maxLength = isset($args['max-length']) ? intval($args['max-length']) : INF;
+		$this->minLength = isset($args['min-length']) ? intval($args['min-length']) : 0;
+		$this->required  = isset($args['required']);
+		$this->mustMatch = isset($args['must-match']) ? $args['must-match'] : null;
+
+	}
 	function get($h) {
         return $this->makeInput($h, 'text', null);
 	}
@@ -483,10 +501,17 @@ class Range extends PostInputComponent {
 }
 
 
-class Password extends SpecialInput {
+class Password extends PostInputComponent {
 	use InputField;
 	function __construct($args) {
 		parent::__construct($args);
+
+		$this->maxLength = isset($args['max-length']) ? intval($args['max-length']) : INF;
+		$this->minLength = isset($args['min-length']) ? intval($args['min-length']) : 0;
+		$this->required  = isset($args['required']);
+		$this->mustMatch = isset($args['must-match']) ? $args['must-match'] : null;
+
+
 		$this->matchHash = isset($args['match-hash']) ? $args['match-hash'] : null;
 	}
 	function get($h) {
