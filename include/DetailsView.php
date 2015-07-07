@@ -135,7 +135,7 @@ class DetailsView implements HTMLComponent {
 					->h1
 						->t($this->title)
 					->end
-					->addC(new ValueTable($this->pageData->getAllFields(), $this->data, true))
+					->addH((new ValueTable($this->pageData->getAllFields(), $this->data, true))->get(new HTMLParentlessContext()))
 				->end
 			->end
 		->end;

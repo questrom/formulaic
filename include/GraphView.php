@@ -55,7 +55,7 @@ class GraphView implements XmlDeserializable, HTMLComponent {
 								->t($this->title)
 							->end
 						->end
-						->addC($this->graphs)
+						->addH( array_map(function($x) { return $x ? $x->get(new HTMLParentlessContext()) : null; }, $this->graphs) )
 				->end
 			->end
 		->end;

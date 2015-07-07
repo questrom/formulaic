@@ -31,7 +31,8 @@ class Config {
 	}
 }
 
-// Non-caching version of Gregwar/cache
+/* Fake cache that doesn't really do anything */
 class FakeCache extends Cache {
 	public function set($filename, $contents = '') { return $this; }
+	protected function checkConditions($cacheFile, array $conditions = array()) { return false; }
 }

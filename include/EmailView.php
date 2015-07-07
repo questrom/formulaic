@@ -64,9 +64,9 @@ class EmailView implements HTMLComponent {
 					->end
 					->table->border(1)
 						->tbody
-							->addC(array_map(function($field) {
+							->addH(array_map(function($field) {
 								if($field instanceof FieldListItem) {
-									return new EmailValueRow( isget($this->data[$field->name], null), $field );
+									return (new EmailValueRow( isget($this->data[$field->name], null), $field ))->get(new HTMLParentlessContext());
 								} else {
 									return null;
 								}

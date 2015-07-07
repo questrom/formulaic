@@ -778,7 +778,7 @@ class ListComponent extends GroupComponent implements FieldListItem, FieldTableI
                         generateString(
                             (new HTMLParentlessContext())->div->class('ui vertical segment close-item')
                                 ->div->class('content')
-                                    ->addC($this->items)
+                                    ->addH( array_map(function($x) { return $x ? $x->get(new HTMLParentlessContext()) : null; }, $this->items) )
                                 ->end
                                 ->button->type('button')->class('ui compact negative icon button delete-btn')
                                     ->i->class('trash icon')->end
@@ -952,7 +952,9 @@ class Group extends GroupComponent {
 			->addH(array_map(function($value) use ($h) {
 					if(is_array($value)) {
 						return (new HTMLParentlessContext())->div->class('ui segment attached')
-							->addC($value)
+							->addH(
+								array_map(function($x) { return $x ? $x->get(new HTMLParentlessContext()) : null; }, $value)
+							)
 						->end;
 					} else {
 						return $value->get(new HTMLParentlessContext());
@@ -983,7 +985,7 @@ class FormElem extends GroupComponent {
 	function get($h) {
 		return $h
 		->form->class('ui form')->action('submit.php')->method('POST')
-			->addC($this->items)
+			->addH( array_map(function($x) { return $x ? $x->get(new HTMLParentlessContext()) : null; }, $this->items) )
 			->input
 				->type('hidden')
 				->name('csrf_token')
