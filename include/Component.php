@@ -361,6 +361,7 @@ class Checkboxes extends PostInputComponent implements Enumerative {
 		return $this->options;
 	}
 	protected function validate($against) {
+
 		return $against
 			->filterManyChosenFromOptions($this->options)
 			->minMaxChoices($this->minChoices, $this->maxChoices)
@@ -929,6 +930,7 @@ class ListComponentFormPart extends FormPart {
 
 class ListComponent extends GroupComponent implements FieldListItem, FieldTableItem {
 	function __construct($args) {
+//        var_dump($args);
 		$this->items = $args['children'];
 		$this->name = $args['name'];
 		$this->label = $args['label'];
@@ -949,7 +951,10 @@ class ListComponent extends GroupComponent implements FieldListItem, FieldTableI
 
 		return $val
 		->innerBind(function($v) {
-			return Result::ok(
+
+//                var_dump($v);
+
+            return Result::ok(
 				[
 					isset($v->post[$this->name]) ? $v->post[$this->name] : null,
 					isset($v->files[$this->name]) ? $v->files[$this->name] : null
@@ -957,20 +962,30 @@ class ListComponent extends GroupComponent implements FieldListItem, FieldTableI
 			);
 		})
 		->innerBind(function($data) {
-			return Result::ok([
+
+
+            return Result::ok([
 				is_array($data[0]) ? $data[0] : [],
 				is_array($data[1]) ? diverse_array($data[1] ) : []
 			]);
 		})
 		->innerBind(function($list) {
 
-			// var_dump($list);
+
 
 			$result = Result::ok([]);
-			$number = max(count($list[0]), count($list[1]));
+            $number = array_merge( array_keys($list[0]), array_keys($list[1]) );
+			$number = count($number) > 0 ? max( $number ) : -1;
 
-			for($index = 0; $index < $number; $index++) {
+//            var_dump($number);
 
+			for($index = 0; $index <= $number; $index++) {
+
+
+
+                if(!isset($list[0][$index]) && !isset($list[1][$index])) {
+                    continue;
+                }
 
 				$validationResult = parent::getMerger(
 					Result::ok(
@@ -981,7 +996,9 @@ class ListComponent extends GroupComponent implements FieldListItem, FieldTableI
 					)
 				);
 
-				$result = $result
+
+
+                $result = $result
 					->innerBind(function($soFar) use($validationResult, $index) {
 						return $validationResult
 							->innerBind(function($fieldResult) use($soFar, $index) {

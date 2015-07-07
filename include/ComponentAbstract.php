@@ -141,7 +141,7 @@ trait NormalTableCell {
 	}
 }
 
-abstract class NamedLabeledComponent implements FormPartFactory, NameMatcher, XmlDeserializable, FieldListItem, FieldTableItem {
+abstract class NamedLabeledComponent implements FormPartFactory, Validatable, NameMatcher, XmlDeserializable, FieldListItem, FieldTableItem {
 
 	use Configurable;
 	use NormalTableCell;
@@ -216,6 +216,7 @@ abstract class GroupComponent implements FormPartFactory, Validatable, NameMatch
 		return $result;
 	}
 	function getMerger($val) {
+
 		return $this->validate($val);
 	}
 	final protected function validate($against) {

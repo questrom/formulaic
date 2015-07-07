@@ -17,6 +17,10 @@ form(name='Example Form', title='Example Form', success-message='Lorem ipsum!')
       li Alpha beta
       li Gamma delta
       li Epsilon zeta
+    list(name='files_list', label='Files', add-text='Upload a file')
+      file(label='Upload a file...', name='upload_file_in_list', max-size='8000000', permissions='public-read')
+        allow(ext='docx', mime='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+        allow(ext='jpg', mime='image/jpeg')
     list(name='phone_list', label='Clients', add-text='Add a client')
       group
         header Client Info

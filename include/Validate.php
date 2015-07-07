@@ -383,6 +383,7 @@ abstract class Validate {
 		return $this->innerBind(function($val) use ($items) {
 			return array_reduce($items, function($total, $field) use($val) {
 				if(!($field instanceof Validatable)) {
+
 					return $total;
 				}
 				return $field
