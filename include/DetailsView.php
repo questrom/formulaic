@@ -41,6 +41,41 @@ class ValueRow implements HTMLComponent {
 	}
 }
 
+class ValueTable implements HTMLComponent {
+	function __construct($fields, $data, $stamp) {
+		$this->fields = $fields;
+		$this->data = $data;
+		$this->stamp = false;
+	}
+	function get($h) {
+		return $h ->table->class('ui definition table')
+			->tbody
+				->add(array_map(function($field) {
+					if($field instanceof FieldListItem) {
+						return new ValueRow( isget($this->data[$field->name], null), $field );
+					} else {
+						return null;
+					}
+				}, $this->fields ))
+			->end
+			->hif($this->stamp)
+				->tfoot->class('full-width')
+					->tr
+						->th->colspan('2')
+							->strong->t('Timestamp:' . json_decode('"\u2002"'))->end
+							->t(isset($this->data['_timestamp']) ? $this->data['_timestamp']->format('Y/m/d g:i A') : null)
+							->p
+								->strong->t('IP:' . json_decode('"\u2002"'))->end
+								->code->t( isget($this->data['_ip']) )->end
+							->end
+						->end
+					->end
+				->end
+			->end
+		->end;
+	}
+}
+
 
 // Used by details.php and Output.php (For HTML email)
 class DetailsView implements HTMLComponent {
@@ -85,10 +120,6 @@ class DetailsView implements HTMLComponent {
 	}
 	function get($h) {
 
-
-
-		$timestamp = $this->data['_timestamp'];
-
 		return
 		$h
 		->html
@@ -103,29 +134,7 @@ class DetailsView implements HTMLComponent {
 					->h1
 						->t($this->title)
 					->end
-					->table->class('ui definition table')
-						->tbody
-							->add(array_map(function($field) {
-								if($field instanceof FieldListItem) {
-									return new ValueRow( isget($this->data[$field->name], null), $field );
-								} else {
-									return null;
-								}
-							}, $this->pageData->getAllFields() ))
-						->end
-						->tfoot->class('full-width')
-							->tr
-								->th->colspan('2')
-									->strong->t('Timestamp:' . json_decode('"\u2002"'))->end
-									->t($timestamp->format('Y/m/d g:i A'))
-									->p
-										->strong->t('IP:' . json_decode('"\u2002"'))->end
-										->code->t($this->data['_ip'])->end
-									->end
-								->end
-							->end
-						->end
-					->end
+					->add(new ValueTable($this->pageData->getAllFields(), $this->data, true))
 				->end
 			->end
 		->end;

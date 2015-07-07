@@ -36,7 +36,7 @@ interface Enumerative {
 
 abstract class BaseHeader implements HTMLComponent, XmlDeserializable  {
 	use Configurable;
-	function __construct($args) {
+	final function __construct($args) {
 		$this->__args = $args;
 
 		$this->text = $args['innerText'];
@@ -64,7 +64,7 @@ abstract class BaseHeader implements HTMLComponent, XmlDeserializable  {
 
 abstract class BaseNotice implements HTMLComponent, XmlDeserializable {
 	use Configurable;
-	function __construct($args) {
+	final function __construct($args) {
 		$this->__args = $args; // Used by Group later on
 
 		$this->text = $args['text'];
@@ -102,10 +102,25 @@ abstract class BaseNotice implements HTMLComponent, XmlDeserializable {
 	}
 }
 
+trait NormalTableCell {
+    function asTableCell($h, $value) {
+		return $value->innerBind(function($v) use ($h) {
+			return Result::ok($h->td->t($v)->end);
+		});
+	}
+	function asDetailedTableCell($h, $value) {
+		return $this->asTableCell($h, $value);
+	}
+	function asEmailTableCell($h, $value) {
+		return $this->asTableCell($h, $value);
+	}
+}
+
 abstract class NamedLabeledComponent implements HTMLComponent, Validatable, NameMatcher, XmlDeserializable, FieldListItem, FieldTableItem {
-	function asDetailedTableCell($h, $value) { return $this->asTableCell($h, $value); }
-	function asEmailTableCell($h, $value) { return $this->asDetailedTableCell($h, $value); }
+
 	use Configurable;
+	use NormalTableCell;
+
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
@@ -128,11 +143,6 @@ abstract class NamedLabeledComponent implements HTMLComponent, Validatable, Name
 				return Result::error([$this->name => $r]);
 			});
     }
-    function asTableCell($h, $value) {
-		return $value->innerBind(function($v) use ($h) {
-			return Result::ok($h->td->t($v)->end);
-		});
-	}
 }
 
 abstract class PostInputComponent extends NamedLabeledComponent {
@@ -146,7 +156,7 @@ abstract class PostInputComponent extends NamedLabeledComponent {
 }
 
 abstract class FileInputComponent extends NamedLabeledComponent {
-	function getMerger($val) {
+	final function getMerger($val) {
 		return parent::getMerger(
 			$val->innerBind(function($x) {
 				return Result::ok($x->files);
@@ -157,6 +167,7 @@ abstract class FileInputComponent extends NamedLabeledComponent {
 
 abstract class GroupComponent implements HTMLComponent, Validatable, NameMatcher, XmlDeserializable {
 	use Configurable;
+
 	function getAllFields() {
 		$arr = [];
 		foreach($this->items as $item) {
@@ -181,7 +192,7 @@ abstract class GroupComponent implements HTMLComponent, Validatable, NameMatcher
 	function getMerger($val) {
 		return $this->validate($val);
 	}
-	protected function validate($against) {
+	final protected function validate($against) {
 		return $against->groupValidate($this->items);
 	}
 }

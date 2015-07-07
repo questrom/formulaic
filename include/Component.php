@@ -460,7 +460,9 @@ class FileUpload extends FileInputComponent {
 
 		});
 	}
-	function asEmailTableCell($h, $value) { return $this->asDetailedTableCell($h, $value); }
+	function asEmailTableCell($h, $value) {
+		return $this->asDetailedTableCell($h, $value);
+	}
 }
 
 class Range extends PostInputComponent {
@@ -894,15 +896,7 @@ class ListComponent extends GroupComponent implements FieldListItem, FieldTableI
 				return Result::ok($h
 					->td
 						->add(array_map(function($listitem) use($h) {
-							return $h->table->class('ui definition table')
-								->add(array_map(function($field) use ($listitem) {
-									if($field instanceof FieldListItem) {
-										return new ValueRow( isget($listitem[$field->name]), $field );
-									} else {
-										return null;
-									}
-								}, parent::getAllFields() ))
-							->end;
+							return new ValueTable(parent::getAllFields(), $listitem, false);
 						}, $v))
 					->end
 				);
