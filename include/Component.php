@@ -6,6 +6,14 @@
 // Full components
 // ===============
 
+class ShowIfComponentFormPart extends FormPart {
+    function render() {
+		return $this->h
+			->div->data('show-if', $this->f->cond)
+				->addH($this->f->items[0]->makeFormPart())
+			->end;
+	}
+}
 
 class ShowIfComponent extends GroupComponent {
 	function __construct($args) {
@@ -14,12 +22,9 @@ class ShowIfComponent extends GroupComponent {
 		];
 		$this->cond = $args['cond'];
 	}
-	function get($h) {
-		return $h
-			->div->data('show-if', $this->cond)
-				->addH($this->items[0]->get(new HTMLParentlessContext()))
-			->end;
-	}
+	function makeFormPart() {
+        return new ShowIfComponentFormPart($this);
+    }
 	function getMerger($val) {
 		return $val
 			->collapse()
@@ -36,20 +41,17 @@ class ShowIfComponent extends GroupComponent {
 	}
 }
 
-class Label implements HTMLComponent {
+class Label implements Renderable {
 	function __construct($label) {
-		$this->label = $label;
+		$this->h = new HTMLParentlessContext();
+        $this->label = $label;
 	}
-	function get($h) {
-		return $h->label->t($this->label)->end;
+	function render() {
+		return $this->h->label->t($this->label)->end;
 	}
 }
 
-class CheckboxFormPart implements Renderable {
-	function __construct($field) {
-		$this->f = $field;
-		$this->h = new HTMLParentlessContext();
-	}
+class CheckboxFormPart extends FormPart {
 	function render() {
 		return $this->h
 		->div->class('field ' . ($this->f->mustCheck ? 'required' : ''))
@@ -87,6 +89,23 @@ class Checkbox extends PostInputComponent implements Enumerative {
 	}
 }
 
+class TimeInputFormPart extends FormPart {
+	function render() {
+		return $this->h
+		->div->class('field ' . ($this->f->required ? ' required' : ''))
+			->addH($this->f->getLabel())
+			->div->class('ui left icon input')
+				->i->class('clock icon')->end
+				->input
+                    ->type('text')
+                    ->name($this->f->name)
+                    ->data('inputmask', " 'alias': 'h:s t', 'placeholder': 'hh:mm am' ")
+                ->end
+			->end
+		->end;
+	}
+}
+
 class TimeInput extends PostInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
@@ -97,16 +116,9 @@ class TimeInput extends PostInputComponent {
 
 		$this->step = isset($args['step']) ? intval($args['step']) : 'any';
 	}
-	function get($h) {
-		return $h
-		->div->class('field ' . ($this->required ? ' required' : ''))
-			->addH($this->getLabel())
-			->div->class('ui left icon input')
-				->i->class('clock icon')->end
-				->input->type('text')->name($this->name)->data('inputmask', " 'alias': 'h:s t', 'placeholder': 'hh:mm am' ")->end
-			->end
-		->end;
-	}
+    function makeFormPart() {
+        return new TimeInputFormPart($this);
+    }
 	protected function validate($against) {
 		return $against
 			->filterTime()
@@ -136,6 +148,19 @@ class TimeInput extends PostInputComponent {
 	}
 }
 
+class DateTimePickerFormPart extends FormPart {
+    function render() {
+		return $this->h
+		->div->class('field ' . ($this->f->required ? ' required' : ''))
+			->addH($this->f->getLabel())
+			->div->class('ui left icon input')
+				->i->class('calendar icon')->end
+				->input->type('text')->name($this->f->name)->data('inputmask', " 'alias': 'proper-datetime' ")->end
+			->end
+		->end;
+	}
+}
+
 class DateTimePicker extends PostInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
@@ -146,16 +171,9 @@ class DateTimePicker extends PostInputComponent {
 
 		$this->step = isset($args['step']) ? $args['step'] : 'any';
 	}
-	function get($h) {
-		return $h
-		->div->class('field ' . ($this->required ? ' required' : ''))
-			->addH($this->getLabel())
-			->div->class('ui left icon input')
-				->i->class('calendar icon')->end
-				->input->type('text')->name($this->name)->data('inputmask', " 'alias': 'proper-datetime' ")->end
-			->end
-		->end;
-	}
+	function makeFormPart() {
+        return new DateTimePickerFormPart($this);
+    }
 	protected function validate($against) {
 		return $against
 			->filterDateTime()
@@ -173,6 +191,15 @@ class DateTimePicker extends PostInputComponent {
 	}
 }
 
+class TextareaFormPart extends FormPart {
+    function render() {
+        return $this->h
+            ->ins(fieldBox($this->h, $this->f->required))
+            ->addH($this->f->getLabel())
+            ->textarea->name($this->f->name)->end
+            ->end;
+    }
+}
 
 class Textarea extends PostInputComponent {
 	function __construct($args) {
@@ -184,13 +211,9 @@ class Textarea extends PostInputComponent {
 		$this->mustMatch = isset($args['must-match']) ? $args['must-match'] : null;
 
 	}
-	function get($h) {
-		return $h
-		->ins(fieldBox($h, $this->required))
-			->addH($this->getLabel())
-			->textarea->name($this->name)->end
-		->end;
-	}
+	function makeFormPart() {
+        return new TextareaFormPart($this);
+    }
 	protected function validate($against) {
 		return $against
 			->filterString()
@@ -211,6 +234,29 @@ class Textarea extends PostInputComponent {
 	}
 }
 
+class DropdownFormPart extends FormPart {
+    function render() {
+		return fieldBox($this->h, $this->f->required)
+			->addH($this->f->getLabel())
+			->div->class('ui fluid dropdown selection')
+				->input->name($this->f->name)->type('hidden')->value('')->end
+				->div->class('default text')->t('Please choose an option...')->end
+				->i->class('dropdown icon')->end
+				->div->class('menu')
+					->addH(array_map(
+						function($v) {
+							return $this->h
+							->div
+								->class('item')->data('value', $v)->t($v)
+							->end;
+						},
+						$this->f->options
+					))
+				->end
+			->end
+		->end;
+	}
+}
 
 
 class Dropdown extends PostInputComponent {
@@ -220,32 +266,38 @@ class Dropdown extends PostInputComponent {
 		$this->options = $args['children'];
 		$this->required = isset($args['required']);
 	}
-	function get($h) {
-		return fieldBox($h, $this->required)
-			->addH($this->getLabel())
-			->div->class('ui fluid dropdown selection')
-				->input->name($this->name)->type('hidden')->value('')->end
-				->div->class('default text')->t('Please choose an option...')->end
-				->i->class('dropdown icon')->end
-				->div->class('menu')
-					->addH(array_map(
-						function($v) use($h) {
-							return $h
-							->div
-								->class('item')->data('value', $v)->t($v)
-							->end;
-						},
-						$this->options
-					))
-				->end
-			->end
-		->end;
-	}
+    function makeFormPart() {
+        return new DropdownFormPart($this);
+    }
+
 	protected function validate($against) {
 		return $against
 			->filterChosenFromOptions($this->options)
 			->requiredMaybe($this->required);
 	}
+}
+
+class RadiosFormPart extends FormPart {
+    public function render() {
+        return $this->h
+            ->div->class('grouped fields validation-root ' . ($this->f->required ? 'required' : ''))
+            ->addH($this->f->getLabel())
+            ->addH(
+                array_map(
+                    function($v) {
+                        return $this->h
+                            ->div->class('field not-validation-root')
+                            ->div->class('ui radio checkbox')
+                            ->input->name($this->f->name)->type('radio')->value($v)->end
+                            ->label->t($v)->end
+                            ->end
+                            ->end;
+                    },
+                    $this->f->options
+                )
+            )
+            ->end;
+    }
 }
 
 class Radios extends PostInputComponent implements Enumerative {
@@ -255,26 +307,9 @@ class Radios extends PostInputComponent implements Enumerative {
 		$this->options = $args['children'];
 		$this->required = isset($args['required']);
 	}
-	function get($h) {
-		return $h
-		->div->class('grouped fields validation-root ' . ($this->required ? 'required' : ''))
-			->addH($this->getLabel())
-			->addH(
-				array_map(
-					function($v) use($h) {
-						return $h
-						->div->class('field not-validation-root')
-							->div->class('ui radio checkbox')
-								->input->name($this->name)->type('radio')->value($v)->end
-								->label->t($v)->end
-							->end
-						->end;
-					},
-					$this->options
-				)
-			)
-		->end;
-	}
+    function makeFormPart() {
+        return new RadiosFormPart($this);
+    }
 	function getPossibleValues() {
 		return $this->options;
 	}
@@ -283,6 +318,30 @@ class Radios extends PostInputComponent implements Enumerative {
 			->filterChosenFromOptions($this->options)
 			->requiredMaybe($this->required);
 	}
+}
+
+class CheckboxesFormPart extends FormPart {
+    function render() {
+        return $this->h
+            ->div
+                ->class('grouped fields validation-root ' . ($this->f->required ? 'required' : ''))
+                ->data('validation-name', $this->f->name)
+                ->addH($this->f->getLabel())
+                ->addH(
+                    array_map(
+                        function($v) {
+                            return $this->h->div->class('field not-validation-root')
+                                    ->div->class('ui checkbox')
+                                     ->input->name($this->f->name . '[]')->type('checkbox')->value($v)->end
+                                      ->label->t($v)->end
+                                    ->end
+                                ->end;
+                        },
+                        $this->f->options
+                    )
+                )
+            ->end;
+    }
 }
 
 
@@ -295,24 +354,8 @@ class Checkboxes extends PostInputComponent implements Enumerative {
 		$this->minChoices = isset($args['min-choices']) ? intval($args['min-choices']) : 0;
 		$this->maxChoices = isset($args['max-choices']) ? intval($args['max-choices']) : INF;
 	}
-	function get($h) {
-		return $h
-		->div->class('grouped fields validation-root ' . ($this->required ? 'required' : ''))->data('validation-name', $this->name)
-			->addH($this->getLabel())
-			->addH(
-				array_map(
-					function($v) use($h) {
-						return $h->div->class('field not-validation-root')
-							->div->class('ui checkbox')
-								->input->name($this->name . '[]')->type('checkbox')->value($v)->end
-								->label->t($v)->end
-							->end
-						->end;
-					},
-					$this->options
-				)
-			)
-		->end;
+	function makeFormPart() {
+		return new CheckboxesFormPart($this);
 	}
 	function getPossibleValues() {
 		return $this->options;
@@ -360,14 +403,10 @@ function makeCaptcha() {
 	];
 }
 
-class Captcha extends PostInputComponent {
-	function __construct($args) {
-		$this->name = '_captcha';
-		$this->label = 'CAPTCHA';
-	}
-	function get($h) {
-		$cc = makeCaptcha();
-        return $h
+class CaptchaFormPart extends FormPart {
+    function render() {
+        $cc = makeCaptcha();
+        return $this->h
 		->div->class('ui field required')
 			->div->class('ui card')
 				->div->class('image')
@@ -386,6 +425,16 @@ class Captcha extends PostInputComponent {
 				->end
 			->end
 		->end;
+    }
+}
+
+class Captcha extends PostInputComponent {
+	function __construct($args) {
+		$this->name = '_captcha';
+		$this->label = 'CAPTCHA';
+	}
+	function makeFormPart() {
+	    return new CaptchaFormPart($this);
 	}
 	protected function validate($against) {
 		return $against
@@ -409,7 +458,6 @@ class Captcha extends PostInputComponent {
 
 
 class Textbox extends PostInputComponent {
-	use InputField;
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -419,8 +467,8 @@ class Textbox extends PostInputComponent {
 		$this->mustMatch = isset($args['must-match']) ? $args['must-match'] : null;
 
 	}
-	function get($h) {
-        return $this->makeInput($h, 'text', null);
+	function makeFormPart() {
+        return new InputFormPart($this, 'text', null);
 	}
 	protected function validate($against) {
 		return $against
@@ -434,7 +482,6 @@ class Textbox extends PostInputComponent {
 
 
 class FileUpload extends FileInputComponent {
-	use InputField;
 	function __construct($args) {
 		parent::__construct($args);
 		$this->required  = isset($args['required']);
@@ -448,8 +495,8 @@ class FileUpload extends FileInputComponent {
 		$this->permissions = $args['permissions'];
 
 	}
-	function get($h) {
-		return $this->makeInput($h, 'file');
+    function makeFormPart() {
+		return new InputFormPart($this, 'file');
 	}
 	protected function validate($against) {
 		return $against
@@ -541,6 +588,27 @@ class FileUpload extends FileInputComponent {
 	}
 }
 
+class RangeFormPart extends FormPart {
+    function render() {
+       	return $this->h
+		->div->class('ui field')
+			->addH($this->f->getLabel())
+			->div
+				->input
+					->type('range')
+					->name($this->f->name)
+					->max($this->f->max)
+					->min($this->f->min)
+					->step($this->f->step)
+					->value($this->f->def)
+				->end
+				->span->class('ui left pointing horizontal label range-value')
+				->end
+			->end
+		->end;
+    }
+}
+
 class Range extends PostInputComponent {
 	function __construct($args) {
 
@@ -551,23 +619,8 @@ class Range extends PostInputComponent {
 		$this->step = isset($args['step']) ? $args['step'] : 'any';
 		$this->def = isset($args['default']) ? intval($args['default']) : midpoint($this->min, $this->max);
 	}
-	function get($h) {
-		return $h
-		->div->class('ui field')
-			->addH($this->getLabel())
-			->div
-				->input
-					->type('range')
-					->name($this->name)
-					->max($this->max)
-					->min($this->min)
-					->step($this->step)
-					->value($this->def)
-				->end
-				->span->class('ui left pointing horizontal label range-value')
-				->end
-			->end
-		->end;
+	function makeFormPart() {
+	    return new RangeFormPart($this);
 	}
 	protected function validate($against) {
 		return $against
@@ -580,7 +633,7 @@ class Range extends PostInputComponent {
 
 
 class Password extends PostInputComponent {
-	use InputField;
+
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -592,8 +645,8 @@ class Password extends PostInputComponent {
 
 		$this->matchHash = isset($args['match-hash']) ? $args['match-hash'] : null;
 	}
-	function get($h) {
-		return $this->makeInput($h, 'password', '');
+    function makeFormPart() {
+		return new InputFormPart($this, 'password', '');
 	}
 	protected function validate($against) {
 		return $against
@@ -623,13 +676,13 @@ class Password extends PostInputComponent {
 }
 
 class PhoneNumber extends PostInputComponent {
-	use InputField;
+
 	function __construct($args) {
 		parent::__construct($args);
 		$this->required = isset($args['required']);
 	}
-	function get($h) {
-		return $this->makeInput($h, 'tel', 'call');
+    function makeFormPart() {
+		return new InputFormPart($this, 'tel', 'call');
 	}
 	protected function validate($against) {
 		return $against
@@ -656,16 +709,15 @@ class PhoneNumber extends PostInputComponent {
 }
 
 class EmailAddr extends PostInputComponent {
-	use InputField;
 	function __construct($args) {
 		parent::__construct($args);
 
 		$this->required = isset($args['required']);
 		$this->mustHaveDomain = isset($args['must-have-domain']) ? $args['must-have-domain'] : null;
 	}
-	function get($h) {
-		return $this->makeInput($h, 'email', 'mail');
-	}
+    function makeFormPart() {
+        return new InputFormPart($this, 'email', 'mail');
+    }
 	protected function validate($against) {
 		return $against
 			->filterString()
@@ -686,15 +738,14 @@ class EmailAddr extends PostInputComponent {
 	}
 }
 class UrlInput extends PostInputComponent {
-	use InputField;
 	function __construct($args) {
 		parent::__construct($args);
 
 		$this->required = isset($args['required']);
 	}
-	function get($h) {
-		return $this->makeInput($h, 'url', 'world');
-	}
+    function makeFormPart() {
+        return new InputFormPart($this, 'url', 'world');
+    }
 	protected function validate($against) {
 		return $against
 			->filterString()
@@ -714,7 +765,6 @@ class UrlInput extends PostInputComponent {
 	}
 }
 class NumberInp extends PostInputComponent {
-	use InputField;
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -723,9 +773,9 @@ class NumberInp extends PostInputComponent {
 		$this->max = isset($args['max']) ? intval($args['max']) : INF;
 		$this->integer = isset($args['integer']);
 	}
-	function get($h) {
-		return $this->makeInput($h, 'number', '');
-	}
+    function makeFormPart() {
+        return new InputFormPart($this, 'number', '');
+    }
 	protected function validate($against) {
 		return $against
 			->filterString()
@@ -737,7 +787,6 @@ class NumberInp extends PostInputComponent {
 }
 
 class DatePicker extends PostInputComponent {
-	use InputField;
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -745,9 +794,9 @@ class DatePicker extends PostInputComponent {
 		$this->min = isset($args['min']) ? DateTimeImmutable::createFromFormat('Y-m-d', $args['min'])->setTime(0,0,0) : null;
 		$this->max = isset($args['max']) ? DateTimeImmutable::createFromFormat('Y-m-d', $args['max'])->setTime(0,0,0) : null;
 	}
-	function get($h) {
-		return $this->makeInput($h, 'text', 'calendar', " 'alias': 'mm/dd/yyyy' ");
-	}
+    function makeFormPart() {
+        return new InputFormPart($this, 'text', 'calendar', " 'alias': 'mm/dd/yyyy' ");
+    }
 	protected function validate($against) {
 		return $against
 			->filterDate()
@@ -764,50 +813,70 @@ class DatePicker extends PostInputComponent {
 	}
 }
 
+class HeaderFormPart extends BaseHeaderFormPart {
+    function render() {
+       $size = ($this->f->size === null) ? 1 : $this->f->size;
+		return $this->h
+		->{'h' . $size}->class('ui header')
+			->addH(parent::render())
+		->end;
+    }
+}
 
-
-
+class GroupHeaderFormPart extends BaseHeaderFormPart {
+    function render() {
+        $size = ($this->f->size === null) ? 5 : $this->f->size;
+        return $this->h
+            ->{'h' . $size}->class('ui header attached')
+                ->addH(parent::render())
+            ->end;
+    }
+}
 
 
 class Header extends BaseHeader {
-	function get($h) { //this->size
-		$size = ($this->size === null) ? 1 : $this->size;
-		return $h
-		->{'h' . $size}->class('ui header')
-			->addH(parent::get($h))
-		->end;
-	}
+	function makeFormPart() {
+        return new HeaderFormPart($this);
+    }
 }
 
 class GroupHeader extends BaseHeader {
-	function get($h) {
-		$size = ($this->size === null) ? 5 : $this->size;
-		return $h
-		->{'h' . $size}->class('ui header attached')
-			->addH(parent::get($h))
-		->end;
-	}
+    function makeFormPart() {
+        return new GroupHeaderFormPart($this);
+    }
+}
+
+class GroupNoticeFormPart extends BaseNoticeFormPart {
+    function render() {
+        return
+            $this->h
+              ->div->class('ui message attached ' . ($this->f->icon === null ? '' : ' icon') . ($this->f->type ? ' ' . $this->f->type : ''))
+              ->addH(parent::render())
+            ->end;
+    }
+}
+
+class NoticeFormPart extends BaseNoticeFormPart {
+    function render() {
+        return
+            $this->h
+                ->div->class('ui message floating ' . ($this->f->icon === null ? '' : ' icon') . ($this->f->type ? ' ' . $this->f->type : ''))
+                ->addH(parent::render())
+                ->end;
+    }
 }
 
 
 class GroupNotice extends BaseNotice {
-	function get($h) {
-		return
-		$h
-		->div->class('ui message attached ' . ($this->icon === null ? '' : ' icon') . ($this->type ? ' ' . $this->type : ''))
-			->addH(parent::get($h))
-		->end;
-	}
+    function makeFormPart() {
+        return new GroupNoticeFormPart($this);
+    }
 }
 
 class Notice extends BaseNotice {
-	function get($h) {
-		return
-		$h
-		->div->class('ui message floating ' . ($this->icon === null ? '' : ' icon') . ($this->type ? ' ' . $this->type : ''))
-			->addH(parent::get($h))
-		->end;
-	}
+	function makeFormPart() {
+        return new NoticeFormPart($this);
+    }
 }
 
 // see http://php.net/manual/en/reserved.variables.files.php
@@ -824,6 +893,38 @@ function diverse_array($vector) {
    return $result;
 }
 
+class ListComponentFormPart extends FormPart {
+    function render() {
+
+		return $this->h
+		->div->class('ui field not-validation-root list-component')->data('count','0')->data('group-name', $this->f->name)
+			->h5->class('top attached ui message')->t($this->f->label)->end
+			->div->data('validation-name', $this->f->name)->class('validation-root ui bottom attached segment list-items')
+				->script->type('text/template')
+					->addH(
+                        // Forcibly HTML-encode things so that nested lists are generated properly...
+                        generateString(
+                            (new HTMLParentlessContext())->div->class('ui vertical segment close-item')
+                                ->div->class('content')
+                                    ->addH( array_map(function($x) { return $x ? $x->makeFormPart() : null; }, $this->f->items) )
+                                ->end
+                                ->button->type('button')->class('ui compact negative icon button delete-btn')
+                                    ->i->class('trash icon')->end
+                               ->end
+                            ->end
+                        )
+                    )
+				->end
+				->div->class('ui center aligned vertical segment')
+					->button->type('button')->class('ui primary labeled icon button add-item')
+						->i->class('plus icon')->end
+						->t($this->f->addText)
+					->end
+				->end
+			->end
+		->end;
+    }
+}
 
 
 class ListComponent extends GroupComponent implements FieldListItem, FieldTableItem {
@@ -841,37 +942,9 @@ class ListComponent extends GroupComponent implements FieldListItem, FieldTableI
 	function getAllFields() {
 		return [ $this ];
 	}
-	function get($h) {
-
-
-		return $h
-		->div->class('ui field not-validation-root list-component')->data('count','0')->data('group-name', $this->name)
-			->h5->class('top attached ui message')->t($this->label)->end
-			->div->data('validation-name', $this->name)->class('validation-root ui bottom attached segment list-items')
-				->script->type('text/template')
-					->addH(
-                        // Forcibly HTML-encode things so that nested lists are generated properly...
-                        generateString(
-                            (new HTMLParentlessContext())->div->class('ui vertical segment close-item')
-                                ->div->class('content')
-                                    ->addH( array_map(function($x) { return $x ? $x->get(new HTMLParentlessContext()) : null; }, $this->items) )
-                                ->end
-                                ->button->type('button')->class('ui compact negative icon button delete-btn')
-                                    ->i->class('trash icon')->end
-                               ->end
-                            ->end
-                        )
-                    )
-				->end
-				->div->class('ui center aligned vertical segment')
-					->button->type('button')->class('ui primary labeled icon button add-item')
-						->i->class('plus icon')->end
-						->t($this->addText)
-					->end
-				->end
-			->end
-		->end;
-	}
+	function makeFormPart() {
+        return new ListComponentFormPart($this);
+    }
 	function getMerger($val) {
 
 		return $val
@@ -1005,63 +1078,63 @@ class ListComponent extends GroupComponent implements FieldListItem, FieldTableI
 	}
 }
 
+class GroupFormPart extends FormPart {
+    function render() {
+
+        $items = array_map(function($item) {
+            if($item instanceof Header) {
+                return new GroupHeader($item->__args);
+            } else if($item instanceof Notice) {
+                return new GroupNotice($item->__args);
+            } else {
+                return $item;
+            }
+        }, $this->f->items);
+
+        return $this->h
+            ->div->class('group')
+            ->addH(array_map(function($value) {
+                if(is_array($value)) {
+                    return (new HTMLParentlessContext())->div->class('ui segment attached')
+                        ->addH(
+                            array_map(function($x) { return $x ? $x->makeFormPart() : null; }, $value)
+                        )
+                        ->end;
+                } else {
+                    return $value->makeFormPart();
+                }
+            }, array_reduce($items, function($carry, $item) {
+                if($item instanceof GroupHeader || $item instanceof GroupNotice) {
+                    $carry[] = $item;
+                    return $carry;
+                } else if( is_array(end($carry)) ) {
+                    $carry[count($carry)-1][] = $item;
+                    return $carry;
+                } else {
+                    $carry[] = [$item];
+                    return $carry;
+                }
+            }, [])))
+        ->end;
+    }
+}
+
 class Group extends GroupComponent {
 
 	function __construct($args) {
 
 		$this->items = $args['children'];
 	}
-	function get($h) {
-
-		$items = array_map(function($item) {
-			if($item instanceof Header) {
-				return new GroupHeader($item->__args);
-			} else if($item instanceof Notice) {
-				return new GroupNotice($item->__args);
-			} else {
-				return $item;
-			}
-		}, $this->items);
-
-		return $h
-		->div->class('group')
-			->addH(array_map(function($value) use ($h) {
-					if(is_array($value)) {
-						return (new HTMLParentlessContext())->div->class('ui segment attached')
-							->addH(
-								array_map(function($x) { return $x ? $x->get(new HTMLParentlessContext()) : null; }, $value)
-							)
-						->end;
-					} else {
-						return $value->get(new HTMLParentlessContext());
-					}
-				}, array_reduce($items, function($carry, $item) {
-					if($item instanceof GroupHeader || $item instanceof GroupNotice) {
-						$carry[] = $item;
-						return $carry;
-					} else if( is_array(end($carry)) ) {
-						$carry[count($carry)-1][] = $item;
-						return $carry;
-					} else {
-						$carry[] = [$item];
-						return $carry;
-					}
-				}, [])))
-		->end;
-	}
+	function makeFormPart() {
+        return new GroupFormPart($this);
+    }
 }
 
-
-class FormElem extends GroupComponent {
-
-
-	function __construct($args) {
-		$this->items = $args['children'];
-	}
-	function get($h) {
-		return $h
+class FormElemFormPart extends FormPart {
+    function render() {
+        return $this->h
 		->form->class('ui form')->action('submit.php')->method('POST')
-			->addH( array_map(function($x) { return $x ? $x->get(new HTMLParentlessContext()) : null; }, $this->items) )
+			->addH( array_map(function($x) { return $x ? $x->makeFormPart() : null; }, $this->f->items) )
 			->input
 				->type('hidden')
 				->name('csrf_token')
@@ -1081,8 +1154,16 @@ class FormElem extends GroupComponent {
 				->span->t('Submit Form')->end
 			->end
 		->end;
-	}
+    }
+}
 
+class FormElem extends GroupComponent {
+	function __construct($args) {
+		$this->items = $args['children'];
+	}
+	function makeFormPart() {
+        return new FormElemFormPart($this);
+	}
 }
 
 
@@ -1138,35 +1219,20 @@ class TimestampField implements FieldTableItem, Validatable {
 	}
 }
 
-class Page extends GroupComponent {
-	function __construct($args) {
-
-		$this->form = $args['byTag']['{}fields'];
-
-		$this->items = [
-			$this->form,
-			new TimestampField(),
-			new IPField()
-		];
-
-		$this->title = isset($args['title']) ? $args['title'] : 'Form';
-		$this->successMessage = isset($args['success-message']) ? $args['success-message'] : 'The form was submitted successfully.';
-		$this->outputs = $args['byTag']['{}outputs'];
-		$this->views = $args['byTag']['{}views'];
-	}
-	function get($h) {
-		return $h
+class PageFormPart extends FormPart {
+    function render() {
+        return $this->h
 		->html
 			->head
 				->meta->charset('utf-8')->end
-				->title->t($this->title)->end
+				->title->t($this->f->title)->end
 				->link->rel('stylesheet')->href('lib/semantic.css')->end
 				->link->rel('stylesheet')->href('styles.css')->end
 			->end
 			->body
 				->div->class('ui text container')
 					->div->class('ui segment')
-						->addH($this->form->get(new HTMLParentlessContext()))
+						->addH($this->f->form->makeFormPart())
 					->end
 				->end
 				->div->class('success-modal ui small modal')
@@ -1174,7 +1240,7 @@ class Page extends GroupComponent {
 						->t('Submission complete')
 					->end
 					->div->class('content')
-						->p->t($this->successMessage)->end
+						->p->t($this->f->successMessage)->end
 					->end
 					->div->class('actions')
 						->button->type('button')->class('ui primary button approve')->t('OK')->end
@@ -1197,6 +1263,27 @@ class Page extends GroupComponent {
 				->script->src('client.js')->end
 			->end
 		->end;
+    }
+}
+
+class Page extends GroupComponent {
+	function __construct($args) {
+
+		$this->form = $args['byTag']['{}fields'];
+
+		$this->items = [
+			$this->form,
+			new TimestampField(),
+			new IPField()
+		];
+
+		$this->title = isset($args['title']) ? $args['title'] : 'Form';
+		$this->successMessage = isset($args['success-message']) ? $args['success-message'] : 'The form was submitted successfully.';
+		$this->outputs = $args['byTag']['{}outputs'];
+		$this->views = $args['byTag']['{}views'];
+	}
+	function makeFormPart() {
+        return new PageFormPart($this);
 	}
 	static function xmlDeserialize(Sabre\Xml\Reader $reader) {
 		$attrs = $reader->parseAttributes();

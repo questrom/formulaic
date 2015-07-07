@@ -34,6 +34,10 @@ function generateString($input) {
 
             $element = $input[$i];
 
+            while($element instanceof Renderable) {
+                $element = $element->render();
+            }
+
             if ($element instanceof HTMLComponent) {
             	// var_dump($element);
             	throw new Exception('Tried to add a Component!');

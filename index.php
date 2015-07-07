@@ -17,7 +17,7 @@ $cache = $config['cache-forms'] ? new Cache() : new FakeCache();
 $cache->setPrefixSize(0);
 $html = $cache->getOrCreate('jade-' . sha1_file('forms/test.jade'), [], function() {
 	$page = Parser::parse_jade('forms/test.jade');
-	return '<!DOCTYPE html>' . generateString($page->get(new HTMLParentlessContext()));
+	return '<!DOCTYPE html>' . generateString($page->makeFormPart());
 });
 
 // echo microtime(true) - $time;

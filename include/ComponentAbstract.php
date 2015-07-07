@@ -6,12 +6,13 @@ use Sabre\Xml\XmlDeserializable as XmlDeserializable;
 // Abstract component classes
 // ==========================
 
-interface Renderable {
-	public function render();
-}
 
 interface HTMLComponent {
 	public function get($h);
+}
+
+interface FormPartFactory {
+    public function makeFormPart();
 }
 
 interface Validatable {
@@ -38,7 +39,39 @@ interface Enumerative {
 	public function getPossibleValues();
 }
 
-abstract class BaseHeader implements HTMLComponent, XmlDeserializable  {
+
+interface Renderable {
+    public function render();
+}
+
+abstract class FormPart implements Renderable {
+    public function __construct($field) {
+        $this->f = $field;
+        $this->h = new HTMLParentlessContext();
+    }
+}
+
+abstract class BaseHeaderFormPart extends FormPart {
+    function render() {
+        $inside = $this->h->t($this->f->text)
+		->hif($this->f->subhead !== null)
+			->div->class('sub header')->t($this->f->subhead)->end
+		->end;
+		return $this->h
+			->hif($this->f->icon !== null)
+				->i->class($this->f->icon . ' icon')->end
+				->div->class('content')
+					->addH($inside)
+				->end
+			->end
+			->hif($this->f->icon === null)
+				->addH($inside)
+			->end;
+    }
+}
+
+
+abstract class BaseHeader implements FormPartFactory, XmlDeserializable  {
 	use Configurable;
 	final function __construct($args) {
 		$this->__args = $args;
@@ -48,25 +81,36 @@ abstract class BaseHeader implements HTMLComponent, XmlDeserializable  {
 		$this->icon = isset($args['icon']) ? $args['icon'] : null;
 		$this->size = isset($args['size']) ? intval($args['size']) : null;
 	}
-	function get($h) {
-		$inside = $h->t($this->text)
-		->hif($this->subhead !== null)
-			->div->class('sub header')->t($this->subhead)->end
-		->end;
-		return $h
-			->hif($this->icon !== null)
-				->i->class($this->icon . ' icon')->end
-				->div->class('content')
-					->addH($inside)
-				->end
-			->end
-			->hif($this->icon === null)
-				->addH($inside)
-			->end;
-	}
 }
 
-abstract class BaseNotice implements HTMLComponent, XmlDeserializable {
+abstract class BaseNoticeFormPart extends FormPart {
+    function render() {
+        return $this->h
+		->hif($this->f->icon !== null)
+			->i->class($this->f->icon . ' icon')->end
+		->end
+		->div->class('content')
+			->hif($this->f->header !== null)
+				->div->class('header')
+					->t($this->f->header)
+				->end
+			->end
+			->p
+				->t($this->f->text)
+			->end
+			->hif($this->f->list !== null)
+			  ->ul->class('list')
+			    ->addH(array_map(function($item) {
+			    	// var_dump($this->list);
+			    	return $this->h->li->t($item)->end;
+			    }, $this->f->list === null ? [] : $this->f->list ))
+			  ->end
+			->end
+		->end;
+    }
+}
+
+abstract class BaseNotice implements FormPartFactory, XmlDeserializable {
 	use Configurable;
 	final function __construct($args) {
 		$this->__args = $args; // Used by Group later on
@@ -80,30 +124,7 @@ abstract class BaseNotice implements HTMLComponent, XmlDeserializable {
 		}
 		$this->type = isset($args['type']) ? $args['type'] : null;
 	}
-	function get($h) {
-		return $h
-		->hif($this->icon !== null)
-			->i->class($this->icon . ' icon')->end
-		->end
-		->div->class('content')
-			->hif($this->header !== null)
-				->div->class('header')
-					->t($this->header)
-				->end
-			->end
-			->p
-				->t($this->text)
-			->end
-			->hif($this->list !== null)
-			  ->ul->class('list')
-			    ->addH(array_map(function($item) use($h) {
-			    	// var_dump($this->list);
-			    	return $h->li->t($item)->end;
-			    }, $this->list === null ? [] : $this->list ))
-			  ->end
-			->end
-		->end;
-	}
+
 }
 
 trait NormalTableCell {
@@ -120,7 +141,7 @@ trait NormalTableCell {
 	}
 }
 
-abstract class NamedLabeledComponent implements HTMLComponent, Validatable, NameMatcher, XmlDeserializable, FieldListItem, FieldTableItem {
+abstract class NamedLabeledComponent implements FormPartFactory, NameMatcher, XmlDeserializable, FieldListItem, FieldTableItem {
 
 	use Configurable;
 	use NormalTableCell;
@@ -130,12 +151,8 @@ abstract class NamedLabeledComponent implements HTMLComponent, Validatable, Name
 		$this->name = $args['name'];
 	}
 
-	function get($h) {
-		return $this->makeFormPart()->render();
-	}
-
 	final function getAllFields() { return [ $this ]; }
-	final function getLabel() { return (new Label($this->label))->get(new HTMLParentlessContext()); }
+	final function getLabel() { return new Label($this->label); }
 	final function getByName($name) { return ($this->name === $name) ? $this : null; }
 
     function getMerger($val) {
@@ -173,10 +190,11 @@ abstract class FileInputComponent extends NamedLabeledComponent {
 	}
 }
 
-abstract class GroupComponent implements HTMLComponent, Validatable, NameMatcher, XmlDeserializable {
+abstract class GroupComponent implements FormPartFactory, Validatable, NameMatcher, XmlDeserializable {
 	use Configurable;
 
-	function getAllFields() {
+
+    function getAllFields() {
 		$arr = [];
 		foreach($this->items as $item) {
 			if($item instanceof NameMatcher) {
@@ -205,21 +223,28 @@ abstract class GroupComponent implements HTMLComponent, Validatable, NameMatcher
 	}
 }
 
-trait InputField {
-	protected function makeInput($h, $type, $icon = null, $mask = null) {
-		return $h
-		->div->class('ui field ' . ($this->required ? 'required' : ''))
-			->addH($this->getLabel())
-			->div->class($icon ? 'ui left icon input' : 'ui input')
-				->hif($icon)
-					->i->class('icon ' . $icon)->end
+class InputFormPart extends FormPart {
+    function __construct($field, $type, $icon = null, $mask = null) {
+        $this->f = $field;
+        $this->h = new HTMLParentlessContext();
+        $this->type = $type;
+        $this->icon = $icon;
+        $this->mask = $mask;
+    }
+    function render() {
+        return $this->h
+		->div->class('ui field ' . ($this->f->required ? 'required' : ''))
+			->addH($this->f->getLabel())
+			->div->class($this->icon ? 'ui left icon input' : 'ui input')
+				->hif($this->icon)
+					->i->class('icon ' . $this->icon)->end
 				->end
 				->input
-					->type($type)
-					->name($this->name)
-					->data('inputmask', $mask, $mask !== null)
+					->type($this->type)
+					->name($this->f->name)
+					->data('inputmask', $this->mask, $this->mask !== null)
 				->end
 			->end
 		->end;
-	}
+    }
 }
