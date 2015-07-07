@@ -64,7 +64,7 @@ form(name='Example Form', title='Example Form', success-message='Lorem ipsum!')
       option Blue
       option Hipster
       option &#60;html&#62;
-    captcha
+    //- captcha
   outputs
     s3(bucket='form-builder-uploads')
     mongo(server='mongodb://localhost:27017', database='forms', collection='example_form')
