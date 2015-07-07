@@ -127,7 +127,7 @@ abstract class NamedLabeledComponent implements HTMLComponent, Validatable, Name
 	}
 
 	final function getAllFields() { return [ $this ]; }
-	final protected function getLabel() { return new Label($this->label); }
+	final protected function getLabel() { return (new Label($this->label))->get(new HTMLParentlessContext()); }
 	final function getByName($name) { return ($this->name === $name) ? $this : null; }
 
     function getMerger($val) {
@@ -201,7 +201,7 @@ trait InputField {
 	protected function makeInput($h, $type, $icon = null, $mask = null) {
 		return $h
 		->div->class('ui field ' . ($this->required ? 'required' : ''))
-			->addC($this->getLabel())
+			->addH($this->getLabel())
 			->div->class($icon ? 'ui left icon input' : 'ui input')
 				->hif($icon)
 					->i->class('icon ' . $icon)->end

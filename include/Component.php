@@ -55,7 +55,7 @@ class Checkbox extends PostInputComponent implements Enumerative {
 		->div->class('field ' . ($this->mustCheck ? 'required' : ''))
 			->div->class('ui checkbox')
 				->input->type('checkbox')->name($this->name)->end
-				->addC($this->getLabel())
+				-HaddC($this->getLabel())
 			->end
 		->end;
 	}
@@ -90,7 +90,7 @@ class TimeInput extends PostInputComponent {
 	function get($h) {
 		return $h
 		->div->class('field ' . ($this->required ? ' required' : ''))
-			->addC($this->getLabel())
+			->addH($this->getLabel())
 			->div->class('ui left icon input')
 				->i->class('clock icon')->end
 				->input->type('text')->name($this->name)->data('inputmask', " 'alias': 'h:s t', 'placeholder': 'hh:mm am' ")->end
@@ -139,7 +139,7 @@ class DateTimePicker extends PostInputComponent {
 	function get($h) {
 		return $h
 		->div->class('field ' . ($this->required ? ' required' : ''))
-			->addC($this->getLabel())
+			->addH($this->getLabel())
 			->div->class('ui left icon input')
 				->i->class('calendar icon')->end
 				->input->type('text')->name($this->name)->data('inputmask', " 'alias': 'proper-datetime' ")->end
@@ -177,7 +177,7 @@ class Textarea extends PostInputComponent {
 	function get($h) {
 		return $h
 		->ins(fieldBox($h, $this->required))
-			->addC($this->getLabel())
+			->addH($this->getLabel())
 			->textarea->name($this->name)->end
 		->end;
 	}
@@ -212,7 +212,7 @@ class Dropdown extends PostInputComponent {
 	}
 	function get($h) {
 		return fieldBox($h, $this->required)
-			->addC($this->getLabel())
+			->addH($this->getLabel())
 			->div->class('ui fluid dropdown selection')
 				->input->name($this->name)->type('hidden')->value('')->end
 				->div->class('default text')->t('Please choose an option...')->end
@@ -248,7 +248,7 @@ class Radios extends PostInputComponent implements Enumerative {
 	function get($h) {
 		return $h
 		->div->class('grouped fields validation-root ' . ($this->required ? 'required' : ''))
-			->addC($this->getLabel())
+			->addH($this->getLabel())
 			->addH(
 				array_map(
 					function($v) use($h) {
@@ -288,7 +288,7 @@ class Checkboxes extends PostInputComponent implements Enumerative {
 	function get($h) {
 		return $h
 		->div->class('grouped fields validation-root ' . ($this->required ? 'required' : ''))->data('validation-name', $this->name)
-			->addC($this->getLabel())
+			->addH($this->getLabel())
 			->addH(
 				array_map(
 					function($v) use($h) {
@@ -478,7 +478,7 @@ class Range extends PostInputComponent {
 	function get($h) {
 		return $h
 		->div->class('ui field')
-			->addC($this->getLabel())
+			->addH($this->getLabel())
 			->div
 				->input
 					->type('range')
