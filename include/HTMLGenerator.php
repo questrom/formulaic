@@ -37,20 +37,20 @@ function generateString($input) {
             if ($element instanceof HTMLComponent) {
                 $element = $element->get(new HTMLParentlessContext());
             }
+
             if ($element instanceof HTMLGeneratorAbstract) {
                 $element = $element->toStringArray();
             }
-
 
             if(is_array($element)) {
                 $placeHolder[] = $input;
                 $lastIndex[] = $i;
                 $input = $element;
                 $i = -1;
-            } else if(!($element instanceof SafeString)) {
-                $out .= htmlspecialchars($element);
-            } else {
+            } else if($element instanceof SafeString) {
                 $out .= $element->value;
+            } else {
+                $out .= htmlspecialchars($element, ENT_QUOTES);
             }
 
         }
