@@ -1,12 +1,14 @@
 <?php
 
-// Utils
-require ('utils.php');
 
 
 // Load dependencies
 require('vendor/autoload.php');
 require('jade/autoload.php.dist');
+
+// Utils
+require ('utils.php');
+
 
 // Misc settings
 date_default_timezone_set(Config::get()['time-zone']);

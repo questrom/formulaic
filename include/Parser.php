@@ -68,25 +68,16 @@ class Parser {
 
 		$config = Config::get();
 
-		if($config['cache-xml']) {
-			$cache = new Cache();
-			$cache->setPrefixSize(0);
-			$xml = $cache->getOrCreate('xml-' . sha1_file($file), [], function() use ($file) {
-				$file = "!!! xml\n" . file_get_contents($file);
-				$jade = new Everzet\Jade\Jade(
-					new Everzet\Jade\Parser(new Everzet\Jade\Lexer\Lexer()),
-					new Everzet\Jade\Dumper\PHPDumper()
-				);
-				return $jade->render($file);
-			});
-		} else {
+		$cache = $config['cache-xml'] ? new Cache() : new FakeCache();
+		$cache->setPrefixSize(0);
+		$xml = $cache->getOrCreate('xml-' . sha1_file($file), [], function() use ($file) {
 			$file = "!!! xml\n" . file_get_contents($file);
 			$jade = new Everzet\Jade\Jade(
 				new Everzet\Jade\Parser(new Everzet\Jade\Lexer\Lexer()),
 				new Everzet\Jade\Dumper\PHPDumper()
 			);
-			$xml = $jade->render($file);
-		}
+			return $jade->render($file);
+		});
 
 
 		$reader = new Sabre\Xml\Reader();

@@ -1,6 +1,7 @@
 <?php
 
 use Yosymfony\Toml\Toml;
+use Gregwar\Cache\Cache;
 
 /* Based on https://github.com/ArtBIT/isget/blob/master/src/isget.php */
 function isget(&$value, $default = null) {
@@ -28,4 +29,9 @@ class Config {
 		}
 		return self::$data;
 	}
+}
+
+// Non-caching version of Gregwar/cache
+class FakeCache extends Cache {
+	public function set($filename, $contents = '') { return $this; }
 }
