@@ -66,7 +66,7 @@ class EmailView implements HTMLComponent {
 						->tbody
 							->add(array_map(function($field) {
 								if($field instanceof FieldListItem) {
-									return new EmailValueRow( isget($this->data[$field->name]), $field );
+									return new EmailValueRow( isget($this->data[$field->name], null), $field );
 								} else {
 									return null;
 								}

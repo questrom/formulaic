@@ -1057,7 +1057,7 @@ class Page extends GroupComponent {
 			->head
 				->meta->charset('utf-8')->end
 				->title->t($this->title)->end
-				->link->rel('stylesheet')->href('semantic-ui/semantic.css')->end
+				->link->rel('stylesheet')->href('lib/semantic.css')->end
 				->link->rel('stylesheet')->href('styles.css')->end
 			->end
 			->body
@@ -1090,7 +1090,7 @@ class Page extends GroupComponent {
 				->end
 				->script->src('vendor/components/jquery/jquery.min.js')->end
 				->script->src('vendor/robinherbots/jquery.inputmask/dist/jquery.inputmask.bundle.js')->end
-				->script->src('semantic-ui/semantic.js')->end
+				->script->src('lib/semantic.js')->end
 				->script->src('client.js')->end
 			->end
 		->end;

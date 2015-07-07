@@ -18,7 +18,6 @@ input[type=range] { width: 150px; vertical-align: -5px; }
 /*http://stackoverflow.com/questions/18794026/remove-dotted-outline-from-range-input-element-in-firefox*/
 input[type=range]::-moz-focus-outer { border:0 !important; }
 
-.ui.large.label, .ui.large.labels .label { font-size: 1rem; }
 
 .submit-count-label { margin-top: 2px !important; }
 

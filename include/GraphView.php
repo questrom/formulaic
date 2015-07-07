@@ -40,7 +40,7 @@ class GraphView implements XmlDeserializable, HTMLComponent {
 			->head
 				->meta->charset('utf-8')->end
 				->title->t($this->title)->end
-				->link->rel("stylesheet")->href("semantic-ui/semantic.css")->end
+				->link->rel("stylesheet")->href("lib/semantic.css")->end
 				->link->rel("stylesheet")->href("styles.css")->end
 			->end
 			->body

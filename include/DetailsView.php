@@ -95,7 +95,7 @@ class DetailsView implements HTMLComponent {
 			->head
 				->meta->charset('utf-8')->end
 				->title->t($this->title)->end
-				->link->rel("stylesheet")->href("semantic-ui/semantic.css")->end
+				->link->rel("stylesheet")->href("lib/semantic.css")->end
 				->link->rel("stylesheet")->href("styles.css")->end
 			->end
 			->body
@@ -107,7 +107,7 @@ class DetailsView implements HTMLComponent {
 						->tbody
 							->add(array_map(function($field) {
 								if($field instanceof FieldListItem) {
-									return new ValueRow( isget($this->data[$field->name]), $field );
+									return new ValueRow( isget($this->data[$field->name], null), $field );
 								} else {
 									return null;
 								}
