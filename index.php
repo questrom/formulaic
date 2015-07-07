@@ -13,11 +13,11 @@ if($cache_enabled) {
 	$cache->setPrefixSize(0);
 	$html = $cache->getOrCreate(sha1_file('forms/test.jade'), [], function() {
 		$page = Parser::parse_jade('forms/test.jade');
-		return '<!DOCTYPE html>' . $page->get(new HTMLParentlessContext());
+		return '<!DOCTYPE html>' . generateString($page->get(new HTMLParentlessContext()));
 	});
 } else {
 	$page = Parser::parse_jade('forms/test.jade');
-	$html = '<!DOCTYPE html>' . $page->get(new HTMLParentlessContext());
+	$html = '<!DOCTYPE html>' . generateString($page->get(new HTMLParentlessContext()));
 }
 
 

@@ -9,4 +9,4 @@ $view = $page->views[0];
 $view->setPage($page);
 $view->query($_GET);
 
-echo '<!DOCTYPE html>' . $view->get(new HTMLParentlessContext());
+echo '<!DOCTYPE html>' . generateString($view->get(new HTMLParentlessContext()));
