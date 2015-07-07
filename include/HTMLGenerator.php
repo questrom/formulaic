@@ -26,7 +26,7 @@ function generateString($input) {
     $placeHolder = [[$input]];
     $lastIndex = [-1];
     $out = '';
-    while(count($placeHolder) > 0) {
+    while(count($placeHolder)) {
         $input = array_pop($placeHolder);
 
         for($i = array_pop($lastIndex) + 1; $i < count($input); $i++) {
