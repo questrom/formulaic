@@ -898,9 +898,10 @@ class ListComponentFormPart extends FormPart {
     function render() {
 
 		return $this->h
-		->div->class('ui field not-validation-root list-component')->data('count','0')->data('group-name', $this->f->name)
+		->div->class('ui field validation-root list-component')->data('count','0')->data('group-name', $this->f->name)
+                ->data('validation-name', $this->f->name)
 			->h5->class('top attached ui message')->t($this->f->label)->end
-			->div->data('validation-name', $this->f->name)->class('validation-root ui bottom attached segment list-items')
+			->div->class('ui bottom attached segment list-items')
 				->script->type('text/template')
 					->addH(
                         // Forcibly HTML-encode things so that nested lists are generated properly...
@@ -934,6 +935,10 @@ class ListComponent extends GroupComponent implements FieldListItem, FieldTableI
 		$this->items = $args['children'];
 		$this->name = $args['name'];
 		$this->label = $args['label'];
+
+        $this->maxItems = isset($args['max-items']) ? intval($args['max-items']) : INF;
+        $this->minItems = isset($args['min-items']) ? intval($args['min-items']) : 0;
+
 		$this->addText = isset($args['add-text']) ? $args['add-text'] : 'Add an item';
 	}
 
@@ -975,11 +980,18 @@ class ListComponent extends GroupComponent implements FieldListItem, FieldTableI
 
 			$result = Result::ok([]);
             $number = array_merge( array_keys($list[0]), array_keys($list[1]) );
-			$number = count($number) > 0 ? max( $number ) : -1;
+			$number = (count($number) > 0 ? max( $number ) : -1) + 1;
+
+            if($number < $this->minItems) {
+                return Result::error([ $this->name => 'Please provide at least ' . $this->minItems . ' items' ]);
+            }
+            if($number > $this->maxItems) {
+                return Result::error([ $this->name => 'Please provide at most ' . $this->maxItems . ' items' ]);
+            }
 
 //            var_dump($number);
 
-			for($index = 0; $index <= $number; $index++) {
+			for($index = 0; $index < $number; $index++) {
 
 
 

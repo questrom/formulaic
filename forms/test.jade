@@ -21,7 +21,7 @@ form(name='Example Form', title='Example Form', success-message='Lorem ipsum!')
       file(label='Upload a file...', name='upload_file_in_list', max-size='8000000', permissions='public-read')
         allow(ext='docx', mime='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
         allow(ext='jpg', mime='image/jpeg')
-    list(name='phone_list', label='Clients', add-text='Add a client')
+    list(name='phone_list', label='Clients', add-text='Add a client', min-items='1', max-items='5')
       group
         header Client Info
         phonenumber(label='Phone number', name='phone')
