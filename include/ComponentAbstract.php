@@ -53,11 +53,11 @@ abstract class BaseHeader implements HTMLComponent, XmlDeserializable  {
 			->hif($this->icon !== null)
 				->i->class($this->icon . ' icon')->end
 				->div->class('content')
-					->add($inside)
+					->addH($inside)
 				->end
 			->end
 			->hif($this->icon === null)
-				->add($inside)
+				->addH($inside)
 			->end;
 	}
 }
@@ -92,7 +92,7 @@ abstract class BaseNotice implements HTMLComponent, XmlDeserializable {
 			->end
 			->hif($this->list !== null)
 			  ->ul->class('list')
-			    ->add(array_map(function($item) use($h) {
+			    ->addH(array_map(function($item) use($h) {
 			    	// var_dump($this->list);
 			    	return $h->li->t($item)->end;
 			    }, $this->list === null ? [] : $this->list ))
@@ -201,7 +201,7 @@ trait InputField {
 	protected function makeInput($h, $type, $icon = null, $mask = null) {
 		return $h
 		->div->class('ui field ' . ($this->required ? 'required' : ''))
-			->add($this->getLabel())
+			->addC($this->getLabel())
 			->div->class($icon ? 'ui left icon input' : 'ui input')
 				->hif($icon)
 					->i->class('icon ' . $icon)->end

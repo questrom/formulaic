@@ -17,7 +17,7 @@ class ShowIfComponent extends GroupComponent {
 	function get($h) {
 		return $h
 			->div->data('show-if', $this->cond)
-				->add($this->items[0])
+				->addC($this->items[0])
 			->end;
 	}
 	function getMerger($val) {
@@ -55,7 +55,7 @@ class Checkbox extends PostInputComponent implements Enumerative {
 		->div->class('field ' . ($this->mustCheck ? 'required' : ''))
 			->div->class('ui checkbox')
 				->input->type('checkbox')->name($this->name)->end
-				->add($this->getLabel())
+				->addC($this->getLabel())
 			->end
 		->end;
 	}
@@ -90,7 +90,7 @@ class TimeInput extends PostInputComponent {
 	function get($h) {
 		return $h
 		->div->class('field ' . ($this->required ? ' required' : ''))
-			->add($this->getLabel())
+			->addC($this->getLabel())
 			->div->class('ui left icon input')
 				->i->class('clock icon')->end
 				->input->type('text')->name($this->name)->data('inputmask', " 'alias': 'h:s t', 'placeholder': 'hh:mm am' ")->end
@@ -139,7 +139,7 @@ class DateTimePicker extends PostInputComponent {
 	function get($h) {
 		return $h
 		->div->class('field ' . ($this->required ? ' required' : ''))
-			->add($this->getLabel())
+			->addC($this->getLabel())
 			->div->class('ui left icon input')
 				->i->class('calendar icon')->end
 				->input->type('text')->name($this->name)->data('inputmask', " 'alias': 'proper-datetime' ")->end
@@ -177,7 +177,7 @@ class Textarea extends PostInputComponent {
 	function get($h) {
 		return $h
 		->ins(fieldBox($h, $this->required))
-			->add($this->getLabel())
+			->addC($this->getLabel())
 			->textarea->name($this->name)->end
 		->end;
 	}
@@ -212,13 +212,13 @@ class Dropdown extends PostInputComponent {
 	}
 	function get($h) {
 		return fieldBox($h, $this->required)
-			->add($this->getLabel())
+			->addC($this->getLabel())
 			->div->class('ui fluid dropdown selection')
 				->input->name($this->name)->type('hidden')->value('')->end
 				->div->class('default text')->t('Please choose an option...')->end
 				->i->class('dropdown icon')->end
 				->div->class('menu')
-					->add(array_map(
+					->addH(array_map(
 						function($v) use($h) {
 							return $h
 							->div
@@ -248,8 +248,8 @@ class Radios extends PostInputComponent implements Enumerative {
 	function get($h) {
 		return $h
 		->div->class('grouped fields validation-root ' . ($this->required ? 'required' : ''))
-			->add($this->getLabel())
-			->add(
+			->addC($this->getLabel())
+			->addH(
 				array_map(
 					function($v) use($h) {
 						return $h
@@ -288,8 +288,8 @@ class Checkboxes extends PostInputComponent implements Enumerative {
 	function get($h) {
 		return $h
 		->div->class('grouped fields validation-root ' . ($this->required ? 'required' : ''))->data('validation-name', $this->name)
-			->add($this->getLabel())
-			->add(
+			->addC($this->getLabel())
+			->addH(
 				array_map(
 					function($v) use($h) {
 						return $h->div->class('field not-validation-root')
@@ -323,7 +323,7 @@ class Checkboxes extends PostInputComponent implements Enumerative {
 			return Result::ok($h
 			->td
 				->ul->class('ui list')
-					->add(array_map(function($x) use ($h) {
+					->addH(array_map(function($x) use ($h) {
 						return $h->li->t($x)->end;
 					}, $v))
 				->end
@@ -478,7 +478,7 @@ class Range extends PostInputComponent {
 	function get($h) {
 		return $h
 		->div->class('ui field')
-			->add($this->getLabel())
+			->addC($this->getLabel())
 			->div
 				->input
 					->type('range')
@@ -698,7 +698,7 @@ class Header extends BaseHeader {
 		$size = ($this->size === null) ? 1 : $this->size;
 		return $h
 		->{'h' . $size}->class('ui header')
-			->add(parent::get($h))
+			->addH(parent::get($h))
 		->end;
 	}
 }
@@ -708,7 +708,7 @@ class GroupHeader extends BaseHeader {
 		$size = ($this->size === null) ? 5 : $this->size;
 		return $h
 		->{'h' . $size}->class('ui header attached')
-			->add(parent::get($h))
+			->addH(parent::get($h))
 		->end;
 	}
 }
@@ -719,7 +719,7 @@ class GroupNotice extends BaseNotice {
 		return
 		$h
 		->div->class('ui message attached ' . ($this->icon === null ? '' : ' icon') . ($this->type ? ' ' . $this->type : ''))
-			->add(parent::get($h))
+			->addH(parent::get($h))
 		->end;
 	}
 }
@@ -729,7 +729,7 @@ class Notice extends BaseNotice {
 		return
 		$h
 		->div->class('ui message floating ' . ($this->icon === null ? '' : ' icon') . ($this->type ? ' ' . $this->type : ''))
-			->add(parent::get($h))
+			->addH(parent::get($h))
 		->end;
 	}
 }
@@ -773,12 +773,12 @@ class ListComponent extends GroupComponent implements FieldListItem, FieldTableI
 			->h5->class('top attached ui message')->t($this->label)->end
 			->div->data('validation-name', $this->name)->class('validation-root ui bottom attached segment list-items')
 				->script->type('text/template')
-					->add(
+					->addH(
                         // Forcibly HTML-encode things so that nested lists are generated properly...
                         generateString(
                             (new HTMLParentlessContext())->div->class('ui vertical segment close-item')
                                 ->div->class('content')
-                                    ->add($this->items)
+                                    ->addC($this->items)
                                 ->end
                                 ->button->type('button')->class('ui compact negative icon button delete-btn')
                                     ->i->class('trash icon')->end
@@ -895,7 +895,7 @@ class ListComponent extends GroupComponent implements FieldListItem, FieldTableI
 
 				return Result::ok($h
 					->td
-						->add(array_map(function($listitem) use($h) {
+						->addC(array_map(function($listitem) use($h) {
 							return new ValueTable(parent::getAllFields(), $listitem, false);
 						}, $v))
 					->end
@@ -909,9 +909,9 @@ class ListComponent extends GroupComponent implements FieldListItem, FieldTableI
 
 				return Result::ok($h
 					->td
-						->add(array_map(function($listitem) use($h) {
+						->addH(array_map(function($listitem) use($h) {
 							return $h->table->border(1)
-								->add(array_map(function($field) use ($listitem) {
+								->addC(array_map(function($field) use ($listitem) {
 									if($field instanceof FieldListItem) {
 										return new ValueRow( isget($listitem[$field->name]), $field );
 									} else {
@@ -947,13 +947,13 @@ class Group extends GroupComponent {
 
 		return $h
 		->div->class('group')
-			->add(array_map(function($value) use ($h) {
+			->addH(array_map(function($value) use ($h) {
 					if(is_array($value)) {
-						return $h->div->class('ui segment attached')
-							->add($value)
+						return (new HTMLParentlessContext())->div->class('ui segment attached')
+							->addC($value)
 						->end;
 					} else {
-						return $value;
+						return $value->get(new HTMLParentlessContext());
 					}
 				}, array_reduce($items, function($carry, $item) {
 					if($item instanceof GroupHeader || $item instanceof GroupNotice) {
@@ -981,7 +981,7 @@ class FormElem extends GroupComponent {
 	function get($h) {
 		return $h
 		->form->class('ui form')->action('submit.php')->method('POST')
-			->add($this->items)
+			->addC($this->items)
 			->div->class('ui floating error message validation-error-message')
 				->div->class('header')
 					->t('Error validating data')
@@ -1081,7 +1081,7 @@ class Page extends GroupComponent {
 			->body
 				->div->class('ui text container')
 					->div->class('ui segment')
-						->add($this->form)
+						->addC($this->form)
 					->end
 				->end
 				->div->class('success-modal ui small modal')
