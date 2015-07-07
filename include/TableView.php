@@ -144,8 +144,9 @@ class TableView implements XmlDeserializable, HTMLComponent {
 							->addH(array_map(function($row) use ($h) {
 								return $h
 								->tr
-									->addC(array_map(function($col) use($h, $row) {
-											return new ValueCell( isset($row[$col->name]) ? $row[$col->name] : null, $this->pageData->getByName($col->name) );
+									->addH(array_map(function($col) use($h, $row) {
+											return (new ValueCell( isset($row[$col->name]) ? $row[$col->name] : null, $this->pageData->getByName($col->name) ))
+												->get(new HTMLParentlessContext());
 									}, $this->cols))
 									->td->class('center aligned nowrap unpadded-cell')
 										->a->class('ui no-margin compact button')->href('details.php?id=' . $row['_id'])
