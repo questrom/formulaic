@@ -22,9 +22,8 @@ class SafeString {
 }
 
 function generateString($input) {
-    $input = [$input];
     // Based on: http://stackoverflow.com/questions/29991016/
-    $placeHolder = [$input];
+    $placeHolder = [[$input]];
     $lastIndex = [-1];
     $out = '';
     while(count($placeHolder) > 0) {
