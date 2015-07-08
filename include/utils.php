@@ -36,3 +36,17 @@ class FakeCache extends Cache {
 	public function set($filename, $contents = '') { return $this; }
 	protected function checkConditions($cacheFile, array $conditions = array()) { return false; }
 }
+
+
+// See http://php.net/manual/en/reserved.variables.files.php
+function diverse_array($vector) {
+   $result = [];
+   foreach($vector as $part => $val) {
+   		foreach($val as $index => $ival) {
+   			foreach($ival as $name => $info) {
+   				$result[$index][$name][$part] = $info;
+   			}
+   		}
+   }
+   return $result;
+}

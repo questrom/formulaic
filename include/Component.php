@@ -621,25 +621,6 @@ class DatePicker extends PostInputComponent {
 	}
 }
 
-class HeaderFormPart extends BaseHeaderFormPart {
-    function render() {
-       $size = ($this->f->size === null) ? 1 : $this->f->size;
-		return $this->h
-		->{'h' . $size}->class('ui header')
-			->addH(parent::render())
-		->end;
-    }
-}
-
-class GroupHeaderFormPart extends BaseHeaderFormPart {
-    function render() {
-        $size = ($this->f->size === null) ? 5 : $this->f->size;
-        return $this->h
-            ->{'h' . $size}->class('ui header attached')
-                ->addH(parent::render())
-            ->end;
-    }
-}
 
 
 class Header extends BaseHeader {
@@ -654,27 +635,6 @@ class GroupHeader extends BaseHeader {
     }
 }
 
-class GroupNoticeFormPart extends BaseNoticeFormPart {
-    function render() {
-        return
-            $this->h
-              ->div->class('ui message attached ' . ($this->f->icon === null ? '' : ' icon') . ($this->f->type ? ' ' . $this->f->type : ''))
-              ->addH(parent::render())
-            ->end;
-    }
-}
-
-class NoticeFormPart extends BaseNoticeFormPart {
-    function render() {
-        return
-            $this->h
-                ->div->class('ui message floating ' . ($this->f->icon === null ? '' : ' icon') . ($this->f->type ? ' ' . $this->f->type : ''))
-                ->addH(parent::render())
-                ->end;
-    }
-}
-
-
 class GroupNotice extends BaseNotice {
     function makeFormPart() {
         return new GroupNoticeFormPart($this);
@@ -686,20 +646,6 @@ class Notice extends BaseNotice {
         return new NoticeFormPart($this);
     }
 }
-
-// See http://php.net/manual/en/reserved.variables.files.php
-function diverse_array($vector) {
-   $result = [];
-   foreach($vector as $part => $val) {
-   		foreach($val as $index => $ival) {
-   			foreach($ival as $name => $info) {
-   				$result[$index][$name][$part] = $info;
-   			}
-   		}
-   }
-   return $result;
-}
-
 
 class ListComponent extends GroupComponent implements FieldListItem, FieldTableItem {
 	function __construct($args) {

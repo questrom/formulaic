@@ -67,6 +67,49 @@ abstract class BaseNoticeFormPart extends FormPart {
 }
 
 
+
+class HeaderFormPart extends BaseHeaderFormPart {
+    function render() {
+       $size = ($this->f->size === null) ? 1 : $this->f->size;
+		return $this->h
+		->{'h' . $size}->class('ui header')
+			->addH(parent::render())
+		->end;
+    }
+}
+
+class GroupHeaderFormPart extends BaseHeaderFormPart {
+    function render() {
+        $size = ($this->f->size === null) ? 5 : $this->f->size;
+        return $this->h
+            ->{'h' . $size}->class('ui header attached')
+                ->addH(parent::render())
+            ->end;
+    }
+}
+
+
+class GroupNoticeFormPart extends BaseNoticeFormPart {
+    function render() {
+        return
+            $this->h
+              ->div->class('ui message attached ' . ($this->f->icon === null ? '' : ' icon') . ($this->f->type ? ' ' . $this->f->type : ''))
+              ->addH(parent::render())
+            ->end;
+    }
+}
+
+class NoticeFormPart extends BaseNoticeFormPart {
+    function render() {
+        return
+            $this->h
+                ->div->class('ui message floating ' . ($this->f->icon === null ? '' : ' icon') . ($this->f->type ? ' ' . $this->f->type : ''))
+                ->addH(parent::render())
+                ->end;
+    }
+}
+
+
 class InputFormPart extends FormPart {
 	function __construct($field, $type, $icon = null, $mask = null) {
 		$this->f = $field;
