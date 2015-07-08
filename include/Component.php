@@ -8,8 +8,11 @@
 
 class ShowIfComponentFormPart extends FormPart {
     function render() {
+    	// Provide a way of specifying type of cnodition, then read this in client.js
 		return $this->h
-			->div->data('show-if', $this->f->cond)
+			->div
+				->data('show-if-name', $this->f->condition->getName())
+				->data('show-if-condition', $this->f->condition->getCondition())
 				->addH($this->f->items[0]->makeFormPart())
 			->end;
 	}
@@ -17,10 +20,11 @@ class ShowIfComponentFormPart extends FormPart {
 
 class ShowIfComponent extends GroupComponent {
 	function __construct($args) {
+
 		$this->items = [
-			$args['children'][0]
+			$args['children'][1]
 		];
-		$this->cond = $args['cond'];
+		$this->condition = $args['children'][0];
 	}
 	function makeFormPart() {
         return new ShowIfComponentFormPart($this);
@@ -29,13 +33,10 @@ class ShowIfComponent extends GroupComponent {
 		return $val
 			->collapse()
 			->innerBind(function($val) {
-				$post_value = $val->post;
-				if(
-					!(isset($post_value[$this->cond]) ? $post_value[$this->cond] === "on" : false)
-				) {
+				if(!($this->condition->evaluate($val))) {
 					return Result::ok([]);
 				} else {
-					return parent::getMerger( Result::ok( $val  ) );
+					return parent::getMerger( Result::ok($val) );
 				}
 			});
 	}

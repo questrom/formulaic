@@ -5,8 +5,15 @@ body { background: #F7F7F7; }
 .ui.container { margin:20px auto; }
 .table-view { table-layout: fixed; }
 pre { margin:0; }
-.ui.form div[data-show-if] > .field:last-child { margin: 0em 0em 1em; }
-div[data-show-if] > .ui.header:last-child { margin: calc(2rem - 0.14285em) 0em 1rem; }
+
+/* Fix margins within show-if */
+.ui.form div[data-show-if-name] > .field:last-child { margin: 0em 0em 1em; }
+div[data-show-if-name] > .ui.header:last-child { margin: 0 0 1rem; }
+
+div[data-show-if-name] > .ui.form .field:last-child,
+div[data-show-if-name] > .ui.form .fields:last-child .field {
+    margin: 0 0 1em ;
+}
 
 /* Reduce padding around file inputs*/
 .ui.form input[type=file] { padding-top: 5px !important; padding-bottom: 5px !important; }
@@ -18,8 +25,8 @@ input[type=range] { width: 150px; vertical-align: -5px; }
 /* See http://stackoverflow.com/questions/18794026/ */
 input[type=range]::-moz-focus-outer { border:0 !important; }
 
-.submit-count-label { margin-top: 2px !important; }
-.submit-count-label .detail { margin-left: 0.65em !important; }
+.submit-count-label { margin-top: 3px !important; }
+.submit-count-label .detail { margin-left: 0.55em !important; }
 
 .ui.sortable.table thead th { cursor:auto; }
 .ui.header { margin-top: 0; }

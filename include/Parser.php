@@ -61,6 +61,7 @@ class AllowElem implements XmlDeserializable {
 }
 
 
+
 class Parser {
 	static function parse_jade($file) {
 
@@ -120,7 +121,8 @@ class Parser {
 			'{}graph-view' => 'GraphView',
 			'{}bar' => 'BarGraph',
 			'{}pie' => 'PieChart',
-			'{}captcha' => 'Captcha'
+			'{}captcha' => 'Captcha',
+			'{}is-checked' => 'IsCheckedCondition'
 		];
 
 		$reader->xml($xml);

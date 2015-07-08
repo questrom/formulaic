@@ -3,7 +3,8 @@ form(name='Example Form', title='Example Form', success-message='Lorem ipsum!')
     //- list(name='all_list', label='AllList', add-text='Add an item')
     header Example Form
     header(size=4) HTML Escaping &lt;works&gt;
-    show-if(cond='existence')
+    show-if
+      is-checked(name='existence')
       header(icon='plug', size=4) Hello world
     file(label='Upload a file...', name='upload_file', max-size='100000', permissions='public-read')
       allow(ext='docx', mime='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
@@ -31,7 +32,8 @@ form(name='Example Form', title='Example Form', success-message='Lorem ipsum!')
     url(label='Website',name='url',required=true)
     email(label='Email address', name='email', must-have-domain='bu.edu')
     date(label='Start date', name='start_date', min='2015-06-17', max='2015-06-20')
-    show-if(cond='existence')
+    show-if
+      is-checked(name='existence')
       number(label='How many attendees?', name='num_attendees', min='3', max='5', required=true)
     checkbox(label='I agree to the terms and conditions', name='agree_to_terms', must-check=true)
     checkbox(label='I exist', name='existence')
@@ -47,7 +49,8 @@ form(name='Example Form', title='Example Form', success-message='Lorem ipsum!')
       option College of Arts and Sciences
       option Questrom School of Business
       option College of General Studies
-    show-if(cond='existence')
+    show-if
+      is-checked(name='existence')
       group
         header(icon='mail', subhead='hey') Login!
         notice(text='Hello world!')

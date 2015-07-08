@@ -1,5 +1,5 @@
 /* jshint undef: true, unused: true */
-/* globals $, document, FormData, Pizza */
+/* globals $, document, FormData */
 
 function addPrompt(name, prompt) {
 	$(document.getElementsByName(name))
@@ -48,9 +48,8 @@ $.extend($.inputmask.defaults.aliases, {
     }
 });
 
-if('modal' in $.fn) {
-	$.fn.modal.settings.transition='scale';
-}
+$.fn.modal.settings.transition='scale';
+
 
 function handleRange() {
 	$(this).parent().find('span.range-value').text($(this).val());
@@ -62,7 +61,7 @@ function handleBox() {
 	if(name.slice(-2) === '[]') {
 		return;
 	}
-	$('[data-show-if="' + name + '"]').toggle($this.is(':checked'));
+	$('[data-show-if-name="' + name + '"][data-show-if-condition="is-checked"]').toggle($this.is(':checked'));
 }
 
 function fixName(groupName, currentName, num) {
@@ -95,8 +94,8 @@ function enableFormControls(root) {
 			return fixName(listCo.data('group-name'), $(this).attr('data-validation-name'), num);
 		});
 
-		item.find('[data-show-if]').attr('data-show-if', function() {
-			return fixName(listCo.data('group-name'), $(this).attr('data-show-if'), num);
+		item.find('[data-show-if-name]').attr('data-show-if-name', function() {
+			return fixName(listCo.data('group-name'), $(this).attr('data-show-if-name'), num);
 		});
 
 		item.insertBefore($this.closest('.segment'));
