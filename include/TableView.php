@@ -12,22 +12,23 @@ class Column implements XmlDeserializable {
 	}
 }
 
-class ValueCell implements HTMLComponent {
+class ValueCell implements Renderable {
 	function __construct($value, $component) {
 
 		$this->value = $value;
 		$this->component = $component;
+		$this->h = new HTMLParentlessContext();
 	}
-	function get($h) {
+	function render() {
 
 
 		if($this->component instanceof FieldTableItem) {
-			return $this->component->asTableCell($h,
+			return $this->component->asTableCell($this->h,
 				$this->value === null ? Result::none(null) : Result::ok($this->value),
 				false)
-				->bindNothing(function($x) use ($h){
+				->bindNothing(function($x){
 					return Result::ok(
-						$h
+						$this->h
 						->td->class('disabled')
 							->i->class('ban icon')->end
 						->end
@@ -144,8 +145,7 @@ class TableView implements XmlDeserializable, HTMLComponent {
 								return $h
 								->tr
 									->addH(array_map(function($col) use($h, $row) {
-											return (new ValueCell( isset($row[$col->name]) ? $row[$col->name] : null, $this->pageData->getByName($col->name) ))
-												->get(new HTMLParentlessContext());
+											return new ValueCell( isset($row[$col->name]) ? $row[$col->name] : null, $this->pageData->getByName($col->name) );
 									}, $this->cols))
 									->td->class('center aligned nowrap unpadded-cell')
 										->a->class('ui no-margin compact button')->href('details.php?id=' . $row['_id'])
