@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ea2c041d267aebd212b5afa061692c83",
+    "hash": "46def8c78549ccb1b9c8f3077073baa5",
     "packages": [
         {
             "name": "gregwar/cache",
@@ -96,6 +96,46 @@
                 "spam"
             ],
             "time": "2015-05-13 06:34:33"
+        },
+        {
+            "name": "mistic100/randomcolor",
+            "version": "1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mistic100/RandomColor.php.git",
+                "reference": "8403529353d7a46aa259621d7c1e1a63b636791d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mistic100/RandomColor.php/zipball/8403529353d7a46aa259621d7c1e1a63b636791d",
+                "reference": "8403529353d7a46aa259621d7c1e1a63b636791d",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Colors\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Damien \"Mistic\" Sorel",
+                    "email": "contact@git.strangeplanet.fr",
+                    "homepage": "http://www.strangeplanet.fr"
+                }
+            ],
+            "description": "Generate attractive random colors",
+            "homepage": "https://github.com/mistic100/RandomColor.php",
+            "keywords": [
+                "color",
+                "generator",
+                "random"
+            ],
+            "time": "2015-06-30 16:57:53"
         },
         {
             "name": "nette/mail",

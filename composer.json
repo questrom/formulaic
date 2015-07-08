@@ -13,6 +13,7 @@
         "Gregwar/Cache": "^1.0",
         "yosymfony/toml": "^0.3.2",
         "riimu/kit-csrf": "^2.3",
-        "gregwar/captcha": "^1.1"
+        "gregwar/captcha": "^1.1",
+        "mistic100/randomcolor": "^1.0"
     }
 }

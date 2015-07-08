@@ -1,5 +1,6 @@
 <?php
 use Sabre\Xml\XmlDeserializable as XmlDeserializable;
+use \Colors\RandomColor;
 
 class GraphView implements XmlDeserializable, HTMLComponent {
 	use Configurable;
@@ -149,7 +150,14 @@ class PieChart extends Graph {
 
 							$hue = floor( hexdec(substr(md5($key), 0, 2))  * (360/256) );
 
-							$color = 'hsl(' . $hue . ', 70%, 50%)';
+							$color = RandomColor::one([
+								'luminosity' => 'bright',
+								'prng' => function($min, $max) use ($key) {
+									return (hexdec(substr(md5($key), 0, 2)) / pow(16, 2))  * ($max - $min) + $min;
+								}
+							]);
+
+
 							if($key === true) { $key = 'Yes'; $color='#21ba45'; }
 							if($key === false) { $key = 'No'; $color='#db2828'; }
 							if($key === null) { $key = '(None)'; $color='#777'; }
@@ -177,7 +185,7 @@ class PieChart extends Graph {
 								->text
 									->style('dominant-baseline:text-before-edge;text-anchor:start;font-size: 40px;')
 									->x(-900 + 40)->y(-600 + $index * 50)
-									->t($key . ' (' . floor($percent * 100) . '%)')
+									->t($key . ' (' . round($percent * 100, 1) . '%)')
 								->end
 							;
 						}, $this->results))
@@ -223,9 +231,14 @@ class BarGraph extends Graph {
 
 							$key = $result['_id'];
 
-							$hue = floor( hexdec(substr(md5($key), 0, 2))  * (360/256) );
 
-							$color = 'hsl(' . $hue . ', 70%, 50%)';
+							$color = RandomColor::one([
+								'luminosity' => 'bright',
+								'prng' => function($min, $max) use ($key) {
+									return (hexdec(substr(md5($key), 0, 2)) / pow(16, 2))  * ($max - $min) + $min;
+								}
+							]);
+
 							if($key === true) { $key = 'Yes'; $color='#21ba45'; }
 							if($key === false) { $key = 'No'; $color='#db2828'; }
 							if($key === null) { $key = '(None)'; $color='#777'; }
