@@ -16,12 +16,13 @@ class ShowIfComponent implements FormPartFactory, Validatable, NameMatcher, XmlD
 	}
 
 	function getAllFields() {
-		if($item instanceof NameMatcher) {
-			return $item->getAllFields();
+		if($this->item instanceof NameMatcher) {
+			return $this->item->getAllFields();
 		} else {
 			return [];
 		}
 	}
+
 	function getByName($name) {
 		if($this->item instanceof NameMatcher) {
 			return $this->item->getByName($name);
@@ -92,19 +93,11 @@ class TimeInput extends PostInputComponent {
 	}
 	function asTableCell($h, $value) {
 		return $value->innerBind(function($v) use ($h) {
-			$hour = floor($v / 3600);
-			$minute = ($v % 3600) / 60;
-			$xm = 'am';
-			if($hour > 11) {
-				$xm = 'pm';
-				$hour -= 12;
-			}
-			if(intval($hour) === 0) {
-				$hour = 12;
-			}
-			return $h->td
+
+			return Result::ok($h->td
 				->t(sprintf("%d:%02d %s",$hour,$minute,$xm))
-			->end;
+			->end);
+
 		});
 	}
 }
@@ -131,11 +124,13 @@ class DateTimePicker extends PostInputComponent {
 			->stepDateTime($this->step);
 	}
 	function asTableCell($h, $value) {
-		return $h->td
-			->t($value->innerBind(function($v) {
-				return Result::ok($v->format('n/j/Y g:i A'));
-			}))
-		->end;
+		return $value->innerBind(function($v) use($h) {
+			return Result::ok($h->td
+				->t(
+					$v->format('n/j/Y g:i A')
+				)
+			->end);
+		});
 	}
 }
 
@@ -650,11 +645,11 @@ class DatePicker extends PostInputComponent {
 			->minMaxDate($this->min, $this->max);
 	}
 	function asTableCell($h, $value) {
-		return $h->td
-			->t($value->innerBind(function($v) {
-				return Result::ok($v->format('n/j/Y'));
-			}))
-		->end;
+		return $value->innerBind(function($v) use($h) {
+			return Result::ok($h->td
+				->t($v->format('n/j/Y'))
+			->end);
+		});
 	}
 }
 

@@ -12,6 +12,7 @@ class ValueRow implements Renderable {
 	}
 
 	function render() {
+		// var_dump($this->component);
 		return $this->component->asDetailedTableCell(
 			$this->h,
 			$this->value === null ? Result::none(null) : Result::ok($this->value)
@@ -93,20 +94,15 @@ class DetailsView implements HTMLComponent {
 				$mongo = $output;
 			}
 		}
-		$this->server = $mongo->server;
-		$this->database = $mongo->database;
-		$this->collection = $mongo->collection;
-
-		$this->item = $getData['id'];
 
 
-		$client = (new MongoClient($this->server))
-			->selectDB($this->database)
-			->selectCollection($this->collection);
+		$client = (new MongoClient($mongo->server))
+			->selectDB($mongo->database)
+			->selectCollection($mongo->collection);
 
 
 		$data = $client->findOne([
-			'_id' => new MongoId($this->item)
+			'_id' => new MongoId($getData['id'])
 		]);
 
 		$data = fixMongoDates($data);
