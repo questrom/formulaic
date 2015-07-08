@@ -102,12 +102,9 @@ class TimeInput extends PostInputComponent {
 			if(intval($hour) === 0) {
 				$hour = 12;
 			}
-			return parent::asTableCell(
-				$h,
-				Result::ok(
-					sprintf("%d:%02d %s",$hour,$minute,$xm)
-				)
-			);
+			return $h->td
+				->t(sprintf("%d:%02d %s",$hour,$minute,$xm))
+			->end;
 		});
 	}
 }
@@ -134,12 +131,11 @@ class DateTimePicker extends PostInputComponent {
 			->stepDateTime($this->step);
 	}
 	function asTableCell($h, $value) {
-		return parent::asTableCell(
-			$h,
-			$value->innerBind(function($v) {
+		return $h->td
+			->t($value->innerBind(function($v) {
 				return Result::ok($v->format('n/j/Y g:i A'));
-			})
-		);
+			}))
+		->end;
 	}
 }
 
@@ -654,12 +650,11 @@ class DatePicker extends PostInputComponent {
 			->minMaxDate($this->min, $this->max);
 	}
 	function asTableCell($h, $value) {
-		return parent::asTableCell(
-			$h,
-			$value->innerBind(function($v) {
+		return $h->td
+			->t($value->innerBind(function($v) {
 				return Result::ok($v->format('n/j/Y'));
-			})
-		);
+			}))
+		->end;
 	}
 }
 

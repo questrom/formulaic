@@ -12,6 +12,7 @@ class Column implements XmlDeserializable {
 	}
 }
 
+
 class ValueCell implements Renderable {
 	function __construct($value, $component) {
 		$this->value = $value;
