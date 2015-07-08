@@ -169,7 +169,7 @@ class TableView implements XmlDeserializable, View, TableViewPartFactory {
 			$cursor->limit($this->perPage);
 		}
 
-		$this->data = fixMongoDates(array_values(iterator_to_array($cursor)));
+		return fixMongoDates(array_values(iterator_to_array($cursor)));
 	}
 	function setPage($page) {
 		$this->pageData = $page;
@@ -184,7 +184,8 @@ class TableView implements XmlDeserializable, View, TableViewPartFactory {
 		$this->database = $mongo->database;
 		$this->collection = $mongo->collection;
 	}
-	function makeTableViewPart() {
+	function makeTableViewPart($data) {
+		$this->data = $data;
 		return new TablePage($this);
 	}
 }

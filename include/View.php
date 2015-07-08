@@ -25,5 +25,5 @@ interface View {
 }
 
 interface TableViewPartFactory {
-	function makeTableViewPart();
+	function makeTableViewPart($data);
 }
