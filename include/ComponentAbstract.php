@@ -167,9 +167,6 @@ abstract class GroupComponent implements FormPartFactory, Validatable, NameMatch
 		return $result;
 	}
 	final function getMerger($val) {
-		return $this->validate($val);
-	}
-	final protected function validate($against) {
-		return $against->groupValidate($this->items);
+		return $val->groupValidate($this->items);
 	}
 }
