@@ -53,6 +53,7 @@ class TablePage implements Renderable {
 				->link->rel("stylesheet")->href("styles.css")->end
 			->end
 			->body
+				->addH(new TopHeader())
 				->div->class('ui container wide-page')
 						->h1
 							->t($this->f->title)

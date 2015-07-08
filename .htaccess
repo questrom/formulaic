@@ -3,4 +3,4 @@
 
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} -f
-RewriteRule !^(index\.php|details\.php|graph\.php|submit\.php|table\.php|styles\.css|client\.js|lib\/.*)$ - [F,NC]
+RewriteRule !^(index\.php|details\.php|graph\.php|submit\.php|table\.php|styles\.css|client\.js|lib\/.*|img\/.*)$ - [F,NC]

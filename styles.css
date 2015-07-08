@@ -15,6 +15,10 @@ div[data-show-if-name] > .ui.form .fields:last-child .field {
     margin: 0 0 1em ;
 }
 
+.ui.top.fixed.menu + .ui.container {
+    margin-top:50px;
+}
+
 .muted-text { color: rgba(40, 40, 40, 0.7); font-size: 90%;margin-top: 5px; }
 
 /* Reduce padding around file inputs*/

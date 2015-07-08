@@ -530,6 +530,21 @@ class FormElemFormPart extends FormPart {
 }
 
 
+class TopHeader implements Renderable {
+	function __construct() {
+		$this->h = new HTMLParentlessContext();
+		$this->cfg = Config::get();
+	}
+	function render() {
+		return $this->h
+		->div->class('ui top fixed menu')->style('background-color: rgb(' . $this->cfg['branding']['color'] . '); box-shadow: 0px 1px 2px 0px rgba(' . $this->cfg['branding']['color'] . ', 0.25);')
+			->div->class('item')
+				->img->src($this->cfg['branding']['image'])->end
+			->end
+		->end;
+	}
+}
+
 class PageFormPart extends FormPart {
 	function render() {
 		return $this->h
@@ -541,6 +556,7 @@ class PageFormPart extends FormPart {
 				->link->rel('stylesheet')->href('styles.css')->end
 			->end
 			->body
+				->addH(new TopHeader())
 				->div->class('ui text container')
 					->div->class('ui segment')
 						->addH($this->f->form->makeFormPart())

@@ -46,6 +46,7 @@ class GraphView implements XmlDeserializable, HTMLComponent, View {
 				->link->rel("stylesheet")->href("styles.css")->end
 			->end
 			->body
+				->addH(new TopHeader())
 				->div->class('ui text container')
 						->div
 
