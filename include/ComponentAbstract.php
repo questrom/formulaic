@@ -75,7 +75,10 @@ abstract class BaseNotice implements FormPartFactory, XmlDeserializable {
 
 }
 
-trait NormalTableCell {
+abstract class NamedLabeledComponent implements FormPartFactory, Validatable, NameMatcher, XmlDeserializable, FieldListItem, FieldTableItem {
+
+	use Configurable;
+
     function asTableCell($h, $value) {
 		return $value->innerBind(function($v) use ($h) {
 			return Result::ok($h->td->t($v)->end);
@@ -87,12 +90,6 @@ trait NormalTableCell {
 	function asEmailTableCell($h, $value) {
 		return $this->asTableCell($h, $value);
 	}
-}
-
-abstract class NamedLabeledComponent implements FormPartFactory, Validatable, NameMatcher, XmlDeserializable, FieldListItem, FieldTableItem {
-
-	use Configurable;
-	use NormalTableCell;
 
 	function __construct($args) {
 		$this->label = $args['label'];
