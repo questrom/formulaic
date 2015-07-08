@@ -101,7 +101,7 @@ class TablePage implements Renderable {
 							->div->class('ui text menu')
 								->div->class('item')
 									->a->class('ui left floated primary labeled icon button ' . ($this->f->page === 1 ? 'disabled' : ''))
-										->href('?page=' . ($this->f->page - 1))
+										->href('?view=' . $this->f->name . '&page=' . ($this->f->page - 1))
 										->i->class('left chevron icon')->end
 										->t('Previous')
 									->end
@@ -111,7 +111,7 @@ class TablePage implements Renderable {
 								->end
 								->div->class('right item')
 									->a->class('ui right floated primary right labeled icon button ' . ((($this->f->page - 1) === $this->f->max) ? 'disabled' : ''))
-										->href('?page=' . ($this->f->page + 1))
+										->href('?view=' . $this->f->name . '&page=' . ($this->f->page + 1))
 										->i->class('right chevron icon')->end
 										->t('Next')
 									->end
