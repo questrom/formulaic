@@ -17,3 +17,13 @@ class ViewList implements XmlDeserializable {
 		return null;
 	}
 }
+
+interface View {
+	function __construct($args);
+	function query($args);
+	function setPage($page);
+}
+
+interface TableViewPartFactory {
+	function makeTableViewPart();
+}

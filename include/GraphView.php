@@ -2,7 +2,7 @@
 use Sabre\Xml\XmlDeserializable as XmlDeserializable;
 use \Colors\RandomColor;
 
-class GraphView implements XmlDeserializable, HTMLComponent {
+class GraphView implements XmlDeserializable, HTMLComponent, View {
 	use Configurable;
 
 	function __construct($args) {

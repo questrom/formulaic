@@ -1,17 +1,38 @@
 <?php
 
 use Gregwar\Captcha\CaptchaBuilder;
+use Sabre\Xml\XmlDeserializable as XmlDeserializable;
+
 
 // Full components
 // ===============
 
 
-class ShowIfComponent extends GroupComponent {
+class ShowIfComponent implements FormPartFactory, Validatable, NameMatcher, XmlDeserializable {
+	use Configurable;
 	function __construct($args) {
-		$this->items = [ $args['children'][1] ];
+		$this->item = $args['children'][1];
 		$this->condition = $args['children'][0];
 	}
-	function makeFormPart() { return new ShowIfComponentFormPart($this); }
+
+	function getAllFields() {
+		if($item instanceof NameMatcher) {
+			return $item->getAllFields();
+		} else {
+			return [];
+		}
+	}
+	function getByName($name) {
+		if($this->item instanceof NameMatcher) {
+			return $this->item->getByName($name);
+		} else {
+			return null;
+		}
+	}
+
+	function makeFormPart() {
+		return new ShowIfComponentFormPart($this);
+	}
 	function getMerger($val) {
 		return $val
 			->collapse()
@@ -19,7 +40,7 @@ class ShowIfComponent extends GroupComponent {
 				if(!($this->condition->evaluate($val))) {
 					return Result::ok([]);
 				} else {
-					return parent::getMerger( Result::ok($val) );
+					return Result::ok($val)->groupValidate([$this->item]);
 				}
 			});
 	}
@@ -668,7 +689,8 @@ class Notice extends BaseNotice {
     }
 }
 
-class ListComponent extends GroupComponent implements FieldListItem, FieldTableItem {
+class ListComponent implements FormPartFactory, Validatable, NameMatcher, XmlDeserializable, FieldListItem, FieldTableItem {
+	use Configurable;
 	function __construct($args) {
 		$this->items = $args['children'];
 		$this->name = $args['name'];
@@ -686,6 +708,17 @@ class ListComponent extends GroupComponent implements FieldListItem, FieldTableI
 	}
 	function getAllFields() {
 		return [ $this ];
+	}
+
+	// Borrowed from GroupComponent
+	private function getAllFieldsWithin() {
+		$arr = [];
+		foreach($this->items as $item) {
+			if($item instanceof NameMatcher) {
+				$arr = array_merge($arr, $item->getAllFields());
+			}
+		}
+		return $arr;
 	}
 	function makeFormPart() {
         return new ListComponentFormPart($this);
@@ -735,14 +768,14 @@ class ListComponent extends GroupComponent implements FieldListItem, FieldTableI
                     continue;
                 }
 
-				$validationResult = parent::getMerger(
+				$validationResult =
 					Result::ok(
 						new ClientData(
 							isget($list[0][$index], []),
 							isget($list[1][$index], [])
 						)
-					)
-				);
+					)->groupValidate($this->items);
+
 
 
 
@@ -810,7 +843,7 @@ class ListComponent extends GroupComponent implements FieldListItem, FieldTableI
 				return Result::ok($h
 					->td
 						->addH(array_map(function($listitem) use($h) {
-							return new ValueTable(parent::getAllFields(), $listitem, false);
+							return new ValueTable($this->getAllFieldsWithin(), $listitem, false);
 						}, $v))
 					->end
 				);
@@ -831,7 +864,7 @@ class ListComponent extends GroupComponent implements FieldListItem, FieldTableI
 									} else {
 										return null;
 									}
-								}, parent::getAllFields() ))
+								}, $this->getAllFieldsWithin() ))
 							->end;
 						}, $v))
 					->end
@@ -853,14 +886,6 @@ class Group extends GroupComponent {
     }
 }
 
-class FormElem extends GroupComponent {
-	function __construct($args) {
-		$this->items = $args['children'];
-	}
-	function makeFormPart() {
-        return new FormElemFormPart($this);
-	}
-}
 
 
 
@@ -915,6 +940,16 @@ class TimestampField implements FieldTableItem, Validatable {
 	}
 }
 
+
+class FieldList extends GroupComponent {
+	function __construct($args) {
+		$this->items = $args['children'];
+	}
+	function makeFormPart() {
+        return new FormElemFormPart($this);
+	}
+}
+
 class Page extends GroupComponent {
 	function __construct($args) {
 
@@ -938,6 +973,12 @@ class Page extends GroupComponent {
 		$attrs = $reader->parseAttributes();
 		$attrs['byTag'] = Sabre\Xml\Element\KeyValue::xmlDeserialize($reader);
 		return new static($attrs);
+	}
+	function getView($name) {
+		$view = $this->views->getByName($name);
+		$view->setPage($this);
+		return $view;
+
 	}
 }
 

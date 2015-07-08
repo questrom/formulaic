@@ -108,7 +108,7 @@ class Parser {
 			'{}file' => 'FileUpload',
 			'{}allow' => 'AllowElem',
 			'{}option' => 'TextElem',
-			'{}fields' => 'FormElem',
+			'{}fields' => 'FieldList',
 			'{}li' => 'TextElem',
 			'{}outputs' => 'SuperOutput',
 			'{}form' => 'Page',

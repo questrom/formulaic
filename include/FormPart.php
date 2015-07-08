@@ -317,7 +317,7 @@ class ShowIfComponentFormPart extends FormPart {
 			->div
 				->data('show-if-name', $this->f->condition->getName())
 				->data('show-if-condition', $this->f->condition->getCondition())
-				->addH($this->f->items[0]->makeFormPart())
+				->addH($this->f->item->makeFormPart())
 			->end;
 	}
 }

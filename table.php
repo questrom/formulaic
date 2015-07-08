@@ -4,8 +4,7 @@ require('include/all.php');
 
 $page = Parser::parse_jade('forms/test.jade');
 
-$view = $page->views->getByName('table');
-$view->setPage($page);
+$view = $page->getView('table');
 $view->query($_GET);
 
-echo '<!DOCTYPE html>' . generateString($view->get(new HTMLParentlessContext()));
+echo '<!DOCTYPE html>' . generateString($view->makeTableViewPart());

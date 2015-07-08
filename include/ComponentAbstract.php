@@ -145,7 +145,7 @@ abstract class GroupComponent implements FormPartFactory, Validatable, NameMatch
 	use Configurable;
 
 
-    function getAllFields() {
+    final function getAllFields() {
 		$arr = [];
 		foreach($this->items as $item) {
 			if($item instanceof NameMatcher) {
@@ -154,7 +154,7 @@ abstract class GroupComponent implements FormPartFactory, Validatable, NameMatch
 		}
 		return $arr;
 	}
-	function getByName($name) {
+	final function getByName($name) {
 		$result = null;
 		foreach($this->items as $item) {
 			if($item instanceof NameMatcher) {
@@ -166,8 +166,7 @@ abstract class GroupComponent implements FormPartFactory, Validatable, NameMatch
 		}
 		return $result;
 	}
-	function getMerger($val) {
-
+	final function getMerger($val) {
 		return $this->validate($val);
 	}
 	final protected function validate($against) {
