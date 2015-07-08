@@ -28,6 +28,7 @@ require('Validate.php');
 // Components
 require('ComponentHelpers.php');
 require('ComponentAbstract.php');
+require('FormPart.php');
 require('Component.php');
 
 // Outputs
