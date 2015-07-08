@@ -79,11 +79,10 @@ class DetailsView implements HTMLComponent {
 	use Configurable;
 
 	function __construct($page) {
-
 		$this->title = $page->title;
 		$this->pageData = $page;
-
 	}
+
 	function query($getData) {
 
 		$page = $this->pageData;
@@ -95,11 +94,9 @@ class DetailsView implements HTMLComponent {
 			}
 		}
 
-
 		$client = (new MongoClient($mongo->server))
 			->selectDB($mongo->database)
 			->selectCollection($mongo->collection);
-
 
 		$data = $client->findOne([
 			'_id' => new MongoId($getData['id'])
