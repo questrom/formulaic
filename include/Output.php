@@ -1,6 +1,8 @@
 <?php
 
 use Sabre\Xml\XmlDeserializable as XmlDeserializable;
+use Nette\Mail\Message;
+use Nette\Mail\SmtpMailer;
 
 interface Output {
 	function __construct($args);
@@ -90,9 +92,6 @@ class SuperOutput implements Output, XmlDeserializable {
 		return $data;
 	}
 }
-
-use Nette\Mail\Message;
-use Nette\Mail\SmtpMailer;
 
 class EmailOutput implements Output, XmlDeserializable {
 	use Configurable;

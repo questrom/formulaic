@@ -1,7 +1,6 @@
 <?php
 
-
-
+use Gregwar\Captcha\CaptchaBuilder;
 
 // Full components
 // ===============
@@ -240,7 +239,6 @@ class Checkboxes extends PostInputComponent implements Enumerative {
 	}
 }
 
-use Gregwar\Captcha\CaptchaBuilder;
 
 function makeCaptcha() {
 
@@ -689,10 +687,9 @@ class Notice extends BaseNotice {
     }
 }
 
-// see http://php.net/manual/en/reserved.variables.files.php
+// See http://php.net/manual/en/reserved.variables.files.php
 function diverse_array($vector) {
-//    var_dump($vector);
-       $result = [];
+   $result = [];
    foreach($vector as $part => $val) {
    		foreach($val as $index => $ival) {
    			foreach($ival as $name => $info) {
@@ -833,7 +830,7 @@ class ListComponent extends GroupComponent implements FieldListItem, FieldTableI
 			if(count($v) === 1) {
 				$showValue = '(1 item)';
 			} else {
-				$showValue = '(' . count($v) . ' items' . ')';
+				$showValue = '(' . count($v) . ' items)';
 			}
 
 			return Result::ok($h
