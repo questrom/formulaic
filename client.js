@@ -62,12 +62,20 @@ function handleBox() {
 		return;
 	}
 	$('[data-show-if-name="' + name + '"][data-show-if-condition="is-checked"]').toggle($this.is(':checked'));
+	$('[data-show-if-name="' + name + '"][data-show-if-condition="is-not-checked"]').toggle(!$this.is(':checked'));
+}
+
+function handleRadio() {
+	var $this = $(this);
+	var name = $this.attr('data-radio-group-name'),
+		value = $this.find(':checked').attr('value');
+	console.log(name, value);
+	$('[data-show-if-name="' + name + '"]').hide();
+	$('[data-show-if-name="' + name + '"][data-show-if-condition="is-radio-selected:' + value + '"]').show();
 }
 
 function fixName(groupName, currentName, num) {
-	currentName = currentName.split('[');
-	var rest = currentName.length > 1 ? ('[' + currentName.slice(1).join('[')) : '';
-	return groupName + '[' + num + '][' + currentName[0] + ']' + rest;
+	return groupName + '[' + num + ']' + currentName.replace(/^(.*?)($|(?=\[))/,'[$1]');
 }
 
 function enableFormControls(root) {
@@ -80,22 +88,23 @@ function enableFormControls(root) {
 		var num = listCo.data('count');
 		listCo.data('count', num + 1);
 
-		var item = $($('<div>').html(template).text());
+		var item = $($('<div>').html(template).text()),
+			groupName = listCo.data('group-name');
 
-		item.find('input[name], textarea[name]').attr('name', function() {
-			return fixName(listCo.data('group-name'), $(this).attr('name'), num);
+		item.find('input[name], textarea[name]').attr('name', function(i, attr) {
+			return fixName(groupName, attr, num);
 		});
 
-        item.find('[data-group-name]').attr('data-group-name', function() {
-            return fixName(listCo.data('group-name'), $(this).attr('data-group-name'), num);
+        item.find('[data-group-name]').attr('data-group-name', function(i, attr) {
+            return fixName(groupName, attr, num);
         });
 
-		item.find('[data-validation-name]').attr('data-validation-name', function() {
-			return fixName(listCo.data('group-name'), $(this).attr('data-validation-name'), num);
+		item.find('[data-validation-name]').attr('data-validation-name', function(i, attr) {
+			return fixName(groupName, attr, num);
 		});
 
-		item.find('[data-show-if-name]').attr('data-show-if-name', function() {
-			return fixName(listCo.data('group-name'), $(this).attr('data-show-if-name'), num);
+		item.find('[data-show-if-name]').attr('data-show-if-name', function(i, attr) {
+			return fixName(groupName, attr, num);
 		});
 
 		item.insertBefore($this.closest('.segment'));
@@ -112,7 +121,7 @@ function enableFormControls(root) {
 	root.find('input[type=range]').on('input', handleRange).each(handleRange);
 	root.find('.ui.dropdown').dropdown();
 	root.find('input[type=checkbox]').on('change', handleBox).each(handleBox);
-	// root.find('.checkbox').checkbox();
+	root.find('[data-radio-group-name]').on('change', handleRadio).each(handleRadio);
 	root.find("[data-inputmask]").inputmask();
 }
 

@@ -122,7 +122,9 @@ class Parser {
 			'{}bar' => 'BarGraph',
 			'{}pie' => 'PieChart',
 			'{}captcha' => 'Captcha',
-			'{}is-checked' => 'IsCheckedCondition'
+			'{}is-checked' => 'IsCheckedCondition',
+			'{}is-not-checked' => 'IsNotCheckedCondition',
+			'{}is-radio-selected' => 'IsRadioSelectedCondition'
 		];
 
 		$reader->xml($xml);

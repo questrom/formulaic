@@ -33,7 +33,7 @@ form(name='Example Form', title='Example Form', success-message='Lorem ipsum!')
     email(label='Email address', name='email', must-have-domain='bu.edu')
     date(label='Start date', name='start_date', min='2015-06-17', max='2015-06-20')
     show-if
-      is-checked(name='existence')
+      is-not-checked(name='existence')
       number(label='How many attendees?', name='num_attendees', min='3', max='5', required=true)
     checkbox(label='I agree to the terms and conditions', name='agree_to_terms', must-check=true)
     checkbox(label='I exist', name='existence')
@@ -50,7 +50,7 @@ form(name='Example Form', title='Example Form', success-message='Lorem ipsum!')
       option Questrom School of Business
       option College of General Studies
     show-if
-      is-checked(name='existence')
+      is-radio-selected(name='choose_a_link',value='Tech Help')
       group
         header(icon='mail', subhead='hey') Login!
         notice(text='Hello world!')

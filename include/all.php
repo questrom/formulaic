@@ -14,8 +14,10 @@ date_default_timezone_set(Config::get()['time-zone']);
 
 
 // Config parsing
-require('Condition.php');
 require('Parser.php');
+
+// Show-if conditions
+require('Condition.php');
 
 // HTML generation
 require('HTMLGenerator.php');

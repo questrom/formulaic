@@ -282,16 +282,17 @@ class RadiosFormPart extends FormPart {
     public function render() {
         return $this->h
             ->div->class('grouped fields validation-root ' . ($this->f->required ? 'required' : ''))
+            	->data('radio-group-name', $this->f->name)
             ->addH($this->f->getLabel())
             ->addH(
                 array_map(
                     function($v) {
                         return $this->h
                             ->div->class('field not-validation-root')
-                            ->div->class('ui radio checkbox')
-                            ->input->name($this->f->name)->type('radio')->value($v)->end
-                            ->label->t($v)->end
-                            ->end
+                            	->div->class('ui radio checkbox')
+                            		->input->name($this->f->name)->type('radio')->value($v)->end
+                            		->label->t($v)->end
+                            	->end
                             ->end;
                     },
                     $this->f->options
