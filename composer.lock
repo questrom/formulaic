@@ -4,8 +4,59 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "46def8c78549ccb1b9c8f3077073baa5",
+    "hash": "2c7715d07a0f85f50855d17700e2f605",
     "packages": [
+        {
+            "name": "gabrielelana/byte-units",
+            "version": "0.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/gabrielelana/byte-units.git",
+                "reference": "95f310237235c7058b7b17b431ac3f009ef79270"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/gabrielelana/byte-units/zipball/95f310237235c7058b7b17b431ac3f009ef79270",
+                "reference": "95f310237235c7058b7b17b431ac3f009ef79270",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "ByteUnits\\": "src/ByteUnits"
+                },
+                "files": [
+                    "src/ByteUnits/functions.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Gabriele Lana",
+                    "email": "gabriele.lana@gmail.com"
+                }
+            ],
+            "description": "Library to parse, format and convert byte units",
+            "homepage": "https://github.com/gabrielelana/byte-units",
+            "keywords": [
+                "byte",
+                "convert",
+                "format",
+                "parse",
+                "size",
+                "units"
+            ],
+            "time": "2015-06-03 12:57:06"
+        },
         {
             "name": "gregwar/cache",
             "version": "v1.0.10",

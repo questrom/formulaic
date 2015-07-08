@@ -9,9 +9,8 @@ form(name='Example Form', title='Example Form', success-message='Lorem ipsum!')
     file(label='Upload a file...', name='upload_file', max-size='100000', permissions='public-read')
       allow(ext='docx', mime='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
       allow(ext='jpg', mime='image/jpeg')
-    datetime(label='Start at', name='start_datetime')
-      //- , min='01/01/2015 11:11 AM', max='01/01/2016 11:11 AM', step='10')
-    time(label='Start time', name='start_time')
+    datetime(label='Start at', name='start_datetime', min='01/01/2015 11:11 AM', max='01/01/2016 11:11 AM', step='10')
+    time(label='Start time', name='start_time', min='11:00 AM')
     range(label='Volume', name='volume', min='3', max='5', default='4', step='0.5')
     textbox(label='Your name', name='name')
     notice(header='Wonderful!', text='Hello world!', type='info', icon='inbox')
@@ -34,11 +33,11 @@ form(name='Example Form', title='Example Form', success-message='Lorem ipsum!')
     date(label='Start date', name='start_date', min='2015-06-17', max='2015-06-20')
     show-if
       is-not-checked(name='existence')
-      number(label='How many attendees?', name='num_attendees', min='3', max='5', required=true)
+      number(label='How many attendees?', name='num_attendees', min='3', max='5', integer=true, required=true)
     checkbox(label='I agree to the terms and conditions', name='agree_to_terms', must-check=true)
     checkbox(label='I exist', name='existence')
     header abc
-    textarea(label='Additional notes', name='additional_notes', min-length='4')
+    textarea(label='Additional notes', name='additional_notes', min-length='4', max-length='8')
     radios(label='Choose a link...', name='choose_a_link')
       option Career Center
       option Student Link
@@ -63,7 +62,7 @@ form(name='Example Form', title='Example Form', success-message='Lorem ipsum!')
             generated with PHP's password_hash
             in prod, don't store this in plaintext
         password(label='Password', name='password', match-hash='$2y$10$FeVuAyjk82DNDflP6LevxOG7GCWm11bJ7R48Kx7wHH6a9PP7Z1Aki')
-    checkboxes(label='What are your favorite colors?', name='fave_colors', required=true)
+    checkboxes(label='What are your favorite colors?', name='fave_colors', required=true, max-choices='5')
       option Red
       option Orange
       option Yellow

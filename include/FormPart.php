@@ -111,12 +111,13 @@ class NoticeFormPart extends BaseNoticeFormPart {
 
 
 class InputFormPart extends FormPart {
-	function __construct($field, $type, $icon = null, $mask = null) {
+	function __construct($field, $type, $icon = null, $mask = null, $sublabel = null) {
 		$this->f = $field;
 		$this->h = new HTMLParentlessContext();
 		$this->type = $type;
 		$this->icon = $icon;
 		$this->mask = $mask;
+		$this->sublabel = $sublabel;
 	}
 	function render() {
 		return $this->h
@@ -130,6 +131,32 @@ class InputFormPart extends FormPart {
 					->type($this->type)
 					->name($this->f->name)
 					->data('inputmask', $this->mask, $this->mask !== null)
+				->end
+			->end
+
+				->hif($this->sublabel)
+					->p->class('muted-text')->t($this->sublabel)->end
+				->end
+		->end;
+	}
+}
+
+class NumberFormPart extends FormPart {
+	function __construct($field) {
+		$this->f = $field;
+		$this->h = new HTMLParentlessContext();
+	}
+	function render() {
+		return $this->h
+		->div->class('ui field ' . ($this->f->required ? 'required' : ''))
+			->addH($this->f->getLabel())
+			->div->class('ui input')
+				->input
+					->type('number')
+					->name($this->f->name)
+					->min($this->f->min, is_finite($this->f->min) )
+					->max($this->f->max, is_finite($this->f->max) )
+					->step($this->f->integer ? '1' : 'any')
 				->end
 			->end
 		->end;
@@ -191,20 +218,40 @@ class TextareaFormPart extends FormPart {
 		return $this->h
 			->ins(fieldBox($this->h, $this->f->required))
 			->addH($this->f->getLabel())
-			->textarea->name($this->f->name)->end
+			->textarea
+				->name($this->f->name)
+				->maxlength($this->f->maxLength, is_finite($this->f->maxLength))
+			->end
 			->end;
 	}
 }
 
 
+function df($date) {
+	return $date->format('g:ia m/d/Y');
+}
+
 class DateTimePickerFormPart extends FormPart {
 	function render() {
+		$sublabel = '';
+
+		if(isset($this->f->max) && isset($this->f->min)) {
+			$sublabel = 'Please provide a date and time between ' . df($this->f->min) . ' and ' . df($this->f->max) . '.';
+		} else if (isset($this->f->max)) {
+			$sublabel = 'Please provide a date and time no later than ' . df($this->f->max) . '.';
+		} else if(isset($this->f->min)) {
+			$sublabel = 'Please provide a date and time no earlier than ' . df($this->f->min) . '.';
+		}
+
 		return $this->h
 		->div->class('field ' . ($this->f->required ? ' required' : ''))
 			->addH($this->f->getLabel())
 			->div->class('ui left icon input')
 				->i->class('calendar icon')->end
 				->input->type('text')->name($this->f->name)->data('inputmask', " 'alias': 'proper-datetime' ")->end
+			->end
+			->hif($sublabel)
+				->p->class('muted-text')->t($sublabel)->end
 			->end
 		->end;
 	}
@@ -213,6 +260,16 @@ class DateTimePickerFormPart extends FormPart {
 
 class TimeInputFormPart extends FormPart {
 	function render() {
+		$sublabel = '';
+
+		if(isset($this->f->max) && isset($this->f->min)) {
+			$sublabel = 'Please provide a time between ' . ($this->f->min) . ' and ' . ($this->f->max) . '.';
+		} else if (isset($this->f->max)) {
+			$sublabel = 'Please provide a time no later than ' . ($this->f->max) . '.';
+		} else if(isset($this->f->min)) {
+			$sublabel = 'Please provide a time no earlier than ' . ($this->f->min) . '.';
+		}
+
 		return $this->h
 		->div->class('field ' . ($this->f->required ? ' required' : ''))
 			->addH($this->f->getLabel())
@@ -223,6 +280,9 @@ class TimeInputFormPart extends FormPart {
 					->name($this->f->name)
 					->data('inputmask', " 'alias': 'h:s t', 'placeholder': 'hh:mm am' ")
 				->end
+			->end
+			->hif($sublabel)
+				->p->class('muted-text')->t($sublabel)->end
 			->end
 		->end;
 	}
@@ -280,11 +340,23 @@ class RangeFormPart extends FormPart {
 
 class ListComponentFormPart extends FormPart {
 	function render() {
-
+		$sublabel = '';
+		if(is_finite($this->f->maxItems) && $this->f->minItems > 0) {
+			$sublabel = 'Please provide between ' . $this->f->minItems . ' and ' . $this->f->maxItems . ' items.';
+		} else if (is_finite($this->f->maxItems)) {
+			$sublabel = 'Please provide no more than ' . $this->f->maxItems . ' items.';
+		} else if($this->f->minItems > 0) {
+			$sublabel = 'Please provide at least ' . $this->f->minItems . ' items.';
+		}
 		return $this->h
 		->div->class('ui field validation-root list-component')->data('count','0')->data('group-name', $this->f->name)
 				->data('validation-name', $this->f->name)
-			->h5->class('top attached ui message')->t($this->f->label)->end
+			->h5->class('top attached ui message')
+				->t($this->f->label)
+				->hif($sublabel)
+					->p->class('muted-text pull-right')->t($sublabel)->end
+				->end
+			->end
 			->div->class('ui bottom attached segment list-items')
 				->script->type('text/template')
 					->addH(
@@ -308,6 +380,7 @@ class ListComponentFormPart extends FormPart {
 					->end
 				->end
 			->end
+
 		->end;
 	}
 }
@@ -359,10 +432,19 @@ class GroupFormPart extends FormPart {
 
 class CheckboxesFormPart extends FormPart {
 	function render() {
+		$sublabel = '';
+		if(is_finite($this->f->maxChoices) && $this->f->minChoices > 0) {
+			$sublabel = 'Please choose between ' . $this->f->minChoices . ' and ' . $this->f->maxChoices . ' items from the list.';
+		} else if (is_finite($this->f->maxChoices)) {
+			$sublabel = 'Please choose no more than ' . $this->f->maxChoices . ' items from the list.';
+		} else if($this->f->minChoices > 0) {
+			$sublabel = 'Please choose at least ' . $this->f->minChoices . ' items from the list.';
+		}
 		return $this->h
 			->div
 				->class('grouped fields validation-root ' . ($this->f->required ? 'required' : ''))
 				->data('validation-name', $this->f->name)
+
 				->addH($this->f->getLabel())
 				->addH(
 					array_map(
@@ -377,6 +459,9 @@ class CheckboxesFormPart extends FormPart {
 						$this->f->options
 					)
 				)
+				->hif($sublabel)
+					->p->class('muted-text')->t($sublabel)->end
+				->end
 			->end;
 	}
 }

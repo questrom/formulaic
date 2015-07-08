@@ -50,17 +50,13 @@ class S3Output implements Output, XmlDeserializable {
 			if(is_array($x)) {
 				return $this->run($x, $page);
 			} else if($x instanceof FileInfo) {
-
-
 				$ret = $this->s3->putObject(
 					S3::inputFile($x->file['tmp_name'], false),
 					$this->bucket,
 					$x->filename,
 					$x->permissions,
 					[],
-					[
-						'Content-Type' => $x->mime
-					]
+					[ 'Content-Type' => $x->mime ]
 				);
 
 				// Based on code from amazon-s3-php-class

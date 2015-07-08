@@ -325,7 +325,8 @@ class FileUpload extends FileInputComponent {
 
 	}
     function makeFormPart() {
-		return new InputFormPart($this, 'file');
+    	$innerText = 'Allowed file types: ' . implode(', ', array_keys($this->allowedExtensions)) . ' ' . json_decode('"\u00B7"') . ' Max file size: ' . ByteUnits\Metric::bytes($this->maxSize)->format(0);
+		return new InputFormPart($this, 'file', null, null, $innerText);
 	}
 	protected function validate($against) {
 		return $against
@@ -452,6 +453,10 @@ class Password extends PostInputComponent {
 
 
 		$this->matchHash = isset($args['match-hash']) ? $args['match-hash'] : null;
+
+		if(isset($args['match-hash'])) {
+			$this->required = true;
+		}
 	}
     function makeFormPart() {
 		return new InputFormPart($this, 'password', '');
@@ -524,7 +529,8 @@ class EmailAddr extends PostInputComponent {
 		$this->mustHaveDomain = isset($args['must-have-domain']) ? $args['must-have-domain'] : null;
 	}
     function makeFormPart() {
-        return new InputFormPart($this, 'email', 'mail');
+    	$innerText = isset($this->mustHaveDomain) ? ('Must be @' . $this->mustHaveDomain) : null;
+        return new InputFormPart($this, 'email', 'mail',  null, $innerText);
     }
 	protected function validate($against) {
 		return $against
@@ -545,6 +551,7 @@ class EmailAddr extends PostInputComponent {
 		});
 	}
 }
+
 class UrlInput extends PostInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
@@ -582,7 +589,7 @@ class NumberInp extends PostInputComponent {
 		$this->integer = isset($args['integer']);
 	}
     function makeFormPart() {
-        return new InputFormPart($this, 'number', '');
+        return new NumberFormPart($this);
     }
 	protected function validate($against) {
 		return $against
@@ -594,6 +601,10 @@ class NumberInp extends PostInputComponent {
 	}
 }
 
+function dfd($date) {
+	return $date->format('m/d/Y');
+}
+
 class DatePicker extends PostInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
@@ -603,7 +614,17 @@ class DatePicker extends PostInputComponent {
 		$this->max = isset($args['max']) ? DateTimeImmutable::createFromFormat('Y-m-d', $args['max'])->setTime(0,0,0) : null;
 	}
     function makeFormPart() {
-        return new InputFormPart($this, 'text', 'calendar', " 'alias': 'mm/dd/yyyy' ");
+    	$sublabel = '';
+
+		if(isset($this->max) && isset($this->min)) {
+			$sublabel = 'Please provide a date between ' . dfd($this->min) . ' and ' . dfd($this->max) . '.';
+		} else if (isset($this->max)) {
+			$sublabel = 'Please provide a date no later than ' . dfd($this->max) . '.';
+		} else if(isset($this->min)) {
+			$sublabel = 'Please provide a date no earlier than ' . dfd($this->min) . '.';
+		}
+
+        return new InputFormPart($this, 'text', 'calendar', " 'alias': 'mm/dd/yyyy' ", $sublabel);
     }
 	protected function validate($against) {
 		return $against
@@ -649,7 +670,6 @@ class Notice extends BaseNotice {
 
 class ListComponent extends GroupComponent implements FieldListItem, FieldTableItem {
 	function __construct($args) {
-//        var_dump($args);
 		$this->items = $args['children'];
 		$this->name = $args['name'];
 		$this->label = $args['label'];
@@ -674,8 +694,6 @@ class ListComponent extends GroupComponent implements FieldListItem, FieldTableI
 
 		return $val
 		->innerBind(function($v) {
-
-//                var_dump($v);
 
             return Result::ok(
 				[
