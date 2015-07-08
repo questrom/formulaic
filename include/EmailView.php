@@ -41,15 +41,11 @@ class EmailView implements HTMLComponent {
 	use Configurable;
 
 	function __construct($page) {
-
 		$this->title = $page->title;
 		$this->pageData = $page;
-
 	}
+
 	function get($h) {
-
-		$timestamp = $this->data['_timestamp'];
-
 		return
 		$h
 		->html
@@ -76,7 +72,7 @@ class EmailView implements HTMLComponent {
 							->tr
 								->td->colspan('2')->align('left')
 									->strong->t('Timestamp:' . json_decode('"\u2002"'))->end
-									->t($timestamp->format('Y/m/d g:i A'))
+									->t($this->data['_timestamp']->format('Y/m/d g:i A'))
 									->br->end
 									->strong->t('IP:' . json_decode('"\u2002"'))->end
 									->code->t($this->data['_ip'])->end

@@ -849,8 +849,7 @@ class ListComponent extends GroupComponent implements FieldListItem, FieldTableI
 				return Result::ok($h
 					->td
 						->addH(array_map(function($listitem) use($h) {
-							return (new ValueTable(parent::getAllFields(), $listitem, false))
-								->get(new HTMLParentlessContext());
+							return new ValueTable(parent::getAllFields(), $listitem, false);
 						}, $v))
 					->end
 				);
@@ -867,8 +866,7 @@ class ListComponent extends GroupComponent implements FieldListItem, FieldTableI
 							return $h->table->border(1)
 								->addH(array_map(function($field) use ($listitem) {
 									if($field instanceof FieldListItem) {
-										return (new ValueRow( isget($listitem[$field->name]), $field ))
-											->get(new HTMLParentlessContext());
+										return (new EmailValueRow( isget($listitem[$field->name]), $field ))->get(new HTMLParentlessContext());
 									} else {
 										return null;
 									}

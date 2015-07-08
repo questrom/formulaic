@@ -3,57 +3,52 @@
 use Sabre\Xml\XmlDeserializable as XmlDeserializable;
 
 
-class ValueRow implements HTMLComponent {
+class ValueRow implements Renderable {
 	function __construct($value, $component) {
 
 		$this->value = $value;
 		$this->component = $component;
+		$this->h = new HTMLParentlessContext();
 	}
-	function get($h) {
 
-
-		if($this->component instanceof FieldListItem) {
-			return $this->component->asDetailedTableCell(
-				$h,
-				$this->value === null ? Result::none(null) : Result::ok($this->value)
-			)
-				->bindNothing(function($x) use ($h){
-					return Result::ok(
-						$h
-						->td->class('disabled')
-							->i->class('ban icon')->end
+	function render() {
+		return $this->component->asDetailedTableCell(
+			$this->h,
+			$this->value === null ? Result::none(null) : Result::ok($this->value)
+		)
+			->bindNothing(function($x) {
+				return Result::ok(
+					$this->h
+					->td->class('disabled')
+						->i->class('ban icon')->end
+					->end
+				);
+			})
+			->innerBind(function($x) {
+					return $this->h
+					->tr
+						->td->class('right aligned collapsing nowrap')
+							->t($this->component->label)
 						->end
-					);
-				})
-				->innerBind(function($x) use ($h) {
-						return $h
-						->tr
-							->td->class('right aligned collapsing nowrap')
-								->t($this->component->label)
-							->end
-							->ins($x)
-						->end;
-				});
-		} else {
-			throw new Exception('Invalid column!');
-		}
-
+						->ins($x)
+					->end;
+			});
 	}
 }
 
-class ValueTable implements HTMLComponent {
+class ValueTable implements Renderable {
 	function __construct($fields, $data, $stamp) {
 		$this->fields = $fields;
 		$this->data = $data;
 		$this->stamp = false;
+		$this->h = new HTMLParentlessContext();
 	}
-	function get($h) {
-		return $h ->table->class('ui definition table')
+	function render() {
+		return $this->h->table->class('ui definition table')
 			->tbody
 				->addH(array_map(function($field) {
 					if($field instanceof FieldListItem) {
-						return (new ValueRow( isget($this->data[$field->name]), $field ))
-							->get(new HTMLParentlessContext());
+						return new ValueRow( isget($this->data[$field->name]), $field );
 					} else {
 						return null;
 					}
@@ -135,7 +130,7 @@ class DetailsView implements HTMLComponent {
 					->h1
 						->t($this->title)
 					->end
-					->addH((new ValueTable($this->pageData->getAllFields(), $this->data, true))->get(new HTMLParentlessContext()))
+					->addH( new ValueTable($this->pageData->getAllFields(), $this->data, true) )
 				->end
 			->end
 		->end;
