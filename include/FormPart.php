@@ -2,12 +2,20 @@
 
 
 class Label implements Renderable {
-	function __construct($label) {
+	function __construct($label, $sublabel = null) {
 		$this->h = new HTMLParentlessContext();
 		$this->label = $label;
+		$this->customSublabel = $sublabel;
 	}
 	function render() {
-		return $this->h->label->t($this->label)->end;
+		return $this->h->label
+			->t($this->label)
+			->hif($this->customSublabel)
+				->p->class('muted-text pull-right')
+					->t($this->customSublabel)
+				->end
+			->end
+		->end;
 	}
 }
 
