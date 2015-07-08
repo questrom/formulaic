@@ -90,7 +90,7 @@ class TablePage implements Renderable {
 											);
 									}, $this->f->cols))
 									->td->class('center aligned nowrap unpadded-cell')
-										->a->class('ui no-margin compact button')->href('details.php?id=' . $row['_id'])
+										->a->class('ui no-margin compact button')->href('details.php?form=' . $_GET['form'] . '&id=' . $row['_id'])
 											->t('Details')
 										->end
 									->end
@@ -101,7 +101,7 @@ class TablePage implements Renderable {
 							->div->class('ui text menu')
 								->div->class('item')
 									->a->class('ui left floated primary labeled icon button ' . ($this->f->page === 1 ? 'disabled' : ''))
-										->href('?view=' . $this->f->name . '&page=' . ($this->f->page - 1))
+										->href('?form=' . $_GET['form'] . '&view=' . $this->f->name . '&page=' . ($this->f->page - 1))
 										->i->class('left chevron icon')->end
 										->t('Previous')
 									->end
@@ -111,7 +111,7 @@ class TablePage implements Renderable {
 								->end
 								->div->class('right item')
 									->a->class('ui right floated primary right labeled icon button ' . ((($this->f->page - 1) === $this->f->max) ? 'disabled' : ''))
-										->href('?view=' . $this->f->name . '&page=' . ($this->f->page + 1))
+										->href('?form=' . $_GET['form'] . '&view=' . $this->f->name . '&page=' . ($this->f->page + 1))
 										->i->class('right chevron icon')->end
 										->t('Next')
 									->end

@@ -63,6 +63,13 @@ class AllowElem implements XmlDeserializable {
 
 
 class Parser {
+	static function getForm($name) {
+		if(is_string($name) && !preg_match('/[^A-za-z0-9_]/', $name) && strlen($name) > 0) {
+			return 'forms/' . $name . '.jade';
+		} else {
+			throw new Exception('Invalid form name!');
+		}
+	}
 	static function parse_jade($file) {
 
 

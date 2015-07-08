@@ -6,7 +6,7 @@ require('include/all.php');
 $csrf = new \Riimu\Kit\CSRF\CSRFHandler();
 $csrf->validateRequest(true);
 
-$page = Parser::parse_jade('forms/test.jade');
+$page = Parser::parse_jade(Parser::getForm($_POST['__form_name']));
 
 $config = Config::get();
 
