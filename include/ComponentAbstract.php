@@ -44,32 +44,6 @@ interface Renderable {
     public function render();
 }
 
-abstract class FormPart implements Renderable {
-    public function __construct($field) {
-        $this->f = $field;
-        $this->h = new HTMLParentlessContext();
-    }
-}
-
-abstract class BaseHeaderFormPart extends FormPart {
-    function render() {
-        $inside = $this->h->t($this->f->text)
-		->hif($this->f->subhead !== null)
-			->div->class('sub header')->t($this->f->subhead)->end
-		->end;
-		return $this->h
-			->hif($this->f->icon !== null)
-				->i->class($this->f->icon . ' icon')->end
-				->div->class('content')
-					->addH($inside)
-				->end
-			->end
-			->hif($this->f->icon === null)
-				->addH($inside)
-			->end;
-    }
-}
-
 
 abstract class BaseHeader implements FormPartFactory, XmlDeserializable  {
 	use Configurable;
@@ -83,32 +57,6 @@ abstract class BaseHeader implements FormPartFactory, XmlDeserializable  {
 	}
 }
 
-abstract class BaseNoticeFormPart extends FormPart {
-    function render() {
-        return $this->h
-		->hif($this->f->icon !== null)
-			->i->class($this->f->icon . ' icon')->end
-		->end
-		->div->class('content')
-			->hif($this->f->header !== null)
-				->div->class('header')
-					->t($this->f->header)
-				->end
-			->end
-			->p
-				->t($this->f->text)
-			->end
-			->hif($this->f->list !== null)
-			  ->ul->class('list')
-			    ->addH(array_map(function($item) {
-			    	// var_dump($this->list);
-			    	return $this->h->li->t($item)->end;
-			    }, $this->f->list === null ? [] : $this->f->list ))
-			  ->end
-			->end
-		->end;
-    }
-}
 
 abstract class BaseNotice implements FormPartFactory, XmlDeserializable {
 	use Configurable;
@@ -222,30 +170,4 @@ abstract class GroupComponent implements FormPartFactory, Validatable, NameMatch
 	final protected function validate($against) {
 		return $against->groupValidate($this->items);
 	}
-}
-
-class InputFormPart extends FormPart {
-    function __construct($field, $type, $icon = null, $mask = null) {
-        $this->f = $field;
-        $this->h = new HTMLParentlessContext();
-        $this->type = $type;
-        $this->icon = $icon;
-        $this->mask = $mask;
-    }
-    function render() {
-        return $this->h
-		->div->class('ui field ' . ($this->f->required ? 'required' : ''))
-			->addH($this->f->getLabel())
-			->div->class($this->icon ? 'ui left icon input' : 'ui input')
-				->hif($this->icon)
-					->i->class('icon ' . $this->icon)->end
-				->end
-				->input
-					->type($this->type)
-					->name($this->f->name)
-					->data('inputmask', $this->mask, $this->mask !== null)
-				->end
-			->end
-		->end;
-    }
 }

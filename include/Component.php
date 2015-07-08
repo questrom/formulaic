@@ -9,15 +9,10 @@
 
 class ShowIfComponent extends GroupComponent {
 	function __construct($args) {
-
-		$this->items = [
-			$args['children'][1]
-		];
+		$this->items = [ $args['children'][1] ];
 		$this->condition = $args['children'][0];
 	}
-	function makeFormPart() {
-        return new ShowIfComponentFormPart($this);
-    }
+	function makeFormPart() { return new ShowIfComponentFormPart($this); }
 	function getMerger($val) {
 		return $val
 			->collapse()
@@ -30,17 +25,6 @@ class ShowIfComponent extends GroupComponent {
 			});
 	}
 }
-
-class Label implements Renderable {
-	function __construct($label) {
-		$this->h = new HTMLParentlessContext();
-        $this->label = $label;
-	}
-	function render() {
-		return $this->h->label->t($this->label)->end;
-	}
-}
-
 
 class Checkbox extends PostInputComponent implements Enumerative {
 	function __construct($args) {
