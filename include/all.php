@@ -35,6 +35,7 @@ require('Component.php');
 require('Output.php');
 
 // Views
+require('View.php');
 require('TableView.php');
 require('DetailsView.php');
 require('GraphView.php');

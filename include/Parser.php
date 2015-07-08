@@ -114,7 +114,6 @@ class Parser {
 			'{}form' => 'Page',
 			'{}list' => 'ListComponent',
 			'{}show-if' => 'ShowIfComponent',
-			'{}views' => 'ChildElem',
 			'{}table-view' => 'TableView',
 			'{}col' => 'Column',
 			'{}email-to' => 'EmailOutput',
@@ -124,7 +123,8 @@ class Parser {
 			'{}captcha' => 'Captcha',
 			'{}is-checked' => 'IsCheckedCondition',
 			'{}is-not-checked' => 'IsNotCheckedCondition',
-			'{}is-radio-selected' => 'IsRadioSelectedCondition'
+			'{}is-radio-selected' => 'IsRadioSelectedCondition',
+			'{}views' => 'ViewList'
 		];
 
 		$reader->xml($xml);

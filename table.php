@@ -4,7 +4,7 @@ require('include/all.php');
 
 $page = Parser::parse_jade('forms/test.jade');
 
-$view = $page->views[0];
+$view = $page->views->getByName('table');
 $view->setPage($page);
 $view->query($_GET);
 

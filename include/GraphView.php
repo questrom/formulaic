@@ -6,6 +6,7 @@ class GraphView implements XmlDeserializable, HTMLComponent {
 	use Configurable;
 
 	function __construct($args) {
+		$this->name = $args['name'];
 		$this->title = $args['title'];
 		$this->graphs = $args['children'];
 	}

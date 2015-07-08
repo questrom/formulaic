@@ -49,6 +49,7 @@ class TableView implements XmlDeserializable, HTMLComponent {
 
 	function __construct($args) {
 
+		$this->name = $args['name'];
 		$this->title = $args['title'];
 		$this->cols = $args['children'];
 
