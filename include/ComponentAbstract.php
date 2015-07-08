@@ -75,14 +75,29 @@ abstract class BaseNotice implements FormPartFactory, XmlDeserializable {
 
 }
 
+class OrdinaryTableCell implements Renderable {
+	function __construct($value) {
+		$this->h = new HTMLParentlessContext();
+		$this->value = $value;
+	}
+	function render() {
+		// Not very elegant to have this yield a non-HTMLGenerator return value
+		return $this->h
+			->td
+				->t($this->value)
+			->end;
+
+	}
+}
+
 abstract class NamedLabeledComponent implements FormPartFactory, Validatable, NameMatcher, XmlDeserializable, FieldListItem, FieldTableItem {
 
 	use Configurable;
 
     function asTableCell($h, $value) {
-		return $value->innerBind(function($v) use ($h) {
-			return Result::ok($h->td->t($v)->end);
-		});
+    	return $value->innerBind(function($v) {
+    		return Result::ok( (new OrdinaryTableCell($v))->render() );
+    	});
 	}
 	function asDetailedTableCell($h, $value) {
 		return $this->asTableCell($h, $value);
