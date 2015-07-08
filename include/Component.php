@@ -31,9 +31,7 @@ class Checkbox extends PostInputComponent implements Enumerative {
 		parent::__construct($args);
 		$this->mustCheck = isset($args['must-check']);
 	}
-	function makeFormPart() {
-		return new CheckboxFormPart($this);
-	}
+	function makeFormPart() { return new CheckboxFormPart($this); }
 	protected function validate($against) {
 		return $against
 			->filterBoolean()
