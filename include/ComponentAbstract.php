@@ -81,12 +81,10 @@ class OrdinaryTableCell implements Renderable {
 		$this->value = $value;
 	}
 	function render() {
-		// Not very elegant to have this yield a non-HTMLGenerator return value
 		return $this->h
 			->td
 				->t($this->value)
 			->end;
-
 	}
 }
 
