@@ -98,12 +98,13 @@ abstract class Graph implements XmlDeserializable, GraphViewPartFactory  {
 			// to handle array case
 			$results = $client->aggregate([
 				[
-					'$unwind' =>
-					'$' . $this->name
+					'$unwind' => '$' . $this->name
 				],
-				['$group'  => [
-					'_id' => '$' . $this->name,
-					'count' => [ '$sum' => 1 ] ]
+				[
+					'$group'  => [
+						'_id' => '$' . $this->name,
+						'count' => [ '$sum' => 1 ]
+					]
 				],
 				[
 					'$sort' => [
@@ -113,10 +114,11 @@ abstract class Graph implements XmlDeserializable, GraphViewPartFactory  {
 			]);
 		} else {
 			$results = $client->aggregate(
-
-				['$group'  => [
-					'_id' => '$' . $this->name,
-					'count' => [ '$sum' => 1 ] ]
+				[
+					'$group'  => [
+						'_id' => '$' . $this->name,
+						'count' => [ '$sum' => 1 ]
+					]
 				],
 				[
 					'$sort' => [
@@ -125,11 +127,9 @@ abstract class Graph implements XmlDeserializable, GraphViewPartFactory  {
 				]
 			);
 		}
+
 		$results = $results['result'];
-
 		$ids = array_map(function($x) { return $x['_id']; }, $results);
-
-
 
 		foreach(array_diff($this->component->getPossibleValues(), $ids) as $value) {
 			$results[] = [
