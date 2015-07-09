@@ -1,6 +1,10 @@
 /* jshint undef: true, unused: true */
 /* globals $, document, FormData */
 
+if(!('FormData' in window)) {
+	alert('broken!');
+}
+
 function addPrompt(name, prompt) {
 	$(document.getElementsByName(name))
 		.add($('[data-validation-name="' + name + '"]'))
@@ -69,7 +73,6 @@ function handleRadio() {
 	var $this = $(this);
 	var name = $this.attr('data-radio-group-name'),
 		value = $this.find(':checked').attr('value');
-	console.log(name, value);
 	$('[data-show-if-name="' + name + '"]').hide();
 	$('[data-show-if-name="' + name + '"][data-show-if-condition="is-radio-selected:' + value + '"]').show();
 }
