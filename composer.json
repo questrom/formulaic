@@ -16,5 +16,8 @@
         "gregwar/captcha": "^1.1",
         "mistic100/randomcolor": "^1.0",
         "gabrielelana/byte-units": "^0.3.0"
+    },
+    "config": {
+        "component-dir": "vendor/etc",
     }
 }
