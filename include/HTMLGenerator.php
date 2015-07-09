@@ -38,11 +38,6 @@ function generateString($input) {
                 $element = $element->render();
             }
 
-            if ($element instanceof HTMLComponent) {
-            	// var_dump($element);
-            	throw new Exception('Tried to add a Component!');
-            }
-
             if ($element instanceof HTMLGeneratorAbstract) {
                 $element = $element->toStringArray();
             }

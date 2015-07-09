@@ -6,11 +6,6 @@ use Sabre\Xml\XmlDeserializable as XmlDeserializable;
 // Abstract component classes
 // ==========================
 
-
-interface HTMLComponent {
-	public function get($h);
-}
-
 interface FormPartFactory {
     public function makeFormPart();
 }
