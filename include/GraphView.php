@@ -9,6 +9,7 @@ class GraphView implements XmlDeserializable, HTMLComponent, View {
 		$this->name = $args['name'];
 		$this->title = $args['title'];
 		$this->graphs = $args['children'];
+		$this->type = 'graph';
 	}
 	function setPage($page) {
 		$this->pageData = $page;

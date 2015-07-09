@@ -8,6 +8,9 @@ class ViewList implements XmlDeserializable {
 	function __construct($args) {
 		$this->views = $args['children'];
 	}
+	function getAllViews() {
+		return $this->views;
+	}
 	function getByName($name) {
 		foreach($this->views as $view) {
 			if($view->name === $name) {

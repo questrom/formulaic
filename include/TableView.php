@@ -148,6 +148,8 @@ class TableView implements XmlDeserializable, View, TableViewPartFactory {
 		$this->sortBy = $sortBy;
 
 		$this->perPage = isset($args['per-page']) ? $args['per-page'] : null;
+
+		$this->type = 'table';
 	}
 	function query($getData) {
 
