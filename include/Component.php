@@ -103,9 +103,11 @@ class TimeInput extends PostInputComponent {
 			if(intval($hour) === 0) {
 				$hour = 12;
 			}
-			return Result::ok($h->td
-				->t(sprintf('%d:%02d %s', $hour, $minute, $xm))
-			->end);
+
+			return Result::ok( (new OrdinaryTableCell(
+				sprintf('%d:%02d %s', $hour, $minute, $xm)
+			))->render() );
+
 
 		});
 	}
