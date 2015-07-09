@@ -12,14 +12,12 @@ div[data-show-if-name] > .ui.header:last-child { margin: 0 0 1rem; }
 
 div[data-show-if-name] > .ui.form .field:last-child,
 div[data-show-if-name] > .ui.form .fields:last-child .field {
-    margin: 0 0 1em ;
+    margin: 0 0 1em;
 }
 
-.ui.top.fixed.menu + .ui.container {
-    margin-top:50px;
-}
+.ui.top.fixed.menu + .ui.container { margin-top:50px; }
 
-.muted-text { color: rgba(40, 40, 40, 0.7); font-size: 90%;margin-top: 5px; }
+.muted-text { color: rgba(40, 40, 40, 0.7); font-size: 90%; margin-top: 5px; }
 
 /* Reduce padding around file inputs*/
 .ui.form input[type=file] { padding-top: 5px !important; padding-bottom: 5px !important; }
