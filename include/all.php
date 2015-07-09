@@ -40,3 +40,6 @@ require('TableView.php');
 require('DetailsView.php');
 require('GraphView.php');
 require('EmailView.php');
+
+// Main form list
+require('FormList.php');
