@@ -577,7 +577,7 @@ class PageFormPart extends FormPart {
 				->link->rel('stylesheet')->href('styles.css')->end
 
 				->meta->name('viewport')->content('width=device-width, initial-scale=1')->end // From https://github.com/h5bp/html5-boilerplate/blob/master/src/index.html
-
+				->meta->name('format-detection')->content('telephone=no')->end
 			->end
 			->body
 				->addH(new BrowserProblemPart(
