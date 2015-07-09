@@ -934,23 +934,22 @@ class TimestampField implements FieldTableItem, Validatable {
 class FieldList extends GroupComponent {
 	function __construct($args) {
 		$this->items = $args['children'];
+		$this->items[] = new TimestampField();
+		$this->items[] = new IPField();
 	}
 	function makeFormPart() {
         return new FormElemFormPart($this);
 	}
 }
 
-class Page extends GroupComponent {
+class Page implements XmlDeserializable {
+	static function xmlDeserialize(Sabre\Xml\Reader $reader) {
+		$attrs = $reader->parseAttributes();
+		$attrs['byTag'] = Sabre\Xml\Element\KeyValue::xmlDeserialize($reader);
+		return new static($attrs);
+	}
 	function __construct($args) {
-
 		$this->form = $args['byTag']['{}fields'];
-
-		$this->items = [
-			$this->form,
-			new TimestampField(),
-			new IPField()
-		];
-
 		$this->title = isset($args['title']) ? $args['title'] : 'Form';
 		$this->successMessage = isset($args['success-message']) ? $args['success-message'] : 'The form was submitted successfully.';
 		$this->outputs = $args['byTag']['{}outputs'];
@@ -959,16 +958,10 @@ class Page extends GroupComponent {
 	function makeFormPart() {
         return new PageFormPart($this);
 	}
-	static function xmlDeserialize(Sabre\Xml\Reader $reader) {
-		$attrs = $reader->parseAttributes();
-		$attrs['byTag'] = Sabre\Xml\Element\KeyValue::xmlDeserialize($reader);
-		return new static($attrs);
-	}
 	function getView($name) {
 		$view = $this->views->getByName($name);
 		$view->setPage($this);
 		return $view;
-
 	}
 	function setId($id) {
 		$this->id = $id;

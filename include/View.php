@@ -22,7 +22,6 @@ class ViewList implements XmlDeserializable {
 }
 
 interface View {
-	function __construct($args);
 	function query($args);
 	function setPage($page);
 }
@@ -32,5 +31,5 @@ interface TableViewPartFactory {
 }
 
 interface GraphViewPartFactory {
-	function makeGraphViewPart();
+	function makeGraphViewPart($data);
 }

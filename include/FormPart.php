@@ -505,7 +505,7 @@ class FormElemFormPart extends FormPart {
 	function render() {
 		return $this->h
 		->form->class('ui form')->action('submit.php')->method('POST')
-			->addH( array_map(function($x) { return $x ? $x->makeFormPart() : null; }, $this->f->items) )
+			->addH( array_map(function($x) { return ($x && $x instanceof FormPartFactory) ? $x->makeFormPart() : null; }, $this->f->items) )
 			->input->type('hidden')->name('__form_name')->value($_GET['form'])->end
 			->input
 				->type('hidden')
@@ -522,7 +522,7 @@ class FormElemFormPart extends FormPart {
 				->end
 			->end
 			->div->class('ui vertically padded center aligned grid')
-				->button->type('submit')->class('ui labeled icon positive big button')
+				->button->type('submit')->class('ui labeled icon positive big button')->data('submit', 'true')
 					->i->class('checkmark icon')->end
 					->span->t('Submit Form')->end
 				->end

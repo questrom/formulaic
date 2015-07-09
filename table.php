@@ -13,6 +13,8 @@ $page = Parser::parse_jade($_GET['form']);
 
 $view = $page->getView($_GET['view']);
 
-echo '<!DOCTYPE html>' . generateString(
-	$view->makeTableViewPart($view->query($_GET))
-);
+if($view instanceof TableView) {
+	echo '<!DOCTYPE html>' . generateString(
+		$view->makeTableViewPart($view->query($_GET))
+	);
+}

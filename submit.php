@@ -11,6 +11,7 @@ $page = Parser::parse_jade($_POST['__form_name']);
 $config = Config::get();
 
 $page
+	->form
 	->getMerger(Result::ok(new ClientData($_POST, $_FILES)))
 	->ifError(function($val) {
 		return Result::error([

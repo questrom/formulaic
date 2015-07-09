@@ -96,7 +96,7 @@ class DetailsViewRenderable implements Renderable {
 					->h1
 						->t($this->f->title)
 					->end
-					->addH( new ValueTable($this->f->pageData->getAllFields(), $this->f->data, true) )
+					->addH( new ValueTable($this->f->pageData->form->getAllFields(), $this->f->data, true) )
 				->end
 			->end
 		->end;
@@ -105,16 +105,15 @@ class DetailsViewRenderable implements Renderable {
 
 
 // Used by details.php and Output.php (For HTML email)
-class DetailsView {
-	use Configurable;
+class DetailsView implements View {
 
-	function __construct($page) {
+
+	function setPage($page) {
 		$this->title = $page->title;
 		$this->pageData = $page;
 	}
 
 	function query($getData) {
-
 		$page = $this->pageData;
 
 		$mongo = null;
@@ -135,8 +134,8 @@ class DetailsView {
 		$data = fixMongoDates($data);
 
 		$this->data = $data;
-
 	}
+
 	function makeDetailsView() {
 		return new DetailsViewRenderable($this);
 	}

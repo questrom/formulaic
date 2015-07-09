@@ -87,7 +87,7 @@ class TablePage implements Renderable {
 									->addH(array_map(function($col) use($row) {
 											return new ValueCell(
 												isget($row[$col->name]),
-												$this->f->pageData->getByName($col->name)
+												$this->f->pageData->form->getByName($col->name)
 											);
 									}, $this->f->cols))
 									->td->class('center aligned nowrap unpadded-cell')

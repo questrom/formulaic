@@ -30,7 +30,7 @@ class GraphViewRenderable implements Renderable {
 							->end
 						->end
 						->addH( array_map(function($x) {
-							return $x ? $x->makeGraphViewPart() : null;
+							return $x ? $x->makeGraphViewPart(null) : null;
 						}, $this->f->graphs) )
 				->end
 			->end
@@ -61,19 +61,24 @@ class GraphView implements XmlDeserializable, GraphViewPartFactory, View {
 		$this->collection = $mongo->collection;
 
 		foreach($this->graphs as $index => $graph) {
-			$graph->setComponent($this->pageData->getByName($graph->name), $index);
+			$graph->setComponent($this->pageData->form->getByName($graph->name), $index);
 		}
 	}
 	function query($getArgs) {
+		$data = [];
 		$client = (new MongoClient($this->server))
 			->selectDB($this->database)
 			->selectCollection($this->collection);
 		$this->totalCount = $client->count();
 		foreach($this->graphs as $graph) {
-			$graph->query($client);
+			$data[] = $graph->query($client);
 		}
+		return $data;
 	}
-	function makeGraphViewPart() {
+	function makeGraphViewPart($data) {
+		foreach($data as $index => $piece) {
+			$this->graphs[$index]->results = $piece;
+		}
 		return new GraphViewRenderable($this);
 	}
 }
@@ -134,7 +139,7 @@ abstract class Graph implements XmlDeserializable, GraphViewPartFactory  {
 
 		}
 
-		$this->results = $results;
+		return $results;
 
 	}
 }
@@ -283,7 +288,7 @@ class BarGraphRenderable implements Renderable {
 
 
 class PieChart extends Graph {
-	function makeGraphViewPart() {
+	function makeGraphViewPart($data) {
 		return new PieChartRenderable($this->label, $this->results);
 	}
 }
@@ -297,7 +302,7 @@ function kvmap(callable $fn, $array) {
 }
 
 class BarGraph extends Graph {
-	function makeGraphViewPart() {
+	function makeGraphViewPart($data) {
 		return new BarGraphRenderable($this->label, $this->results);
 	}
 }

@@ -68,7 +68,7 @@ class EmailViewRenderable implements Renderable {
 								} else {
 									return null;
 								}
-							}, $this->pageData->getAllFields() ))
+							}, $this->pageData->form->getAllFields() ))
 						->end
 						->tfoot
 							->tr
