@@ -1,28 +1,31 @@
 <?php
-class EmailValueRow implements HTMLComponent {
+
+
+class EmailValueRow implements Renderable {
 	function __construct($value, $component) {
 
 		$this->value = $value;
 		$this->component = $component;
+		$this->h = new HTMLParentlessContext();
 	}
-	function get($h) {
+	function render() {
 
 
 		if($this->component instanceof FieldListItem) {
 			return $this->component->asEmailTableCell(
-				$h,
+				$this->h,
 				$this->value === null ? Result::none(null) : Result::ok($this->value)
 			)
-				->bindNothing(function($x) use ($h){
+				->bindNothing(function($x) {
 					return Result::ok(
-						$h
+						$this->h
 						->td->bgcolor('#ccc')
 							->t('(No value)')
 						->end
 					);
 				})
-				->innerBind(function($x) use ($h) {
-						return $h
+				->innerBind(function($x)  {
+						return $this->h
 						->tr
 							->td->class('right aligned collapsing nowrap')
 								->t($this->component->label)
@@ -37,17 +40,16 @@ class EmailValueRow implements HTMLComponent {
 	}
 }
 
-class EmailView implements HTMLComponent {
-	use Configurable;
-
-	function __construct($page) {
-		$this->title = $page->title;
-		$this->pageData = $page;
+class EmailViewRenderable implements Renderable {
+	function __construct($title, $pageData, $data) {
+		$this->title = $title;
+		$this->pageData = $pageData;
+		$this->h = new HTMLParentlessContext();
+		$this->data = $data;
 	}
-
-	function get($h) {
+	function render() {
 		return
-		$h
+		$this->h
 		->html
 			->head
 				->meta->charset('utf-8')->end
@@ -62,7 +64,7 @@ class EmailView implements HTMLComponent {
 						->tbody
 							->addH(array_map(function($field) {
 								if($field instanceof FieldListItem) {
-									return (new EmailValueRow( isget($this->data[$field->name], null), $field ))->get(new HTMLParentlessContext());
+									return new EmailValueRow( isget($this->data[$field->name], null), $field );
 								} else {
 									return null;
 								}
@@ -83,5 +85,17 @@ class EmailView implements HTMLComponent {
 				->end
 			->end
 		->end;
+	}
+}
+
+class EmailView {
+
+	function __construct($page) {
+		$this->title = $page->title;
+		$this->pageData = $page;
+	}
+
+	function makeEmailView() {
+		return new EmailViewRenderable($this->title, $this->pageData, $this->data);
 	}
 }

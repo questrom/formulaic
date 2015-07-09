@@ -8,4 +8,4 @@ $view = new DetailsView($page);
 
 $view->query($_GET);
 
-echo '<!DOCTYPE html>' . generateString($view->get(new HTMLParentlessContext()));
+echo '<!DOCTYPE html>' . generateString($view->makeDetailsView());

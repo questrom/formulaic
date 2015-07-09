@@ -850,7 +850,7 @@ class ListComponent implements FormPartFactory, Validatable, NameMatcher, XmlDes
 							return $h->table->border(1)
 								->addH(array_map(function($field) use ($listitem) {
 									if($field instanceof FieldListItem) {
-										return (new EmailValueRow( isget($listitem[$field->name]), $field ))->get(new HTMLParentlessContext());
+										return (new EmailValueRow( isget($listitem[$field->name]), $field ));
 									} else {
 										return null;
 									}

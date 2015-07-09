@@ -73,9 +73,39 @@ class ValueTable implements Renderable {
 	}
 }
 
+class DetailsViewRenderable implements Renderable {
+	function __construct($field) {
+		$this->f = $field;
+		$this->h = new HTMLParentlessContext();
+
+	}
+	function render() {
+
+		return
+		$this->h
+		->html
+			->head
+				->meta->charset('utf-8')->end
+				->title->t($this->f->title)->end
+				->link->rel("stylesheet")->href("lib/semantic.css")->end
+				->link->rel("stylesheet")->href("styles.css")->end
+			->end
+			->body
+				->addH(new TopHeader())
+				->div->class('ui container wide-page')
+					->h1
+						->t($this->f->title)
+					->end
+					->addH( new ValueTable($this->f->pageData->getAllFields(), $this->f->data, true) )
+				->end
+			->end
+		->end;
+	}
+}
+
 
 // Used by details.php and Output.php (For HTML email)
-class DetailsView implements HTMLComponent {
+class DetailsView {
 	use Configurable;
 
 	function __construct($page) {
@@ -107,27 +137,8 @@ class DetailsView implements HTMLComponent {
 		$this->data = $data;
 
 	}
-	function get($h) {
-
-		return
-		$h
-		->html
-			->head
-				->meta->charset('utf-8')->end
-				->title->t($this->title)->end
-				->link->rel("stylesheet")->href("lib/semantic.css")->end
-				->link->rel("stylesheet")->href("styles.css")->end
-			->end
-			->body
-				->addH(new TopHeader())
-				->div->class('ui container wide-page')
-					->h1
-						->t($this->title)
-					->end
-					->addH( new ValueTable($this->pageData->getAllFields(), $this->data, true) )
-				->end
-			->end
-		->end;
+	function makeDetailsView() {
+		return new DetailsViewRenderable($this);
 	}
 }
 
