@@ -1,11 +1,11 @@
 <?php
 
 // Load dependencies
-require('vendor/autoload.php');
-require('jade/autoload.php.dist');
+require 'vendor/autoload.php';
+require 'jade/autoload.php.dist';
 
 // Utils
-require('utils.php');
+require 'include/utils.php';
 
 
 // Misc settings
@@ -14,32 +14,32 @@ date_default_timezone_set(Config::get()['time-zone']);
 
 
 // Config parsing
-require('Parser.php');
+require 'include/Parser.php';
 
 // Show-if conditions
-require('Condition.php');
+require 'include/Condition.php';
 
 // HTML generation
-require('HTMLGenerator.php');
+require 'include/HTMLGenerator.php';
 
 // Form valdation
-require('Validate.php');
+require 'include/Validate.php';
 
 // Components
-require('ComponentHelpers.php');
-require('ComponentAbstract.php');
-require('FormPart.php');
-require('Component.php');
+require 'include/ComponentHelpers.php';
+require 'include/ComponentAbstract.php';
+require 'include/FormPart.php';
+require 'include/Component.php';
 
 // Outputs
-require('Output.php');
+require 'include/Output.php';
 
 // Views
-require('include/View.php'); // include/ needed here
-require('TableView.php');
-require('DetailsView.php');
-require('GraphView.php');
-require('EmailView.php');
+require 'include/View.php'; // include/ needed hee
+require 'include/TableView.php';
+require 'include/DetailsView.php';
+require 'include/GraphView.php';
+require 'include/EmailView.php';
 
 // Main form list
-require('FormList.php');
+require 'include/FormList.php';
