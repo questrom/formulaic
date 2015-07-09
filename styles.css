@@ -4,6 +4,8 @@ html, body { height:auto; }
 body { overflow-x: auto; }
 /*End for chrome*/
 
+/*For IE: -ms- prefixed properties among stuff below; nothing besides thse*/
+
 /* Darker background*/
 body { background: #F7F7F7; }
 
@@ -43,6 +45,7 @@ input[type=range]::-moz-focus-outer { border:0 !important; }
 .ui.form .required > label:after,
 .ui.form .required  .ui.checkbox:after { font-size: 1.5rem; top: 5px; right:-10px; left: auto;}
 .ui.top.attached.header { margin-top:0 !important; }
+.ui.icon.message { -ms-flex-align: start; }
 .ui.icon.message > .icon:not(.close) { align-self: flex-start; }
 .ui.header.attached > .icon { vertical-align: top; }
 .red.prompt { display: table; }
@@ -73,8 +76,14 @@ input[type=range]::-moz-focus-outer { border:0 !important; }
     border-radius: 0.3125rem 0.3125rem 0.2857rem 0.2857rem !important;
 }
 
-.close-item { display:flex; align-items: flex-start; }
-.close-item > .content { flex: 1; margin-right: 15px; }
+.close-item {
+    display: -ms-flexbox;
+    display:flex;
+    -ms-flex-align: start;
+    align-items: flex-start;
+}
+
+.close-item > .content { -ms-flex: 1; flex: 1; margin-right: 15px; }
 .close-item > button { margin-top:5px !important; }
 .list-component > .segment { padding: 0 15px; }
 
