@@ -94,7 +94,7 @@ class TimeInput extends PostInputComponent {
 		return $value->innerBind(function($v) use ($h) {
 
 			return Result::ok($h->td
-				->t(sprintf("%d:%02d %s", $hour, $minute, $xm))
+				->t(sprintf('%d:%02d %s', $hour, $minute, $xm))
 			->end);
 
 		});
