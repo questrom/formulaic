@@ -1,4 +1,9 @@
 
+/*For chrome*/
+html, body { height:auto; }
+body { overflow-x: auto; }
+/*End for chrome*/
+
 /* Darker background*/
 body { background: #F7F7F7; }
 

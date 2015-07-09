@@ -11,8 +11,6 @@ require 'include/utils.php';
 // Misc settings
 date_default_timezone_set(Config::get()['time-zone']);
 
-
-
 // Config parsing
 require 'include/Parser.php';
 
