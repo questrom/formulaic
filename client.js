@@ -1,10 +1,6 @@
 /* jshint undef: true, unused: true */
 /* globals $, document, FormData */
 
-if(!('FormData' in window)) {
-	alert('broken!');
-}
-
 function addPrompt(name, prompt) {
 	$(document.getElementsByName(name))
 		.add($('[data-validation-name="' + name + '"]'))

@@ -60,19 +60,22 @@ class FormListView implements Renderable {
 				->link->rel("stylesheet")->href("styles.css")->end
 			->end
 			->body
-				->addH(new TopHeader())
-				->div->class('ui text container')
-					->h1->class('ui center aligned header')
-						->t('All Forms')
+				->addH(new BrowserProblemPart(
+					$this->h
+					->addH(new TopHeader())
+					->div->class('ui text container')
+						->h1->class('ui center aligned header')
+							->t('All Forms')
+						->end
+						->div->class('ui large relaxed divided list')
+							->addH(
+								array_map(function($formInfo) {
+									return new FormItemView($formInfo);
+								}, $this->data)
+							)
+						->end
 					->end
-					->div->class('ui large relaxed divided list')
-						->addH(
-							array_map(function($formInfo) {
-								return new FormItemView($formInfo);
-							}, $this->data)
-						)
-					->end
-				->end
+				))
 			->end
 		->end;
 	}

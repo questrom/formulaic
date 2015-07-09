@@ -545,6 +545,25 @@ class TopHeader implements Renderable {
 	}
 }
 
+class BrowserProblemPart implements Renderable {
+	function __construct($inner) {
+		$this->inner = $inner;
+	}
+	function render() {
+		// Based on html5boilerplate
+		return new SafeString(
+		'<!--[if lt IE 10]>'
+		. '<div style="text-align:center">'
+	            . '<h1>You are using an unsupported web browser.</h1>'
+	            . '<p>Please <a href="http://browsehappy.com/">upgrade your browser</a> to use this webpage.</p>'
+            . '</div>'
+        . '<![endif]--><!--[if gte IE 10]> -->'
+        	. generateString($this->inner)
+        . '<!-- <![endif]-->'
+        );
+	}
+}
+
 class PageFormPart extends FormPart {
 	function render() {
 		return $this->h
@@ -556,38 +575,41 @@ class PageFormPart extends FormPart {
 				->link->rel('stylesheet')->href('styles.css')->end
 			->end
 			->body
-				->addH(new TopHeader())
-				->div->class('ui text container')
-					->div->class('ui segment')
-						->addH($this->f->form->makeFormPart())
+				->addH(new BrowserProblemPart(
+					$this->h
+					->addH(new TopHeader())
+					->div->class('ui text container')
+						->div->class('ui segment')
+							->addH($this->f->form->makeFormPart())
+						->end
 					->end
-				->end
-				->div->class('success-modal ui small modal')
-					->div->class('header')
-						->t('Submission complete')
+					->div->class('success-modal ui small modal')
+						->div->class('header')
+							->t('Submission complete')
+						->end
+						->div->class('content')
+							->p->t($this->f->successMessage)->end
+						->end
+						->div->class('actions')
+							->button->type('button')->class('ui primary button approve')->t('OK')->end
+						->end
 					->end
-					->div->class('content')
-						->p->t($this->f->successMessage)->end
+					->div->class('failure-modal ui small modal')
+						->div->class('red ui header')
+							->t('Submission failed')
+						->end
+						->div->class('content')
+							->p->t('The server encountered an error when processing your request. Please try again.')->end
+						->end
+						->div->class('actions')
+							->button->type('button')->class('ui primary button approve')->t('OK')->end
+						->end
 					->end
-					->div->class('actions')
-						->button->type('button')->class('ui primary button approve')->t('OK')->end
-					->end
-				->end
-				->div->class('failure-modal ui small modal')
-					->div->class('red ui header')
-						->t('Submission failed')
-					->end
-					->div->class('content')
-						->p->t('The server encountered an error when processing your request. Please try again.')->end
-					->end
-					->div->class('actions')
-						->button->type('button')->class('ui primary button approve')->t('OK')->end
-					->end
-				->end
-				->script->src('lib/jquery.js')->end
-				->script->src('lib/jquery.inputmask.bundle.js')->end
-				->script->src('lib/semantic.js')->end
-				->script->src('client.js')->end
+					->script->src('lib/jquery.js')->end
+					->script->src('lib/jquery.inputmask.bundle.js')->end
+					->script->src('lib/semantic.js')->end
+					->script->src('client.js')->end
+				))
 			->end
 		->end;
 	}
