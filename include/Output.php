@@ -5,7 +5,6 @@ use Nette\Mail\Message;
 use Nette\Mail\SmtpMailer;
 
 interface Output {
-	function __construct($args);
 	function run($data, $page);
 }
 
@@ -76,12 +75,22 @@ class S3Output implements Output, XmlDeserializable {
 	}
 }
 
+class CounterOutput implements Output {
+	function run($data, $page) {
+		$counts = json_decode(file_get_contents('data/submit-counts.json'));
+		$counts->{$page->id} = isget($counts->{$page->id}, 0) + 1;
+		file_put_contents('data/submit-counts.json', json_encode($counts));
+		return $data;
+	}
+}
+
 class SuperOutput implements Output, XmlDeserializable {
 	use Configurable;
 	function __construct($args) {
 		$this->outputs = $args['children'];
 	}
 	function run($data, $page) {
+		(new CounterOutput([]))->run($data, $page);
 		foreach ($this->outputs as $output) {
 			$data = $output->run($data, $page);
 		}

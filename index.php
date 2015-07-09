@@ -2,6 +2,8 @@
 
 require('include/all.php');
 
+$submitCounts = json_decode(file_get_contents('data/submit-counts.json'));
+
 $files = scandir('forms');
 
 $files = array_values(array_filter($files, function($item) {
@@ -13,8 +15,8 @@ $files = array_map(function($item) {
 }, $files);
 
 
-$files = array_map(function($item) {
-	$page = Parser::parse_jade(Parser::getForm($item));
+$files = array_map(function($item) use($submitCounts) {
+	$page = Parser::parse_jade($item);
 	$views = array_map(function($view) {
 		return [
 			'id' => $view->name,
@@ -25,7 +27,8 @@ $files = array_map(function($item) {
 	return [
 		'id' => $item,
 		'name' => $page->title,
-		'views' => $views
+		'views' => $views,
+		'count' => isget($submitCounts->$item, 0)
 	];
 }, $files);
 

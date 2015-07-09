@@ -970,5 +970,8 @@ class Page extends GroupComponent {
 		return $view;
 
 	}
+	function setId($id) {
+		$this->id = $id;
+	}
 }
 

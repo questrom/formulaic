@@ -70,9 +70,9 @@ class Parser {
 			throw new Exception('Invalid form name!');
 		}
 	}
-	static function parse_jade($file) {
+	static function parse_jade($id) {
 
-
+		$file = self::getForm($id);
 
 		$config = Config::get();
 
@@ -138,6 +138,7 @@ class Parser {
 		$readData = $reader->parse();
 
 		$page = $readData['value'];
+		$page->setId($id);
 
 
 		return $page;

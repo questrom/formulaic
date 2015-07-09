@@ -7,7 +7,7 @@ if(!isset($_GET['view'])) {
 	die();
 }
 
-$page = Parser::parse_jade(Parser::getForm($_GET['form']));
+$page = Parser::parse_jade($_GET['form']);
 
 $view = $page->getView($_GET['view']);
 $view->query($_GET);

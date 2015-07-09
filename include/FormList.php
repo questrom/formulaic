@@ -29,6 +29,10 @@ class FormItemView implements Renderable {
 					->a->href('form.php?form=' . $this->data['id'])
 						->t($this->data['name'])
 					->end
+					->div->class('ui label right floated content')
+						->t($this->data['count'])
+						->t(' submissions')
+					->end
 				->end
 				->div
 					->div->class('ui horizontal list')
@@ -88,4 +92,5 @@ class FormList {
 	function makeFormList() {
 		return new FormListView($this->data);
 	}
+
 }
