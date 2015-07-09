@@ -93,6 +93,16 @@ class TimeInput extends PostInputComponent {
 	function asTableCell($h, $value) {
 		return $value->innerBind(function($v) use ($h) {
 
+			$hour = floor($v / 3600);
+			$minute = ($v % 3600) / 60;
+			$xm = 'am';
+			if($hour > 11) {
+				$xm = 'pm';
+				$hour -= 12;
+			}
+			if(intval($hour) === 0) {
+				$hour = 12;
+			}
 			return Result::ok($h->td
 				->t(sprintf('%d:%02d %s', $hour, $minute, $xm))
 			->end);
