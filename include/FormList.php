@@ -9,7 +9,7 @@ class ViewInfoView implements Renderable {
 	function render() {
 		return $this->h
 				->div->class('item')
-				->a->href($this->data['type'] . '.php?form=' . $this->formData['id'] . '&view=' . $this->data['id'])->class('item')
+				->a->href('view.php?form=' . $this->formData['id'] . '&view=' . $this->data['id'])->class('item')
 					->i->class($this->data['type'] === 'graph' ? 'area chart icon' : 'table icon')->end
 					->t($this->data['title'])
 				->end

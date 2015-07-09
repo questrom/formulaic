@@ -14,4 +14,8 @@ if($view instanceof GraphView) {
 	echo '<!DOCTYPE html>' . generateString(
 		$view->makeGraphViewPart($view->query($_GET))
 	);
+} else if ($view instanceof TableView) {
+	echo '<!DOCTYPE html>' . generateString(
+		$view->makeTableViewPart($view->query($_GET))
+	);
 }

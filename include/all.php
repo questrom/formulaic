@@ -5,7 +5,7 @@ require('vendor/autoload.php');
 require('jade/autoload.php.dist');
 
 // Utils
-require ('utils.php');
+require('utils.php');
 
 
 // Misc settings
@@ -35,7 +35,7 @@ require('Component.php');
 require('Output.php');
 
 // Views
-require('View.php');
+require('include/View.php'); // include/ needed here
 require('TableView.php');
 require('DetailsView.php');
 require('GraphView.php');
