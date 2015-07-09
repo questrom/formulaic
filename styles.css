@@ -34,7 +34,6 @@ input[type=range]::-moz-focus-outer { border:0 !important; }
 
 .ui.sortable.table thead th { cursor:auto; }
 .ui.header { margin-top: 0; }
-.pagination { text-align: center; line-height:37px; }
 .ui.checkbox + .ui.red.label.visible { float:left; margin-right: 1000px;}
 .ui.form .required > label:after,
 .ui.form .required  .ui.checkbox:after { font-size: 1.5rem; top: 5px; right:-10px; left: auto;}
@@ -75,12 +74,10 @@ input[type=range]::-moz-focus-outer { border:0 !important; }
 .list-component > .segment { padding: 0 15px; }
 
 /* Improve contrast within tables */
-.ui.celled.table tr.negative td, .ui.celled.table tr td.negative { background-color: #FFE7E7 !important; }
-.ui.celled.table tr.positive td, .ui.celled.table tr td.positive { background-color: #F7FFE6 !important; }
+.ui.table tr.negative td, .ui.table tr td.negative { background-color: #FFE7E7 !important; }
+.ui.table tr.positive td, .ui.table tr td.positive { background-color: #F7FFE6 !important; }
 
-.table-view li {
-    padding: 0 !important;
-}
+.table-view li { padding: 0 !important; }
 
 /* Remove hover effect*/
 .ui.sortable.table thead th:hover { background: #F9FAFB; }
