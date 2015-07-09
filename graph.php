@@ -12,4 +12,4 @@ $page = Parser::parse_jade($_GET['form']);
 $view = $page->getView($_GET['view']);
 $view->query($_GET);
 
-echo '<!DOCTYPE html>' . generateString($view->get(new HTMLParentlessContext()));
+echo '<!DOCTYPE html>' . generateString($view->makeGraphViewPart());

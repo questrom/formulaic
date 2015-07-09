@@ -2,7 +2,43 @@
 use Sabre\Xml\XmlDeserializable as XmlDeserializable;
 use \Colors\RandomColor;
 
-class GraphView implements XmlDeserializable, HTMLComponent, View {
+class GraphViewRenderable implements Renderable {
+	public function __construct($field) {
+		$this->f = $field;
+		$this->h = new HTMLParentlessContext();
+	}
+	function render() {
+		return $this->h
+		->html
+			->head
+				->meta->charset('utf-8')->end
+				->title->t($this->f->title)->end
+				->link->rel("stylesheet")->href("lib/semantic.css")->end
+				->link->rel("stylesheet")->href("styles.css")->end
+			->end
+			->body
+				->addH(new TopHeader())
+				->div->class('ui text container')
+						->div
+
+							->h1->class('ui header')
+								->div->class('pull-right ui large label submit-count-label')
+									->t($this->f->totalCount)
+									->div->class('detail')->t('total submissions')->end
+								->end
+								->t($this->f->title)
+							->end
+						->end
+						->addH( array_map(function($x) {
+							return $x ? $x->makeGraphViewPart() : null;
+						}, $this->f->graphs) )
+				->end
+			->end
+		->end;
+	}
+}
+
+class GraphView implements XmlDeserializable, GraphViewPartFactory, View {
 	use Configurable;
 
 	function __construct($args) {
@@ -37,36 +73,12 @@ class GraphView implements XmlDeserializable, HTMLComponent, View {
 			$graph->query($client);
 		}
 	}
-	function get($h) {
-		return $h
-		->html
-			->head
-				->meta->charset('utf-8')->end
-				->title->t($this->title)->end
-				->link->rel("stylesheet")->href("lib/semantic.css")->end
-				->link->rel("stylesheet")->href("styles.css")->end
-			->end
-			->body
-				->addH(new TopHeader())
-				->div->class('ui text container')
-						->div
-
-							->h1->class('ui header')
-								->div->class('pull-right ui large label submit-count-label')
-									->t($this->totalCount)
-									->div->class('detail')->t('total submissions')->end
-								->end
-								->t($this->title)
-							->end
-						->end
-						->addH( array_map(function($x) { return $x ? $x->get(new HTMLParentlessContext()) : null; }, $this->graphs) )
-				->end
-			->end
-		->end;
+	function makeGraphViewPart() {
+		return new GraphViewRenderable($this);
 	}
 }
 
-abstract class Graph implements XmlDeserializable, HTMLComponent  {
+abstract class Graph implements XmlDeserializable, GraphViewPartFactory  {
 	use Configurable;
 	function __construct($args) {
 		$this->name = $args['name'];
@@ -127,24 +139,28 @@ abstract class Graph implements XmlDeserializable, HTMLComponent  {
 	}
 }
 
-class PieChart extends Graph {
-	function get($h) {
-
+class PieChartRenderable implements Renderable {
+	function __construct($label, $results) {
+		$this->label = $label;
+		$this->results = $results;
+		$this->h = new HTMLParentlessContext();
+	}
+	function render() {
 		$total = array_sum(array_map(function($result) {
-				return $result['count'];
-			}, $this->results));
+			return $result['count'];
+		}, $this->results));
 
 		$lastAngle = -pi() / 2;
 
 
-		return $h
+		return $this->h
 			->div->class('ui fluid card')
 				->div->class('content')
 					->div->class('header')->t($this->label)->end
 				->end
 				->div->class('content')
 					->svg->viewBox('-900 -600 1800 1200')->style('background:#fff')
-						->addH(kvmap(function($index, $result) use($h, $total, &$lastAngle) {
+						->addH(kvmap(function($index, $result) use($total, &$lastAngle) {
 
 							$key = $result['_id'];
 
@@ -178,7 +194,7 @@ class PieChart extends Graph {
 
 							$lastAngle = $pct;
 
-							return $h
+							return $this->h
 								->path->fill($color)->d($path)->end
 								->rect
 									->x(-900)->y(-600 + $index * 50 + 10)
@@ -195,20 +211,16 @@ class PieChart extends Graph {
 					->end
 				->end
 			->end;
-
 	}
 }
 
-function kvmap(callable $fn, $array) {
-	$result = [];
-	foreach($array as $key => $value) {
-		$result[$key] = $fn($key, $value);
+class BarGraphRenderable implements Renderable {
+	function __construct($label, $results) {
+		$this->label = $label;
+		$this->results = $results;
+		$this->h = new HTMLParentlessContext();
 	}
-	return $result;
-}
-
-class BarGraph extends Graph {
-	function get($h) {
+	function render() {
 
 		if(count($this->results) > 0) {
 			$max = max(array_map(function($result) {
@@ -220,7 +232,7 @@ class BarGraph extends Graph {
 
 
 		// see http://bost.ocks.org/mike/bar/2/
-		return $h
+		return $this->h
 			->div->class('ui fluid card')
 
 				->div->class('content')
@@ -228,7 +240,7 @@ class BarGraph extends Graph {
 				->end
 				->div->class('content')
 					->svg->viewBox('0 0 700 ' . count($this->results) * 30 )->style('background:#fff')
-						->addH(kvmap(function($index, $result) use($h, $max) {
+						->addH(kvmap(function($index, $result) use($max) {
 							$barWidth = ($result['count']/$max) * 500;
 							$labelAtRight = $barWidth < 40;
 
@@ -246,7 +258,7 @@ class BarGraph extends Graph {
 							if($key === false) { $key = 'No'; $color='#db2828'; }
 							if($key === null) { $key = '(None)'; $color='#777'; }
 
-							return $h
+							return $this->h
 							->g->transform('translate(0, ' . ($index * 30) . ')')
 								->text
 									->style('dominant-baseline:middle;text-anchor:end;')
@@ -266,5 +278,26 @@ class BarGraph extends Graph {
 					->end
 				->end
 			->end;
+	}
+}
+
+
+class PieChart extends Graph {
+	function makeGraphViewPart() {
+		return new PieChartRenderable($this->label, $this->results);
+	}
+}
+
+function kvmap(callable $fn, $array) {
+	$result = [];
+	foreach($array as $key => $value) {
+		$result[$key] = $fn($key, $value);
+	}
+	return $result;
+}
+
+class BarGraph extends Graph {
+	function makeGraphViewPart() {
+		return new BarGraphRenderable($this->label, $this->results);
 	}
 }

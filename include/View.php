@@ -30,3 +30,7 @@ interface View {
 interface TableViewPartFactory {
 	function makeTableViewPart($data);
 }
+
+interface GraphViewPartFactory {
+	function makeGraphViewPart();
+}
