@@ -38,7 +38,6 @@ input[type=range]::-moz-focus-outer { border:0 !important; }
 .ui.checkbox + .ui.red.label.visible { float:left; margin-right: 1000px;}
 .ui.form .required > label:after,
 .ui.form .required  .ui.checkbox:after { font-size: 1.5rem; top: 5px; right:-10px; left: auto;}
-.centered-button { margin: 0 auto !important; display: block !important; }
 .ui.top.attached.header { margin-top:0 !important; }
 .ui.icon.message > .icon:not(.close) { align-self: flex-start; }
 .ui.header.attached > .icon { vertical-align: top; }
