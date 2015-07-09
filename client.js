@@ -138,7 +138,8 @@ $(function() {
 	}
 
 
-	$('[data-submit=true]').on('click', function() {
+	$('form').on('submit', function(e) {
+		e.preventDefault();
 
 		removePrompts();
 		$('[data-submit=true]').addClass('loading').attr('disabled', true);

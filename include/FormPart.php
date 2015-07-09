@@ -521,9 +521,11 @@ class FormElemFormPart extends FormPart {
 					->t('After you have corrected the errors, press the button below to try again.')
 				->end
 			->end
-			->button->type('button')->class('ui labeled icon positive big button centered-button')->data('submit','true')
-				->i->class('checkmark icon')->end
-				->span->t('Submit Form')->end
+			->div->class('ui vertically padded center aligned grid')
+				->button->type('submit')->class('ui labeled icon positive big button')
+					->i->class('checkmark icon')->end
+					->span->t('Submit Form')->end
+				->end
 			->end
 		->end;
 	}
