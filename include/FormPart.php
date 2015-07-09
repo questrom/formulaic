@@ -77,44 +77,44 @@ abstract class BaseNoticeFormPart extends FormPart {
 
 
 class HeaderFormPart extends BaseHeaderFormPart {
-    function render() {
-       $size = ($this->f->size === null) ? 1 : $this->f->size;
+	function render() {
+		$size = ($this->f->size === null) ? 1 : $this->f->size;
 		return $this->h
 		->{'h' . $size}->class('ui header')
 			->addH(parent::render())
 		->end;
-    }
+	}
 }
 
 class GroupHeaderFormPart extends BaseHeaderFormPart {
-    function render() {
-        $size = ($this->f->size === null) ? 5 : $this->f->size;
-        return $this->h
-            ->{'h' . $size}->class('ui header attached')
-                ->addH(parent::render())
-            ->end;
-    }
+	function render() {
+		$size = ($this->f->size === null) ? 5 : $this->f->size;
+		return $this->h
+			->{'h' . $size}->class('ui header attached')
+				->addH(parent::render())
+			->end;
+	}
 }
 
 
 class GroupNoticeFormPart extends BaseNoticeFormPart {
-    function render() {
-        return
-            $this->h
-              ->div->class('ui message attached ' . ($this->f->icon === null ? '' : ' icon') . ($this->f->type ? ' ' . $this->f->type : ''))
-              ->addH(parent::render())
-            ->end;
-    }
+	function render() {
+		return
+			$this->h
+			  ->div->class('ui message attached ' . ($this->f->icon === null ? '' : ' icon') . ($this->f->type ? ' ' . $this->f->type : ''))
+			  ->addH(parent::render())
+			->end;
+	}
 }
 
 class NoticeFormPart extends BaseNoticeFormPart {
-    function render() {
-        return
-            $this->h
-                ->div->class('ui message floating ' . ($this->f->icon === null ? '' : ' icon') . ($this->f->type ? ' ' . $this->f->type : ''))
-                ->addH(parent::render())
-                ->end;
-    }
+	function render() {
+		return
+			$this->h
+				->div->class('ui message floating ' . ($this->f->icon === null ? '' : ' icon') . ($this->f->type ? ' ' . $this->f->type : ''))
+				->addH(parent::render())
+				->end;
+	}
 }
 
 
@@ -556,13 +556,13 @@ class BrowserProblemPart implements Renderable {
 		return new SafeString(
 		'<!--[if lt IE 10]>'
 		. '<div style="text-align:center">'
-	            . '<h1>You are using an unsupported web browser.</h1>'
-	            . '<p>Please <a href="http://browsehappy.com/">upgrade your browser</a> to use this webpage.</p>'
-            . '</div>'
-        . '<![endif]--><!--[if gte IE 10]> -->'
-        	. generateString($this->inner)
-        . '<!-- <![endif]-->'
-        );
+				. '<h1>You are using an unsupported web browser.</h1>'
+				. '<p>Please <a href="http://browsehappy.com/">upgrade your browser</a> to use this webpage.</p>'
+			. '</div>'
+		. '<![endif]--><!--[if gte IE 10]> -->'
+			. generateString($this->inner)
+		. '<!-- <![endif]-->'
+		);
 	}
 }
 

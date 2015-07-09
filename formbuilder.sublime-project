@@ -5,5 +5,14 @@
 			"path": "."
 		}
 	],
-	"scan_php_classes": true
+	"scan_php_classes": true,
+	"SublimeLinter":
+    {
+        "linters":
+        {
+            "phpcs": {
+            	"standard": "${project}/phpcs"
+            }
+        }
+    }
 }

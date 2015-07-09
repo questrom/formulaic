@@ -7,7 +7,6 @@ use Sabre\Xml\XmlDeserializable as XmlDeserializable;
 // Full components
 // ===============
 
-
 class ShowIfComponent implements FormPartFactory, Validatable, NameMatcher, XmlDeserializable {
 	use Configurable;
 	function __construct($args) {
@@ -81,9 +80,9 @@ class TimeInput extends PostInputComponent {
 
 		$this->step = isset($args['step']) ? intval($args['step']) : 'any';
 	}
-    function makeFormPart() {
-        return new TimeInputFormPart($this);
-    }
+	function makeFormPart() {
+		return new TimeInputFormPart($this);
+	}
 	protected function validate($against) {
 		return $against
 			->filterTime()
@@ -95,7 +94,7 @@ class TimeInput extends PostInputComponent {
 		return $value->innerBind(function($v) use ($h) {
 
 			return Result::ok($h->td
-				->t(sprintf("%d:%02d %s",$hour,$minute,$xm))
+				->t(sprintf("%d:%02d %s", $hour, $minute, $xm))
 			->end);
 
 		});
@@ -114,8 +113,8 @@ class DateTimePicker extends PostInputComponent {
 		$this->step = isset($args['step']) ? $args['step'] : 'any';
 	}
 	function makeFormPart() {
-        return new DateTimePickerFormPart($this);
-    }
+		return new DateTimePickerFormPart($this);
+	}
 	protected function validate($against) {
 		return $against
 			->filterDateTime()
@@ -145,8 +144,8 @@ class Textarea extends PostInputComponent {
 
 	}
 	function makeFormPart() {
-        return new TextareaFormPart($this);
-    }
+		return new TextareaFormPart($this);
+	}
 	protected function validate($against) {
 		return $against
 			->filterString()
@@ -176,9 +175,9 @@ class Dropdown extends PostInputComponent {
 		$this->options = $args['children'];
 		$this->required = isset($args['required']);
 	}
-    function makeFormPart() {
-        return new DropdownFormPart($this);
-    }
+	function makeFormPart() {
+		return new DropdownFormPart($this);
+	}
 
 	protected function validate($against) {
 		return $against
@@ -195,9 +194,9 @@ class Radios extends PostInputComponent implements Enumerative {
 		$this->options = $args['children'];
 		$this->required = isset($args['required']);
 	}
-    function makeFormPart() {
-        return new RadiosFormPart($this);
-    }
+	function makeFormPart() {
+		return new RadiosFormPart($this);
+	}
 	function getPossibleValues() {
 		return $this->options;
 	}
@@ -275,7 +274,7 @@ class Captcha extends PostInputComponent {
 		$this->label = 'CAPTCHA';
 	}
 	function makeFormPart() {
-	    return new CaptchaFormPart($this);
+		return new CaptchaFormPart($this);
 	}
 	protected function validate($against) {
 		return $against
@@ -309,7 +308,7 @@ class Textbox extends PostInputComponent {
 
 	}
 	function makeFormPart() {
-        return new InputFormPart($this, 'text', null);
+		return new InputFormPart($this, 'text', null);
 	}
 	protected function validate($against) {
 		return $against
@@ -330,14 +329,17 @@ class FileUpload extends FileInputComponent {
 			array_map(function($x) {
 				return [$x->ext => $x->mime];
 			}, $args['children']),
-		'array_merge', []);
+			'array_merge',
+			[]
+		);
 
 		$this->maxSize = intval($args['max-size']);
 		$this->permissions = $args['permissions'];
 
 	}
-    function makeFormPart() {
-    	$innerText = 'Allowed file types: ' . implode(', ', array_keys($this->allowedExtensions)) . ' ' . json_decode('"\u00B7"') . ' Max file size: ' . ByteUnits\Metric::bytes($this->maxSize)->format(0);
+	function makeFormPart() {
+		$innerText = 'Allowed file types: ' . implode(', ', array_keys($this->allowedExtensions)) . ' ' . json_decode('"\u00B7"') .
+			' Max file size: ' . ByteUnits\Metric::bytes($this->maxSize)->format(0);
 		return new InputFormPart($this, 'file', null, null, $innerText);
 	}
 	protected function validate($against) {
@@ -376,7 +378,8 @@ class FileUpload extends FileInputComponent {
 				);
 
 				if($ext === false) {
-					return Result::error('Invalid file type or wrong MIME type. Allowed extensions are: ' . implode(', ', array_keys($this->allowedExtensions)) . '.');
+					return Result::error('Invalid file type or wrong MIME type. Allowed extensions are: ' .
+						implode(', ', array_keys($this->allowedExtensions)) . '.');
 				}
 
 				if(!is_uploaded_file($file['tmp_name'])) {
@@ -441,7 +444,7 @@ class Range extends PostInputComponent {
 		$this->def = isset($args['default']) ? intval($args['default']) : midpoint($this->min, $this->max);
 	}
 	function makeFormPart() {
-	    return new RangeFormPart($this);
+		return new RangeFormPart($this);
 	}
 	protected function validate($against) {
 		return $against
@@ -470,7 +473,7 @@ class Password extends PostInputComponent {
 			$this->required = true;
 		}
 	}
-    function makeFormPart() {
+	function makeFormPart() {
 		return new InputFormPart($this, 'password', '');
 	}
 	protected function validate($against) {
@@ -506,7 +509,7 @@ class PhoneNumber extends PostInputComponent {
 		parent::__construct($args);
 		$this->required = isset($args['required']);
 	}
-    function makeFormPart() {
+	function makeFormPart() {
 		return new InputFormPart($this, 'tel', 'call');
 	}
 	protected function validate($against) {
@@ -540,10 +543,10 @@ class EmailAddr extends PostInputComponent {
 		$this->required = isset($args['required']);
 		$this->mustHaveDomain = isset($args['must-have-domain']) ? $args['must-have-domain'] : null;
 	}
-    function makeFormPart() {
-    	$innerText = isset($this->mustHaveDomain) ? ('Must be @' . $this->mustHaveDomain) : null;
-        return new InputFormPart($this, 'email', 'mail',  null, $innerText);
-    }
+	function makeFormPart() {
+		$innerText = isset($this->mustHaveDomain) ? ('Must be @' . $this->mustHaveDomain) : null;
+		return new InputFormPart($this, 'email', 'mail',  null, $innerText);
+	}
 	protected function validate($against) {
 		return $against
 			->filterString()
@@ -552,7 +555,7 @@ class EmailAddr extends PostInputComponent {
 			->filterFilterVar(FILTER_VALIDATE_EMAIL, 'Invalid email address.')
 			->mustHaveDomain($this->mustHaveDomain);
 	}
-	 function asTableCell($h, $value) {
+	function asTableCell($h, $value) {
 		return $value->innerBind(function($v) use ($h) {
 			return Result::ok($h
 			->td
@@ -570,9 +573,9 @@ class UrlInput extends PostInputComponent {
 
 		$this->required = isset($args['required']);
 	}
-    function makeFormPart() {
-        return new InputFormPart($this, 'url', 'world');
-    }
+	function makeFormPart() {
+		return new InputFormPart($this, 'url', 'world');
+	}
 	protected function validate($against) {
 		return $against
 			->filterString()
@@ -600,9 +603,9 @@ class NumberInp extends PostInputComponent {
 		$this->max = isset($args['max']) ? intval($args['max']) : INF;
 		$this->integer = isset($args['integer']);
 	}
-    function makeFormPart() {
-        return new NumberFormPart($this);
-    }
+	function makeFormPart() {
+		return new NumberFormPart($this);
+	}
 	protected function validate($against) {
 		return $against
 			->filterString()
@@ -622,11 +625,13 @@ class DatePicker extends PostInputComponent {
 		parent::__construct($args);
 
 		$this->required = isset($args['required']);
-		$this->min = isset($args['min']) ? DateTimeImmutable::createFromFormat('Y-m-d', $args['min'])->setTime(0,0,0) : null;
-		$this->max = isset($args['max']) ? DateTimeImmutable::createFromFormat('Y-m-d', $args['max'])->setTime(0,0,0) : null;
+		$this->min = isset($args['min']) ?
+			DateTimeImmutable::createFromFormat('Y-m-d', $args['min'])->setTime(0,0,0) : null;
+		$this->max = isset($args['max']) ?
+			DateTimeImmutable::createFromFormat('Y-m-d', $args['max'])->setTime(0,0,0) : null;
 	}
-    function makeFormPart() {
-    	$sublabel = '';
+	function makeFormPart() {
+		$sublabel = '';
 
 		if(isset($this->max) && isset($this->min)) {
 			$sublabel = 'Please provide a date between ' . dfd($this->min) . ' and ' . dfd($this->max) . '.';
@@ -636,8 +641,8 @@ class DatePicker extends PostInputComponent {
 			$sublabel = 'Please provide a date no earlier than ' . dfd($this->min) . '.';
 		}
 
-        return new InputFormPart($this, 'text', 'calendar', " 'alias': 'mm/dd/yyyy' ", $sublabel);
-    }
+		return new InputFormPart($this, 'text', 'calendar', " 'alias': 'mm/dd/yyyy' ", $sublabel);
+	}
 	protected function validate($against) {
 		return $against
 			->filterDate()
@@ -657,37 +662,38 @@ class DatePicker extends PostInputComponent {
 
 class Header extends BaseHeader {
 	function makeFormPart() {
-        return new HeaderFormPart($this);
-    }
+		return new HeaderFormPart($this);
+	}
 }
 
 class GroupHeader extends BaseHeader {
-    function makeFormPart() {
-        return new GroupHeaderFormPart($this);
-    }
+	function makeFormPart() {
+		return new GroupHeaderFormPart($this);
+	}
 }
 
 class GroupNotice extends BaseNotice {
-    function makeFormPart() {
-        return new GroupNoticeFormPart($this);
-    }
+	function makeFormPart() {
+		return new GroupNoticeFormPart($this);
+	}
 }
 
 class Notice extends BaseNotice {
 	function makeFormPart() {
-        return new NoticeFormPart($this);
-    }
+		return new NoticeFormPart($this);
+	}
 }
 
-class ListComponent implements FormPartFactory, Validatable, NameMatcher, XmlDeserializable, FieldListItem, FieldTableItem {
+class ListComponent implements FormPartFactory, Validatable, NameMatcher,
+	XmlDeserializable, FieldListItem, FieldTableItem {
 	use Configurable;
 	function __construct($args) {
 		$this->items = $args['children'];
 		$this->name = $args['name'];
 		$this->label = $args['label'];
 
-        $this->maxItems = isset($args['max-items']) ? intval($args['max-items']) : INF;
-        $this->minItems = isset($args['min-items']) ? intval($args['min-items']) : 0;
+		$this->maxItems = isset($args['max-items']) ? intval($args['max-items']) : INF;
+		$this->minItems = isset($args['min-items']) ? intval($args['min-items']) : 0;
 
 		$this->addText = isset($args['add-text']) ? $args['add-text'] : 'Add an item';
 	}
@@ -711,14 +717,14 @@ class ListComponent implements FormPartFactory, Validatable, NameMatcher, XmlDes
 		return $arr;
 	}
 	function makeFormPart() {
-        return new ListComponentFormPart($this);
-    }
+		return new ListComponentFormPart($this);
+	}
 	function getMerger($val) {
 
 		return $val
 		->innerBind(function($v) {
 
-            return Result::ok(
+			return Result::ok(
 				[
 					isset($v->post[$this->name]) ? $v->post[$this->name] : null,
 					isset($v->files[$this->name]) ? $v->files[$this->name] : null
@@ -728,7 +734,7 @@ class ListComponent implements FormPartFactory, Validatable, NameMatcher, XmlDes
 		->innerBind(function($data) {
 
 
-            return Result::ok([
+			return Result::ok([
 				is_array($data[0]) ? $data[0] : [],
 				is_array($data[1]) ? diverse_array($data[1] ) : []
 			]);
@@ -738,25 +744,24 @@ class ListComponent implements FormPartFactory, Validatable, NameMatcher, XmlDes
 
 
 			$result = Result::ok([]);
-            $number = array_merge( array_keys($list[0]), array_keys($list[1]) );
+			$number = array_merge( array_keys($list[0]), array_keys($list[1]) );
 			$number = (count($number) > 0 ? max( $number ) : -1) + 1;
 
-            if($number < $this->minItems) {
-                return Result::error([ $this->name => 'Please provide at least ' . $this->minItems . ' items' ]);
-            }
-            if($number > $this->maxItems) {
-                return Result::error([ $this->name => 'Please provide at most ' . $this->maxItems . ' items' ]);
-            }
+			if($number < $this->minItems) {
+				return Result::error([ $this->name => 'Please provide at least ' . $this->minItems . ' items' ]);
+			}
+			if($number > $this->maxItems) {
+				return Result::error([ $this->name => 'Please provide at most ' . $this->maxItems . ' items' ]);
+			}
 
-//            var_dump($number);
 
 			for($index = 0; $index < $number; $index++) {
 
 
 
-                if(!isset($list[0][$index]) && !isset($list[1][$index])) {
-                    continue;
-                }
+				if(!isset($list[0][$index]) && !isset($list[1][$index])) {
+					continue;
+				}
 
 				$validationResult =
 					Result::ok(
@@ -769,7 +774,7 @@ class ListComponent implements FormPartFactory, Validatable, NameMatcher, XmlDes
 
 
 
-                $result = $result
+				$result = $result
 					->innerBind(function($soFar) use($validationResult, $index) {
 						return $validationResult
 							->innerBind(function($fieldResult) use($soFar, $index) {
@@ -785,11 +790,11 @@ class ListComponent implements FormPartFactory, Validatable, NameMatcher, XmlDes
 							->ifError(function($fieldError) use($errorSoFar, $index) {
 								foreach($fieldError as $k => $v) {
 
-                                    $k = explode('[', $k);
-                                    $kStart = $k[0];
-                                    $kRest = (count($k) > 1) ?
-                                        '[' . implode('[', array_slice($k, 1)) :
-                                        '';
+									$k = explode('[', $k);
+									$kStart = $k[0];
+									$kRest = (count($k) > 1) ?
+										'[' . implode('[', array_slice($k, 1)) :
+										'';
 
 									$errorSoFar[ $this->name . '[' . $index . '][' . $kStart . ']' . $kRest  ] = $v;
 								}
@@ -809,7 +814,7 @@ class ListComponent implements FormPartFactory, Validatable, NameMatcher, XmlDes
 			return $result;
 		});
 	}
-  function asTableCell($h, $value) {
+	function asTableCell($h, $value) {
 
 		return $value->innerBind(function($v) use ($h) {
 
@@ -872,8 +877,8 @@ class Group extends GroupComponent {
 		$this->items = $args['children'];
 	}
 	function makeFormPart() {
-        return new GroupFormPart($this);
-    }
+		return new GroupFormPart($this);
+	}
 }
 
 
@@ -938,7 +943,7 @@ class FieldList extends GroupComponent {
 		$this->items[] = new IPField();
 	}
 	function makeFormPart() {
-        return new FormElemFormPart($this);
+		return new FormElemFormPart($this);
 	}
 }
 
@@ -951,12 +956,13 @@ class Page implements XmlDeserializable {
 	function __construct($args) {
 		$this->form = $args['byTag']['{}fields'];
 		$this->title = isset($args['title']) ? $args['title'] : 'Form';
-		$this->successMessage = isset($args['success-message']) ? $args['success-message'] : 'The form was submitted successfully.';
+		$this->successMessage = isset($args['success-message']) ? $args['success-message'] :
+			'The form was submitted successfully.';
 		$this->outputs = $args['byTag']['{}outputs'];
 		$this->views = $args['byTag']['{}views'];
 	}
 	function makeFormPart() {
-        return new PageFormPart($this);
+		return new PageFormPart($this);
 	}
 	function getView($name) {
 		$view = $this->views->getByName($name);

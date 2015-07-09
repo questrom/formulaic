@@ -4,7 +4,7 @@ use Phamda\Phamda as P;
 
 abstract class Validate {
 	// Type filters
- 	function filterBoolean() {
+	function filterBoolean() {
 		return $this->innerBind(function($x) {
 			$value = filter_var($x, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
 
@@ -38,14 +38,14 @@ abstract class Validate {
 	}
 	function filterChosenFromOptions($options) {
 		return $this->innerBind(function($x) use($options) {
-				if($x === '' || $x === null) {
-					return Result::none(null);
-				} else if(in_array($x, $options, TRUE)) {
-					return Result::ok($x);
-				} else {
-					return Result::error('Invalid data!');
-				}
-			});
+			if($x === '' || $x === null) {
+				return Result::none(null);
+			} else if(in_array($x, $options, true)) {
+				return Result::ok($x);
+			} else {
+				return Result::error('Invalid data!');
+			}
+		});
 	}
 	function filterManyChosenFromOptions($options) {
 		return $this->innerBind(function($x) use($options) {
@@ -60,21 +60,20 @@ abstract class Validate {
 	}
 	function filterDate() {
 		return $this->innerBind(function($x) {
+			if(trim($x) == '') {
+				return Result::none(null);
+			}
 
-				if(trim($x) == '') {
-					return Result::none(null);
-				}
-
-				$date = DateTimeImmutable::createFromFormat('m/d/Y', $x);
+			$date = DateTimeImmutable::createFromFormat('m/d/Y', $x);
 
 
-				if($date !== false) {
-					$date = $date->setTime(0, 0, 0);
-					return Result::ok($date);
-				} else {
-					return Result::error('Invalid date!');
-				}
-			});
+			if($date !== false) {
+				$date = $date->setTime(0, 0, 0);
+				return Result::ok($date);
+			} else {
+				return Result::error('Invalid date!');
+			}
+		});
 	}
 	static function timeToSeconds($x) {
 
@@ -152,11 +151,11 @@ abstract class Validate {
 	}
 	function filterNoChoices() {
 		return $this->innerBind(function($x) {
-				if(count($x) === 0) {
-					return Result::none($x);
-				}
-				return Result::ok($x);
-			});
+			if(count($x) === 0) {
+				return Result::none($x);
+			}
+			return Result::ok($x);
+		});
 	}
 	// Required checkers
 	function requiredMaybe($enable) {
@@ -195,16 +194,16 @@ abstract class Validate {
 	function minMaxDate($minDate, $maxDate) {
 		return $this->innerBind(function($x) use ($minDate, $maxDate) {
 
-				$x = $x->setTime(0,0,0);
-				// var_dump($min/
-				if($minDate !== null && $minDate > $x) {
-					return Result::error('Please enter a date starting at ' . $minDate->format('Y-m-d'));
-				} else if($maxDate !== null && $maxDate < $x) {
-					return Result::error('Please enter a date ending at ' . $maxDate->format('Y-m-d'));
-				} else {
-					return Result::ok($x);
-				}
-			});
+			$x = $x->setTime(0,0,0);
+			// var_dump($min/
+			if($minDate !== null && $minDate > $x) {
+				return Result::error('Please enter a date starting at ' . $minDate->format('Y-m-d'));
+			} else if($maxDate !== null && $maxDate < $x) {
+				return Result::error('Please enter a date ending at ' . $maxDate->format('Y-m-d'));
+			} else {
+				return Result::ok($x);
+			}
+		});
 	}
 	function minMaxLength($minLength, $maxLength) {
 		return $this->innerBind(function($x) use ($minLength, $maxLength) {
@@ -240,22 +239,22 @@ abstract class Validate {
 	}
 	function minMaxChoices($min, $max) {
 		return $this->innerBind(function($x) use($min, $max) {
-				if(count($x) < $min) {
-					return Result::error('Please choose at least ' . $min . ' options.');
-				} else if(count($x) > $max) {
-					return Result::error('At most ' . $max . ' choices are allowed.');
-				}
-				return Result::ok($x);
-			});
+			if(count($x) < $min) {
+				return Result::error('Please choose at least ' . $min . ' options.');
+			} else if(count($x) > $max) {
+				return Result::error('At most ' . $max . ' choices are allowed.');
+			}
+			return Result::ok($x);
+		});
 	}
 	function maybeString() {
 		return $this->innerBind(function($x) {
-				if(trim($x) === '') {
-					return Result::none($x);
-				} else {
-					return Result::ok($x);
-				}
-			});
+			if(trim($x) === '') {
+				return Result::none($x);
+			} else {
+				return Result::ok($x);
+			}
+		});
 	}
 	function minMaxNumber($min, $max) {
 		return $this->innerBind(function($x) use($min, $max) {

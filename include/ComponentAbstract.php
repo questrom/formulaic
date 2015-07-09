@@ -7,7 +7,7 @@ use Sabre\Xml\XmlDeserializable as XmlDeserializable;
 // ==========================
 
 interface FormPartFactory {
-    public function makeFormPart();
+	public function makeFormPart();
 }
 
 interface Validatable {
@@ -36,7 +36,7 @@ interface Enumerative {
 
 
 interface Renderable {
-    public function render();
+	public function render();
 }
 
 
@@ -87,10 +87,10 @@ abstract class NamedLabeledComponent implements FormPartFactory, Validatable, Na
 
 	use Configurable;
 
-    function asTableCell($h, $value) {
-    	return $value->innerBind(function($v) {
-    		return Result::ok( (new OrdinaryTableCell($v))->render() );
-    	});
+	function asTableCell($h, $value) {
+		return $value->innerBind(function($v) {
+			return Result::ok( (new OrdinaryTableCell($v))->render() );
+		});
 	}
 	function asDetailedTableCell($h, $value) {
 		return $this->asTableCell($h, $value);
@@ -111,8 +111,8 @@ abstract class NamedLabeledComponent implements FormPartFactory, Validatable, Na
 	}
 	final function getByName($name) { return ($this->name === $name) ? $this : null; }
 
-    function getMerger($val) {
-    	$val = $val->innerBind(function($v) {
+	function getMerger($val) {
+		$val = $val->innerBind(function($v) {
 			return Result::ok(isset($v[$this->name]) ? $v[$this->name] : null);
 		});
 		return $this->validate($val)
@@ -123,7 +123,7 @@ abstract class NamedLabeledComponent implements FormPartFactory, Validatable, Na
 			->ifError(function($r) {
 				return Result::error([$this->name => $r]);
 			});
-    }
+	}
 }
 
 abstract class PostInputComponent extends NamedLabeledComponent {
@@ -150,7 +150,7 @@ abstract class GroupComponent implements FormPartFactory, Validatable, NameMatch
 	use Configurable;
 
 
-    final function getAllFields() {
+	final function getAllFields() {
 		$arr = [];
 		foreach($this->items as $item) {
 			if($item instanceof NameMatcher) {

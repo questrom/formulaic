@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<ruleset name="PSR2">
+	<description>The PSR-2 coding standard.</description>
+	<arg name="tab-width" value="4"/>
+	<rule ref="Generic.CodeAnalysis.EmptyStatement"/>
+	<rule ref="Generic.Commenting.Todo"/>
+	<rule ref="Generic.ControlStructures.InlineControlStructure"/>
+	<rule ref="Generic.Formatting.DisallowMultipleStatements"/>
+	<rule ref="Generic.Formatting.SpaceAfterCast"/>
+	<rule ref="Generic.NamingConventions.ConstructorName"/>
+	<rule ref="Generic.NamingConventions.UpperCaseConstantName"/>
+	<rule ref="Generic.PHP.DeprecatedFunctions"/>
+	<rule ref="Generic.PHP.ForbiddenFunctions"/>
+	<rule ref="Generic.PHP.DisallowShortOpenTag"/>
+	<rule ref="Generic.PHP.LowerCaseKeyword"/>
+	<rule ref="Generic.PHP.LowerCaseConstant"/>
+	<rule ref="Generic.Strings.UnnecessaryStringConcat"/>
+	<rule ref="Generic.WhiteSpace.DisallowSpaceIndent"/>
+	<rule ref="Generic.WhiteSpace.ScopeIndent"/>
+	<rule ref="PEAR.Files.IncludingFile"/>
+	<rule ref="PEAR.Functions.ValidDefaultValue"/>
+	<rule ref="Squiz.Strings.DoubleQuoteUsage" />
+	<rule ref="Zend.Files.ClosingTag"/>
+	<rule ref="Zend.Debug.CodeAnalyzer"/>
+
+	<rule ref="Squiz.Functions.GlobalFunction" />
+
+	<!-- Lines can be 120 chars long, but never show errors -->
+	<rule ref="Generic.Files.LineLength">
+		<properties>
+			<property name="lineLimit" value="150"/>
+			<property name="absoluteLineLimit" value="0"/>
+		</properties>
+	</rule>
+
+	<!-- Use Unix newlines -->
+	<rule ref="Generic.Files.LineEndings">
+		<properties>
+			<property name="eolChar" value="\n"/>
+		</properties>
+	</rule>
+
+	<!-- We allow empty catch statements -->
+	<rule ref="Generic.CodeAnalysis.EmptyStatement.DetectedCATCH">
+		<severity>0</severity>
+	</rule>
+
+
+	<rule ref="Generic.WhiteSpace.DisallowSpaceIndent"/>
+
+
+	<rule ref="Generic.Arrays.DisallowLongArraySyntax" />
+	<rule ref="Generic.Classes.DuplicateClassName" />
+	<rule ref="Generic.CodeAnalysis.UselessOverridingMethod" />
+
+	<rule ref="Generic.Commenting.Fixme"/>
+	<rule ref="Generic.Files.ByteOrderMark"/>
+
+	<rule ref="Generic.Metrics.CyclomaticComplexity">
+		<properties>
+			<property name="complexity" value="15"/>
+		</properties>
+	</rule>
+	<rule ref="Generic.Metrics.NestingLevel">
+		<properties>
+			<property name="nestingLevel" value="5"/>
+		</properties>
+	</rule>
+	<rule ref="Generic.NamingConventions.CamelCapsFunctionName" />
+	<rule ref="Generic.NamingConventions.UpperCaseConstantName"/>
+	<rule ref="Generic.PHP.DeprecatedFunctions"/>
+	<rule ref="Generic.PHP.ForbiddenFunctions"/>
+	<rule ref="PSR1.Files.SideEffects" />
+</ruleset>

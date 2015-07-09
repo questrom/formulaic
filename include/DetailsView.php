@@ -87,8 +87,8 @@ class DetailsViewRenderable implements Renderable {
 			->head
 				->meta->charset('utf-8')->end
 				->title->t($this->f->title)->end
-				->link->rel("stylesheet")->href("lib/semantic.css")->end
-				->link->rel("stylesheet")->href("styles.css")->end
+				->link->rel('stylesheet')->href('lib/semantic.css')->end
+				->link->rel('stylesheet')->href('styles.css')->end
 			->end
 			->body
 				->addH(new TopHeader())

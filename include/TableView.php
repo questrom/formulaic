@@ -33,7 +33,9 @@ class ValueCell implements Renderable {
 				->end
 			);
 		})
-		->innerBind(function($x) { return $x; });
+		->innerBind(function($x) {
+			return $x;
+		});
 	}
 }
 
@@ -49,8 +51,8 @@ class TablePage implements Renderable {
 			->head
 				->meta->charset('utf-8')->end
 				->title->t($this->f->title)->end
-				->link->rel("stylesheet")->href("lib/semantic.css")->end
-				->link->rel("stylesheet")->href("styles.css")->end
+				->link->rel('stylesheet')->href('lib/semantic.css')->end
+				->link->rel('stylesheet')->href('styles.css')->end
 			->end
 			->body
 				->addH(new TopHeader())
@@ -101,7 +103,8 @@ class TablePage implements Renderable {
 						->hif($this->f->perPage)
 							->div->class('ui text menu')
 								->div->class('item')
-									->a->class('ui left floated primary labeled icon button ' . ($this->f->page === 1 ? 'disabled' : ''))
+									->a->class('ui left floated primary labeled icon button '
+											. ($this->f->page === 1 ? 'disabled' : ''))
 										->href('?form=' . $_GET['form'] . '&view=' . $this->f->name . '&page=' . ($this->f->page - 1))
 										->i->class('left chevron icon')->end
 										->t('Previous')
@@ -111,7 +114,8 @@ class TablePage implements Renderable {
 									->t('Page ' . ($this->f->page) . ' of ' . ($this->f->max + 1))
 								->end
 								->div->class('right item')
-									->a->class('ui right floated primary right labeled icon button ' . ((($this->f->page - 1) === $this->f->max) ? 'disabled' : ''))
+									->a->class('ui right floated primary right labeled icon button '
+											. ((($this->f->page - 1) === $this->f->max) ? 'disabled' : ''))
 										->href('?form=' . $_GET['form'] . '&view=' . $this->f->name . '&page=' . ($this->f->page + 1))
 										->i->class('right chevron icon')->end
 										->t('Next')
