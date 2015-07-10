@@ -111,7 +111,7 @@ class EmailOutput implements Output, XmlDeserializable {
 		$view = new EmailView($page);
 		$view->data = $data;
 
-		$html = '<!DOCTYPE html>' . generateString($view->makeEmailView());
+		$html = '<!DOCTYPE html>' . $view->makeEmailView()->render()->generateString();
 
 		$mail = new Message();
 		$mail

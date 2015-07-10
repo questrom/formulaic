@@ -11,6 +11,46 @@ abstract class HTMLGeneratorAbstract {
 		return $this->addH($text);
 	}
 	abstract function toStringArray();
+
+	function generateString() {
+		// Based on: http://stackoverflow.com/questions/29991016/
+		$placeHolder = [[$this]];
+		$lastIndex = [-1];
+		$out = '';
+		while(count($placeHolder)) {
+			$input = array_pop($placeHolder);
+
+			for($i = array_pop($lastIndex) + 1; $i < count($input); $i++) {
+
+				$element = $input[$i];
+
+				if($element instanceof Renderable) {
+					$element = $element->render();
+				}
+
+				if($element instanceof Renderable) {
+					throw new Exception('Tried to render twice!');
+				}
+
+				if ($element instanceof HTMLGeneratorAbstract) {
+					$element = $element->toStringArray();
+				}
+
+				if(is_array($element)) {
+					$placeHolder[] = $input;
+					$lastIndex[] = $i;
+					$input = $element;
+					$i = -1;
+				} else if($element instanceof SafeString) {
+					$out .= $element->value;
+				} else {
+					$out .= htmlspecialchars($element, ENT_QUOTES);
+				}
+
+			}
+		}
+		return $out;
+	}
 }
 
 
@@ -22,41 +62,6 @@ class SafeString {
 	}
 }
 
-function generateString($input) {
-	// Based on: http://stackoverflow.com/questions/29991016/
-	$placeHolder = [[$input]];
-	$lastIndex = [-1];
-	$out = '';
-	while(count($placeHolder)) {
-		$input = array_pop($placeHolder);
-
-		for($i = array_pop($lastIndex) + 1; $i < count($input); $i++) {
-
-			$element = $input[$i];
-
-			while($element instanceof Renderable) {
-				$element = $element->render();
-			}
-
-			if ($element instanceof HTMLGeneratorAbstract) {
-				$element = $element->toStringArray();
-			}
-
-			if(is_array($element)) {
-				$placeHolder[] = $input;
-				$lastIndex[] = $i;
-				$input = $element;
-				$i = -1;
-			} else if($element instanceof SafeString) {
-				$out .= $element->value;
-			} else {
-				$out .= htmlspecialchars($element, ENT_QUOTES);
-			}
-
-		}
-	}
-	return $out;
-}
 
 abstract class HTMLRealGenerator extends HTMLGeneratorAbstract {
 	function __get($name) {

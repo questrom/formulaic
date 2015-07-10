@@ -11,11 +11,11 @@ $page = Parser::parse_jade($_GET['form']);
 
 $view = $page->getView($_GET['view']);
 if($view instanceof GraphView) {
-	echo '<!DOCTYPE html>' . generateString(
-		$view->makeGraphViewPart($view->query($_GET))
-	);
+	echo '<!DOCTYPE html>' .
+		$view->makeGraphViewPart($view->query($_GET))->render()->generateString()
+	;
 } else if ($view instanceof TableView) {
-	echo '<!DOCTYPE html>' . generateString(
-		$view->makeTableViewPart($view->query($_GET))
-	);
+	echo '<!DOCTYPE html>' .
+		$view->makeTableViewPart($view->query($_GET))->render()->generateString()
+	;
 }

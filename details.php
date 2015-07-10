@@ -10,4 +10,4 @@ $view->setPage($page);
 
 $view->query($_GET);
 
-echo '<!DOCTYPE html>' . generateString($view->makeDetailsView());
+echo '<!DOCTYPE html>' . $view->makeDetailsView()->render()->generateString();
