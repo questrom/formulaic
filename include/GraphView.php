@@ -161,7 +161,7 @@ class PieChartRenderable implements Renderable {
 					->div->class('header')->t($this->label)->end
 				->end
 				->div->class('content')
-					->svg->viewBox('-900 -600 1800 1200')->style('background:#fff')
+					->svg->viewBox('-900 -600 1800 1200')->style('background:#fff;width:100%;')
 						->addH(kvmap(function($index, $result) use($total, &$lastAngle) {
 
 							$key = $result['_id'];
@@ -241,7 +241,7 @@ class BarGraphRenderable implements Renderable {
 					->div->class('header')->t($this->label)->end
 				->end
 				->div->class('content')
-					->svg->viewBox('0 0 700 ' . count($this->results) * 30 )->style('background:#fff')
+					->svg->viewBox('0 0 700 ' . count($this->results) * 30 )->style('background:#fff;width:100%;')
 						->addH(kvmap(function($index, $result) use($max) {
 							$barWidth = ($result['count']/$max) * 500;
 							$labelAtRight = $barWidth < 40;

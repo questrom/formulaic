@@ -473,12 +473,7 @@ class Password extends PostInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
 
-		$this->maxLength = isset($args['max-length']) ? intval($args['max-length']) : INF;
-		$this->minLength = isset($args['min-length']) ? intval($args['min-length']) : 0;
 		$this->required  = isset($args['required']);
-		$this->mustMatch = isset($args['must-match']) ? $args['must-match'] : null;
-
-
 		$this->matchHash = isset($args['match-hash']) ? $args['match-hash'] : null;
 
 		if(isset($args['match-hash'])) {
@@ -486,14 +481,12 @@ class Password extends PostInputComponent {
 		}
 	}
 	function makeFormPart() {
-		return new InputFormPart($this, 'password', '');
+		return new InputFormPart($this, 'password',null);
 	}
 	protected function validate($against) {
 		return $against
 			->filterString()
 			->matchHash( isset($this->matchHash) ? $this->matchHash : null )
-			->minMaxLength($this->minLength, $this->maxLength)
-			->matchRegex($this->mustMatch)
 			->filterEmptyString()
 			->requiredMaybe($this->required);
 	}

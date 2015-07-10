@@ -228,7 +228,7 @@ abstract class Validate {
 		return $this->innerBind(function($x) use ($hash) {
 			if($hash !== null) {
 				if(password_verify($x, $hash)) {
-					return Result::ok(null);
+					return Result::ok($x);
 				} else {
 					return Result::error('Password incorrect!');
 				}
