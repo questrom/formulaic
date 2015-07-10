@@ -10,7 +10,7 @@ class Label implements Renderable {
 	function render() {
 		return $this->h
 		->label
-			->t($this->label)
+			->span->t($this->label)->end
 			->addH(new PossibleSublabel($this->customSublabel, true))
 		->end;
 	}
