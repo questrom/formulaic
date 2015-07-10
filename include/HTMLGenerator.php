@@ -60,16 +60,14 @@ class SafeString {
 }
 
 
-abstract class HTMLRealGenerator extends HTMLGeneratorAbstract {
-	function __get($name) {
-		return new HTMLTagGenerator(new HTMLContentGenerator(), $name, []);
-	}
-}
-
-class HTMLContentGenerator extends HTMLRealGenerator {
+class HTMLContentGenerator extends HTMLGeneratorAbstract {
 
 	function __construct($children = []) {
 		$this->children = $children;
+	}
+
+	function __get($name) {
+		return new HTMLTagGenerator(new HTMLContentGenerator(), $name);
 	}
 
 	function addH($arr) {
@@ -84,7 +82,7 @@ class HTMLContentGenerator extends HTMLRealGenerator {
 }
 
 // Generates the inside of an HTML element
-class HTMLTagGenerator extends HTMLRealGenerator {
+class HTMLTagGenerator extends HTMLGeneratorAbstract {
 	private $contents, $tag, $attrs;
 
 	function __construct( $contents, $tag, $attrs = []) {
@@ -138,9 +136,6 @@ class HTMLParentContext extends HTMLGeneratorAbstract {
 	function addH($arr) { return new HTMLParentContext($this->parent, $this->generator->addH($arr)); }
 	function data($key, $val, $cond = true) { return new HTMLParentContext($this->parent, $this->generator->data($key, $val, $cond)); }
 
-	function ins($gen) {
-		return new HTMLParentContext($this, $gen->generator);
-	}
 
 	function __get($name) {
 		if($name === 'end') {
@@ -164,9 +159,6 @@ class HTMLParentlessContext extends HTMLGeneratorAbstract{
 	}
 	function addH($arr) {
 		return new HTMLParentlessContext($this->generator->addH($arr));
-	}
-	function ins($gen) {
-		return new HTMLParentContext($this, $gen->generator);
 	}
 	function toStringArray() {
 		return $this->generator->toStringArray();

@@ -20,16 +20,3 @@ class FileInfo {
 		$this->permissions = $permissions;
 	}
 }
-
-
-// Helper functions
-// ================
-
-function fieldBox($h, $required) {
-	return $h->div->class('field ' . ($required ? ' required' : ''));
-}
-
-
-function midpoint($a, $b) {
-	return $a + (($b - $a) / 2);
-}

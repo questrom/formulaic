@@ -31,7 +31,9 @@ class ValueRow implements Renderable {
 						->td->class('right aligned collapsing nowrap')
 							->t($this->component->label)
 						->end
-						->ins($x)
+						->addH(
+							$x
+						)
 					->end;
 			});
 	}

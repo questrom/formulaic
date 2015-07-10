@@ -50,3 +50,8 @@ function diverse_array($vector) {
    }
    return $result;
 }
+
+
+function midpoint($a, $b) {
+	return $a + (($b - $a) / 2);
+}

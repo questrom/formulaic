@@ -168,7 +168,7 @@ class NumberFormPart extends FormPart {
 
 class DropdownFormPart extends FormPart {
 	function render() {
-		return fieldBox($this->h, $this->f->required)
+		return $this->h->div->class('field ' . ($this->f->required ? ' required' : ''))
 			->addH($this->f->getLabel())
 			->div->class('ui fluid dropdown selection')
 				->input->name($this->f->name)->type('hidden')->value('')->end
@@ -228,12 +228,12 @@ class RadiosFormPart extends FormPart {
 class TextareaFormPart extends FormPart {
 	function render() {
 		return $this->h
-			->ins(fieldBox($this->h, $this->f->required))
-			->addH($this->f->getLabel())
-			->textarea
-				->name($this->f->name)
-				->maxlength($this->f->maxLength, is_finite($this->f->maxLength))
-			->end
+			->div->class('field ' . ($this->f->required ? ' required' : ''))
+				->addH($this->f->getLabel())
+				->textarea
+					->name($this->f->name)
+					->maxlength($this->f->maxLength, is_finite($this->f->maxLength))
+				->end
 			->end;
 	}
 }
