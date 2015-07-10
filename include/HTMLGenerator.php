@@ -2,7 +2,6 @@
 
 abstract class HTMLGeneratorAbstract {
 	protected $parent;
-	abstract function hif($cond);
 
 	abstract function addH($arr);
 
@@ -65,10 +64,6 @@ abstract class HTMLRealGenerator extends HTMLGeneratorAbstract {
 	function __get($name) {
 		return new HTMLTagGenerator(new HTMLContentGenerator(), $name, []);
 	}
-
-	// Helper for "if" statements
-	function hif($cond) { return $cond ? new HTMLContentGenerator() : new HTMLDummyGenerator(); }
-
 }
 
 class HTMLDummyGenerator extends HTMLGeneratorAbstract {
@@ -76,7 +71,6 @@ class HTMLDummyGenerator extends HTMLGeneratorAbstract {
 	function __get($name) { return $this; }
 	function ins($gen) { return $this; }
 	function append($text) { return $this; }
-	function hif($cond) { return $this; }
 	function data($key, $val, $cond = true) { return $this; }
 	function __call($name, $args) { return $this; }
 	function toStringArray() { return []; }
@@ -115,6 +109,7 @@ class HTMLTagGenerator extends HTMLRealGenerator {
 		$this->attrs[$name] = $args[0];
 		return new HTMLTagGenerator($this->tagless, $this->tag, $this->attrs);
 	}
+
 	function data($key, $val, $cond = true) {
 		if(!$cond) {
 			return $this;
@@ -131,11 +126,6 @@ class HTMLTagGenerator extends HTMLRealGenerator {
 		return new HTMLTagGenerator(new HTMLContentGenerator(), $name);
 	}
 
-
-	// Helper for "if" statements
-	function hif($cond) {
-		return $cond ? new HTMLContentGenerator() : new HTMLDummyGenerator();
-	}
 
 	function toStringArray() {
 		$parts = [ new SafeString('<'), $this->tag ];
@@ -159,10 +149,6 @@ class HTMLParentContext extends HTMLGeneratorAbstract {
 	function __construct($parent, $generator) {
 		$this->parent = $parent;
 		$this->generator = $generator;
-	}
-
-	function hif($cond) {
-		return new HTMLParentContext($this, $this->generator->hif($cond));
 	}
 
 	function __call($name, $args) { return new HTMLParentContext($this->parent, $this->generator->__call($name, $args)); }
@@ -195,9 +181,6 @@ class HTMLParentlessContext extends HTMLGeneratorAbstract{
 	}
 	function addH($arr) {
 		return new HTMLParentlessContext($this->generator->addH($arr));
-	}
-	function hif($arr) {
-		return new HTMLParentContext($this, $this->generator->hif($arr));
 	}
 	function ins($gen) {
 		return new HTMLParentContext($this, $gen->generator);
