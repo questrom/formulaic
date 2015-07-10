@@ -55,13 +55,12 @@ abstract class HTMLGeneratorAbstract {
 
 class SafeString {
 	function __construct($value) {
-		$this->value = $value . '';
+		$this->value = $value;
 	}
 }
 
 
 class HTMLContentGenerator extends HTMLGeneratorAbstract {
-
 	function __construct($children = []) {
 		$this->children = $children;
 	}
@@ -110,11 +109,9 @@ class HTMLTagGenerator extends HTMLGeneratorAbstract {
 		return new HTMLTagGenerator($this->contents->addH($arr), $this->tag, $this->attrs);
 	}
 
-
 	function __get($name) {
 		return new HTMLTagGenerator(new HTMLContentGenerator(), $name);
 	}
-
 
 	function toStringArray() {
 		$parts = [ new SafeString('<'), $this->tag ];
@@ -132,10 +129,17 @@ class HTMLParentContext extends HTMLGeneratorAbstract {
 		$this->generator = $generator;
 	}
 
-	function __call($name, $args) { return new HTMLParentContext($this->parent, $this->generator->__call($name, $args)); }
-	function addH($arr) { return new HTMLParentContext($this->parent, $this->generator->addH($arr)); }
-	function data($key, $val, $cond = true) { return new HTMLParentContext($this->parent, $this->generator->data($key, $val, $cond)); }
+	function __call($name, $args) {
+		return new HTMLParentContext($this->parent, $this->generator->__call($name, $args));
+	}
 
+	function addH($arr) {
+		return new HTMLParentContext($this->parent, $this->generator->addH($arr));
+	}
+
+	function data($key, $val, $cond = true) {
+		return new HTMLParentContext($this->parent, $this->generator->data($key, $val, $cond));
+	}
 
 	function __get($name) {
 		if($name === 'end') {
@@ -154,14 +158,20 @@ class HTMLParentlessContext extends HTMLGeneratorAbstract{
 	function __construct($generator = null) {
 		$this->generator = $generator ? $generator : new HTMLContentGenerator();
 	}
+
 	function __get($name) {
 		return new HTMLParentContext($this, $this->generator->__get($name));
 	}
+
 	function addH($arr) {
 		return new HTMLParentlessContext($this->generator->addH($arr));
 	}
+
 	function toStringArray() {
 		return $this->generator->toStringArray();
 	}
 }
 
+function h() {
+	return new HTMLParentlessContext();
+}
