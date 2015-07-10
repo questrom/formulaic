@@ -369,14 +369,15 @@ class ListComponentFormPart extends FormPart {
 				->script->type('text/template')
 					->addH(
 						// Forcibly HTML-encode things so that nested lists are generated properly...
-						(new HTMLParentlessContext())->div->class('ui vertical segment close-item')
-								->div->class('content')
-									->addH( array_map(function($x) { return $x ? $x->makeFormPart() : null; }, $this->f->items) )
-								->end
-								->button->type('button')->class('ui compact negative icon button delete-btn')
-									->i->class('trash icon')->end
-							   ->end
-							->end->generateString()
+						$this->h
+						->div->class('ui vertical segment close-item')
+							->div->class('content')
+								->addH( array_map(function($x) { return $x ? $x->makeFormPart() : null; }, $this->f->items) )
+							->end
+							->button->type('button')->class('ui compact negative icon button delete-btn')
+								->i->class('trash icon')->end
+						   ->end
+						->end->generateString()
 					)
 				->end
 				->div->class('ui center aligned vertical segment')
@@ -406,29 +407,29 @@ class GroupFormPart extends FormPart {
 		}, $this->f->items);
 
 		return $this->h
-			->div->class('group')
-			->addH(array_map(function($value) {
-				if(is_array($value)) {
-					return (new HTMLParentlessContext())->div->class('ui segment attached')
-						->addH(
-							array_map(function($x) { return $x ? $x->makeFormPart() : null; }, $value)
-						)
-						->end;
-				} else {
-					return $value->makeFormPart();
-				}
-			}, array_reduce($items, function($carry, $item) {
-				if($item instanceof GroupHeader || $item instanceof GroupNotice) {
-					$carry[] = $item;
-					return $carry;
-				} else if( is_array(end($carry)) ) {
-					$carry[count($carry)-1][] = $item;
-					return $carry;
-				} else {
-					$carry[] = [$item];
-					return $carry;
-				}
-			}, [])))
+		->div->class('group')
+		->addH(array_map(function($value) {
+			if(is_array($value)) {
+				return (new HTMLParentlessContext())->div->class('ui segment attached')
+					->addH(
+						array_map(function($x) { return $x ? $x->makeFormPart() : null; }, $value)
+					)
+					->end;
+			} else {
+				return $value->makeFormPart();
+			}
+		}, array_reduce($items, function($carry, $item) {
+			if($item instanceof GroupHeader || $item instanceof GroupNotice) {
+				$carry[] = $item;
+				return $carry;
+			} else if( is_array(end($carry)) ) {
+				$carry[count($carry)-1][] = $item;
+				return $carry;
+			} else {
+				$carry[] = [$item];
+				return $carry;
+			}
+		}, [])))
 		->end;
 	}
 }
@@ -537,7 +538,8 @@ class TopHeader implements Renderable {
 	}
 	function render() {
 		return $this->h
-		->div->class('ui top fixed menu')->style('background-color: rgb(' . $this->cfg['branding']['color'] . '); box-shadow: 0px 1px 2px 0px rgba(' . $this->cfg['branding']['color'] . ', 0.25);')
+		->div->class('ui top fixed menu')
+			->style('background-color: rgb(' . $this->cfg['branding']['color'] . '); box-shadow: 0px 1px 2px 0px rgba(' . $this->cfg['branding']['color'] . ', 0.25);')
 			->div->class('item')
 				->img->src($this->cfg['branding']['image'])->end
 			->end

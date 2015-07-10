@@ -28,10 +28,6 @@ abstract class HTMLGeneratorAbstract {
 					$element = $element->render();
 				}
 
-				if($element instanceof Renderable) {
-					throw new Exception('Tried to render twice!');
-				}
-
 				if ($element instanceof HTMLGeneratorAbstract) {
 					$element = $element->toStringArray();
 				}
@@ -43,8 +39,10 @@ abstract class HTMLGeneratorAbstract {
 					$i = -1;
 				} else if($element instanceof SafeString) {
 					$out .= $element->value;
-				} else {
+				} else if(is_scalar($element)) {
 					$out .= htmlspecialchars($element, ENT_QUOTES);
+				} else if(!is_null($element)) {
+					throw new Exception('Invalid HTML generation target!');
 				}
 
 			}
@@ -81,10 +79,7 @@ class HTMLDummyGenerator extends HTMLGeneratorAbstract {
 	function hif($cond) { return $this; }
 	function data($key, $val, $cond = true) { return $this; }
 	function __call($name, $args) { return $this; }
-
-	function toStringArray() {
-		return [];
-	}
+	function toStringArray() { return []; }
 }
 
 
@@ -95,27 +90,19 @@ class HTMLContentGenerator extends HTMLRealGenerator {
 	}
 
 	function addH($arr) {
-		if(!is_array($arr)) {
-			$arr = [$arr];
-		}
-		return new HTMLContentGenerator(
-			array_merge(
-				$this->children,
-				$arr
-			)
-		);
+		$children = $this->children;
+		$children[] = $arr;
+		return new HTMLContentGenerator($children);
 	}
-
 
 	function toStringArray() {
 		return $this->children;
 	}
-
 }
 
 // Generates the inside of an HTML element
 class HTMLTagGenerator extends HTMLRealGenerator {
-	function __construct( $tagless, $tag, $attrs) {
+	function __construct( $tagless, $tag, $attrs = []) {
 		$this->tagless = $tagless;
 		$this->tag = $tag;
 		$this->attrs = $attrs;
@@ -125,7 +112,8 @@ class HTMLTagGenerator extends HTMLRealGenerator {
 		if(isset($args[1]) && !$args[1]) {
 			return $this;
 		}
-		return new HTMLTagGenerator($this->tagless, $this->tag, array_merge($this->attrs, [ $name => $args[0] ] )  );
+		$this->attrs[$name] = $args[0];
+		return new HTMLTagGenerator($this->tagless, $this->tag, $this->attrs);
 	}
 	function data($key, $val, $cond = true) {
 		if(!$cond) {
@@ -140,7 +128,7 @@ class HTMLTagGenerator extends HTMLRealGenerator {
 
 
 	function __get($name) {
-		return new HTMLTagGenerator( new HTMLContentGenerator(), $name, [] );
+		return new HTMLTagGenerator(new HTMLContentGenerator(), $name);
 	}
 
 
@@ -177,9 +165,9 @@ class HTMLParentContext extends HTMLGeneratorAbstract {
 		return new HTMLParentContext($this, $this->generator->hif($cond));
 	}
 
-	function __call($name, $args) { return new HTMLParentContext( $this->parent, $this->generator->__call($name, $args)); }
-	function addH($arr) { return new HTMLParentContext( $this->parent, $this->generator->addH($arr)); }
-	function data($key, $val, $cond = true) { return new HTMLParentContext( $this->parent, $this->generator->data($key, $val, $cond)); }
+	function __call($name, $args) { return new HTMLParentContext($this->parent, $this->generator->__call($name, $args)); }
+	function addH($arr) { return new HTMLParentContext($this->parent, $this->generator->addH($arr)); }
+	function data($key, $val, $cond = true) { return new HTMLParentContext($this->parent, $this->generator->data($key, $val, $cond)); }
 
 	function ins($gen) {
 		return new HTMLParentContext($this, $gen->generator);
@@ -192,7 +180,6 @@ class HTMLParentContext extends HTMLGeneratorAbstract {
 			return new HTMLParentContext($this, $this->generator->__get($name));
 		}
 	}
-
 
 	function toStringArray() {
 		return $this->generator->toStringArray();
