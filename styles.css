@@ -50,7 +50,9 @@ input[type=range]::-moz-focus-outer { border:0 !important; }
 .ui.icon.message { -ms-flex-align: start; }
 .ui.icon.message > .icon:not(.close) { align-self: flex-start; -webkit-align-self:flex-start; }
 .ui.header.attached > .icon { vertical-align: top; }
-.red.prompt { display: table; }
+
+.red.prompt { display: table; white-space: normal !important; }
+
 
 /* Utility classes */
 .nowrap { white-space:nowrap;}
@@ -108,6 +110,15 @@ input[type=range]::-moz-focus-outer { border:0 !important; }
 .pagenumber { flex: 1 !important; text-align: center !important; display:block !important; }
 
 
+@media screen and (max-width: 600px) {
+    .sublabel.pull-right {
+        float:none !important;
+        display:block !important;
+        text-align: right !important;
+    }
+}
+
+
 /* iOS: stackoverflow.com/questions/2989263/disable-auto-zoom-in-input-text-tag-safari-on-iphone */
 .ios select,
 .ios textarea,
@@ -126,12 +137,6 @@ input[type=range]::-moz-focus-outer { border:0 !important; }
 .ios input[type="tel"],
 .ios input[type="color"] {
     font-size: 16px !important;
-}
-
-.ios .sublabel.pull-right {
-    float:none !important;
-    display:block !important;
-    text-align: right !important;
 }
 
 
