@@ -100,7 +100,8 @@ class TablePage implements Renderable {
 								->end;
 							}, $this->f->data))
 						->end
-						->hif($this->f->perPage)
+						->addH(!$this->f->perPage ? null :
+							$this->h
 							->div->class('ui text menu')
 								->div->class('item')
 									->a->class('ui left floated primary labeled icon button '
@@ -122,8 +123,7 @@ class TablePage implements Renderable {
 									->end
 								->end
 							->end
-
-					->end
+						)
 				->end
 			->end
 		->end;

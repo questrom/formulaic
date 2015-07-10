@@ -38,10 +38,10 @@ class ValueRow implements Renderable {
 }
 
 class ValueTable implements Renderable {
-	function __construct($fields, $data, $stamp) {
+	function __construct($fields, $data, $stamp = false) {
 		$this->fields = $fields;
 		$this->data = $data;
-		$this->stamp = false;
+		$this->stamp = $stamp;
 		$this->h = new HTMLParentlessContext();
 	}
 	function render() {
@@ -55,7 +55,8 @@ class ValueTable implements Renderable {
 					}
 				}, $this->fields ))
 			->end
-			->hif($this->stamp)
+			->addH(!$this->stamp ? null :
+				$this->h
 				->tfoot->class('full-width')
 					->tr
 						->th->colspan('2')
@@ -68,7 +69,7 @@ class ValueTable implements Renderable {
 						->end
 					->end
 				->end
-			->end
+			)
 		->end;
 	}
 }
