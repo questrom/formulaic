@@ -19,15 +19,12 @@ class GraphViewRenderable implements Renderable {
 			->body
 				->addH(new TopHeader())
 				->div->class('ui text container')
-						->div
-
-							->h1->class('ui header')
-								->div->class('pull-right ui large label submit-count-label')
-									->t($this->f->totalCount)
-									->div->class('detail')->t('total submissions')->end
-								->end
-								->t($this->f->title)
+						->h1->class('ui header')
+							->div->class('pull-right ui large label submit-count-label')
+								->t($this->f->totalCount)
+								->div->class('detail')->t('total submissions')->end
 							->end
+							->t($this->f->title)
 						->end
 						->addH( array_map(function($x) {
 							return $x ? $x->makeGraphViewPart(null) : null;

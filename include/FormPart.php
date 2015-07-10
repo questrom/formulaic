@@ -10,11 +10,7 @@ class Label implements Renderable {
 	function render() {
 		return $this->h->label
 			->t($this->label)
-			->hif($this->customSublabel)
-				->p->class('muted-text pull-right')
-					->t($this->customSublabel)
-				->end
-			->end
+			->addH(new PossibleSublabel($this->customSublabel, true))
 		->end;
 	}
 }
@@ -30,19 +26,16 @@ abstract class FormPart implements Renderable {
 abstract class BaseHeaderFormPart extends FormPart {
 	function render() {
 		$inside = $this->h->t($this->f->text)
-		->hif($this->f->subhead !== null)
-			->div->class('sub header')->t($this->f->subhead)->end
-		->end;
-		return $this->h
-			->hif($this->f->icon !== null)
-				->i->class($this->f->icon . ' icon')->end
-				->div->class('content')
-					->addH($inside)
-				->end
-			->end
-			->hif($this->f->icon === null)
+		->addH($this->f->subhead === null ? null :
+			$this->h->div->class('sub header')->t($this->f->subhead)->end
+		);
+		return $this->f->icon === null ? $inside :
+			$this->h
+			->i->class($this->f->icon . ' icon')->end
+			->div->class('content')
 				->addH($inside)
-			->end;
+			->end
+		;
 	}
 }
 
@@ -50,26 +43,30 @@ abstract class BaseHeaderFormPart extends FormPart {
 abstract class BaseNoticeFormPart extends FormPart {
 	function render() {
 		return $this->h
-		->hif($this->f->icon !== null)
+		->addH($this->f->icon === null ? null :
+			$this->h
 			->i->class($this->f->icon . ' icon')->end
-		->end
+		)
 		->div->class('content')
-			->hif($this->f->header !== null)
-				->div->class('header')
+			->addH($this->f->header === null ? null :
+				$this->h->div->class('header')
 					->t($this->f->header)
 				->end
-			->end
+			)
 			->p
 				->t($this->f->text)
 			->end
-			->hif($this->f->list !== null)
-			  ->ul->class('list')
-				->addH(array_map(function($item) {
-					// var_dump($this->list);
-					return $this->h->li->t($item)->end;
-				}, $this->f->list === null ? [] : $this->f->list ))
-			  ->end
-			->end
+			->addH(
+				$this->f->list === null ? null :
+				$this->h->ul->class('list')
+					->addH(array_map(
+						function($item) {
+							return $this->h->li->t($item)->end;
+						},
+						$this->f->list === null ? [] : $this->f->list
+					))
+				->end
+			)
 		->end;
 	}
 }
@@ -132,19 +129,17 @@ class InputFormPart extends FormPart {
 		->div->class('ui field ' . ($this->f->required ? 'required' : ''))
 			->addH($this->f->getLabel())
 			->div->class($this->icon ? 'ui left icon input' : 'ui input')
-				->hif($this->icon)
+				->addH($this->icon === null ? null :
+					$this->h
 					->i->class('icon ' . $this->icon)->end
-				->end
+				)
 				->input
 					->type($this->type)
 					->name($this->f->name)
 					->data('inputmask', $this->mask, $this->mask !== null)
 				->end
 			->end
-
-				->hif($this->sublabel)
-					->p->class('muted-text')->t($this->sublabel)->end
-				->end
+			->addH(new PossibleSublabel($this->sublabel))
 		->end;
 	}
 }
@@ -183,13 +178,30 @@ class DropdownFormPart extends FormPart {
 					->addH(array_map(
 						function($v) {
 							return $this->h
-							->div
-								->class('item')->data('value', $v)->t($v)
+							->div->class('item')->data('value', $v)
+								->t($v)
 							->end;
 						},
 						$this->f->options
 					))
 				->end
+			->end
+		->end;
+	}
+}
+
+class RadioButton implements Renderable {
+	function __construct($name, $value) {
+		$this->name = $name;
+		$this->value = $value;
+		$this->h = new HTMLParentlessContext();
+	}
+	public function render() {
+		return $this->h
+		->div->class('field not-validation-root')
+			->div->class('ui radio checkbox')
+				->input->name($this->name)->type('radio')->value($this->value)->end
+				->label->t($this->value)->end
 			->end
 		->end;
 	}
@@ -204,15 +216,7 @@ class RadiosFormPart extends FormPart {
 			->addH($this->f->getLabel())
 			->addH(
 				array_map(
-					function($v) {
-						return $this->h
-							->div->class('field not-validation-root')
-								->div->class('ui radio checkbox')
-									->input->name($this->f->name)->type('radio')->value($v)->end
-									->label->t($v)->end
-								->end
-							->end;
-					},
+					function($v) { return new RadioButton($this->f->name, $v); },
 					$this->f->options
 				)
 			)
@@ -239,6 +243,22 @@ function df($date) {
 	return $date->format('g:ia m/d/Y');
 }
 
+class PossibleSublabel implements Renderable {
+	function __construct($sublabel, $right = false) {
+		$this->h = new HTMLParentlessContext();
+		$this->sublabel = $sublabel;
+		$this->right = $right;
+	}
+	function render() {
+		if($this->sublabel !== '') {
+			return $this->h
+			->p->class('muted-text ' . ($this->right ? 'pull-right' : ''))->t($this->sublabel)->end;
+		} else {
+			return null;
+		}
+	}
+}
+
 class DateTimePickerFormPart extends FormPart {
 	function render() {
 		$sublabel = '';
@@ -258,9 +278,7 @@ class DateTimePickerFormPart extends FormPart {
 				->i->class('calendar icon')->end
 				->input->type('text')->name($this->f->name)->data('inputmask', " 'alias': 'proper-datetime' ")->end
 			->end
-			->hif($sublabel)
-				->p->class('muted-text')->t($sublabel)->end
-			->end
+			->addH(new PossibleSublabel($sublabel))
 		->end;
 	}
 }
@@ -289,9 +307,7 @@ class TimeInputFormPart extends FormPart {
 					->data('inputmask', " 'alias': 'h:s t', 'placeholder': 'hh:mm am' ")
 				->end
 			->end
-			->hif($sublabel)
-				->p->class('muted-text')->t($sublabel)->end
-			->end
+			->addH(new PossibleSublabel($sublabel))
 		->end;
 	}
 }
@@ -361,9 +377,7 @@ class ListComponentFormPart extends FormPart {
 				->data('validation-name', $this->f->name)
 			->h5->class('top attached ui message')
 				->t($this->f->label)
-				->hif($sublabel)
-					->p->class('muted-text pull-right')->t($sublabel)->end
-				->end
+				->addH(new PossibleSublabel($sublabel, true))
 			->end
 			->div->class('ui bottom attached segment list-items')
 				->script->type('text/template')
@@ -466,9 +480,7 @@ class CheckboxesFormPart extends FormPart {
 						$this->f->options
 					)
 				)
-				->hif($sublabel)
-					->p->class('muted-text')->t($sublabel)->end
-				->end
+				->addH(new PossibleSublabel($sublabel))
 			->end;
 	}
 }
