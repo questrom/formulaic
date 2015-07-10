@@ -252,7 +252,7 @@ class PossibleSublabel implements Renderable {
 	function render() {
 		if($this->sublabel !== '') {
 			return $this->h
-			->p->class('muted-text ' . ($this->right ? 'pull-right' : ''))->t($this->sublabel)->end;
+			->p->class('sublabel muted-text ' . ($this->right ? 'pull-right' : ''))->t($this->sublabel)->end;
 		} else {
 			return null;
 		}

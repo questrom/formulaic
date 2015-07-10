@@ -15,7 +15,8 @@
         "riimu/kit-csrf": "^2.3",
         "gregwar/captcha": "^1.1",
         "mistic100/randomcolor": "^1.0",
-        "gabrielelana/byte-units": "^0.3.0"
+        "gabrielelana/byte-units": "^0.3.0",
+        "mobiledetect/mobiledetectlib": "^2.8"
     },
     "config": {
         "__comment__" : "Use the below line so that component-installer won't create an extra directory...",

@@ -1,8 +1,13 @@
 /* jshint undef: true, unused: true */
 /* globals $, document, FormData */
 
+var isios = navigator.userAgent.match(/iPad|iPhone|iPod/g);
+if(isios) {
+	document.documentElement.className += ' ios';
+}
+
 function addPrompt(name, prompt) {
-	$(document.getElementsByName(name))
+	var $elem = $(document.getElementsByName(name))
 		.add($('[data-validation-name="' + name + '"]'))
 		.closest('.field:not(.not-validation-root), .validation-root')
 		.addClass('error')
@@ -11,6 +16,10 @@ function addPrompt(name, prompt) {
 				.addClass('ui red pointing prompt label')
 				.text(prompt)
 		);
+	return {
+		elem: $elem,
+		top: $elem.offset().top
+	};
 }
 
 function removePrompts() {
@@ -137,8 +146,18 @@ $(function() {
 			$('.failure-modal').modal('show');
 	}
 
+	// alert('Hello world!');
+
+	if(isios) {
+		$('[data-submit=true]').on('touchend', function(e) {
+			// stackoverflow.com/questions/24306818/form-submit-button-event-is-not-captured-when-keyboard-is-up-ios-7
+			$('form').submit();
+		});
+	}
 
 	$('form').on('submit', function(e) {
+
+
 		e.preventDefault();
 
 		removePrompts();
@@ -170,11 +189,24 @@ $(function() {
 				var submit = $('[data-submit=true]').removeClass('loading').removeAttr('disabled');
 				$(submit).find('span').text('Try Again');
 
-				var results = x.errors;
+				var results = x.errors,
+					lowest = null,
+					result;
 
 				for(var k in results) {
-					addPrompt(k, results[k]);
+					result = addPrompt(k, results[k]);
+					if(lowest === null || result.top < lowest.top) {
+						lowest = result;
+					}
 				}
+				if(lowest) {
+
+					lowest.elem[0].scrollIntoView();
+					if($('.ui.top.fixed.menu').css('position') === 'fixed') { // It isn't fixed on iOS
+						window.scrollBy(0, -$('.ui.top.fixed.menu').height());
+					}
+				}
+
 			} else {
 				$('.validation-error-message').hide();
 				$('[data-submit=true]').removeClass('loading').removeAttr('disabled').find('span').text('Submit Again');

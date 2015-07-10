@@ -7,6 +7,7 @@ body { overflow-x: auto; }
 /*For IE: -ms- prefixed properties among stuff below; nothing besides thse,
     For Safari, -webkit- */
 
+
 /* Darker background*/
 body { background: #F7F7F7; }
 
@@ -105,3 +106,53 @@ input[type=range]::-moz-focus-outer { border:0 !important; }
 
 .ui.text.menu .item { color:#000 !important; }
 .pagenumber { flex: 1 !important; text-align: center !important; display:block !important; }
+
+
+/* iOS: stackoverflow.com/questions/2989263/disable-auto-zoom-in-input-text-tag-safari-on-iphone */
+.ios select,
+.ios textarea,
+.ios input[type="text"],
+.ios input[type="password"],
+.ios input[type="datetime"],
+.ios input[type="datetime-local"],
+.ios input[type="date"],
+.ios input[type="month"],
+.ios input[type="time"],
+.ios input[type="week"],
+.ios input[type="number"],
+.ios input[type="email"],
+.ios input[type="url"],
+.ios input[type="search"],
+.ios input[type="tel"],
+.ios input[type="color"] {
+    font-size: 16px !important;
+}
+
+.ios .sublabel.pull-right {
+    float:none !important;
+    display:block !important;
+    text-align: right !important;
+}
+
+
+.ios .ui.top.fixed.menu {
+    position: absolute !important;
+}
+
+.ios .close-item {
+    position:relative;
+    display:block;
+}
+.ios .close-item > .content {
+    margin-right:0;
+}
+.ios .close-item > .delete-btn {
+    position:absolute;
+    top:0;
+    right:-15px;
+    margin:0 !important;
+    border-top-right-radius:0;
+    border-top-left-radius:0;
+    border-bottom-right-radius:0;
+}
+/* -- end iOS */
