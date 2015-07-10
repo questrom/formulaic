@@ -6,7 +6,7 @@ form(title='Example Form', success-message='Lorem ipsum!')
     show-if
       is-checked(name='existence')
       header(icon='plug', size=4) Hello world
-    file(label='Upload a file...', name='upload_file', max-size='1000000', permissions='public-read')
+    file(label='Upload a file...', name='upload_file', max-size='100000', permissions='public-read')
       allow(ext='docx', mime='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
       allow(ext='jpg', mime='image/jpeg')
     datetime(label='Start at', name='start_datetime', min='01/01/2015 11:11 AM', max='01/01/2016 11:11 AM', step='10')

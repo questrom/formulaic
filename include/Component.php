@@ -481,7 +481,7 @@ class Password extends PostInputComponent {
 		}
 	}
 	function makeFormPart() {
-		return new InputFormPart($this, 'password',null);
+		return new InputFormPart($this, 'password', null);
 	}
 	protected function validate($against) {
 		return $against
