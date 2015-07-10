@@ -53,6 +53,9 @@ input[type=range]::-moz-focus-outer { border:0 !important; }
 
 .red.prompt { display: table; white-space: normal !important; }
 
+.no-margin { margin:0 !important;}
+
+.pull-left { float:left !important;}
 
 /* Utility classes */
 .nowrap { white-space:nowrap;}

@@ -8,7 +8,8 @@ class Label implements Renderable {
 		$this->customSublabel = $sublabel;
 	}
 	function render() {
-		return $this->h->label
+		return $this->h
+		->label
 			->t($this->label)
 			->addH(new PossibleSublabel($this->customSublabel, true))
 		->end;
@@ -250,7 +251,7 @@ class PossibleSublabel implements Renderable {
 		$this->right = $right;
 	}
 	function render() {
-		if($this->sublabel !== '') {
+		if($this->sublabel) {
 			return $this->h
 			->p->class('sublabel muted-text ' . ($this->right ? 'pull-right' : ''))->t($this->sublabel)->end;
 		} else {
