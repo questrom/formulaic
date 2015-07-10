@@ -66,17 +66,6 @@ abstract class HTMLRealGenerator extends HTMLGeneratorAbstract {
 	}
 }
 
-class HTMLDummyGenerator extends HTMLGeneratorAbstract {
-	function addH($arr) { return $this; }
-	function __get($name) { return $this; }
-	function ins($gen) { return $this; }
-	function append($text) { return $this; }
-	function data($key, $val, $cond = true) { return $this; }
-	function __call($name, $args) { return $this; }
-	function toStringArray() { return []; }
-}
-
-
 class HTMLContentGenerator extends HTMLRealGenerator {
 
 	function __construct($children = []) {
@@ -96,8 +85,10 @@ class HTMLContentGenerator extends HTMLRealGenerator {
 
 // Generates the inside of an HTML element
 class HTMLTagGenerator extends HTMLRealGenerator {
-	function __construct( $tagless, $tag, $attrs = []) {
-		$this->tagless = $tagless;
+	private $contents, $tag, $attrs;
+
+	function __construct( $contents, $tag, $attrs = []) {
+		$this->contents = $contents;
 		$this->tag = $tag;
 		$this->attrs = $attrs;
 	}
@@ -107,18 +98,18 @@ class HTMLTagGenerator extends HTMLRealGenerator {
 			return $this;
 		}
 		$this->attrs[$name] = $args[0];
-		return new HTMLTagGenerator($this->tagless, $this->tag, $this->attrs);
+		return new HTMLTagGenerator($this->contents, $this->tag, $this->attrs);
 	}
 
 	function data($key, $val, $cond = true) {
 		if(!$cond) {
 			return $this;
 		}
-		return new HTMLTagGenerator($this->tagless, $this->tag, array_merge($this->attrs, [  'data-' . $key => $val ] ));
+		return new HTMLTagGenerator($this->contents, $this->tag, array_merge($this->attrs, [  'data-' . $key => $val ] ));
 	}
 
 	function addH($arr) {
-		return new HTMLTagGenerator($this->tagless->addH($arr), $this->tag, $this->attrs);
+		return new HTMLTagGenerator($this->contents->addH($arr), $this->tag, $this->attrs);
 	}
 
 
@@ -130,17 +121,9 @@ class HTMLTagGenerator extends HTMLRealGenerator {
 	function toStringArray() {
 		$parts = [ new SafeString('<'), $this->tag ];
 		foreach ($this->attrs as $key => $value) {
-			$parts[] = new SafeString(' ');
-			$parts[] = $key;
-			$parts[] = new SafeString('="');
-			$parts[] = $value;
-			$parts[] = new SafeString('"');
+			$parts[] = [ new SafeString(' '), $key, new SafeString('="'), $value, new SafeString('"') ];
 		}
-		$parts[] = new SafeString('>');
-		$parts[] = $this->tagless;
-		$parts[] = new SafeString('</');
-		$parts[] = $this->tag;
-		$parts[] = new SafeString('>');
+		$parts[] = [ new SafeString('>'), $this->contents, new SafeString('</'), $this->tag, new SafeString('>')];
 		return $parts;
 	}
 }
