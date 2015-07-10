@@ -171,7 +171,3 @@ class HTMLParentlessContext extends HTMLGeneratorAbstract{
 		return $this->generator->toStringArray();
 	}
 }
-
-function h() {
-	return new HTMLParentlessContext();
-}
