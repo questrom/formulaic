@@ -1,5 +1,5 @@
-/* jshint undef: true, unused: true */
-/* globals $, document, FormData */
+/* jshint undef: true, unused: vars */
+/* globals $, document, FormData, window, navigator */
 
 var isios = navigator.userAgent.match(/iPad|iPhone|iPod/g);
 if(isios) {

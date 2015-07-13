@@ -13,8 +13,8 @@ class GraphViewRenderable implements Renderable {
 			->head
 				->meta->charset('utf-8')->end
 				->title->t($this->f->title)->end
-				->link->rel("stylesheet")->href("lib/semantic.css")->end
-				->link->rel("stylesheet")->href("styles.css")->end
+				->link->rel('stylesheet')->href('lib/semantic.css')->end
+				->link->rel('stylesheet')->href('styles.css')->end
 			->end
 			->body
 				->addH(new TopHeader())
@@ -126,18 +126,87 @@ abstract class Graph implements XmlDeserializable, GraphViewPartFactory  {
 		}
 
 		$results = $results['result'];
-		$ids = array_map(function($x) { return $x['_id']; }, $results);
+		$ids = array_map(function($x) {
+			return $x['_id'];
+		}, $results);
 
 		foreach(array_diff($this->component->getPossibleValues(), $ids) as $value) {
 			$results[] = [
 				'_id' => $value,
 				'count' => 0
 			];
+		}
 
+		foreach($results as $index => &$result) {
+			$result['index'] = $index;
 		}
 
 		return $results;
 
+	}
+}
+
+class PieSlice implements Renderable {
+	function __construct($result, $total, $prev) {
+		$this->result = $result;
+		$this->total = $total;
+		$this->h = new HTMLParentlessContext();
+		$this->prev = $prev;
+		$this->lastAngle = isset($prev) ? $prev->endAngle : -pi()/2;
+		$this->endAngle = ($this->result['count'] / $total) * 2 * pi() + $this->lastAngle;
+
+	}
+	function render() {
+		$key = $this->result['_id'];
+
+		$percent = ($this->result['count'] / $this->total);
+
+		if($key === true) {
+			$key = 'Yes';
+			$color='#21ba45';
+		} else if($key === false) {
+			$key = 'No';
+			$color='#db2828';
+		} else if($key === null) {
+			$key = '(None)';
+			$color='#777';
+		} else {
+			$color = RandomColor::one([
+				'luminosity' => 'bright',
+				'prng' => function($min, $max) use ($key) {
+					return (hexdec(substr(md5($key), 0, 2)) / pow(16, 2))  * ($max - $min) + $min;
+				}
+			]);
+		}
+
+		$pct = $this->endAngle;
+
+
+		$largeSweep = ($percent >= 0.5) ? 1 : 0;
+
+		$startX = cos($this->lastAngle) * 600;
+		$startY = sin($this->lastAngle) * 600;
+		$endX = cos($pct) * 600;
+		$endY = sin($pct) * 600;
+
+		$path = "M 0 0 L $startX $startY A 600 600 0 $largeSweep 1 $endX $endY L 0 0";
+
+
+		return [
+			$this->prev,
+			$this->h
+			->path->fill($color)->stroke('#000')->{'stroke-width'}('2px')->d($path)->end
+			->rect
+				->x(-900)->y(-600 + $this->result['index'] * 50 + 10)
+				->width(30)->height(30)
+				->fill($color)
+			->end
+			->text
+				->style('dominant-baseline:text-before-edge;text-anchor:start;font-size: 40px;')
+				->x(-900 + 40)->y(-600 + $this->result['index'] * 50)
+				->t($key . ' (' . round($percent * 100, 1) . '%)')
+			->end
+		];
 	}
 }
 
@@ -152,9 +221,6 @@ class PieChartRenderable implements Renderable {
 			return $result['count'];
 		}, $this->results));
 
-		$lastAngle = -pi() / 2;
-
-
 		return $this->h
 			->div->class('ui fluid card')
 				->div->class('content')
@@ -162,54 +228,9 @@ class PieChartRenderable implements Renderable {
 				->end
 				->div->class('content')
 					->svg->viewBox('-900 -600 1800 1200')->style('background:#fff;width:100%;')
-						->addH(kvmap(function($index, $result) use($total, &$lastAngle) {
-
-							$key = $result['_id'];
-
-							$percent = ($result['count'] / $total);
-
-
-							$hue = floor( hexdec(substr(md5($key), 0, 2))  * (360/256) );
-
-							$color = RandomColor::one([
-								'luminosity' => 'bright',
-								'prng' => function($min, $max) use ($key) {
-									return (hexdec(substr(md5($key), 0, 2)) / pow(16, 2))  * ($max - $min) + $min;
-								}
-							]);
-
-
-							if($key === true) { $key = 'Yes'; $color='#21ba45'; }
-							if($key === false) { $key = 'No'; $color='#db2828'; }
-							if($key === null) { $key = '(None)'; $color='#777'; }
-
-							$pct = ($result['count'] / $total) * 2 * pi() + $lastAngle;
-
-							$largeSweep = (($result['count'] / $total) >= 0.5) ? 1 : 0;
-
-							$startX = cos($lastAngle) * 600;
-							$startY = sin($lastAngle) * 600;
-							$endX = cos($pct) * 600;
-							$endY = sin($pct) * 600;
-
-							$path = "M 0 0 L $startX $startY A 600 600 0 $largeSweep 1 $endX $endY L 0 0";
-
-							$lastAngle = $pct;
-
-							return $this->h
-								->path->fill($color)->d($path)->end
-								->rect
-									->x(-900)->y(-600 + $index * 50 + 10)
-									->width(30)->height(30)
-									->fill($color)
-								->end
-								->text
-									->style('dominant-baseline:text-before-edge;text-anchor:start;font-size: 40px;')
-									->x(-900 + 40)->y(-600 + $index * 50)
-									->t($key . ' (' . round($percent * 100, 1) . '%)')
-								->end
-							;
-						}, $this->results))
+						->addH(array_reduce($this->results, function($carry, $result) use($total) {
+							return new PieSlice($result, $total, $carry);
+						}))
 					->end
 				->end
 			->end;
@@ -242,7 +263,7 @@ class BarGraphRenderable implements Renderable {
 				->end
 				->div->class('content')
 					->svg->viewBox('0 0 700 ' . count($this->results) * 30 )->style('background:#fff;width:100%;')
-						->addH(kvmap(function($index, $result) use($max) {
+						->addH(array_map(function($result) use($max) {
 							$barWidth = ($result['count']/$max) * 500;
 							$labelAtRight = $barWidth < 40;
 
@@ -261,7 +282,7 @@ class BarGraphRenderable implements Renderable {
 							if($key === null) { $key = '(None)'; $color='#777'; }
 
 							return $this->h
-							->g->transform('translate(0, ' . ($index * 30) . ')')
+							->g->transform('translate(0, ' . ($result['index'] * 30) . ')')
 								->text
 									->style('dominant-baseline:middle;text-anchor:end;')
 									->x(140)->y(15)

@@ -47,7 +47,7 @@ class ValueTable implements Renderable {
 		$this->h = new HTMLParentlessContext();
 	}
 	function render() {
-		return $this->h->table->class('ui definition table')
+		return $this->h->table->class('ui unstackable definition table')
 			->tbody
 				->addH(array_map(function($field) {
 					if($field instanceof FieldListItem) {

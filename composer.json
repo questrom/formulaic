@@ -28,11 +28,11 @@
         "mistic100/randomcolor": "^1.0",
         "gabrielelana/byte-units": "^0.3.0",
         "mobiledetect/mobiledetectlib": "^2.8",
-        "hranicka/tracy": "1.0.0"
+        "hranicka/tracy": "1.0.0",
+        "klein/klein": "^2.1"
     },
     "config": {
         "__comment__" : "Use the below line so that component-installer won't create an extra directory...",
         "component-dir": "vendor/etc"
     }
 }
-

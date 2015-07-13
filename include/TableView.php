@@ -56,7 +56,7 @@ class TablePage implements Renderable {
 			->end
 			->body
 				->addH(new TopHeader())
-				->div->class('ui container wide-page')
+				->div->class('ui fluid container table-page')
 						->h1
 							->t($this->f->title)
 						->end
