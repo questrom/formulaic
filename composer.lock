@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f6f671a88d30deeec03c8ef2f5c5c625",
+    "hash": "d7a607b90fb08e951c993f12cc77c19b",
     "packages": [
         {
             "name": "gabrielelana/byte-units",
@@ -147,6 +147,17 @@
                 "spam"
             ],
             "time": "2015-05-13 06:34:33"
+        },
+        {
+            "name": "hranicka/tracy",
+            "version": "1.0.0",
+            "dist": {
+                "type": "zip",
+                "url": "https://github.com/hranicka/tracy/archive/8fbd9eea088bdc64e24d88f1bba41d9e718fcbc8.zip",
+                "reference": null,
+                "shasum": null
+            },
+            "type": "library"
         },
         {
             "name": "mistic100/randomcolor",

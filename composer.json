@@ -6,6 +6,17 @@
             "email": "perljason@gmail.com"
         }
     ],
+    "repositories": [ {
+        "type": "package",
+        "package": {
+            "name": "hranicka/tracy",
+            "version": "1.0.0",
+            "dist": {
+                "url": "https://github.com/hranicka/tracy/archive/8fbd9eea088bdc64e24d88f1bba41d9e718fcbc8.zip",
+                "type": "zip"
+            }
+        }
+    } ],
     "require": {
         "tpyo/amazon-s3-php-class": "^0.5.1",
         "nette/mail": "^2.3",
@@ -16,10 +27,12 @@
         "gregwar/captcha": "^1.1",
         "mistic100/randomcolor": "^1.0",
         "gabrielelana/byte-units": "^0.3.0",
-        "mobiledetect/mobiledetectlib": "^2.8"
+        "mobiledetect/mobiledetectlib": "^2.8",
+        "hranicka/tracy": "1.0.0"
     },
     "config": {
         "__comment__" : "Use the below line so that component-installer won't create an extra directory...",
         "component-dir": "vendor/etc"
     }
 }
+

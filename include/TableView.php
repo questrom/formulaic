@@ -106,7 +106,7 @@ class TablePage implements Renderable {
 								->div->class('item')
 									->a->class('ui left floated primary labeled icon button '
 											. ($this->f->page === 1 ? 'disabled' : ''))
-										->href('?form=' . $_GET['form'] . '&view=' . $this->f->name . '&page=' . ($this->f->page - 1))
+										->href('view.php?form=' . $_GET['form'] . '&view=' . $this->f->name . '&page=' . ($this->f->page - 1))
 										->i->class('left chevron icon')->end
 										->t('Previous')
 									->end
@@ -117,7 +117,7 @@ class TablePage implements Renderable {
 								->div->class('right item')
 									->a->class('ui right floated primary right labeled icon button '
 											. ((($this->f->page - 1) === $this->f->max) ? 'disabled' : ''))
-										->href('?form=' . $_GET['form'] . '&view=' . $this->f->name . '&page=' . ($this->f->page + 1))
+										->href('view.php?form=' . $_GET['form'] . '&view=' . $this->f->name . '&page=' . ($this->f->page + 1))
 										->i->class('right chevron icon')->end
 										->t('Next')
 									->end
