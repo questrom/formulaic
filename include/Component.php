@@ -956,10 +956,12 @@ class Page implements XmlDeserializable {
 	static function xmlDeserialize(Sabre\Xml\Reader $reader) {
 		$attrs = $reader->parseAttributes();
 		$attrs['byTag'] = Sabre\Xml\Element\KeyValue::xmlDeserialize($reader);
+
 		return new static($attrs);
 	}
 	function __construct($args) {
 		$this->form = $args['byTag']['{}fields'];
+
 		$this->title = isset($args['title']) ? $args['title'] : 'Form';
 		$this->successMessage = isset($args['success-message']) ? $args['success-message'] :
 			'The form was submitted successfully.';
@@ -976,6 +978,7 @@ class Page implements XmlDeserializable {
 	}
 	function setId($id) {
 		$this->id = $id;
+		$this->form->id = $id;
 	}
 }
 

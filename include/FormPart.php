@@ -523,7 +523,7 @@ class FormElemFormPart extends FormPart {
 		return $this->h
 		->form->class('ui form')->action('submit.php')->method('POST')->novalidate(true)
 			->addH( array_map(function($x) { return ($x && $x instanceof FormPartFactory) ? $x->makeFormPart() : null; }, $this->f->items) )
-			->input->type('hidden')->name('__form_name')->value($_GET['form'])->end
+			->input->type('hidden')->name('__form_name')->value($this->f->id)->end
 			->input
 				->type('hidden')
 				->name('csrf_token')

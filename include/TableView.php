@@ -131,11 +131,17 @@ class TablePage implements Renderable {
 	}
 }
 
-class TableView implements XmlDeserializable, View, TableViewPartFactory {
+class TableView implements XmlDeserializable, View {
 	use Configurable;
 
 	function makeView($data) {
-		return $this->makeTableViewPart($data);
+		$this->data = $data['data'];
+		$this->max = $data['max'];
+		$this->page = $data['pageNum'];
+		$this->formID = $data['formID'];
+		// var_dump($this->formID);
+
+		return new TablePage($this);
 	}
 
 	function __construct($args) {
@@ -202,14 +208,5 @@ class TableView implements XmlDeserializable, View, TableViewPartFactory {
 		$this->server = $mongo->server;
 		$this->database = $mongo->database;
 		$this->collection = $mongo->collection;
-	}
-	function makeTableViewPart($data) {
-		$this->data = $data['data'];
-		$this->max = $data['max'];
-		$this->page = $data['pageNum'];
-		$this->formID = $data['formID'];
-		// var_dump($this->formID);
-
-		return new TablePage($this);
 	}
 }

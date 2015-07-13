@@ -36,10 +36,18 @@ class GraphViewRenderable implements Renderable {
 	}
 }
 
-class GraphView implements XmlDeserializable, GraphViewPartFactory, View {
+class GraphView implements XmlDeserializable, View {
 	use Configurable;
 	function makeView($data) {
-		return $this->makeGraphViewPart($data);
+		$info = [];
+		foreach($data as $index => $piece) {
+			$info[] = [
+				'graph' => $this->graphs[$index],
+				'results' => $piece
+			];
+			$this->graphs[$index]->results = $piece;
+		}
+		return new GraphViewRenderable($this, $info);
 	}
 
 	function __construct($args) {
@@ -75,17 +83,6 @@ class GraphView implements XmlDeserializable, GraphViewPartFactory, View {
 			$data[] = $graph->query($client);
 		}
 		return $data;
-	}
-	function makeGraphViewPart($data) {
-		$info = [];
-		foreach($data as $index => $piece) {
-			$info[] = [
-				'graph' => $this->graphs[$index],
-				'results' => $piece
-			];
-			$this->graphs[$index]->results = $piece;
-		}
-		return new GraphViewRenderable($this, $info);
 	}
 }
 

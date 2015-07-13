@@ -47,7 +47,8 @@ class ValueTable implements Renderable {
 		$this->h = new HTMLParentlessContext();
 	}
 	function render() {
-		return $this->h->table->class('ui unstackable definition table')
+		return $this->h
+		->table->class('ui unstackable definition table')
 			->tbody
 				->addH(array_map(function($field) {
 					if($field instanceof FieldListItem) {
@@ -77,19 +78,20 @@ class ValueTable implements Renderable {
 }
 
 class DetailsViewRenderable implements Renderable {
-	function __construct($field) {
-		$this->f = $field;
+	function __construct($fields, $title, $data) {
+		$this->fields = $fields;
+		$this->title = $title;
+		$this->data = $data;
 		$this->h = new HTMLParentlessContext();
 
 	}
 	function render() {
-
 		return
 		$this->h
 		->html
 			->head
 				->meta->charset('utf-8')->end
-				->title->t($this->f->title)->end
+				->title->t($this->title)->end
 				->link->rel('stylesheet')->href('lib/semantic.css')->end
 				->link->rel('stylesheet')->href('styles.css')->end
 			->end
@@ -97,9 +99,9 @@ class DetailsViewRenderable implements Renderable {
 				->addH(new TopHeader())
 				->div->class('ui container wide-page')
 					->h1
-						->t($this->f->title)
+						->t($this->title)
 					->end
-					->addH( new ValueTable($this->f->pageData->form->getAllFields(), $this->f->data, true) )
+					->addH( new ValueTable($this->fields, $this->data, true) )
 				->end
 			->end
 		->end;
@@ -110,11 +112,10 @@ class DetailsViewRenderable implements Renderable {
 // Used by details.php and Output.php (For HTML email)
 class DetailsView implements View {
 	function makeView($data) {
-		return $this->makeDetailsView($data);
+		return new DetailsViewRenderable($this->pageData->form->getAllFields(), $this->pageData->title, $data);
 	}
 
 	function setPage($page) {
-		$this->title = $page->title;
 		$this->pageData = $page;
 	}
 
@@ -139,11 +140,6 @@ class DetailsView implements View {
 		$data = fixMongoDates($data);
 
 		return $data;
-	}
-
-	function makeDetailsView($data) {
-		$this->data = $data;
-		return new DetailsViewRenderable($this);
 	}
 }
 
