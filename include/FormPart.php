@@ -11,8 +11,25 @@ class Label implements Renderable {
 		return $this->h
 		->label
 			->span->t($this->label)->end
-			->addH(new PossibleSublabel($this->customSublabel, true))
+			->addH(new PossibleSublabel($this->customSublabel, false))
 		->end;
+	}
+}
+
+
+class PossibleSublabel implements Renderable {
+	function __construct($sublabel, $right = false) {
+		$this->h = new HTMLParentlessContext();
+		$this->sublabel = $sublabel;
+		$this->right = $right;
+	}
+	function render() {
+		if($this->sublabel) {
+			return $this->h
+			->p->class('sublabel')->t($this->sublabel)->end;
+		} else {
+			return null;
+		}
 	}
 }
 
@@ -116,6 +133,7 @@ class NoticeFormPart extends BaseNoticeFormPart {
 }
 
 
+
 class InputFormPart extends FormPart {
 	function __construct($field, $type, $icon = null, $mask = null, $sublabel = null) {
 		$this->f = $field;
@@ -128,7 +146,7 @@ class InputFormPart extends FormPart {
 	function render() {
 		return $this->h
 		->div->class('ui field ' . ($this->f->required ? 'required' : ''))
-			->addH($this->f->getLabel())
+			->addH($this->f->getLabel($this->sublabel))
 			->div->class($this->icon ? 'ui left icon input' : 'ui input')
 				->addH($this->icon === null ? null :
 					$this->h
@@ -140,7 +158,6 @@ class InputFormPart extends FormPart {
 					->data('inputmask', $this->mask, $this->mask !== null)
 				->end
 			->end
-			->addH(new PossibleSublabel($this->sublabel))
 		->end;
 	}
 }
@@ -244,21 +261,6 @@ function df($date) {
 	return $date->format('g:ia m/d/Y');
 }
 
-class PossibleSublabel implements Renderable {
-	function __construct($sublabel, $right = false) {
-		$this->h = new HTMLParentlessContext();
-		$this->sublabel = $sublabel;
-		$this->right = $right;
-	}
-	function render() {
-		if($this->sublabel) {
-			return $this->h
-			->p->class('sublabel muted-text ' . ($this->right ? 'pull-right' : ''))->t($this->sublabel)->end;
-		} else {
-			return null;
-		}
-	}
-}
 
 class DateTimePickerFormPart extends FormPart {
 	function render() {
@@ -274,12 +276,11 @@ class DateTimePickerFormPart extends FormPart {
 
 		return $this->h
 		->div->class('field ' . ($this->f->required ? ' required' : ''))
-			->addH($this->f->getLabel())
+			->addH($this->f->getLabel($sublabel))
 			->div->class('ui left icon input')
 				->i->class('calendar icon')->end
 				->input->type('text')->name($this->f->name)->data('inputmask', " 'alias': 'proper-datetime' ")->end
 			->end
-			->addH(new PossibleSublabel($sublabel))
 		->end;
 	}
 }
@@ -299,7 +300,7 @@ class TimeInputFormPart extends FormPart {
 
 		return $this->h
 		->div->class('field ' . ($this->f->required ? ' required' : ''))
-			->addH($this->f->getLabel())
+			->addH($this->f->getLabel($sublabel))
 			->div->class('ui left icon input')
 				->i->class('clock icon')->end
 				->input
@@ -308,7 +309,6 @@ class TimeInputFormPart extends FormPart {
 					->data('inputmask', " 'alias': 'h:s t', 'placeholder': 'hh:mm am' ")
 				->end
 			->end
-			->addH(new PossibleSublabel($sublabel))
 		->end;
 	}
 }
@@ -365,14 +365,17 @@ class RangeFormPart extends FormPart {
 
 class ListComponentFormPart extends FormPart {
 	function render() {
-		$sublabel = '';
+
 		if(is_finite($this->f->maxItems) && $this->f->minItems > 0) {
 			$sublabel = 'Please provide between ' . $this->f->minItems . ' and ' . $this->f->maxItems . ' items.';
 		} else if (is_finite($this->f->maxItems)) {
 			$sublabel = 'Please provide no more than ' . $this->f->maxItems . ' items.';
 		} else if($this->f->minItems > 0) {
 			$sublabel = 'Please provide at least ' . $this->f->minItems . ' items.';
+		} else {
+			$sublabel = '';
 		}
+
 		return $this->h
 		->div->class('ui field validation-root list-component')->data('count','0')->data('group-name', $this->f->name)
 				->data('validation-name', $this->f->name)
@@ -454,20 +457,21 @@ class GroupFormPart extends FormPart {
 
 class CheckboxesFormPart extends FormPart {
 	function render() {
-		$sublabel = '';
 		if(is_finite($this->f->maxChoices) && $this->f->minChoices > 0) {
 			$sublabel = 'Please choose between ' . $this->f->minChoices . ' and ' . $this->f->maxChoices . ' items from the list.';
 		} else if (is_finite($this->f->maxChoices)) {
 			$sublabel = 'Please choose no more than ' . $this->f->maxChoices . ' items from the list.';
 		} else if($this->f->minChoices > 0) {
 			$sublabel = 'Please choose at least ' . $this->f->minChoices . ' items from the list.';
+		} else {
+			$sublabel = '';
 		}
 		return $this->h
 			->div
 				->class('grouped fields validation-root ' . ($this->f->required ? 'required' : ''))
 				->data('validation-name', $this->f->name)
 
-				->addH($this->f->getLabel())
+				->addH($this->f->getLabel($sublabel))
 				->addH(
 					array_map(
 						function($v) {
@@ -481,7 +485,6 @@ class CheckboxesFormPart extends FormPart {
 						$this->f->options
 					)
 				)
-				->addH(new PossibleSublabel($sublabel))
 			->end;
 	}
 }
@@ -515,8 +518,10 @@ class CaptchaFormPart extends FormPart {
 
 class FormElemFormPart extends FormPart {
 	function render() {
+		// Use the "novalidate" attribute to disable HTML5 form validation,
+		// since we implement our own validation logic.
 		return $this->h
-		->form->class('ui form')->action('submit.php')->method('POST')
+		->form->class('ui form')->action('submit.php')->method('POST')->novalidate(true)
 			->addH( array_map(function($x) { return ($x && $x instanceof FormPartFactory) ? $x->makeFormPart() : null; }, $this->f->items) )
 			->input->type('hidden')->name('__form_name')->value($_GET['form'])->end
 			->input

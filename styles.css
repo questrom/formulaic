@@ -9,6 +9,8 @@ body { overflow-x: auto; }
 
 .ui.container.table-page { width: 1200px !important; max-width:none !important; }
 
+
+
 /* Darker background*/
 body { background: #F7F7F7; }
 
@@ -27,7 +29,6 @@ div[data-show-if-name] > .ui.form .fields:last-child .field {
 
 .ui.top.fixed.menu + .ui.container { margin-top:50px; }
 
-.muted-text { color: rgba(40, 40, 40, 0.7); font-size: 90%; margin-top: 5px; }
 
 /* Reduce padding around file inputs*/
 .ui.form input[type=file] { padding-top: 5px !important; padding-bottom: 5px !important; }
@@ -113,14 +114,15 @@ input[type=range]::-moz-focus-outer { border:0 !important; }
 .ui.text.menu .item { color:#000 !important; }
 .pagenumber { flex: 1 !important; text-align: center !important; display:block !important; }
 
+.sublabel {  color: rgba(40, 40, 40, 0.7);  margin:-3px 0 5px 0; font-family: Verdana; font-weight: normal; font-size: 85%; }
 
-@media screen and (max-width: 600px) {
+/*@media screen and (max-width: 600px) {
     .sublabel.pull-right {
         float:none !important;
         display:block !important;
         text-align: right !important;
     }
-}
+}*/
 
 
 /* iOS: stackoverflow.com/questions/2989263/disable-auto-zoom-in-input-text-tag-safari-on-iphone */

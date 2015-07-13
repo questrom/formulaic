@@ -106,8 +106,8 @@ abstract class NamedLabeledComponent implements FormPartFactory, Validatable, Na
 	}
 
 	final function getAllFields() { return [ $this ]; }
-	final function getLabel() {
-		return new Label($this->label, $this->customSublabel);
+	final function getLabel($sublabel = '') {
+		return new Label($this->label, isset($this->customSublabel) ? $this->customSublabel : $sublabel);
 	}
 	final function getByName($name) { return ($this->name === $name) ? $this : null; }
 
