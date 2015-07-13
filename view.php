@@ -1,13 +1,13 @@
 <?php
 
-require('include/all.php');
+require 'include/all.php';
 
 if(!isset($_GET['view'])) {
 	echo 'Please specify a view.';
 	die();
 }
 
-$page = Parser::parse_jade($_GET['form']);
+$page = Parser::parseJade($_GET['form']);
 
 $view = $page->getView($_GET['view']);
 if($view instanceof GraphView) {

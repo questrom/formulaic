@@ -2,7 +2,7 @@
 
 require('include/all.php');
 
-$page = Parser::parse_jade($_GET['form']);
+$page = Parser::parseJade($_GET['form']);
 
 $view = new DetailsView();
 

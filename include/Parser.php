@@ -114,7 +114,7 @@ class Parser {
 
 		return $files;
 	}
-	static function parse_jade($id) {
+	static function parseJade($id) {
 
 		$file = self::getForm($id);
 

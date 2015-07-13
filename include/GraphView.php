@@ -3,8 +3,9 @@ use Sabre\Xml\XmlDeserializable as XmlDeserializable;
 use \Colors\RandomColor;
 
 class GraphViewRenderable implements Renderable {
-	public function __construct($field) {
+	public function __construct($field, $info) {
 		$this->f = $field;
+		$this->i = $info;
 		$this->h = new HTMLParentlessContext();
 	}
 	function render() {
@@ -27,8 +28,8 @@ class GraphViewRenderable implements Renderable {
 							->t($this->f->title)
 						->end
 						->addH( array_map(function($x) {
-							return $x ? $x->makeGraphViewPart(null) : null;
-						}, $this->f->graphs) )
+							return $x['graph']->makeGraphViewPart($x['results']);
+						}, $this->i) )
 				->end
 			->end
 		->end;
@@ -58,7 +59,7 @@ class GraphView implements XmlDeserializable, GraphViewPartFactory, View {
 		$this->collection = $mongo->collection;
 
 		foreach($this->graphs as $index => $graph) {
-			$graph->setComponent($this->pageData->form->getByName($graph->name), $index);
+			$graph->setComponent($this->pageData->form->getByName($graph->name));
 		}
 	}
 	function query($getArgs) {
@@ -73,10 +74,15 @@ class GraphView implements XmlDeserializable, GraphViewPartFactory, View {
 		return $data;
 	}
 	function makeGraphViewPart($data) {
+		$info = [];
 		foreach($data as $index => $piece) {
+			$info[] = [
+				'graph' => $this->graphs[$index],
+				'results' => $piece
+			];
 			$this->graphs[$index]->results = $piece;
 		}
-		return new GraphViewRenderable($this);
+		return new GraphViewRenderable($this, $info);
 	}
 }
 
@@ -86,9 +92,8 @@ abstract class Graph implements XmlDeserializable, GraphViewPartFactory  {
 		$this->name = $args['name'];
 		$this->label = $args['label'];
 	}
-	function setComponent($comp, $index) {
+	function setComponent($comp) {
 		$this->component = $comp;
-		$this->id = 'graph-' . $index;
 	}
 	function query($client) {
 		if($this->component instanceof Checkboxes) {
@@ -307,7 +312,7 @@ class BarGraphRenderable implements Renderable {
 
 class PieChart extends Graph {
 	function makeGraphViewPart($data) {
-		return new PieChartRenderable($this->label, $this->results);
+		return new PieChartRenderable($this->label, $data);
 	}
 }
 
@@ -321,6 +326,6 @@ function kvmap(callable $fn, $array) {
 
 class BarGraph extends Graph {
 	function makeGraphViewPart($data) {
-		return new BarGraphRenderable($this->label, $this->results);
+		return new BarGraphRenderable($this->label, $data);
 	}
 }

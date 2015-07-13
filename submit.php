@@ -1,12 +1,11 @@
 <?php
 
-session_start();
-require('include/all.php');
+require 'include/all.php';
 
 $csrf = new \Riimu\Kit\CSRF\CSRFHandler();
 $csrf->validateRequest(true);
 
-$page = Parser::parse_jade($_POST['__form_name']);
+$page = Parser::parseJade($_POST['__form_name']);
 
 $config = Config::get();
 
