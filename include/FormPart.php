@@ -11,8 +11,8 @@ class Label implements Renderable {
 		return $this->h
 		->label
 			->span->t($this->label)->end
-			->addH(new PossibleSublabel($this->customSublabel, false))
-		->end;
+		->end
+		->addH(new PossibleSublabel($this->customSublabel, false));
 	}
 }
 

@@ -1,17 +1,17 @@
-# Use a whitelist to protect access to sensitive files
-# such as configuration data.
 
+
+# See https://github.com/h5bp/html5-boilerplate/blob/master/dist/.htaccess
+Options -MultiViews +FollowSymLinks -Indexes
+AddDefaultCharset utf-8
+Header set X-Frame-Options "DENY"
+Header set X-XSS-Protection "1; mode=block"
+
+# Use a whitelist to protect access to sensitive files.
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} -f
-RewriteRule !^(index\.php|details\.php|form\.php|submit\.php|styles\.css|client\.js|lib\/.*|img\/.*|view\.php)$ - [F,NC]
+RewriteRule !^(index\.php|details\.php|form\.php|submit\.php|styles\.css|client\.js|lib\/.*|img\/.*|view\.php|immutable/.*)$ - [F,NC]
 
-# From stackoverflow, iirc
-<filesMatch "\.(html|htm|js|css)$">
-  FileETag None
-  <ifModule mod_headers.c>
-     Header unset ETag
-     Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
-     Header set Pragma "no-cache"
-     Header set Expires "Wed, 11 Jan 1984 05:00:00 GMT"
-  </ifModule>
-</filesMatch>
+# Make sure stale content is NEVER served
+FileETag All
+Header set Cache-Control "private, max-age=0, no-cache, must-revalidate, no-transform"
+Header set Expires "Wed, 11 Jan 1984 05:00:00 GMT"

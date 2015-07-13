@@ -114,7 +114,7 @@ input[type=range]::-moz-focus-outer { border:0 !important; }
 .ui.text.menu .item { color:#000 !important; }
 .pagenumber { flex: 1 !important; text-align: center !important; display:block !important; }
 
-.sublabel {  color: rgba(40, 40, 40, 0.7);  margin:-3px 0 5px 0; font-family: Verdana; font-weight: normal; font-size: 85%; }
+.sublabel {  color: rgba(40, 40, 40, 0.7);  margin:-6px 0 6px 0; font-family: Verdana; font-weight: normal; font-size: 82%; }
 
 /*@media screen and (max-width: 600px) {
     .sublabel.pull-right {
