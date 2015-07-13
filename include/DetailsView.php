@@ -5,14 +5,13 @@ use Sabre\Xml\XmlDeserializable as XmlDeserializable;
 
 class ValueRow implements Renderable {
 	function __construct($value, $component) {
-
 		$this->value = $value;
 		$this->component = $component;
 		$this->h = new HTMLParentlessContext();
 	}
 
 	function render() {
-		// var_dump($this->component);
+
 		return $this->component->asDetailedTableCell(
 			$this->h,
 			$this->value === null ? Result::none(null) : Result::ok($this->value)

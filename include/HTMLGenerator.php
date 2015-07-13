@@ -41,6 +41,7 @@ abstract class HTMLGeneratorAbstract {
 				} else if(is_scalar($element)) {
 					$out .= htmlspecialchars($element, ENT_QUOTES);
 				} else if(!is_null($element)) {
+					// dump($element);
 					throw new Exception('Invalid HTML generation target!');
 				}
 

@@ -46,6 +46,20 @@ class ShowIfComponent implements FormPartFactory, Validatable, NameMatcher, XmlD
 	}
 }
 
+class CheckboxTableCell implements Renderable {
+	function __construct($value) {
+		$this->value = $value;
+		$this->h = new HTMLParentlessContext();
+	}
+	function render() {
+		return $this->h
+		->td->class($this->value ? 'positive' : 'negative')
+			->t($this->value ? 'Yes' : 'No')
+		->end;
+	}
+
+}
+
 class Checkbox extends PostInputComponent implements Enumerative {
 	function __construct($args) {
 		parent::__construct($args);
@@ -62,10 +76,7 @@ class Checkbox extends PostInputComponent implements Enumerative {
 	}
 	function asTableCell($h, $value) {
 		return $value->innerBind(function($v) use ($h) {
-			return Result::ok($h
-			->td->class($v ? 'positive' : 'negative')
-				->t($v ? 'Yes' : 'No')
-			->end);
+			return Result::ok( (new CheckboxTableCell($v))->render() );
 		});
 	}
 }
@@ -136,11 +147,7 @@ class DateTimePicker extends PostInputComponent {
 	}
 	function asTableCell($h, $value) {
 		return $value->innerBind(function($v) use($h) {
-			return Result::ok($h->td
-				->t(
-					$v->format('n/j/Y g:i A')
-				)
-			->end);
+			return Result::ok((new OrdinaryTableCell($v->format('n/j/Y g:i A')))->render());
 		});
 	}
 }
@@ -167,6 +174,7 @@ class Textarea extends PostInputComponent {
 			->requiredMaybe($this->required);
 	}
 	function asTableCell($h, $value) {
+		// no class here
 		return $value->innerBind(function($v) use ($h) {
 			return Result::ok($h
 			->td
@@ -245,6 +253,7 @@ class Checkboxes extends PostInputComponent implements Enumerative {
 			->requiredMaybe($this->required);
 	}
 	function asTableCell($h, $value) {
+		// no class here
 		return $value->innerBind(function($v) use ($h) {
 
 			if(count($v) === 0) {
@@ -405,6 +414,7 @@ class FileUpload extends FileInputComponent {
 			});
 	}
 	function asTableCell($h, $value) {
+		// no class here
 		return $value->innerBind(function($v) use ($h) {
 
 			if(is_string($v) || !isset($v['url'])) {
@@ -498,6 +508,7 @@ class Password extends PostInputComponent {
 			});
 	}
 	function asTableCell($h, $value) {
+		// no class here
 		return Result::ok($h
 		->td
 			->abbr->title('Passwords are not saved in the database')
@@ -525,6 +536,7 @@ class PhoneNumber extends PostInputComponent {
 			->filterPhone();
 	}
 	function asTableCell($h, $value) {
+		// no class here
 		return $value->innerBind(function($v) use ($h) {
 			if(preg_match('/^[0-9]{10}$/', $v)) {
 				$showValue = '(' . substr($v, 0, 3) . ')' . json_decode('"\u2006"') . substr($v, 3, 3) . json_decode('"\u2006"') . substr($v, 6, 4);
@@ -561,6 +573,7 @@ class EmailAddr extends PostInputComponent {
 			->mustHaveDomain($this->mustHaveDomain);
 	}
 	function asTableCell($h, $value) {
+		// no class here
 		return $value->innerBind(function($v) use ($h) {
 			return Result::ok($h
 			->td
@@ -589,6 +602,7 @@ class UrlInput extends PostInputComponent {
 			->filterFilterVar(FILTER_VALIDATE_URL, 'Invalid URL.');
 	}
 	function asTableCell($h, $value) {
+		// no class here
 		return $value->innerBind(function($v) use ($h) {
 			return Result::ok($h
 			->td
@@ -655,6 +669,7 @@ class DatePicker extends PostInputComponent {
 			->minMaxDate($this->min, $this->max);
 	}
 	function asTableCell($h, $value) {
+		// no class here
 		return $value->innerBind(function($v) use($h) {
 			return Result::ok($h->td
 				->t($v->format('n/j/Y'))
@@ -704,7 +719,6 @@ class ListComponent implements FormPartFactory, Validatable, NameMatcher,
 	}
 
 	function getByName($name) {
-
 		return ($this->name === $name) ? $this : null;
 	}
 	function getAllFields() {
@@ -830,10 +844,7 @@ class ListComponent implements FormPartFactory, Validatable, NameMatcher,
 				$showValue = '(' . count($v) . ' items)';
 			}
 
-			return Result::ok($h
-			->td
-				->t($showValue)
-			->end);
+			return Result::ok( (new OrdinaryTableCell($showValue))->render() );
 		});
 	}
 	function asDetailedTableCell($h, $value) {
@@ -876,18 +887,13 @@ class ListComponent implements FormPartFactory, Validatable, NameMatcher,
 
 
 class Group extends GroupComponent {
-
 	function __construct($args) {
-
 		$this->items = $args['children'];
 	}
 	function makeFormPart() {
 		return new GroupFormPart($this);
 	}
 }
-
-
-
 
 class IPField implements FieldTableItem, Validatable {
 	function __construct() {
@@ -896,11 +902,7 @@ class IPField implements FieldTableItem, Validatable {
 	}
 	function asTableCell($h, $value) {
 		return $value->innerBind(function($v) use($h) {
-			return Result::ok($h
-				->td
-					->t($v)
-				->end
-			);
+			return Result::ok( (new OrdinaryTableCell($v))->render() );
 		});
 	}
 	function getByName($name) {
@@ -922,11 +924,7 @@ class TimestampField implements FieldTableItem, Validatable {
 	}
 	function asTableCell($h, $value) {
 		return $value->innerBind(function($v) use($h) {
-			return Result::ok($h
-				->td
-					->t($v->format('n/j/Y g:i A'))
-				->end
-			);
+			return Result::ok( (new OrdinaryTableCell($v->format('n/j/Y g:i A')))->render() );
 		});
 	}
 	function getByName($name) {
