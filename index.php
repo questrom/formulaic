@@ -3,4 +3,4 @@
 require 'include/all.php';
 
 $formlist = new FormList(Parser::getFormInfo());
-echo '<!DOCTYPE html>' . $formlist->makeFormList()->render()->generateString();
+echo '<!DOCTYPE html>' . fixAssets($formlist->makeFormList()->render()->generateString());

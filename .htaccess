@@ -6,8 +6,9 @@ Header set X-XSS-Protection "1; mode=block"
 
 # Use a whitelist to protect access to sensitive files.
 RewriteEngine On
+RewriteRule ^(.*)\.hash-.*?\.(.*)$ /$1.$2
 RewriteCond %{REQUEST_FILENAME} -f
-RewriteRule !^(index\.php|details\.php|form\.php|submit\.php|styles\.css|client\.js|lib\/.*|img\/.*|view\.php)$ - [F,NC]
+RewriteRule !^(index\.php|details\.php|form\.php|submit\.php|styles\.css|client\.js|lib\/.*|img\/.*|view\.php|immutable\/.*)$ - [F,NC]
 
 # Make sure stale content is NEVER served
 FileETag All

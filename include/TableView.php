@@ -52,8 +52,8 @@ class TablePage implements Renderable {
 			->head
 				->meta->charset('utf-8')->end
 				->title->t($this->f->title)->end
-				->link->rel('stylesheet')->href('lib/semantic.css')->end
-				->link->rel('stylesheet')->href('styles.css')->end
+				->link->rel('stylesheet')->href('{{asset lib/semantic.css}}')->end
+				->link->rel('stylesheet')->href('{{asset styles.css}}')->end
 			->end
 			->body
 				->addH(new TopHeader())
@@ -167,10 +167,7 @@ class TableView implements XmlDeserializable, View {
 		$this->type = 'table';
 	}
 	function query($getData) {
-
-
 		$page = intval(isset($getData['page']) ? $getData['page'] : 1);
-
 
 		$client = (new MongoClient($this->server))
 			->selectDB($this->database)

@@ -21,4 +21,7 @@ $html = $cache->getOrCreate('jade-' . sha1_file(Parser::getForm($_GET['form'])) 
 // Do the replacement here so that it won't be cached...
 $html = str_replace('__{{CSRF__TOKEN}}__', htmlspecialchars($token), $html);
 
-echo $html;
+// dump($html);
+
+
+echo fixAssets($html);

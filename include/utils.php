@@ -55,3 +55,11 @@ function diverse_array($vector) {
 function midpoint($a, $b) {
 	return $a + (($b - $a) / 2);
 }
+
+function fixAssets($html) {
+	return preg_replace_callback('/\{\{asset (.*?)\}\}/', function($matches) {
+		return preg_replace_callback('/^(.*)\.(.*)$/', function($parts) use($matches) {
+			return $parts[1] . '.hash-' . sha1_file($matches[1]) . '.' . $parts[2];
+		}, $matches[1]);
+	}, $html);
+}
