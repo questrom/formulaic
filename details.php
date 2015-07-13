@@ -1,13 +1,8 @@
 <?php
 
-require('include/all.php');
+require 'include/all.php';
 
 $page = Parser::parseJade($_GET['form']);
-
 $view = new DetailsView();
-
 $view->setPage($page);
-
-$view->query($_GET);
-
-echo '<!DOCTYPE html>' . $view->makeDetailsView()->render()->generateString();
+echo '<!DOCTYPE html>' . $view->makeDetailsView($view->query($_GET))->render()->generateString();

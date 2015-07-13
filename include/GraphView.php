@@ -38,6 +38,9 @@ class GraphViewRenderable implements Renderable {
 
 class GraphView implements XmlDeserializable, GraphViewPartFactory, View {
 	use Configurable;
+	function makeView($data) {
+		return $this->makeGraphViewPart($data);
+	}
 
 	function __construct($args) {
 		$this->name = $args['name'];

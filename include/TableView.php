@@ -41,6 +41,7 @@ class ValueCell implements Renderable {
 
 class TablePage implements Renderable {
 	function __construct($f) {
+
 		$this->f = $f;
 		$this->h = new HTMLParentlessContext();
 	}
@@ -93,7 +94,7 @@ class TablePage implements Renderable {
 											);
 									}, $this->f->cols))
 									->td->class('center aligned nowrap unpadded-cell')
-										->a->class('ui no-margin compact button')->href('details.php?form=' . $_GET['form'] . '&id=' . $row['_id'])
+										->a->class('ui no-margin compact button')->href('details.php?form=' . $this->f->formID . '&id=' . $row['_id'])
 											->t('Details')
 										->end
 									->end
@@ -106,7 +107,7 @@ class TablePage implements Renderable {
 								->div->class('item')
 									->a->class('ui left floated primary labeled icon button '
 											. ($this->f->page === 1 ? 'disabled' : ''))
-										->href('view.php?form=' . $_GET['form'] . '&view=' . $this->f->name . '&page=' . ($this->f->page - 1))
+										->href('view.php?form=' . $this->f->formID . '&view=' . $this->f->name . '&page=' . ($this->f->page - 1))
 										->i->class('left chevron icon')->end
 										->t('Previous')
 									->end
@@ -117,7 +118,7 @@ class TablePage implements Renderable {
 								->div->class('right item')
 									->a->class('ui right floated primary right labeled icon button '
 											. ((($this->f->page - 1) === $this->f->max) ? 'disabled' : ''))
-										->href('view.php?form=' . $_GET['form'] . '&view=' . $this->f->name . '&page=' . ($this->f->page + 1))
+										->href('view.php?form=' . $this->f->formID . '&view=' . $this->f->name . '&page=' . ($this->f->page + 1))
 										->i->class('right chevron icon')->end
 										->t('Next')
 									->end
@@ -132,6 +133,10 @@ class TablePage implements Renderable {
 
 class TableView implements XmlDeserializable, View, TableViewPartFactory {
 	use Configurable;
+
+	function makeView($data) {
+		return $this->makeTableViewPart($data);
+	}
 
 	function __construct($args) {
 
@@ -157,6 +162,7 @@ class TableView implements XmlDeserializable, View, TableViewPartFactory {
 	}
 	function query($getData) {
 
+
 		$page = intval(isset($getData['page']) ? $getData['page'] : 1);
 
 
@@ -180,7 +186,8 @@ class TableView implements XmlDeserializable, View, TableViewPartFactory {
 		return [
 			'data' => fixMongoDates(array_values(iterator_to_array($cursor))),
 			'max' => $max,
-			'pageNum' => $page
+			'pageNum' => $page,
+			'formID' => $getData['form']
 		];
 	}
 	function setPage($page) {
@@ -200,6 +207,9 @@ class TableView implements XmlDeserializable, View, TableViewPartFactory {
 		$this->data = $data['data'];
 		$this->max = $data['max'];
 		$this->page = $data['pageNum'];
+		$this->formID = $data['formID'];
+		// var_dump($this->formID);
+
 		return new TablePage($this);
 	}
 }

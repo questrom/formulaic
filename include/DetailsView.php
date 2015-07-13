@@ -109,7 +109,9 @@ class DetailsViewRenderable implements Renderable {
 
 // Used by details.php and Output.php (For HTML email)
 class DetailsView implements View {
-
+	function makeView($data) {
+		return $this->makeDetailsView($data);
+	}
 
 	function setPage($page) {
 		$this->title = $page->title;
@@ -136,10 +138,11 @@ class DetailsView implements View {
 
 		$data = fixMongoDates($data);
 
-		$this->data = $data;
+		return $data;
 	}
 
-	function makeDetailsView() {
+	function makeDetailsView($data) {
+		$this->data = $data;
 		return new DetailsViewRenderable($this);
 	}
 }

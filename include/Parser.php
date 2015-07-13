@@ -96,7 +96,7 @@ class Parser {
 
 
 		$files = array_map(function($item) {
-			$page = Parser::parse_jade($item);
+			$page = Parser::parseJade($item);
 			$views = array_map(function($view) {
 				return [
 					'id' => $view->name,

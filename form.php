@@ -12,15 +12,11 @@ $config = Config::get();
 
 $cache = $config['cache-forms'] ? new Cache() : new FakeCache();
 
-// $time = microtime(true);
-
 $cache->setPrefixSize(0);
 $html = $cache->getOrCreate('jade-' . sha1_file(Parser::getForm($_GET['form'])) . '-' . sha1_file('config/config.toml'), [], function() {
 	$page = Parser::parseJade($_GET['form']);
 	return '<!DOCTYPE html>' . $page->makeFormPart()->render()->generateString();
 });
-
-// echo microtime(true) - $time;
 
 // Do the replacement here so that it won't be cached...
 $html = str_replace('__{{CSRF__TOKEN}}__', htmlspecialchars($token), $html);
