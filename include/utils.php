@@ -56,10 +56,44 @@ function midpoint($a, $b) {
 	return $a + (($b - $a) / 2);
 }
 
+class Hashes {
+	private static $data = null;
+	private static $config = null;
+	static function getData() {
+		self::$config = Config::get();
+
+		if(!self::$config['cache-hashes']) {
+			self::$data = [];
+			self::write();
+		} else if(file_exists('cache/hashes.json')) {
+			self::$data = (array) json_decode(file_get_contents('cache/hashes.json'));
+		} else {
+			self::$data = [];
+		}
+	}
+	static function write() {
+		file_put_contents('cache/hashes.json', json_encode(self::$data));
+	}
+	static function get($key) {
+		if(self::$data === null) {
+			self::getData();
+		}
+		if(isset(self::$data[$key])) {
+			// Allow disabling this...
+			return self::$data[$key];
+		} else {
+			$hash = sha1_file($key);
+			self::$data[$key] = $hash;
+			self::write();
+			return $hash;
+		}
+	}
+}
+
 function fixAssets($html) {
 	return preg_replace_callback('/____\{\{asset (.*?)\}\}____/', function($matches) {
 		return preg_replace_callback('/^(.*)\.(.*)$/', function($parts) use($matches) {
-			return $parts[1] . '.hash-' . sha1_file($matches[1]) . '.' . $parts[2];
+			return $parts[1] . '.hash-' . Hashes::get($matches[1]) . '.' . $parts[2];
 		}, $matches[1]);
 	}, $html);
 }

@@ -140,7 +140,6 @@ class TableView implements XmlDeserializable, View {
 		$this->max = $data['max'];
 		$this->page = $data['pageNum'];
 		$this->formID = $data['formID'];
-		// var_dump($this->formID);
 
 		return new TablePage($this);
 	}
