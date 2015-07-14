@@ -1,8 +1,5 @@
 <?php
 
-use Sabre\Xml\XmlDeserializable as XmlDeserializable;
-
-
 class ValueRow implements Renderable {
 	function __construct($value, $component) {
 		$this->value = $value;
