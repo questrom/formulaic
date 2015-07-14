@@ -387,15 +387,17 @@ class ListComponentFormPart extends FormPart {
 				->script->type('text/template')
 					->addH(
 						// Forcibly HTML-encode things so that nested lists are generated properly...
-						$this->h
-						->div->class('ui vertical segment close-item')
-							->div->class('content')
-								->addH( array_map(function($x) { return $x ? $x->makeFormPart() : null; }, $this->f->items) )
+						new DoubleEncode(
+							$this->h
+							->div->class('ui vertical segment close-item')
+								->div->class('content')
+									->addH( array_map(function($x) { return $x ? $x->makeFormPart() : null; }, $this->f->items) )
+								->end
+								->button->type('button')->class('ui compact negative icon button delete-btn')
+									->i->class('trash icon')->end
+							   ->end
 							->end
-							->button->type('button')->class('ui compact negative icon button delete-btn')
-								->i->class('trash icon')->end
-						   ->end
-						->end->generateString()
+						)
 					)
 				->end
 				->div->class('ui center aligned vertical segment')
@@ -571,16 +573,18 @@ class BrowserProblemPart implements Renderable {
 	}
 	function render() {
 		// Based on html5boilerplate
-		return new SafeString(
-		'<!--[if lt IE 10]>'
-		. '<div style="text-align:center">'
-				. '<h1>You are using an unsupported web browser.</h1>'
-				. '<p>Please <a href="http://browsehappy.com/">upgrade your browser</a> to use this webpage.</p>'
-			. '</div>'
-		. '<![endif]--><!--[if gte IE 10]> -->'
-			. $this->inner->generateString()
-		. '<!-- <![endif]-->'
-		);
+		return [
+			new SafeString(
+				'<!--[if lt IE 10]>'
+				. '<div style="text-align:center">'
+						. '<h1>You are using an unsupported web browser.</h1>'
+						. '<p>Please <a href="http://browsehappy.com/">upgrade your browser</a> to use this webpage.</p>'
+					. '</div>'
+				. '<![endif]--><!--[if gte IE 10]> -->'
+			),
+			$this->inner,
+			new SafeString('<!-- <![endif]-->')
+		];
 	}
 }
 

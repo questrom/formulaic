@@ -1,5 +1,13 @@
 <?php
 
+class ArrayPointer {
+	function __construct($array, $index, $escapeCount) {
+		$this->array = $array;
+		$this->index = $index;
+		$this->escapeCount = $escapeCount;
+	}
+}
+
 abstract class HTMLGeneratorAbstract {
 	protected $parent;
 
@@ -13,13 +21,20 @@ abstract class HTMLGeneratorAbstract {
 
 	function generateString() {
 		// Based on: http://stackoverflow.com/questions/29991016/
-		$placeHolder = [[$this]];
-		$lastIndex = [-1];
-		$out = '';
-		while(count($placeHolder)) {
-			$input = array_pop($placeHolder);
 
-			for($i = array_pop($lastIndex) + 1; $i < count($input); $i++) {
+		$positions = [new ArrayPointer([$this], -1, 0)];
+
+		$out = [];
+		while(count($positions)) {
+			$position = array_pop($positions);
+			$input = $position->array;
+			$i = $position->index;
+			$escapeCount = $position->escapeCount;
+
+			// $input = array_pop($placeHolder);
+			// $i = array_pop($lastIndex);
+
+			for($i++; $i < count($input); $i++) {
 
 				$element = $input[$i];
 
@@ -31,29 +46,86 @@ abstract class HTMLGeneratorAbstract {
 					$element = $element->toStringArray();
 				}
 
-				if(is_array($element)) {
-					$placeHolder[] = $input;
-					$lastIndex[] = $i;
-					$input = $element;
-					$i = -1;
-				} else if($element instanceof SafeString) {
-					$out .= $element->getValue();
-				} else if(is_scalar($element)) {
-					$out .= htmlspecialchars($element, ENT_QUOTES);
-				} else if(!is_null($element)) {
-					// dump($element);
-					throw new Exception('Invalid HTML generation target!');
+				if(is_scalar($element)) {
+					$element = new DoubleEncode(new SafeString($element));
+				} else if(is_null($element)) {
+					$element = new SafeString('');
 				}
 
+				if(is_array($element)) {
+					$positions[] = new ArrayPointer($input, $i, $escapeCount);
+					$input = $element;
+					$i = -1;
+				} else if($element instanceof DoubleEncode) {
+					$positions[] = new ArrayPointer($input, $i, $escapeCount);
+					$input = [new StartEncoding(), $element->value, new EndEncoding()];
+					$i = -1;
+					// var_dump($escapeCount);
+					$escapeCount++;
+				} else {
+					$out[] = $element;
+				}
 			}
 		}
-		return $out;
+
+
+		for($i = 0; $i < count($out); $i++) {
+			if(!isset($out[$i])) {
+				continue;
+			}
+			if($out[$i] instanceof SafeString) {
+				for($j = $i + 1; $j < count($out); $j++) {
+					if($out[$j] instanceof SafeString) {
+						$out[$i] = new SafeString($out[$i]->getValue() . $out[$j]->getValue());
+						unset($out[$j]);
+					} else {
+						break;
+					}
+				}
+			} else if($out[$i] instanceof StartEncoding) {
+				if(isset($out[$i+1]) && $out[$i+1] instanceof EndEncoding) {
+					unset($out[$i]);
+					unset($out[$i+1]);
+				}
+			}
+		}
+
+
+		foreach($out as &$value) {
+			if($value instanceof SafeString) {
+				$value = $value->getValue();
+			}
+		}
+
+		echo '<br><br><br>';
+		var_dump(serialize($out));
+
+
+		$outstr = '';
+		$levels = 0;
+		foreach($out as $value) {
+
+			if($value instanceof StartEncoding) {
+				$levels++;
+			} elseif ($value instanceof EndEncoding) {
+				$levels--;
+			} else {
+				// $value = $value->getValue();
+				for($j = 0; $j < $levels; $j++) {
+					$value = htmlspecialchars($value, ENT_QUOTES);
+				}
+				$outstr .=$value;
+			}
+		}
+		return $outstr;
 	}
 }
 
 
 // =============================================================================================================
 
+class StartEncoding {}
+class EndEncoding {}
 
 class SafeString {
 	function __construct($value) {
@@ -64,6 +136,11 @@ class SafeString {
 	}
 }
 
+class DoubleEncode {
+	function __construct($value) {
+		$this->value = $value;
+	}
+}
 
 class AssetUrl extends SafeString {
 	function __construct($value) {
