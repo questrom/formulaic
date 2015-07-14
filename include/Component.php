@@ -60,7 +60,7 @@ class CheckboxTableCell implements Renderable {
 
 }
 
-class Checkbox extends PostInputComponent implements Enumerative {
+class Checkbox extends PostInputComponent implements Enumerative, TableCellFactory {
 	function __construct($args) {
 		parent::__construct($args);
 		$this->mustCheck = isset($args['must-check']);
@@ -74,14 +74,12 @@ class Checkbox extends PostInputComponent implements Enumerative {
 	function getPossibleValues() {
 		return [true, false];
 	}
-	function asTableCell($h, $value) {
-		return $value->innerBind(function($v) use ($h) {
-			return Result::ok( (new CheckboxTableCell($v))->render() );
-		});
+	function makeTableCellPart($v) {
+		return new CheckboxTableCell($v);
 	}
 }
 
-class TimeInput extends PostInputComponent {
+class TimeInput extends PostInputComponent implements TableCellFactory {
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -101,8 +99,7 @@ class TimeInput extends PostInputComponent {
 			->minMaxTime($this->min, $this->max)
 			->stepTime($this->step);
 	}
-	function asTableCell($h, $value) {
-		return $value->innerBind(function($v) use ($h) {
+	function makeTableCellPart($v) {
 
 			$hour = floor($v / 3600);
 			$minute = ($v % 3600) / 60;
@@ -115,17 +112,16 @@ class TimeInput extends PostInputComponent {
 				$hour = 12;
 			}
 
-			return Result::ok( (new OrdinaryTableCell(
+			return new OrdinaryTableCell(
 				sprintf('%d:%02d %s', $hour, $minute, $xm)
-			))->render() );
+			);
 
 
-		});
 	}
 }
 
 
-class DateTimePicker extends PostInputComponent {
+class DateTimePicker extends PostInputComponent implements TableCellFactory {
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -145,14 +141,27 @@ class DateTimePicker extends PostInputComponent {
 			->minMaxDateTime($this->min, $this->max)
 			->stepDateTime($this->step);
 	}
-	function asTableCell($h, $value) {
-		return $value->innerBind(function($v) use($h) {
-			return Result::ok((new OrdinaryTableCell($v->format('n/j/Y g:i A')))->render());
-		});
+	function makeTableCellPart($v) {
+		return new OrdinaryTableCell($v->format('n/j/Y g:i A'));
 	}
 }
 
-class Textarea extends PostInputComponent {
+class TextareaTableCell implements Renderable {
+	function __construct($value) {
+		$this->h = new HTMLParentlessContext();
+		$this->value = $value;
+	}
+	function render() {
+		return $this->h
+			->td
+				->pre
+					->t($this->value)
+				->end
+			->end;
+	}
+}
+
+class Textarea extends PostInputComponent implements TableCellFactory {
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -173,16 +182,8 @@ class Textarea extends PostInputComponent {
 			->filterEmptyString()
 			->requiredMaybe($this->required);
 	}
-	function asTableCell($h, $value) {
-		// no class here
-		return $value->innerBind(function($v) use ($h) {
-			return Result::ok($h
-			->td
-				->pre
-					->t($v)
-				->end
-			->end);
-		});
+	function makeTableCellPart($v) {
+		return new TextareaTableCell($v);
 	}
 }
 
@@ -227,6 +228,22 @@ class Radios extends PostInputComponent implements Enumerative {
 	}
 }
 
+class ListTableCell implements Renderable {
+	function __construct($value) {
+		$this->h = new HTMLParentlessContext();
+		$this->value = $value;
+	}
+	function render() {
+		return $this->h
+			->td
+				->ul->class('ui list')
+					->addH(array_map(function($x) {
+						return $this->h->li->t($x)->end;
+					}, $this->value))
+				->end
+			->end;
+	}
+}
 
 
 class Checkboxes extends PostInputComponent implements Enumerative {
@@ -253,20 +270,12 @@ class Checkboxes extends PostInputComponent implements Enumerative {
 			->requiredMaybe($this->required);
 	}
 	function asTableCell($h, $value) {
-		// no class here
 		return $value->innerBind(function($v) use ($h) {
 
 			if(count($v) === 0) {
 				return Result::none(null);
 			}
-			return Result::ok($h
-			->td
-				->ul->class('ui list')
-					->addH(array_map(function($x) use ($h) {
-						return $h->li->t($x)->end;
-					}, $v))
-				->end
-			->end);
+			return Result::ok((new ListTableCell($v))->render());
 		});
 	}
 }
@@ -338,6 +347,22 @@ class Textbox extends PostInputComponent {
 			->matchRegex($this->mustMatch)
 			->filterEmptyString()
 			->requiredMaybe($this->required);
+	}
+}
+
+class FileUploadTableCell implements Renderable {
+	function __construct($value) {
+		$this->h = new HTMLParentlessContext();
+		$this->value = $value;
+	}
+	function render() {
+		return $this->h
+			->td->class('unpadded-cell')
+				->a->href($this->value['url'])->class('ui attached labeled icon button')
+					->i->class('download icon')->end
+					->t('Download')
+				->end
+			->end;
 	}
 }
 
@@ -414,7 +439,6 @@ class FileUpload extends FileInputComponent {
 			});
 	}
 	function asTableCell($h, $value) {
-		// no class here
 		return $value->innerBind(function($v) use ($h) {
 
 			if(is_string($v) || !isset($v['url'])) {
@@ -422,13 +446,7 @@ class FileUpload extends FileInputComponent {
 				return Result::none(null);
 			}
 
-			return Result::ok($h
-			->td->class('unpadded-cell')
-				->a->href($v['url'])->class('ui attached labeled icon button')
-					->i->class('download icon')->end
-					->t('Download')
-				->end
-			->end);
+			return Result::ok((new FileUploadTableCell($v))->render());
 		});
 	}
 	function asDetailedTableCell($h, $value) {
@@ -477,8 +495,22 @@ class Range extends PostInputComponent {
 	}
 }
 
+class PasswordTableCell implements Renderable {
+	function __construct() {
+		$this->h = new HTMLParentlessContext();
+	}
+	function render() {
+		return $this->h
+			->td
+				->abbr->title('Passwords are not saved in the database')
+					->t('N/A')
+				->end
+			->end;
+	}
+}
 
-class Password extends PostInputComponent {
+
+class Password extends PostInputComponent  {
 
 	function __construct($args) {
 		parent::__construct($args);
@@ -508,18 +540,29 @@ class Password extends PostInputComponent {
 			});
 	}
 	function asTableCell($h, $value) {
-		// no class here
-		return Result::ok($h
-		->td
-			->abbr->title('Passwords are not saved in the database')
-				->t('N/A')
-			->end
-		->end);
+		return Result::ok((new PasswordTableCell())->render());
 
 	}
 }
 
-class PhoneNumber extends PostInputComponent {
+class LinkTableCell implements Renderable {
+	function __construct($url, $value, $blank = false) {
+		$this->h = new HTMLParentlessContext();
+		$this->url = $url;
+		$this->value = $value;
+		$this->blank = $blank;
+	}
+	function render() {
+		return $this->h
+			->td
+				->a->href($this->url)->target('_blank', $this->blank)
+					->t($this->value)
+				->end
+			->end;
+	}
+}
+
+class PhoneNumber extends PostInputComponent implements TableCellFactory {
 
 	function __construct($args) {
 		parent::__construct($args);
@@ -535,25 +578,17 @@ class PhoneNumber extends PostInputComponent {
 			->requiredMaybe($this->required)
 			->filterPhone();
 	}
-	function asTableCell($h, $value) {
-		// no class here
-		return $value->innerBind(function($v) use ($h) {
-			if(preg_match('/^[0-9]{10}$/', $v)) {
-				$showValue = '(' . substr($v, 0, 3) . ')' . json_decode('"\u2006"') . substr($v, 3, 3) . json_decode('"\u2006"') . substr($v, 6, 4);
-			} else {
-				$showValue = $v;
-			}
-			return Result::ok($h
-			->td
-				->a->href('tel:' . $v)
-					->t($showValue)
-				->end
-			->end);
-		});
+	function makeTableCellPart($v) {
+		if(preg_match('/^[0-9]{10}$/', $v)) {
+			$showValue = '(' . substr($v, 0, 3) . ')' . json_decode('"\u2006"') . substr($v, 3, 3) . json_decode('"\u2006"') . substr($v, 6, 4);
+		} else {
+			$showValue = $v;
+		}
+		return new LinkTableCell('tel:' . $v, $showValue);
 	}
 }
 
-class EmailAddr extends PostInputComponent {
+class EmailAddr extends PostInputComponent implements TableCellFactory {
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -572,20 +607,12 @@ class EmailAddr extends PostInputComponent {
 			->filterFilterVar(FILTER_VALIDATE_EMAIL, 'Invalid email address.')
 			->mustHaveDomain($this->mustHaveDomain);
 	}
-	function asTableCell($h, $value) {
-		// no class here
-		return $value->innerBind(function($v) use ($h) {
-			return Result::ok($h
-			->td
-				->a->href('mailto:' . $v)
-					->t($v)
-				->end
-			->end);
-		});
+	function makeTableCellPart($v) {
+		return new LinkTableCell('mailto:' . $v, $v);
 	}
 }
 
-class UrlInput extends PostInputComponent {
+class UrlInput extends PostInputComponent implements TableCellFactory {
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -601,16 +628,8 @@ class UrlInput extends PostInputComponent {
 			->requiredMaybe($this->required)
 			->filterFilterVar(FILTER_VALIDATE_URL, 'Invalid URL.');
 	}
-	function asTableCell($h, $value) {
-		// no class here
-		return $value->innerBind(function($v) use ($h) {
-			return Result::ok($h
-			->td
-				->a->href($v)->target('_blank')
-					->t($v)
-				->end
-			->end);
-		});
+	function makeTableCellPart($v) {
+		return new LinkTableCell($v, $v, true);
 	}
 }
 class NumberInp extends PostInputComponent {
@@ -639,7 +658,7 @@ function dfd($date) {
 	return $date->format('m/d/Y');
 }
 
-class DatePicker extends PostInputComponent {
+class DatePicker extends PostInputComponent implements TableCellFactory {
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -668,13 +687,11 @@ class DatePicker extends PostInputComponent {
 			->requiredMaybe($this->required)
 			->minMaxDate($this->min, $this->max);
 	}
-	function asTableCell($h, $value) {
-		// no class here
-		return $value->innerBind(function($v) use($h) {
-			return Result::ok($h->td
-				->t($v->format('n/j/Y'))
-			->end);
-		});
+	function makeTableCellPart($v) {
+		// return $value->innerBind(function($v) use($h) {
+			return new OrdinaryTableCell($v->format('n/j/Y'));
+
+		// });
 	}
 }
 
@@ -705,7 +722,7 @@ class Notice extends BaseNotice {
 }
 
 class ListComponent implements FormPartFactory, Validatable, NameMatcher,
-	XmlDeserializable, FieldListItem, FieldTableItem {
+	XmlDeserializable, FieldListItem, FieldTableItem, TableCellFactory {
 	use Configurable;
 	function __construct($args) {
 		$this->items = $args['children'];
@@ -833,9 +850,9 @@ class ListComponent implements FormPartFactory, Validatable, NameMatcher,
 			return $result;
 		});
 	}
-	function asTableCell($h, $value) {
+	use Tableize;
+	function makeTableCellPart($v) {
 
-		return $value->innerBind(function($v) use ($h) {
 
 
 			if(count($v) === 1) {
@@ -844,8 +861,8 @@ class ListComponent implements FormPartFactory, Validatable, NameMatcher,
 				$showValue = '(' . count($v) . ' items)';
 			}
 
-			return Result::ok( (new OrdinaryTableCell($showValue))->render() );
-		});
+			return new OrdinaryTableCell($showValue);
+
 	}
 	function asDetailedTableCell($h, $value) {
 
@@ -895,15 +912,13 @@ class Group extends GroupComponent {
 	}
 }
 
-class IPField implements FieldTableItem, Validatable {
+class IPField implements FieldTableItem, Validatable, TableCellFactory {
 	function __construct() {
 		$this->name = '_ip';
 		$this->label = 'IP Address';
 	}
-	function asTableCell($h, $value) {
-		return $value->innerBind(function($v) use($h) {
-			return Result::ok( (new OrdinaryTableCell($v))->render() );
-		});
+	function makeTableCellPart($v) {
+		return new OrdinaryTableCell($v);
 	}
 	function getByName($name) {
 		return ($this->name === $name) ? $this : null;
@@ -914,18 +929,16 @@ class IPField implements FieldTableItem, Validatable {
 	function getAllFields() {
 		return [ $this ];
 	}
-
+	use Tableize;
 }
 
-class TimestampField implements FieldTableItem, Validatable {
+class TimestampField implements FieldTableItem, Validatable, TableCellFactory {
 	function __construct() {
 		$this->name = '_timestamp';
 		$this->label = 'Timestamp';
 	}
-	function asTableCell($h, $value) {
-		return $value->innerBind(function($v) use($h) {
-			return Result::ok( (new OrdinaryTableCell($v->format('n/j/Y g:i A')))->render() );
-		});
+	function makeTableCellPart($v) {
+		return new OrdinaryTableCell($v->format('n/j/Y g:i A'));
 	}
 	function getByName($name) {
 		return ($this->name === $name) ? $this : null;
@@ -936,6 +949,7 @@ class TimestampField implements FieldTableItem, Validatable {
 	function getAllFields() {
 		return [ $this ];
 	}
+		use Tableize;
 }
 
 

@@ -40,6 +40,11 @@ interface Renderable {
 }
 
 
+interface TableCellFactory {
+	public function makeTableCellPart($value);
+}
+
+
 abstract class BaseHeader implements FormPartFactory, XmlDeserializable  {
 	use Configurable;
 	final function __construct($args) {
@@ -83,21 +88,30 @@ class OrdinaryTableCell implements Renderable {
 	}
 }
 
-abstract class NamedLabeledComponent implements FormPartFactory, Validatable, NameMatcher, XmlDeserializable, FieldListItem, FieldTableItem {
-
-	use Configurable;
-
+trait Tableize {
 	function asTableCell($h, $value) {
+		if($this instanceof TableCellFactory) {
+			return $value->innerBind(function($v) {
+				return Result::ok($this->makeTableCellPart($v)->render());
+			});
+		}
 		return $value->innerBind(function($v) {
 			return Result::ok( (new OrdinaryTableCell($v))->render() );
 		});
 	}
+
 	function asDetailedTableCell($h, $value) {
 		return $this->asTableCell($h, $value);
 	}
 	function asEmailTableCell($h, $value) {
 		return $this->asTableCell($h, $value);
 	}
+}
+
+abstract class NamedLabeledComponent implements FormPartFactory, Validatable, NameMatcher, XmlDeserializable, FieldListItem, FieldTableItem {
+
+	use Configurable, Tableize;
+
 
 	function __construct($args) {
 		$this->label = $args['label'];
