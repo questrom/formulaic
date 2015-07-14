@@ -11,31 +11,21 @@ class EmailValueRow implements Renderable {
 	function render() {
 
 
-		if($this->component instanceof FieldListItem) {
-			return $this->component->asEmailTableCell(
-				$this->h,
-				$this->value === null ? Result::none(null) : Result::ok($this->value)
-			)
-				->bindNothing(function($x) {
-					return Result::ok(
-						$this->h
-						->td->bgcolor('#ccc')
-							->t('(No value)')
-						->end
-					);
-				})
-				->innerBind(function($x)  {
-						return $this->h
-						->tr
-							->td->class('right aligned collapsing nowrap')
-								->t($this->component->label)
-							->end
-							->addH($x)
-						->end;
-				});
-		} else {
-			throw new Exception('Invalid column!');
-		}
+			$v = $this->component->makeEmailTableCell($this->value);
+			if($v === null) {
+				$v = $this->h
+				->td->bgcolor('#ccc')
+					->t('(No value)')
+				->end;
+			}
+			return $this->h
+			->tr
+				->td->class('right aligned collapsing nowrap')
+					->t($this->component->label)
+				->end
+				->addH($v)
+			->end;
+
 
 	}
 }
@@ -63,7 +53,7 @@ class EmailViewRenderable implements Renderable {
 					->table->border(1)
 						->tbody
 							->addH(array_map(function($field) {
-								if($field instanceof FieldListItem) {
+								if($field instanceof TableCellFactory) {
 									return new EmailValueRow( isget($this->data[$field->name], null), $field );
 								} else {
 									return null;

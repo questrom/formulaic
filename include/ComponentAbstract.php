@@ -20,10 +20,6 @@ interface NameMatcher {
 }
 
 
-interface FieldListItem {
-	public function asDetailedTableCell($h, $value);
-	public function asEmailTableCell($h, $value);
-}
 
 
 interface Enumerative {
@@ -38,6 +34,8 @@ interface Renderable {
 
 interface TableCellFactory {
 	public function makeTableCellPart($value);
+	public function makeDetailedTableCell($value);
+	public function makeEmailTableCell($value);
 }
 
 
@@ -85,33 +83,32 @@ class OrdinaryTableCell implements Renderable {
 }
 
 trait Tableize {
-	function asDetailedTableCell($h, $v) {
-
-		$v = $this->makeTableCellPart($v);
-
-		if($v === null) {
-			return Result::none($v);
-		} else {
-			return Result::ok($v->render());
-		}
+	function makeDetailedTableCell($v) {
+		return $this->makeTableCellPart($v);
 	}
-	function asEmailTableCell($h, $value) {
-		$v = $value->bindNothing(function($v) {
-			return Result::ok($v);
-		})->innerBind(function($v) {
-			return $v;
-		});
-		$v = $this->makeTableCellPart($v);
 
-		if($v === null) {
-			return Result::none($v);
-		} else {
-			return Result::ok($v->render());
-		}
+	function makeEmailTableCell($v) {
+		return $this->makeTableCellPart($v);
 	}
+
+	// function asEmailTableCell($h, $value) {
+	// 	$v = $value->bindNothing(function($v) {
+	// 		return Result::ok($v);
+	// 	})->innerBind(function($v) {
+	// 		return $v;
+	// 	});
+	// 	$v = $this->makeTableCellPart($v);
+
+	// 	if($v === null) {
+	// 		return Result::none($v);
+	// 	} else {
+	// 		return Result::ok($v->render());
+	// 	}
+	// }
 }
 
-abstract class NamedLabeledComponent implements FormPartFactory, Validatable, NameMatcher, XmlDeserializable, FieldListItem, TableCellFactory {
+abstract class NamedLabeledComponent implements FormPartFactory, Validatable, NameMatcher,
+	XmlDeserializable, TableCellFactory {
 
 	use Configurable, Tableize;
 

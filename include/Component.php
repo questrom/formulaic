@@ -460,25 +460,26 @@ class FileUpload extends FileInputComponent implements TableCellFactory {
 		if(is_string($v) && !isset($v['url'])) { return null; }
 		return new FileUploadTableCell($v);
 	}
-	function asDetailedTableCell($h, $v) {
+	function makeDetailedTableCell($v) {
 
-			if($v === null) { return Result::none(null); }
+			if($v === null) { return null; }
 
 			if(is_string($v) || !isset($v['url'])) {
 				// From old version
-				return Result::none(null);
+				return null;
 			}
-			return Result::ok((new FileUploadDetailedTableCell($v))->render());
+			return new FileUploadDetailedTableCell($v);
 
 	}
-	function asEmailTableCell($h, $value) {
-		return $value->innerBind(function($v) use ($h) {
+	function makeEmailTableCell($v) {
+
+			if($v === null) { return null; }
+
 			if(is_string($v) || !isset($v['url'])) {
 				// From old version
-				return Result::none(null);
+				return null;
 			}
-			return Result::ok((new FileUploadDetailedTableCell($v))->render());
-		});
+			return new FileUploadDetailedTableCell($v);
 	}
 }
 
@@ -735,7 +736,7 @@ class Notice extends BaseNotice {
 }
 
 class ListComponent implements FormPartFactory, Validatable, NameMatcher,
-	XmlDeserializable, FieldListItem, TableCellFactory {
+	XmlDeserializable, TableCellFactory {
 	use Configurable;
 	function __construct($args) {
 		$this->items = $args['children'];
@@ -875,24 +876,21 @@ class ListComponent implements FormPartFactory, Validatable, NameMatcher,
 		return new OrdinaryTableCell($showValue);
 
 	}
-	function asDetailedTableCell($h, $v) {
+	function makeDetailedTableCell($v) {
 
 
-			if($v === null) { return Result::none(null); }
+			if($v === null) { return null; }
 
-				return Result::ok(
-					(new ListDetailedTableCell($v, $this->getAllFieldsWithin()))->render()
-				);
+				return new ListDetailedTableCell($v, $this->getAllFieldsWithin());
 
 
 	}
-	function asEmailTableCell($h, $value) {
+	function makeEmailTableCell($v) {
 
-		return $value->innerBind(function($v) use ($h) {
+				if($v === null) { return null; }
 
-				return Result::ok((new ListEmailTableCell($v, $this->getAllFieldsWithin()))->render());
+				return new ListEmailTableCell($v, $this->getAllFieldsWithin());
 
-		});
 	}
 }
 
@@ -908,7 +906,7 @@ class ListEmailTableCell implements Renderable {
 			->addH(array_map(function($listitem) {
 				return $this->h->table->border(1)
 					->addH(array_map(function($field) use ($listitem) {
-						if($field instanceof FieldListItem) {
+						if($field instanceof TableCellFactory) {
 							return (new EmailValueRow( isget($listitem[$field->name]), $field ));
 						} else {
 							return null;
@@ -946,7 +944,7 @@ class Group extends GroupComponent {
 	}
 }
 
-class IPField implements Validatable, TableCellFactory {
+class IPField implements Validatable, TableCellFactory, NameMatcher {
 	function __construct() {
 		$this->name = '_ip';
 		$this->label = 'IP Address';
@@ -967,7 +965,7 @@ class IPField implements Validatable, TableCellFactory {
 	use Tableize;
 }
 
-class TimestampField implements Validatable, TableCellFactory {
+class TimestampField implements Validatable, TableCellFactory, NameMatcher {
 	function __construct() {
 		$this->name = '_timestamp';
 		$this->label = 'Timestamp';

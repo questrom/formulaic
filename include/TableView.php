@@ -20,6 +20,7 @@ class ValueCell implements Renderable {
 		$this->h = new HTMLParentlessContext();
 	}
 	function render() {
+
 		$v = $this->component->makeTableCellPart($this->value);
 		if($v === null) {
 			return $this->h

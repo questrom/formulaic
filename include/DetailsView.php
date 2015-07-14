@@ -9,29 +9,24 @@ class ValueRow implements Renderable {
 
 	function render() {
 
-		return $this->component->asDetailedTableCell(
-			$this->h,
-			$this->value
-		)
-			->bindNothing(function($x) {
-				return Result::ok(
-					$this->h
-					->td->class('disabled')
-						->i->class('ban icon')->end
-					->end
-				);
-			})
-			->innerBind(function($x) {
-					return $this->h
-					->tr
-						->td->class('right aligned collapsing nowrap')
-							->t($this->component->label)
-						->end
-						->addH(
-							$x
-						)
-					->end;
-			});
+
+
+		$v = $this->component->makeDetailedTableCell($this->value);
+		if($v === null) {
+			$v = $this->h
+			->td->class('disabled')
+				->i->class('ban icon')->end
+			->end;
+		}
+		return $this->h
+		->tr
+			->td->class('right aligned collapsing nowrap')
+				->t($this->component->label)
+			->end
+			->addH($v)
+		->end;
+
+
 	}
 }
 
@@ -47,7 +42,7 @@ class ValueTable implements Renderable {
 		->table->class('ui unstackable definition table')
 			->tbody
 				->addH(array_map(function($field) {
-					if($field instanceof FieldListItem) {
+					if($field instanceof TableCellFactory) {
 						return new ValueRow( isget($this->data[$field->name]), $field );
 					} else {
 						return null;
