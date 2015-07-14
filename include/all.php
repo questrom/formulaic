@@ -10,10 +10,10 @@ require 'include/utils.php';
 
 require 'vendor/hranicka/tracy/src/tracy.php';
 
-use Tracy\Debugger;
-$bar = Debugger::getBar();
-$bar->disable();
-Debugger::enable(Config::get()['debug'] ? Debugger::DEVELOPMENT : Debugger::PRODUCTION);
+// use Tracy\Debugger;
+// $bar = Debugger::getBar();
+// $bar->disable();
+// Debugger::enable(Config::get()['debug'] ? Debugger::DEVELOPMENT : Debugger::PRODUCTION);
 
 
 // Misc settings

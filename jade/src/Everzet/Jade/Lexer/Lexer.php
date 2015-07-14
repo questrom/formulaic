@@ -237,7 +237,7 @@ class Lexer implements LexerInterface
      */
     protected function scanTag()
     {
-        return $this->scanInput('/^(\w(\:|-|\w)*)/', 'tag');
+        return $this->scanInput('/^(\w[-:\w]*)/', 'tag');
     }
 
     /**
