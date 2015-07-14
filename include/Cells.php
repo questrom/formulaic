@@ -92,9 +92,9 @@ class FileUploadDetailedTableCell implements Renderable {
 		return $this->h
 		->td
 			->div->class('ui list')
-				->div->class('item') ->strong->t('URL: ')->end->a->href($v['url'])->t($v['url'])->end							->end
-				->div->class('item') ->strong->t('Original Filename: ')->end->t($v['originalName'])	->end
-				->div->class('item') ->strong->t('Type: ')->end->t($v['mime'])						->end
+				->div->class('item') ->strong->t('URL: ')->end->a->href($v['url'])->t($v['url'])->end->end
+				->div->class('item') ->strong->t('Original Filename: ')->end->t($v['originalName'])->end
+				->div->class('item') ->strong->t('Type: ')->end->t($v['mime'])->end
 			->end
 		->end;
 	}
@@ -108,9 +108,7 @@ class TextareaTableCell implements Renderable {
 	function render() {
 		return $this->h
 			->td
-				->pre
-					->t($this->value)
-				->end
+				->pre->t($this->value)->end
 			->end;
 	}
 }
