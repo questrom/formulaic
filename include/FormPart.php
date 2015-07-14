@@ -494,26 +494,11 @@ class CheckboxesFormPart extends FormPart {
 
 class CaptchaFormPart extends FormPart {
 	function render() {
-		$cc = makeCaptcha();
 		return $this->h
-		->div->class('ui field required')
-			->div->class('ui card')
-				->div->class('image')
-					->img
-						->src($cc['data'])
-					->end
-				->end
-				->div->class('content')->data('validation-name', '_captcha')
-					->p
-						->t('Please prove that you are not a robot by entering the above code into the box below.')
-					->end
-					->div->class('ui input')
-						->input->type('text')->name('_captcha[]')->placeholder('Enter code...')->end
-						->input->type('hidden')->name('_captcha[]')->value($cc['id'])->end
-					->end
-				->end
-			->end
-		->end;
+			->div->class('ui field')
+				->label->t('Are you a robot?')->end
+				->div->class('g-recaptcha')->data('sitekey', Config::get()['recaptcha']['site-key'])->end
+			->end;
 	}
 }
 
@@ -636,6 +621,7 @@ class PageFormPart extends FormPart {
 					->script->src(new AssetUrl('lib/jquery.inputmask.bundle.js'))->end
 					->script->src(new AssetUrl('lib/semantic.js'))->end
 					->script->src(new AssetUrl('client.js'))->end
+					->script->src('https://www.google.com/recaptcha/api.js')->end
 				))
 			->end
 		->end;

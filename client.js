@@ -160,6 +160,11 @@ $(function() {
 
 		e.preventDefault();
 
+		if('grecaptcha' in window && $('.g-recaptcha').size()) {
+			// Make a new reCAPTCHA
+			window.grecaptcha.reset();
+		}
+
 		removePrompts();
 		$('[data-submit=true]').addClass('loading').attr('disabled', true);
 

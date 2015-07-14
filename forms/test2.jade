@@ -1,6 +1,7 @@
 form(title='Example Form v2', success-message='Lorem ipsum!')
   fields
     textbox(name='test', label='Hello world')
+    captcha
   outputs
     s3(bucket='form-builder-uploads')
     mongo(server='mongodb://localhost:27017', database='forms', collection='example_form_2')

@@ -252,28 +252,29 @@ function makeCaptcha() {
 
 class Captcha extends PostInputComponent {
 	function __construct($args) {
-		$this->name = '_captcha';
+		$this->name = 'g-recaptcha-response'; // Google sets this name
 		$this->label = 'CAPTCHA';
 	}
 	function makeFormPart() {
 		return new CaptchaFormPart($this);
 	}
+	function getMerger($val) {
+		return parent::getMerger($val)
+			->innerBind(function($x) {
+				// Avoid storing captcha-related data.
+				return Result::ok([]);
+			});
+	}
 	protected function validate($against) {
 		return $against
-			->innerBind(function($x) {
-				$code = $x[0];
-				$id = intval($x[1]);
-				if(!isset($_SESSION['phrases'][$id])) {
-					return Result::error('Invalid data');
+			->innerBind(function($v) {
+				$recaptcha = new \ReCaptcha\ReCaptcha(Config::get()['recaptcha']['secret-key']);
+				$resp = $recaptcha->verify($v, $_SERVER['REMOTE_ADDR']);
+				if ($resp->isSuccess()) {
+				    return Result::ok(null);
+				} else {
+				    return Result::error('Please prove that you are human.');
 				}
-
-				$isCorrect = (new CaptchaBuilder($_SESSION['phrases'][$id]))->testPhrase($code);
-				unset($_SESSION['phrases'][$id]); // So user can't just reuse one CAPTCHA/id pair
-
-				if($isCorrect) {
-					return Result::error('Incorrect phrase.');
-				}
-				return Result::ok(null);
 			});
 	}
 }
