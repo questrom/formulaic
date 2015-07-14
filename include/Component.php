@@ -101,7 +101,7 @@ class TimeInput extends PostInputComponent {
 		if(intval($hour) === 0) {
 			$hour = 12;
 		}
-		return new OrdinaryTableCell(sprintf('%d:%02d %s', $hour, $minute, $xm) );
+		return new OrdinaryTableCell(sprintf('%d:%02d %s', $hour, $minute, $xm));
 	}
 }
 
