@@ -10,7 +10,18 @@ RewriteRule ^(.*)\.hash-.*?\.(.*)$ /$1.$2
 RewriteCond %{REQUEST_FILENAME} -f
 RewriteRule !^(index\.php|details\.php|form\.php|submit\.php|styles\.css|client\.js|lib\/.*|img\/.*|view\.php|immutable\/.*)$ - [F,NC]
 
-# Make sure stale content is NEVER served
+# Caching
+
 FileETag All
-Header set Cache-Control "private, max-age=0, no-cache, must-revalidate, no-transform"
-Header set Expires "Wed, 11 Jan 1984 05:00:00 GMT"
+
+Header merge Cache-Control "no-transform"
+Header merge Cache-Control "private"
+
+ExpiresActive on
+ExpiresDefault "access plus 0 seconds"
+
+# We use cachebusting URLs for this anyway...
+ExpiresByType text/css "access plus 1 year"
+ExpiresByType application/javascript                "access plus 1 year"
+ExpiresByType application/x-javascript              "access plus 1 year"
+ExpiresByType text/javascript                       "access plus 1 year"
