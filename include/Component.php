@@ -366,6 +366,24 @@ class FileUploadTableCell implements Renderable {
 	}
 }
 
+class FileUploadDetailedTableCell implements Renderable {
+	function __construct($value) {
+		$this->h = new HTMLParentlessContext();
+		$this->value = $value;
+	}
+	function render() {
+		$v = $this->value;
+		return $this->h
+		->td
+			->div->class('ui list')
+				->div->class('item') ->strong->t('URL: ')->end->a->href($v['url'])->t($v['url'])->end							->end
+				->div->class('item') ->strong->t('Original Filename: ')->end->t($v['originalName'])	->end
+				->div->class('item') ->strong->t('Type: ')->end->t($v['mime'])						->end
+			->end
+		->end;
+	}
+}
+
 
 class FileUpload extends FileInputComponent implements TableCellFactory {
 	function __construct($args) {
@@ -460,14 +478,7 @@ class FileUpload extends FileInputComponent implements TableCellFactory {
 				return Result::none(null);
 			}
 
-			return Result::ok($h
-			->td
-				->div->class('ui list')
-					->div->class('item') ->strong->t('URL: ')->end->a->href($v['url'])->t($v['url'])->end							->end
-					->div->class('item') ->strong->t('Original Filename: ')->end->t($v['originalName'])	->end
-					->div->class('item') ->strong->t('Type: ')->end->t($v['mime'])						->end
-				->end
-			->end);
+			return Result::ok((new FileUploadDetailedTableCell($v))->render());
 
 		});
 	}
@@ -869,12 +880,8 @@ class ListComponent implements FormPartFactory, Validatable, NameMatcher,
 
 		return $value->innerBind(function($v) use ($h) {
 
-				return Result::ok($h
-					->td
-						->addH(array_map(function($listitem) use($h) {
-							return new ValueTable($this->getAllFieldsWithin(), $listitem, false);
-						}, $v))
-					->end
+				return Result::ok(
+					(new ListDetailedTableCell($v, $this->getAllFieldsWithin()))->render()
 				);
 
 		});
@@ -883,26 +890,52 @@ class ListComponent implements FormPartFactory, Validatable, NameMatcher,
 
 		return $value->innerBind(function($v) use ($h) {
 
-				return Result::ok($h
-					->td
-						->addH(array_map(function($listitem) use($h) {
-							return $h->table->border(1)
-								->addH(array_map(function($field) use ($listitem) {
-									if($field instanceof FieldListItem) {
-										return (new EmailValueRow( isget($listitem[$field->name]), $field ));
-									} else {
-										return null;
-									}
-								}, $this->getAllFieldsWithin() ))
-							->end;
-						}, $v))
-					->end
-				);
+				return Result::ok((new ListEmailTableCell($v, $this->getAllFieldsWithin()))->render());
 
 		});
 	}
 }
 
+class ListEmailTableCell implements Renderable {
+	function __construct($value, $fields) {
+		$this->h = new HTMLParentlessContext();
+		$this->value = $value;
+		$this->fields = $fields;
+	}
+	function render() {
+		return $this->h
+		->td
+			->addH(array_map(function($listitem) {
+				return $this->h->table->border(1)
+					->addH(array_map(function($field) use ($listitem) {
+						if($field instanceof FieldListItem) {
+							return (new EmailValueRow( isget($listitem[$field->name]), $field ));
+						} else {
+							return null;
+						}
+					}, $this->fields))
+				->end;
+			}, $this->value))
+		->end;
+	}
+}
+
+class ListDetailedTableCell implements Renderable {
+	function __construct($v, $value) {
+		$this->h = new HTMLParentlessContext();
+		$this->value = $value;
+		$this->v = $v;
+	}
+	function render() {
+
+		return $this->h
+		->td
+			->addH(array_map(function($listitem) {
+				return new ValueTable($this->value, $listitem, false);
+			}, $this->v))
+		->end;
+	}
+}
 
 class Group extends GroupComponent {
 	function __construct($args) {

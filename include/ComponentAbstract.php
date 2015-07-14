@@ -90,13 +90,8 @@ class OrdinaryTableCell implements Renderable {
 
 trait Tableize {
 	function asTableCell($h, $value) {
-		if($this instanceof TableCellFactory) {
-			return $value->innerBind(function($v) {
-				return Result::ok($this->makeTableCellPart($v)->render());
-			});
-		}
 		return $value->innerBind(function($v) {
-			return Result::ok( (new OrdinaryTableCell($v))->render() );
+			return Result::ok($this->makeTableCellPart($v)->render());
 		});
 	}
 
@@ -108,7 +103,7 @@ trait Tableize {
 	}
 }
 
-abstract class NamedLabeledComponent implements FormPartFactory, Validatable, NameMatcher, XmlDeserializable, FieldListItem, FieldTableItem {
+abstract class NamedLabeledComponent implements FormPartFactory, Validatable, NameMatcher, XmlDeserializable, FieldListItem, FieldTableItem, TableCellFactory {
 
 	use Configurable, Tableize;
 
@@ -117,6 +112,9 @@ abstract class NamedLabeledComponent implements FormPartFactory, Validatable, Na
 		$this->label = $args['label'];
 		$this->name = $args['name'];
 		$this->customSublabel = isset($args['sublabel']) ? $args['sublabel'] : null;
+	}
+	function makeTableCellPart($v) {
+		return new OrdinaryTableCell($v);
 	}
 
 	final function getAllFields() { return [ $this ]; }
