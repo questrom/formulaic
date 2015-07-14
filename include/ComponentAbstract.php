@@ -20,10 +20,6 @@ interface NameMatcher {
 }
 
 
-interface FieldTableItem extends NameMatcher {
-	// Get rid of this...
-}
-
 interface FieldListItem {
 	public function asDetailedTableCell($h, $value);
 	public function asEmailTableCell($h, $value);
@@ -115,7 +111,7 @@ trait Tableize {
 	}
 }
 
-abstract class NamedLabeledComponent implements FormPartFactory, Validatable, NameMatcher, XmlDeserializable, FieldListItem, FieldTableItem, TableCellFactory {
+abstract class NamedLabeledComponent implements FormPartFactory, Validatable, NameMatcher, XmlDeserializable, FieldListItem, TableCellFactory {
 
 	use Configurable, Tableize;
 

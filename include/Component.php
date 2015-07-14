@@ -735,7 +735,7 @@ class Notice extends BaseNotice {
 }
 
 class ListComponent implements FormPartFactory, Validatable, NameMatcher,
-	XmlDeserializable, FieldListItem, FieldTableItem, TableCellFactory {
+	XmlDeserializable, FieldListItem, TableCellFactory {
 	use Configurable;
 	function __construct($args) {
 		$this->items = $args['children'];
@@ -946,7 +946,7 @@ class Group extends GroupComponent {
 	}
 }
 
-class IPField implements FieldTableItem, Validatable, TableCellFactory {
+class IPField implements Validatable, TableCellFactory {
 	function __construct() {
 		$this->name = '_ip';
 		$this->label = 'IP Address';
@@ -967,7 +967,7 @@ class IPField implements FieldTableItem, Validatable, TableCellFactory {
 	use Tableize;
 }
 
-class TimestampField implements FieldTableItem, Validatable, TableCellFactory {
+class TimestampField implements Validatable, TableCellFactory {
 	function __construct() {
 		$this->name = '_timestamp';
 		$this->label = 'Timestamp';
