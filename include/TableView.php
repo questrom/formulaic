@@ -53,8 +53,8 @@ class TablePage implements Renderable {
 			->head
 				->meta->charset('utf-8')->end
 				->title->t($this->f->title)->end
-				->link->rel('stylesheet')->href('{{asset lib/semantic.css}}')->end
-				->link->rel('stylesheet')->href('{{asset styles.css}}')->end
+				->link->rel('stylesheet')->href(new AssetUrl('lib/semantic.css'))->end
+				->link->rel('stylesheet')->href(new AssetUrl('styles.css'))->end
 			->end
 			->body
 				->addH(new TopHeader())

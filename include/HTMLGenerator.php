@@ -37,7 +37,7 @@ abstract class HTMLGeneratorAbstract {
 					$input = $element;
 					$i = -1;
 				} else if($element instanceof SafeString) {
-					$out .= $element->value;
+					$out .= $element->getValue();
 				} else if(is_scalar($element)) {
 					$out .= htmlspecialchars($element, ENT_QUOTES);
 				} else if(!is_null($element)) {
@@ -54,9 +54,23 @@ abstract class HTMLGeneratorAbstract {
 
 // =============================================================================================================
 
+
 class SafeString {
 	function __construct($value) {
 		$this->value = $value;
+	}
+	function getValue() {
+		return $this->value;
+	}
+}
+
+
+class AssetUrl extends SafeString {
+	function __construct($value) {
+		$this->value = $value;
+	}
+	function getValue() {
+		return '____{{asset ' . $this->value . '}}____';
 	}
 }
 

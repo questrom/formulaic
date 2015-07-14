@@ -591,8 +591,8 @@ class PageFormPart extends FormPart {
 			->head
 				->meta->charset('utf-8')->end
 				->title->t($this->f->title)->end
-				->link->rel('stylesheet')->href('{{asset lib/semantic.css}}')->end
-				->link->rel('stylesheet')->href('{{asset styles.css}}')->end
+				->link->rel('stylesheet')->href(new AssetUrl('lib/semantic.css'))->end
+				->link->rel('stylesheet')->href(new AssetUrl('styles.css'))->end
 
 				->meta->name('viewport')->content('width=device-width, initial-scale=1')->end // From https://github.com/h5bp/html5-boilerplate/blob/master/src/index.html
 				->meta->name('format-detection')->content('telephone=no')->end
@@ -628,10 +628,10 @@ class PageFormPart extends FormPart {
 							->button->type('button')->class('ui primary button approve')->t('OK')->end
 						->end
 					->end
-					->script->src('{{asset lib/jquery.js}}')->end
-					->script->src('{{asset lib/jquery.inputmask.bundle.js}}')->end
-					->script->src('{{asset lib/semantic.js}}')->end
-					->script->src('{{asset client.js}}')->end
+					->script->src(new AssetUrl('lib/jquery.js'))->end
+					->script->src(new AssetUrl('lib/jquery.inputmask.bundle.js'))->end
+					->script->src(new AssetUrl('lib/semantic.js'))->end
+					->script->src(new AssetUrl('client.js'))->end
 				))
 			->end
 		->end;

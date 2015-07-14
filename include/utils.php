@@ -57,7 +57,7 @@ function midpoint($a, $b) {
 }
 
 function fixAssets($html) {
-	return preg_replace_callback('/\{\{asset (.*?)\}\}/', function($matches) {
+	return preg_replace_callback('/____\{\{asset (.*?)\}\}____/', function($matches) {
 		return preg_replace_callback('/^(.*)\.(.*)$/', function($parts) use($matches) {
 			return $parts[1] . '.hash-' . sha1_file($matches[1]) . '.' . $parts[2];
 		}, $matches[1]);

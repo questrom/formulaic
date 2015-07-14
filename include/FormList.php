@@ -60,8 +60,8 @@ class FormListView implements Renderable {
 			->head
 				->meta->charset('utf-8')->end
 				->title->t('Forms')->end
-				->link->rel('stylesheet')->href('{{asset lib/semantic.css}}')->end
-				->link->rel('stylesheet')->href('{{asset styles.css}}')->end
+				->link->rel('stylesheet')->href(new AssetUrl('lib/semantic.css'))->end
+				->link->rel('stylesheet')->href(new AssetUrl('styles.css'))->end
 
 				->meta->name('viewport')->content('width=device-width, initial-scale=1')->end
 				// From https://github.com/h5bp/html5-boilerplate/blob/master/src/index.html
