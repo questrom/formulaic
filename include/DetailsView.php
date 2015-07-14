@@ -93,8 +93,6 @@ class DetailsViewRenderable implements Renderable {
 	}
 }
 
-
-// Used by details.php and Output.php (For HTML email)
 class DetailsView implements View {
 	function makeView($data) {
 		return new DetailsViewRenderable($this->pageData->form->getAllFields(), $this->pageData->title, $data);
@@ -106,15 +104,12 @@ class DetailsView implements View {
 
 	function query($getData) {
 		$page = $this->pageData;
-
 		$mongo = null;
 		foreach($page->outputs->outputs as $output) {
 			if($output instanceof MongoOutput) {
 				$mongo = $output;
 			}
 		}
-
 		return $mongo->getById($_GET['id']);
 	}
 }
-
