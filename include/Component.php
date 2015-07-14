@@ -596,10 +596,7 @@ class DatePicker extends PostInputComponent {
 	}
 	function makeTableCellPart($v) {
 		if($v === null) { return null; }
-		// return $value->innerBind(function($v) use($h) {
-			return new OrdinaryTableCell($v->format('n/j/Y'));
-
-		// });
+		return new OrdinaryTableCell($v->format('n/j/Y'));
 	}
 }
 
