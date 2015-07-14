@@ -60,7 +60,7 @@ class AllowElem implements XmlDeserializable {
 	}
 }
 
-final class SubmitCounts {
+class SubmitCounts {
 	private static $data = null;
 	static function update() {
 		self::$data = json_decode(file_get_contents('data/submit-counts.json'));
