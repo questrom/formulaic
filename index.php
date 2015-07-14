@@ -8,6 +8,7 @@ $klein = new \Klein\Klein();
 
 
 $klein->onHttpError(function ($code, $router) {
+	// based on klein docs
     switch ($code) {
         case 404:
             $router->response()->body(
@@ -22,7 +23,6 @@ $klein->onHttpError(function ($code, $router) {
 });
 
 $klein->respond('GET', '/', function() {
-
 	$formlist = new FormList(Parser::getFormInfo());
 	return '<!DOCTYPE html>' . fixAssets($formlist->makeFormList()->render()->generateString());
 });
@@ -98,7 +98,6 @@ $klein->respond('POST', '/submit.php', function() {
 });
 
 $klein->respond('GET', '/details.php', function() {
-
 	$page = Parser::parseJade($_GET['form']);
 	$view = new DetailsView();
 	$view->setPage($page);
