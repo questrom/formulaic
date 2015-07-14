@@ -144,23 +144,6 @@ class InputFormPart extends FormPart {
 		$this->sublabel = $sublabel;
 	}
 	function render() {
-		$jade = <<<'JADE'
-div.ui.field(class = f->required ? ['required'] : [])
-	!= label
-	div.ui.input(class = icon ? ['left icon'] : [])
-		- if (icon):
-			i.icon(class = icon)
-		- unless mask
-			input(type=type,name=f->name)
-		- if mask
-			input(type=type,name=f.name,data-inputmask='#{mask2}')
-JADE;
-$jadeParser = new Jade\Jade();
-$this->label = $this->f->getLabel($this->sublabel)->render()->generateString();
-$this->mask2 = htmlspecialchars($this->mask);
-$result1 = ($jadeParser->render($jade, (array) $this));
-
-
 		return $this->h
 		->div->class('ui field ' . ($this->f->required ? 'required' : ''))
 			->addH($this->f->getLabel($this->sublabel))
