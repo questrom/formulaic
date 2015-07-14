@@ -34,7 +34,6 @@ div[data-show-if-name] > .ui.form .fields:last-child .field {
 .ui.form input[type=file] { padding-top: 5px !important; padding-bottom: 5px !important; }
 
 .ui.compact.table th { padding-top: 0.5em; padding-bottom: 0.5em; }
-
 input[type=range] { width: 150px; vertical-align: -5px; }
 
 /* See http://stackoverflow.com/questions/18794026/ */
@@ -55,15 +54,10 @@ input[type=range]::-moz-focus-outer { border:0 !important; }
 
 .red.prompt { display: table; white-space: normal !important; }
 
-.no-margin { margin:0 !important;}
-
-.pull-left { float:left !important;}
-
 /* Utility classes */
 .nowrap { white-space:nowrap;}
 .no-margin { margin:0 !important;}
 .pull-right { float:right;}
-
 
 /* Simpler styling for groups */
 .group > :first-child.attached {
@@ -115,15 +109,6 @@ input[type=range]::-moz-focus-outer { border:0 !important; }
 .pagenumber { flex: 1 !important; text-align: center !important; display:block !important; }
 
 .sublabel {  color: rgba(40, 40, 40, 0.7);  margin:-6px 0 6px 0; font-family: Verdana; font-weight: normal; font-size: 82%; }
-
-/*@media screen and (max-width: 600px) {
-    .sublabel.pull-right {
-        float:none !important;
-        display:block !important;
-        text-align: right !important;
-    }
-}*/
-
 
 /* iOS: stackoverflow.com/questions/2989263/disable-auto-zoom-in-input-text-tag-safari-on-iphone */
 .ios select,

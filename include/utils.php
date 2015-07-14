@@ -93,7 +93,7 @@ class Hashes {
 function fixAssets($html) {
 	return preg_replace_callback('/____\{\{asset (.*?)\}\}____/', function($matches) {
 		return preg_replace_callback('/^(.*)\.(.*)$/', function($parts) use($matches) {
-			return $parts[1] . '.hash-' . Hashes::get($matches[1]) . '.' . $parts[2];
+			return Config::get()['asset-prefix'] . $parts[1] . '.hash-' . Hashes::get($matches[1]) . '.' . $parts[2];
 		}, $matches[1]);
 	}, $html);
 }

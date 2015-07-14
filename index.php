@@ -1,11 +1,9 @@
 <?php
 
 require 'include/all.php';
-
 use Gregwar\Cache\Cache;
 
 $klein = new \Klein\Klein();
-
 
 $klein->onHttpError(function ($code, $router) {
 	// based on klein docs
@@ -32,8 +30,6 @@ $klein->respond('GET', '/view.php', function() {
 	$view = $page->getView($_GET['view']);
 	return fixAssets($view->makeView($view->query($_GET))->render()->generateString());
 });
-
-
 
 $klein->respond('GET', '/form.php', function() {
 
