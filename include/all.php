@@ -49,3 +49,5 @@ require 'include/EmailView.php';
 
 // Main form list
 require 'include/FormList.php';
+
+require 'include/Cells.php';

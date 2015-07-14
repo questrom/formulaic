@@ -41,7 +41,7 @@ abstract class FormPart implements Renderable {
 }
 
 
-abstract class BaseHeaderFormPart extends FormPart {
+class BaseHeaderFormPart extends FormPart {
 	function render() {
 		$inside = $this->h->t($this->f->text)
 		->addH($this->f->subhead === null ? null :
@@ -58,7 +58,7 @@ abstract class BaseHeaderFormPart extends FormPart {
 }
 
 
-abstract class BaseNoticeFormPart extends FormPart {
+class BaseNoticeFormPart extends FormPart {
 	function render() {
 		return $this->h
 		->addH($this->f->icon === null ? null :
@@ -91,43 +91,51 @@ abstract class BaseNoticeFormPart extends FormPart {
 
 
 
-class HeaderFormPart extends BaseHeaderFormPart {
+class HeaderFormPart extends FormPart {
 	function render() {
 		$size = ($this->f->size === null) ? 1 : $this->f->size;
 		return $this->h
 		->{'h' . $size}->class('ui header')
-			->addH(parent::render())
+			->addH(
+				new BaseHeaderFormPart($this->f)
+			)
 		->end;
 	}
 }
 
-class GroupHeaderFormPart extends BaseHeaderFormPart {
+class GroupHeaderFormPart extends FormPart {
 	function render() {
 		$size = ($this->f->size === null) ? 5 : $this->f->size;
 		return $this->h
 			->{'h' . $size}->class('ui header attached')
-				->addH(parent::render())
+				->addH(
+					new BaseHeaderFormPart($this->f)
+				)
 			->end;
 	}
 }
 
 
-class GroupNoticeFormPart extends BaseNoticeFormPart {
+class GroupNoticeFormPart extends FormPart {
 	function render() {
 		return
 			$this->h
-			  ->div->class('ui message attached ' . ($this->f->icon === null ? '' : ' icon') . ($this->f->type ? ' ' . $this->f->type : ''))
-			  ->addH(parent::render())
+				->div->class('ui message attached ' . ($this->f->icon === null ? '' : ' icon') . ($this->f->type ? ' ' . $this->f->type : ''))
+				->addH(
+					new BaseNoticeFormPart($this->f)
+				)
 			->end;
 	}
 }
 
-class NoticeFormPart extends BaseNoticeFormPart {
+class NoticeFormPart extends FormPart {
 	function render() {
 		return
 			$this->h
 				->div->class('ui message floating ' . ($this->f->icon === null ? '' : ' icon') . ($this->f->type ? ' ' . $this->f->type : ''))
-				->addH(parent::render())
+				->addH(
+					new BaseNoticeFormPart($this->f)
+				)
 				->end;
 	}
 }
@@ -334,7 +342,7 @@ class ShowIfComponentFormPart extends FormPart {
 			->div
 				->data('show-if-name', $this->f->condition->getName())
 				->data('show-if-condition', $this->f->condition->getCondition())
-				->addH($this->f->item->makeFormPart())
+				->addH($this->f->item)
 			->end;
 	}
 }
@@ -416,15 +424,7 @@ class ListComponentFormPart extends FormPart {
 class GroupFormPart extends FormPart {
 	function render() {
 
-		$items = array_map(function($item) {
-			if($item instanceof Header) {
-				return new GroupHeader($item->__args);
-			} else if($item instanceof Notice) {
-				return new GroupNotice($item->__args);
-			} else {
-				return $item;
-			}
-		}, $this->f->items);
+		$items = $this->f->items;
 
 		return $this->h
 		->div->class('group')
@@ -432,14 +432,14 @@ class GroupFormPart extends FormPart {
 			if(is_array($value)) {
 				return (new HTMLParentlessContext())->div->class('ui segment attached')
 					->addH(
-						array_map(function($x) { return $x ? $x->makeFormPart() : null; }, $value)
+						array_map(function($x) { return $x ? $x->makeGroupPart() : null; }, $value)
 					)
 					->end;
 			} else {
-				return $value->makeFormPart();
+				return $value->makeGroupPart();
 			}
 		}, array_reduce($items, function($carry, $item) {
-			if($item instanceof GroupHeader || $item instanceof GroupNotice) {
+			if($item instanceof Header || $item instanceof Notice) {
 				$carry[] = $item;
 				return $carry;
 			} else if( is_array(end($carry)) ) {

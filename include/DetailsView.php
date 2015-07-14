@@ -8,9 +8,6 @@ class ValueRow implements Renderable {
 	}
 
 	function render() {
-
-
-
 		$v = $this->component->makeDetailedTableCell($this->value);
 		if($v === null) {
 			$v = $this->h
@@ -25,8 +22,6 @@ class ValueRow implements Renderable {
 			->end
 			->addH($v)
 		->end;
-
-
 	}
 }
 
@@ -74,7 +69,6 @@ class DetailsViewRenderable implements Renderable {
 		$this->title = $title;
 		$this->data = $data;
 		$this->h = new HTMLParentlessContext();
-
 	}
 	function render() {
 		return

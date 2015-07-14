@@ -8,13 +8,11 @@ use Sabre\Xml\XmlDeserializable as XmlDeserializable;
 
 interface FormPartFactory {
 	public function makeFormPart();
+	public function makeGroupPart();
 }
 
-interface Validatable {
+interface Storeable {
 	public function getMerger($val);
-}
-
-interface NameMatcher {
 	public function getAllFields();
 }
 
@@ -26,54 +24,18 @@ interface Renderable {
 	public function render();
 }
 
-interface TableCellFactory extends NameMatcher, Validatable {
+interface TableCellFactory extends Storeable {
 	public function makeTableCellPart($value);
 	public function makeDetailedTableCell($value);
 	public function makeEmailTableCell($value);
 }
 
-
-abstract class BaseHeader implements FormPartFactory, XmlDeserializable  {
-	use Configurable;
-	final function __construct($args) {
-		$this->__args = $args;
-
-		$this->text = $args['innerText'];
-		$this->subhead = isset($args['subhead']) ? $args['subhead'] : null;
-		$this->icon = isset($args['icon']) ? $args['icon'] : null;
-		$this->size = isset($args['size']) ? intval($args['size']) : null;
+trait Groupize {
+	public function makeGroupPart() {
+		return $this->makeFormPart();
 	}
 }
 
-
-abstract class BaseNotice implements FormPartFactory, XmlDeserializable {
-	use Configurable;
-	final function __construct($args) {
-		$this->__args = $args; // Used by Group later on
-
-		$this->text = $args['text'];
-		$this->header = isset($args['header']) ? $args['header'] : null;
-		$this->icon = isset($args['icon']) ? $args['icon'] : null;
-		$this->list = isset($args['children']) ? $args['children'] : null;
-		if(isset($args['children']) && count($args['children']) === 0) {
-			$this->list = null;
-		}
-		$this->type = isset($args['type']) ? $args['type'] : null;
-	}
-}
-
-class OrdinaryTableCell implements Renderable {
-	function __construct($value) {
-		$this->h = new HTMLParentlessContext();
-		$this->value = $value;
-	}
-	function render() {
-		return $this->h
-			->td
-				->t($this->value)
-			->end;
-	}
-}
 
 trait Tableize {
 	function makeDetailedTableCell($v) {
@@ -86,7 +48,7 @@ trait Tableize {
 
 abstract class NamedLabeledComponent implements FormPartFactory, XmlDeserializable, TableCellFactory {
 
-	use Configurable, Tableize;
+	use Configurable, Tableize, Groupize;
 
 	function __construct($args) {
 		$this->label = $args['label'];
@@ -108,11 +70,13 @@ abstract class NamedLabeledComponent implements FormPartFactory, XmlDeserializab
 		return new Label($this->label, isset($this->customSublabel) ? $this->customSublabel : $sublabel);
 	}
 
+	protected abstract function validate($val);
 	function getMerger($val) {
 		$val = $val->innerBind(function($v) {
 			return Result::ok(isset($v[$this->name]) ? $v[$this->name] : null);
 		});
-		return $this->validate($val)
+		return $this
+			->validate($val)
 			->collapse()
 			->innerBind(function($r) {
 				return Result::ok([$this->name => $r]);
@@ -143,14 +107,12 @@ abstract class FileInputComponent extends NamedLabeledComponent {
 	}
 }
 
-abstract class GroupComponent implements FormPartFactory, Validatable, NameMatcher, XmlDeserializable {
-	use Configurable;
-
-
+abstract class GroupComponent implements FormPartFactory, Storeable, XmlDeserializable {
+	use Configurable, Groupize;
 	final function getAllFields() {
 		$arr = [];
 		foreach($this->items as $item) {
-			if($item instanceof NameMatcher) {
+			if($item instanceof Storeable) {
 				$arr = array_merge($arr, $item->getAllFields());
 			}
 		}

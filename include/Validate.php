@@ -381,7 +381,7 @@ abstract class Validate {
 	function groupValidate($items) {
 		return $this->innerBind(function($val) use ($items) {
 			return array_reduce($items, function($total, $field) use($val) {
-				if(!($field instanceof Validatable)) {
+				if(!($field instanceof Storeable)) {
 
 					return $total;
 				}

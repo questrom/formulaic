@@ -7,7 +7,7 @@ use Sabre\Xml\XmlDeserializable as XmlDeserializable;
 // Full components
 // ===============
 
-class ShowIfComponent implements FormPartFactory, Validatable, NameMatcher, XmlDeserializable {
+class ShowIfComponent implements FormPartFactory, Storeable, XmlDeserializable {
 	use Configurable;
 	function __construct($args) {
 		$this->item = $args['children'][1];
@@ -15,7 +15,7 @@ class ShowIfComponent implements FormPartFactory, Validatable, NameMatcher, XmlD
 	}
 
 	function getAllFields() {
-		if($this->item instanceof NameMatcher) {
+		if($this->item instanceof Storeable) {
 			return $this->item->getAllFields();
 		} else {
 			return [];
@@ -23,8 +23,18 @@ class ShowIfComponent implements FormPartFactory, Validatable, NameMatcher, XmlD
 	}
 
 	function makeFormPart() {
-		return new ShowIfComponentFormPart($this);
+		return new ShowIfComponentFormPart((object) [
+			'item' => $this->item->makeFormPart(),
+			'condition' => $this->condition
+		]);
 	}
+	function makeGroupPart() {
+		return new ShowIfComponentFormPart((object) [
+			'item' => $this->item->makeGroupPart(),
+			'condition' => $this->condition
+		]);
+	}
+
 	function getMerger($val) {
 		return $val
 			->collapse()
@@ -38,19 +48,6 @@ class ShowIfComponent implements FormPartFactory, Validatable, NameMatcher, XmlD
 	}
 }
 
-class CheckboxTableCell implements Renderable {
-	function __construct($value) {
-		$this->value = $value;
-		$this->h = new HTMLParentlessContext();
-	}
-	function render() {
-		return $this->h
-		->td->class($this->value ? 'positive' : 'negative')
-			->t($this->value ? 'Yes' : 'No')
-		->end;
-	}
-
-}
 
 class Checkbox extends PostInputComponent implements Enumerative {
 	function __construct($args) {
@@ -140,21 +137,6 @@ class DateTimePicker extends PostInputComponent {
 	}
 }
 
-class TextareaTableCell implements Renderable {
-	function __construct($value) {
-		$this->h = new HTMLParentlessContext();
-		$this->value = $value;
-	}
-	function render() {
-		return $this->h
-			->td
-				->pre
-					->t($this->value)
-				->end
-			->end;
-	}
-}
-
 class Textarea extends PostInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
@@ -223,22 +205,6 @@ class Radios extends PostInputComponent implements Enumerative {
 	}
 }
 
-class ListTableCell implements Renderable {
-	function __construct($value) {
-		$this->h = new HTMLParentlessContext();
-		$this->value = $value;
-	}
-	function render() {
-		return $this->h
-			->td
-				->ul->class('ui list')
-					->addH(array_map(function($x) {
-						return $this->h->li->t($x)->end;
-					}, $this->value))
-				->end
-			->end;
-	}
-}
 
 
 class Checkboxes extends PostInputComponent implements Enumerative {
@@ -341,39 +307,6 @@ class Textbox extends PostInputComponent {
 	}
 }
 
-class FileUploadTableCell implements Renderable {
-	function __construct($value) {
-		$this->h = new HTMLParentlessContext();
-		$this->value = $value;
-	}
-	function render() {
-		return $this->h
-			->td->class('unpadded-cell')
-				->a->href($this->value['url'])->class('ui attached labeled icon button')
-					->i->class('download icon')->end
-					->t('Download')
-				->end
-			->end;
-	}
-}
-
-class FileUploadDetailedTableCell implements Renderable {
-	function __construct($value) {
-		$this->h = new HTMLParentlessContext();
-		$this->value = $value;
-	}
-	function render() {
-		$v = $this->value;
-		return $this->h
-		->td
-			->div->class('ui list')
-				->div->class('item') ->strong->t('URL: ')->end->a->href($v['url'])->t($v['url'])->end							->end
-				->div->class('item') ->strong->t('Original Filename: ')->end->t($v['originalName'])	->end
-				->div->class('item') ->strong->t('Type: ')->end->t($v['mime'])						->end
-			->end
-		->end;
-	}
-}
 
 
 class FileUpload extends FileInputComponent {
@@ -497,20 +430,6 @@ class Range extends PostInputComponent {
 	}
 }
 
-class PasswordTableCell implements Renderable {
-	function __construct() {
-		$this->h = new HTMLParentlessContext();
-	}
-	function render() {
-		return $this->h
-			->td
-				->abbr->title('Passwords are not saved in the database')
-					->t('N/A')
-				->end
-			->end;
-	}
-}
-
 
 class Password extends PostInputComponent  {
 
@@ -544,23 +463,6 @@ class Password extends PostInputComponent  {
 	function makeTableCellPart($v) {
 		return new PasswordTableCell();
 
-	}
-}
-
-class LinkTableCell implements Renderable {
-	function __construct($url, $value, $blank = false) {
-		$this->h = new HTMLParentlessContext();
-		$this->url = $url;
-		$this->value = $value;
-		$this->blank = $blank;
-	}
-	function render() {
-		return $this->h
-			->td
-				->a->href($this->url)->target('_blank', $this->blank)
-					->t($this->value)
-				->end
-			->end;
 	}
 }
 
@@ -703,32 +605,49 @@ class DatePicker extends PostInputComponent {
 
 
 
-class Header extends BaseHeader {
+class Header implements FormPartFactory, XmlDeserializable  {
+	use Configurable;
+	final function __construct($args) {
+		$this->__args = $args;
+
+		$this->text = $args['innerText'];
+		$this->subhead = isset($args['subhead']) ? $args['subhead'] : null;
+		$this->icon = isset($args['icon']) ? $args['icon'] : null;
+		$this->size = isset($args['size']) ? intval($args['size']) : null;
+	}
 	function makeFormPart() {
 		return new HeaderFormPart($this);
 	}
-}
-
-class GroupHeader extends BaseHeader {
-	function makeFormPart() {
+	function makeGroupPart() {
 		return new GroupHeaderFormPart($this);
 	}
 }
 
-class GroupNotice extends BaseNotice {
+
+class Notice implements FormPartFactory, XmlDeserializable {
+	use Configurable, Groupize;
+	final function __construct($args) {
+		$this->__args = $args; // Used by Group later on
+
+		$this->text = $args['text'];
+		$this->header = isset($args['header']) ? $args['header'] : null;
+		$this->icon = isset($args['icon']) ? $args['icon'] : null;
+		$this->list = isset($args['children']) ? $args['children'] : null;
+		if(isset($args['children']) && count($args['children']) === 0) {
+			$this->list = null;
+		}
+		$this->type = isset($args['type']) ? $args['type'] : null;
+	}
 	function makeFormPart() {
+		return new NoticeFormPart($this);
+	}
+	function makeGroupPart() {
 		return new GroupNoticeFormPart($this);
 	}
 }
 
-class Notice extends BaseNotice {
-	function makeFormPart() {
-		return new NoticeFormPart($this);
-	}
-}
-
 class ListComponent implements FormPartFactory, XmlDeserializable, TableCellFactory {
-	use Configurable, Tableize;
+	use Configurable, Tableize, Groupize;
 	function __construct($args) {
 		$this->items = $args['children'];
 		$this->name = $args['name'];
@@ -746,7 +665,7 @@ class ListComponent implements FormPartFactory, XmlDeserializable, TableCellFact
 	private function getAllFieldsWithin() {
 		$arr = [];
 		foreach($this->items as $item) {
-			if($item instanceof NameMatcher) {
+			if($item instanceof Storeable) {
 				$arr = array_merge($arr, $item->getAllFields());
 			}
 		}
@@ -868,47 +787,6 @@ class ListComponent implements FormPartFactory, XmlDeserializable, TableCellFact
 	function makeEmailTableCell($v) {
 		if($v === null) { return null; }
 		return new ListEmailTableCell($v, $this->getAllFieldsWithin());
-	}
-}
-
-class ListEmailTableCell implements Renderable {
-	function __construct($value, $fields) {
-		$this->h = new HTMLParentlessContext();
-		$this->value = $value;
-		$this->fields = $fields;
-	}
-	function render() {
-		return $this->h
-		->td
-			->addH(array_map(function($listitem) {
-				return $this->h->table->border(1)
-					->addH(array_map(function($field) use ($listitem) {
-						if($field instanceof TableCellFactory) {
-							return (new EmailValueRow( isget($listitem[$field->name]), $field ));
-						} else {
-							return null;
-						}
-					}, $this->fields))
-				->end;
-			}, $this->value))
-		->end;
-	}
-}
-
-class ListDetailedTableCell implements Renderable {
-	function __construct($v, $value) {
-		$this->h = new HTMLParentlessContext();
-		$this->value = $value;
-		$this->v = $v;
-	}
-	function render() {
-
-		return $this->h
-		->td
-			->addH(array_map(function($listitem) {
-				return new ValueTable($this->value, $listitem, false);
-			}, $this->v))
-		->end;
 	}
 }
 
