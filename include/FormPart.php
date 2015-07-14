@@ -144,31 +144,6 @@ class InputFormPart extends FormPart {
 		$this->sublabel = $sublabel;
 	}
 	function render() {
-		$twig = <<<'TWIG'
-{% spaceless %}
-<div class="ui field {{f.required ? 'required' : ''}}">
-	{{ f.getLabel(sublabel).render().generateString() | raw }}
-	<div class="ui input {{icon ? 'left icon' : ''}}">
-		{% if icon %}
-		<i class="icon {{icon}}"></i>
-		{% endif %}
-		{% if not mask %}
-		<input type="{{type}}" name="{{f.name}}">
-		{% else %}
-		<input type="{{type}}" name="{{f.name}}" data-inputmask="{{mask}}">
-		{% endif %}
-	</div>
-</div>
-{% endspaceless %}
-TWIG;
-$loader = new Twig_Loader_Array(array(
-    'index.html' => $twig,
-));
-$twig = new Twig_Environment($loader);
-$result1 = $twig->render('index.html', (array) $this);
-
-return new SafeString($result1);
-
 		return $this->h
 		->div->class('ui field ' . ($this->f->required ? 'required' : ''))
 			->addH($this->f->getLabel($this->sublabel))
