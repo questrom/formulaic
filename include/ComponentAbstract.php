@@ -15,7 +15,6 @@ interface Validatable {
 }
 
 interface NameMatcher {
-	public function getByName($name);
 	public function getAllFields();
 }
 
@@ -32,7 +31,7 @@ interface Renderable {
 }
 
 
-interface TableCellFactory {
+interface TableCellFactory extends NameMatcher, Validatable {
 	public function makeTableCellPart($value);
 	public function makeDetailedTableCell($value);
 	public function makeEmailTableCell($value);
@@ -86,29 +85,12 @@ trait Tableize {
 	function makeDetailedTableCell($v) {
 		return $this->makeTableCellPart($v);
 	}
-
 	function makeEmailTableCell($v) {
 		return $this->makeTableCellPart($v);
 	}
-
-	// function asEmailTableCell($h, $value) {
-	// 	$v = $value->bindNothing(function($v) {
-	// 		return Result::ok($v);
-	// 	})->innerBind(function($v) {
-	// 		return $v;
-	// 	});
-	// 	$v = $this->makeTableCellPart($v);
-
-	// 	if($v === null) {
-	// 		return Result::none($v);
-	// 	} else {
-	// 		return Result::ok($v->render());
-	// 	}
-	// }
 }
 
-abstract class NamedLabeledComponent implements FormPartFactory, Validatable, NameMatcher,
-	XmlDeserializable, TableCellFactory {
+abstract class NamedLabeledComponent implements FormPartFactory, XmlDeserializable, TableCellFactory {
 
 	use Configurable, Tableize;
 
@@ -122,11 +104,14 @@ abstract class NamedLabeledComponent implements FormPartFactory, Validatable, Na
 		return new OrdinaryTableCell($v);
 	}
 
-	final function getAllFields() { return [ $this ]; }
+	final function getAllFields() {
+		return [
+			$this->name => $this
+		];
+	}
 	final function getLabel($sublabel = '') {
 		return new Label($this->label, isset($this->customSublabel) ? $this->customSublabel : $sublabel);
 	}
-	final function getByName($name) { return ($this->name === $name) ? $this : null; }
 
 	function getMerger($val) {
 		$val = $val->innerBind(function($v) {
@@ -175,18 +160,6 @@ abstract class GroupComponent implements FormPartFactory, Validatable, NameMatch
 			}
 		}
 		return $arr;
-	}
-	final function getByName($name) {
-		$result = null;
-		foreach($this->items as $item) {
-			if($item instanceof NameMatcher) {
-				$result = $item->getByName($name);
-				if($result) {
-					return $result;
-				}
-			}
-		}
-		return $result;
 	}
 	final function getMerger($val) {
 		return $val->groupValidate($this->items);

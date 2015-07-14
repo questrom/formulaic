@@ -69,8 +69,10 @@ class GraphView implements XmlDeserializable, View {
 		$this->database = $mongo->database;
 		$this->collection = $mongo->collection;
 
+		$byName = $this->pageData->form->getAllFields();
+
 		foreach($this->graphs as $index => $graph) {
-			$graph->setComponent($this->pageData->form->getByName($graph->name));
+			$graph->setComponent($byName[$graph->name]);
 		}
 	}
 	function query($getArgs) {

@@ -22,14 +22,6 @@ class ShowIfComponent implements FormPartFactory, Validatable, NameMatcher, XmlD
 		}
 	}
 
-	function getByName($name) {
-		if($this->item instanceof NameMatcher) {
-			return $this->item->getByName($name);
-		} else {
-			return null;
-		}
-	}
-
 	function makeFormPart() {
 		return new ShowIfComponentFormPart($this);
 	}
@@ -60,7 +52,7 @@ class CheckboxTableCell implements Renderable {
 
 }
 
-class Checkbox extends PostInputComponent implements Enumerative, TableCellFactory {
+class Checkbox extends PostInputComponent implements Enumerative {
 	function __construct($args) {
 		parent::__construct($args);
 		$this->mustCheck = isset($args['must-check']);
@@ -80,7 +72,7 @@ class Checkbox extends PostInputComponent implements Enumerative, TableCellFacto
 	}
 }
 
-class TimeInput extends PostInputComponent implements TableCellFactory {
+class TimeInput extends PostInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -122,7 +114,7 @@ class TimeInput extends PostInputComponent implements TableCellFactory {
 }
 
 
-class DateTimePicker extends PostInputComponent implements TableCellFactory {
+class DateTimePicker extends PostInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -163,7 +155,7 @@ class TextareaTableCell implements Renderable {
 	}
 }
 
-class Textarea extends PostInputComponent implements TableCellFactory {
+class Textarea extends PostInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -384,7 +376,7 @@ class FileUploadDetailedTableCell implements Renderable {
 }
 
 
-class FileUpload extends FileInputComponent implements TableCellFactory {
+class FileUpload extends FileInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
 		$this->required  = isset($args['required']);
@@ -572,7 +564,7 @@ class LinkTableCell implements Renderable {
 	}
 }
 
-class PhoneNumber extends PostInputComponent implements TableCellFactory {
+class PhoneNumber extends PostInputComponent {
 
 	function __construct($args) {
 		parent::__construct($args);
@@ -599,7 +591,7 @@ class PhoneNumber extends PostInputComponent implements TableCellFactory {
 	}
 }
 
-class EmailAddr extends PostInputComponent implements TableCellFactory {
+class EmailAddr extends PostInputComponent  {
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -624,7 +616,7 @@ class EmailAddr extends PostInputComponent implements TableCellFactory {
 	}
 }
 
-class UrlInput extends PostInputComponent implements TableCellFactory {
+class UrlInput extends PostInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -671,7 +663,7 @@ function dfd($date) {
 	return $date->format('m/d/Y');
 }
 
-class DatePicker extends PostInputComponent implements TableCellFactory {
+class DatePicker extends PostInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -735,8 +727,7 @@ class Notice extends BaseNotice {
 	}
 }
 
-class ListComponent implements FormPartFactory, Validatable, NameMatcher,
-	XmlDeserializable, TableCellFactory {
+class ListComponent implements FormPartFactory, XmlDeserializable, TableCellFactory {
 	use Configurable, Tableize;
 	function __construct($args) {
 		$this->items = $args['children'];
@@ -749,11 +740,8 @@ class ListComponent implements FormPartFactory, Validatable, NameMatcher,
 		$this->addText = isset($args['add-text']) ? $args['add-text'] : 'Add an item';
 	}
 
-	function getByName($name) {
-		return ($this->name === $name) ? $this : null;
-	}
 	function getAllFields() {
-		return [ $this ];
+		return [ $this->name => $this ];
 	}
 
 	// Borrowed from GroupComponent
@@ -876,20 +864,12 @@ class ListComponent implements FormPartFactory, Validatable, NameMatcher,
 
 	}
 	function makeDetailedTableCell($v) {
-
-
-			if($v === null) { return null; }
-
-				return new ListDetailedTableCell($v, $this->getAllFieldsWithin());
-
-
+		if($v === null) { return null; }
+		return new ListDetailedTableCell($v, $this->getAllFieldsWithin());
 	}
 	function makeEmailTableCell($v) {
-
-				if($v === null) { return null; }
-
-				return new ListEmailTableCell($v, $this->getAllFieldsWithin());
-
+		if($v === null) { return null; }
+		return new ListEmailTableCell($v, $this->getAllFieldsWithin());
 	}
 }
 
@@ -943,7 +923,7 @@ class Group extends GroupComponent {
 	}
 }
 
-class IPField implements Validatable, TableCellFactory, NameMatcher {
+class IPField implements TableCellFactory {
 	use Tableize;
 	function __construct() {
 		$this->name = '_ip';
@@ -953,19 +933,16 @@ class IPField implements Validatable, TableCellFactory, NameMatcher {
 		if($v === null) { return null; }
 		return new OrdinaryTableCell($v);
 	}
-	function getByName($name) {
-		return ($this->name === $name) ? $this : null;
-	}
 	function getMerger($val) {
 		return Result::ok(['_ip' => $_SERVER['REMOTE_ADDR']]);
 	}
 	function getAllFields() {
-		return [ $this ];
+		return [ $this->name => $this ];
 	}
 
 }
 
-class TimestampField implements Validatable, TableCellFactory, NameMatcher {
+class TimestampField implements TableCellFactory {
 	use Tableize;
 	function __construct() {
 		$this->name = '_timestamp';
@@ -975,14 +952,11 @@ class TimestampField implements Validatable, TableCellFactory, NameMatcher {
 		if($v === null) { return null; }
 		return new OrdinaryTableCell($v->format('n/j/Y g:i A'));
 	}
-	function getByName($name) {
-		return ($this->name === $name) ? $this : null;
-	}
 	function getMerger($val) {
 		return Result::ok(['_timestamp' => new DateTimeImmutable()]);
 	}
 	function getAllFields() {
-		return [ $this ];
+		return [ $this->name => $this ];
 	}
 }
 

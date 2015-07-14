@@ -39,6 +39,8 @@ class TablePage implements Renderable {
 		$this->f = $f;
 		$this->h = new HTMLParentlessContext();
 		// var_dump($f->data);
+
+		$this->byName = $this->f->pageData->form->getAllFields();
 	}
 	function render() {
 		return
@@ -85,7 +87,7 @@ class TablePage implements Renderable {
 									->addH(array_map(function($col) use($row) {
 											return new ValueCell(
 												isget($row[$col->name]),
-												$this->f->pageData->form->getByName($col->name)
+												$this->byName[$col->name]
 											);
 									}, $this->f->cols))
 									->td->class('center aligned nowrap unpadded-cell')

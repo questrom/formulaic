@@ -9,17 +9,15 @@ class ArrayPointer {
 }
 
 abstract class HTMLGeneratorAbstract {
-	protected $parent;
-
 	abstract function addH($arr);
-
 	abstract function __get($name);
-	function t($text) {
-		return $this->addH($text);
-	}
 	abstract function toStringArray();
 
-	function generateString() {
+	final function t($text) {
+		return $this->addH($text);
+	}
+
+	final function generateString() {
 		// Based on: http://stackoverflow.com/questions/29991016/
 
 		$positions = [new ArrayPointer([$this], -1, 0)];
@@ -36,6 +34,7 @@ abstract class HTMLGeneratorAbstract {
 
 			for($i++; $i < count($input); $i++) {
 
+				// var_dump($input);
 				$element = $input[$i];
 
 				if($element instanceof Renderable) {
@@ -54,7 +53,7 @@ abstract class HTMLGeneratorAbstract {
 
 				if(is_array($element)) {
 					$positions[] = new ArrayPointer($input, $i, $escapeCount);
-					$input = $element;
+					$input = array_values($element);
 					$i = -1;
 				} else if($element instanceof DoubleEncode) {
 					$positions[] = new ArrayPointer($input, $i, $escapeCount);
