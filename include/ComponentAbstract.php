@@ -36,7 +36,6 @@ trait Groupize {
 	}
 }
 
-
 trait Tableize {
 	function makeDetailedTableCell($v) {
 		return $this->makeTableCellPart($v);

@@ -4,17 +4,8 @@
 require 'vendor/autoload.php';
 require 'jade/autoload.php.dist';
 
-
 // Utils
 require 'include/utils.php';
-
-require 'vendor/hranicka/tracy/src/tracy.php';
-
-// use Tracy\Debugger;
-// $bar = Debugger::getBar();
-// $bar->disable();
-// Debugger::enable(Config::get()['debug'] ? Debugger::DEVELOPMENT : Debugger::PRODUCTION);
-
 
 // Misc settings
 date_default_timezone_set(Config::get()['time-zone']);
@@ -35,6 +26,7 @@ require 'include/Validate.php';
 require 'include/ComponentHelpers.php';
 require 'include/ComponentAbstract.php';
 require 'include/FormPart.php';
+require 'include/Cells.php';
 require 'include/Component.php';
 
 // Outputs
@@ -49,5 +41,3 @@ require 'include/EmailView.php';
 
 // Main form list
 require 'include/FormList.php';
-
-require 'include/Cells.php';

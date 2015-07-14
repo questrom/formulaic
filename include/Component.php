@@ -90,23 +90,18 @@ class TimeInput extends PostInputComponent {
 			->stepTime($this->step);
 	}
 	function makeTableCellPart($v) {
-			if($v === null) { return null; }
-			$hour = floor($v / 3600);
-			$minute = ($v % 3600) / 60;
-			$xm = 'am';
-			if($hour > 11) {
-				$xm = 'pm';
-				$hour -= 12;
-			}
-			if(intval($hour) === 0) {
-				$hour = 12;
-			}
-
-			return new OrdinaryTableCell(
-				sprintf('%d:%02d %s', $hour, $minute, $xm)
-			);
-
-
+		if($v === null) { return null; }
+		$hour = floor($v / 3600);
+		$minute = ($v % 3600) / 60;
+		$xm = 'am';
+		if($hour > 11) {
+			$xm = 'pm';
+			$hour -= 12;
+		}
+		if(intval($hour) === 0) {
+			$hour = 12;
+		}
+		return new OrdinaryTableCell(sprintf('%d:%02d %s', $hour, $minute, $xm) );
 	}
 }
 
@@ -622,7 +617,7 @@ class Header implements FormPartFactory, XmlDeserializable  {
 
 
 class Notice implements FormPartFactory, XmlDeserializable {
-	use Configurable, Groupize;
+	use Configurable;
 	final function __construct($args) {
 		$this->__args = $args; // Used by Group later on
 
@@ -672,10 +667,8 @@ class ListComponent implements FormPartFactory, XmlDeserializable, TableCellFact
 		return new ListComponentFormPart($this);
 	}
 	function getMerger($val) {
-
 		return $val
 		->innerBind(function($v) {
-
 			return Result::ok(
 				[
 					isset($v->post[$this->name]) ? $v->post[$this->name] : null,
@@ -684,8 +677,6 @@ class ListComponent implements FormPartFactory, XmlDeserializable, TableCellFact
 			);
 		})
 		->innerBind(function($data) {
-
-
 			return Result::ok([
 				is_array($data[0]) ? $data[0] : [],
 				is_array($data[1]) ? diverse_array($data[1] ) : []
@@ -773,9 +764,7 @@ class ListComponent implements FormPartFactory, XmlDeserializable, TableCellFact
 		} else {
 			$showValue = '(' . count($v) . ' items)';
 		}
-
 		return new OrdinaryTableCell($showValue);
-
 	}
 	function makeDetailedTableCell($v) {
 		if($v === null) { return null; }
