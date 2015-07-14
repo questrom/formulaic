@@ -89,12 +89,8 @@ class OrdinaryTableCell implements Renderable {
 }
 
 trait Tableize {
-	function asDetailedTableCell($h, $value) {
-		$v = $value->bindNothing(function($v) {
-			return Result::ok($v);
-		})->innerBind(function($v) {
-			return $v;
-		});
+	function asDetailedTableCell($h, $v) {
+
 		$v = $this->makeTableCellPart($v);
 
 		if($v === null) {

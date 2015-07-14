@@ -11,7 +11,7 @@ class ValueRow implements Renderable {
 
 		return $this->component->asDetailedTableCell(
 			$this->h,
-			$this->value === null ? Result::none(null) : Result::ok($this->value)
+			$this->value
 		)
 			->bindNothing(function($x) {
 				return Result::ok(

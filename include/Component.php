@@ -460,20 +460,25 @@ class FileUpload extends FileInputComponent implements TableCellFactory {
 		if(is_string($v) && !isset($v['url'])) { return null; }
 		return new FileUploadTableCell($v);
 	}
-	function asDetailedTableCell($h, $value) {
-		return $value->innerBind(function($v) use ($h) {
+	function asDetailedTableCell($h, $v) {
+
+			if($v === null) { return Result::none(null); }
 
 			if(is_string($v) || !isset($v['url'])) {
 				// From old version
 				return Result::none(null);
 			}
-
 			return Result::ok((new FileUploadDetailedTableCell($v))->render());
 
-		});
 	}
 	function asEmailTableCell($h, $value) {
-		return $this->asDetailedTableCell($h, $value);
+		return $value->innerBind(function($v) use ($h) {
+			if(is_string($v) || !isset($v['url'])) {
+				// From old version
+				return Result::none(null);
+			}
+			return Result::ok((new FileUploadDetailedTableCell($v))->render());
+		});
 	}
 }
 
@@ -870,15 +875,16 @@ class ListComponent implements FormPartFactory, Validatable, NameMatcher,
 		return new OrdinaryTableCell($showValue);
 
 	}
-	function asDetailedTableCell($h, $value) {
+	function asDetailedTableCell($h, $v) {
 
-		return $value->innerBind(function($v) use ($h) {
+
+			if($v === null) { return Result::none(null); }
 
 				return Result::ok(
 					(new ListDetailedTableCell($v, $this->getAllFieldsWithin()))->render()
 				);
 
-		});
+
 	}
 	function asEmailTableCell($h, $value) {
 
