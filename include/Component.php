@@ -367,7 +367,7 @@ class FileUploadTableCell implements Renderable {
 }
 
 
-class FileUpload extends FileInputComponent {
+class FileUpload extends FileInputComponent implements TableCellFactory {
 	function __construct($args) {
 		parent::__construct($args);
 		$this->required  = isset($args['required']);
@@ -438,6 +438,9 @@ class FileUpload extends FileInputComponent {
 				return Result::ok(new FileInfo($file, $filename, $mime, $this->permissions));
 			});
 	}
+	function makeTableCellPart($v) {
+		return new FileUploadTableCell($v);
+	}
 	function asTableCell($h, $value) {
 		return $value->innerBind(function($v) use ($h) {
 
@@ -446,7 +449,7 @@ class FileUpload extends FileInputComponent {
 				return Result::none(null);
 			}
 
-			return Result::ok((new FileUploadTableCell($v))->render());
+			return Result::ok($this->makeTableCellPart($v)->render());
 		});
 	}
 	function asDetailedTableCell($h, $value) {
@@ -853,15 +856,13 @@ class ListComponent implements FormPartFactory, Validatable, NameMatcher,
 	use Tableize;
 	function makeTableCellPart($v) {
 
+		if(count($v) === 1) {
+			$showValue = '(1 item)';
+		} else {
+			$showValue = '(' . count($v) . ' items)';
+		}
 
-
-			if(count($v) === 1) {
-				$showValue = '(1 item)';
-			} else {
-				$showValue = '(' . count($v) . ' items)';
-			}
-
-			return new OrdinaryTableCell($showValue);
+		return new OrdinaryTableCell($showValue);
 
 	}
 	function asDetailedTableCell($h, $value) {
