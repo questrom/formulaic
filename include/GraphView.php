@@ -65,9 +65,7 @@ class GraphView implements XmlDeserializable, View {
 				$mongo = $output;
 			}
 		}
-		$this->server = $mongo->server;
-		$this->database = $mongo->database;
-		$this->collection = $mongo->collection;
+		$this->mongo = $mongo;
 
 		$byName = $this->pageData->form->getAllFields();
 
@@ -77,12 +75,10 @@ class GraphView implements XmlDeserializable, View {
 	}
 	function query($getArgs) {
 		$data = [];
-		$client = (new MongoClient($this->server))
-			->selectDB($this->database)
-			->selectCollection($this->collection);
-		$this->totalCount = $client->count();
+
+		$this->totalCount = $this->mongo->count();
 		foreach($this->graphs as $graph) {
-			$data[] = $graph->query($client);
+			$data[] = $graph->query($this->mongo);
 		}
 		return $data;
 	}
@@ -97,42 +93,8 @@ abstract class Graph implements XmlDeserializable, GraphViewPartFactory  {
 	function setComponent($comp) {
 		$this->component = $comp;
 	}
-	function query($client) {
-		if($this->component instanceof Checkboxes) {
-			// to handle array case
-			$results = $client->aggregate([
-				[
-					'$unwind' => '$' . $this->name
-				],
-				[
-					'$group'  => [
-						'_id' => '$' . $this->name,
-						'count' => [ '$sum' => 1 ]
-					]
-				],
-				[
-					'$sort' => [
-						'count' => -1
-					]
-				]
-			]);
-		} else {
-			$results = $client->aggregate(
-				[
-					'$group'  => [
-						'_id' => '$' . $this->name,
-						'count' => [ '$sum' => 1 ]
-					]
-				],
-				[
-					'$sort' => [
-						'count' => -1
-					]
-				]
-			);
-		}
-
-		$results = $results['result'];
+	function query($mongo) {
+		$results = $mongo->getStats($this->component instanceof Checkboxes, $this->name);
 		$ids = array_map(function($x) {
 			return $x['_id'];
 		}, $results);

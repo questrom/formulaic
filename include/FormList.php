@@ -63,8 +63,8 @@ class FormListView implements Renderable {
 				->link->rel('stylesheet')->href(new AssetUrl('lib/semantic.css'))->end
 				->link->rel('stylesheet')->href(new AssetUrl('styles.css'))->end
 
-				->meta->name('viewport')->content('width=device-width, initial-scale=1')->end
 				// From https://github.com/h5bp/html5-boilerplate/blob/master/src/index.html
+				->meta->name('viewport')->content('width=device-width, initial-scale=1')->end
 
 			->end
 			->body
@@ -96,5 +96,4 @@ class FormList {
 	function makeFormList() {
 		return new FormListView($this->data);
 	}
-
 }

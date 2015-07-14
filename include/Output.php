@@ -8,12 +8,31 @@ interface Output {
 	function run($data, $page);
 }
 
-class MongoOutput implements Output, XmlDeserializable {
+interface Storage {
+	function count();
+	function getById($id);
+	function getStats($unwindArrays, $name);
+	function getTable($page, $sortBy, $perPage);
+}
+
+class MongoOutput implements Output, XmlDeserializable, Storage {
 	use Configurable;
 	function __construct($args) {
 		$this->server = $args['server'];
 		$this->database = $args['database'];
 		$this->collection = $args['collection'];
+		$this->client = null;
+	}
+	private function getClient() {
+		if($this->client === null) {
+			$this->client = (new MongoClient($this->server))
+				->selectDB($this->database)
+				->selectCollection($this->collection);
+		}
+		return $this->client;
+	}
+	function count() {
+		return $this->getClient()->count();
 	}
 	function run($data, $page) {
 		$oldData = $data;
@@ -28,12 +47,80 @@ class MongoOutput implements Output, XmlDeserializable {
 			}
 		}, $data);
 
-		$collection = (new MongoClient($this->server))
-			->selectDB($this->database)
-			->selectCollection($this->collection);
+		$collection = $this->getClient();
 		$collection->insert($data);
 
 		return $oldData;
+	}
+	function getById($id) {
+		$client = $this->getClient();
+
+		$data = $client->findOne([
+			'_id' => new MongoId($id)
+		]);
+
+		$data = fixMongoDates($data);
+
+		return $data;
+	}
+	function getStats($unwindArrays, $name) {
+		$client = $this->getClient();
+		if($unwindArrays) {
+			// to handle array case
+			$results = $client->aggregate([
+				[
+					'$unwind' => '$' . $name
+				],
+				[
+					'$group'  => [
+						'_id' => '$' . $name,
+						'count' => [ '$sum' => 1 ]
+					]
+				],
+				[
+					'$sort' => [
+						'count' => -1
+					]
+				]
+			]);
+		} else {
+			$results = $client->aggregate(
+				[
+					'$group'  => [
+						'_id' => '$' . $name,
+						'count' => [ '$sum' => 1 ]
+					]
+				],
+				[
+					'$sort' => [
+						'count' => -1
+					]
+				]
+			);
+		}
+
+		return $results['result'];
+	}
+	function getTable($page, $sortBy, $perPage) {
+
+		$client = $this->getClient();
+		$cursor = $client->find()->sort($sortBy);
+
+		if($perPage !== null) {
+			$max = intval(floor($cursor->count() / $perPage)); // Need intval for the comparison below to work
+		} else {
+			$max = 1;
+		}
+
+		if($perPage !== null) {
+			$cursor->skip(($page - 1) * $perPage);
+			$cursor->limit($perPage);
+		}
+
+		return [
+			'data' => fixMongoDates(array_values(iterator_to_array($cursor))),
+			'max' => $max
+		];
 	}
 }
 

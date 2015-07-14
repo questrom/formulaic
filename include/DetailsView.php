@@ -114,17 +114,7 @@ class DetailsView implements View {
 			}
 		}
 
-		$client = (new MongoClient($mongo->server))
-			->selectDB($mongo->database)
-			->selectCollection($mongo->collection);
-
-		$data = $client->findOne([
-			'_id' => new MongoId($getData['id'])
-		]);
-
-		$data = fixMongoDates($data);
-
-		return $data;
+		return $mongo->getById($_GET['id']);
 	}
 }
 

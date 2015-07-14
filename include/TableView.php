@@ -165,29 +165,10 @@ class TableView implements XmlDeserializable, View {
 	function query($getData) {
 		$page = intval(isset($getData['page']) ? $getData['page'] : 1);
 
-		$client = (new MongoClient($this->server))
-			->selectDB($this->database)
-			->selectCollection($this->collection);
-
-		$cursor = $client->find()->sort($this->sortBy);
-
-		if($this->perPage !== null) {
-			$max = intval(floor($cursor->count() / $this->perPage)); // Need intval for the comparison below to work
-		} else {
-			$max = 1;
-		}
-
-		if($this->perPage !== null) {
-			$cursor->skip(($page - 1) * $this->perPage);
-			$cursor->limit($this->perPage);
-		}
-
-		return [
-			'data' => fixMongoDates(array_values(iterator_to_array($cursor))),
-			'max' => $max,
-			'pageNum' => $page,
-			'formID' => $getData['form']
-		];
+		$result = $this->mongo->getTable($page, $this->sortBy, $this->perPage);
+		$result['pageNum'] = $page;
+		$result['formID'] = $getData['form'];
+		return $result;
 	}
 	function setPage($page) {
 		$this->pageData = $page;
@@ -198,8 +179,6 @@ class TableView implements XmlDeserializable, View {
 				$mongo = $output;
 			}
 		}
-		$this->server = $mongo->server;
-		$this->database = $mongo->database;
-		$this->collection = $mongo->collection;
+		$this->mongo = $mongo;
 	}
 }
