@@ -29,9 +29,6 @@ abstract class HTMLGeneratorAbstract {
 			$i = $position->index;
 			$escapeCount = $position->escapeCount;
 
-			// $input = array_pop($placeHolder);
-			// $i = array_pop($lastIndex);
-
 			for($i++; $i < count($input); $i++) {
 
 				// var_dump($input);

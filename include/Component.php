@@ -733,10 +733,8 @@ class ListComponent implements FormPartFactory, XmlDeserializable, TableCellFact
 		$this->items = $args['children'];
 		$this->name = $args['name'];
 		$this->label = $args['label'];
-
 		$this->maxItems = isset($args['max-items']) ? intval($args['max-items']) : INF;
 		$this->minItems = isset($args['min-items']) ? intval($args['min-items']) : 0;
-
 		$this->addText = isset($args['add-text']) ? $args['add-text'] : 'Add an item';
 	}
 

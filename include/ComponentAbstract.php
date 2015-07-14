@@ -18,18 +18,13 @@ interface NameMatcher {
 	public function getAllFields();
 }
 
-
-
-
 interface Enumerative {
 	public function getPossibleValues();
 }
 
-
 interface Renderable {
 	public function render();
 }
-
 
 interface TableCellFactory extends NameMatcher, Validatable {
 	public function makeTableCellPart($value);
@@ -65,7 +60,6 @@ abstract class BaseNotice implements FormPartFactory, XmlDeserializable {
 		}
 		$this->type = isset($args['type']) ? $args['type'] : null;
 	}
-
 }
 
 class OrdinaryTableCell implements Renderable {
@@ -94,12 +88,12 @@ abstract class NamedLabeledComponent implements FormPartFactory, XmlDeserializab
 
 	use Configurable, Tableize;
 
-
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
 		$this->customSublabel = isset($args['sublabel']) ? $args['sublabel'] : null;
 	}
+
 	function makeTableCellPart($v) {
 		return new OrdinaryTableCell($v);
 	}
@@ -109,6 +103,7 @@ abstract class NamedLabeledComponent implements FormPartFactory, XmlDeserializab
 			$this->name => $this
 		];
 	}
+
 	final function getLabel($sublabel = '') {
 		return new Label($this->label, isset($this->customSublabel) ? $this->customSublabel : $sublabel);
 	}
