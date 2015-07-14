@@ -37,21 +37,6 @@ class TextElem implements XmlDeserializable {
 	}
 }
 
-class ChildElem implements XmlDeserializable  {
-	static function xmlDeserialize(Sabre\Xml\Reader $reader) {
-
-		$tree = $reader->parseInnerTree();
-
-		if(is_array($tree)) {
-			return array_map(function($x) {
-				return $x['value'];
-			}, $tree);
-		} else {
-			return [];
-		}
-	}
-}
-
 class AllowElem implements XmlDeserializable {
 	use Configurable;
 	function __construct($args) {
