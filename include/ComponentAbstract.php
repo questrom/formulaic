@@ -21,7 +21,7 @@ interface NameMatcher {
 
 
 interface FieldTableItem extends NameMatcher {
-	public function asTableCell($h, $value);
+	// Get rid of this...
 }
 
 interface FieldListItem {
@@ -89,17 +89,33 @@ class OrdinaryTableCell implements Renderable {
 }
 
 trait Tableize {
-	function asTableCell($h, $value) {
-		return $value->innerBind(function($v) {
-			return Result::ok($this->makeTableCellPart($v)->render());
-		});
-	}
-
 	function asDetailedTableCell($h, $value) {
-		return $this->asTableCell($h, $value);
+		$v = $value->bindNothing(function($v) {
+			return Result::ok($v);
+		})->innerBind(function($v) {
+			return $v;
+		});
+		$v = $this->makeTableCellPart($v);
+
+		if($v === null) {
+			return Result::none($v);
+		} else {
+			return Result::ok($v->render());
+		}
 	}
 	function asEmailTableCell($h, $value) {
-		return $this->asTableCell($h, $value);
+		$v = $value->bindNothing(function($v) {
+			return Result::ok($v);
+		})->innerBind(function($v) {
+			return $v;
+		});
+		$v = $this->makeTableCellPart($v);
+
+		if($v === null) {
+			return Result::none($v);
+		} else {
+			return Result::ok($v->render());
+		}
 	}
 }
 

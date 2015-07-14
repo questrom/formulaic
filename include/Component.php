@@ -75,6 +75,7 @@ class Checkbox extends PostInputComponent implements Enumerative, TableCellFacto
 		return [true, false];
 	}
 	function makeTableCellPart($v) {
+		if($v === null) { return null; }
 		return new CheckboxTableCell($v);
 	}
 }
@@ -100,7 +101,7 @@ class TimeInput extends PostInputComponent implements TableCellFactory {
 			->stepTime($this->step);
 	}
 	function makeTableCellPart($v) {
-
+			if($v === null) { return null; }
 			$hour = floor($v / 3600);
 			$minute = ($v % 3600) / 60;
 			$xm = 'am';
@@ -142,6 +143,7 @@ class DateTimePicker extends PostInputComponent implements TableCellFactory {
 			->stepDateTime($this->step);
 	}
 	function makeTableCellPart($v) {
+		if($v === null) { return null; }
 		return new OrdinaryTableCell($v->format('n/j/Y g:i A'));
 	}
 }
@@ -183,6 +185,7 @@ class Textarea extends PostInputComponent implements TableCellFactory {
 			->requiredMaybe($this->required);
 	}
 	function makeTableCellPart($v) {
+		if($v === null) { return null; }
 		return new TextareaTableCell($v);
 	}
 }
@@ -269,14 +272,10 @@ class Checkboxes extends PostInputComponent implements Enumerative {
 			->filterNoChoices()
 			->requiredMaybe($this->required);
 	}
-	function asTableCell($h, $value) {
-		return $value->innerBind(function($v) use ($h) {
-
-			if(count($v) === 0) {
-				return Result::none(null);
-			}
-			return Result::ok((new ListTableCell($v))->render());
-		});
+	function makeTableCellPart($v) {
+		if($v === null) { return null; }
+		if(count($v) === 0) { return null;}
+		return new ListTableCell($v);
 	}
 }
 
@@ -457,18 +456,9 @@ class FileUpload extends FileInputComponent implements TableCellFactory {
 			});
 	}
 	function makeTableCellPart($v) {
+		if($v === null) { return null; }
+		if(is_string($v) && !isset($v['url'])) { return null; }
 		return new FileUploadTableCell($v);
-	}
-	function asTableCell($h, $value) {
-		return $value->innerBind(function($v) use ($h) {
-
-			if(is_string($v) || !isset($v['url'])) {
-				// From old version
-				return Result::none(null);
-			}
-
-			return Result::ok($this->makeTableCellPart($v)->render());
-		});
 	}
 	function asDetailedTableCell($h, $value) {
 		return $value->innerBind(function($v) use ($h) {
@@ -553,8 +543,8 @@ class Password extends PostInputComponent  {
 				return Result::ok([]);
 			});
 	}
-	function asTableCell($h, $value) {
-		return Result::ok((new PasswordTableCell())->render());
+	function makeTableCellPart($v) {
+		return new PasswordTableCell();
 
 	}
 }
@@ -593,6 +583,7 @@ class PhoneNumber extends PostInputComponent implements TableCellFactory {
 			->filterPhone();
 	}
 	function makeTableCellPart($v) {
+		if($v === null) { return null; }
 		if(preg_match('/^[0-9]{10}$/', $v)) {
 			$showValue = '(' . substr($v, 0, 3) . ')' . json_decode('"\u2006"') . substr($v, 3, 3) . json_decode('"\u2006"') . substr($v, 6, 4);
 		} else {
@@ -622,6 +613,7 @@ class EmailAddr extends PostInputComponent implements TableCellFactory {
 			->mustHaveDomain($this->mustHaveDomain);
 	}
 	function makeTableCellPart($v) {
+		if($v === null) { return null; }
 		return new LinkTableCell('mailto:' . $v, $v);
 	}
 }
@@ -643,6 +635,7 @@ class UrlInput extends PostInputComponent implements TableCellFactory {
 			->filterFilterVar(FILTER_VALIDATE_URL, 'Invalid URL.');
 	}
 	function makeTableCellPart($v) {
+		if($v === null) { return null; }
 		return new LinkTableCell($v, $v, true);
 	}
 }
@@ -702,6 +695,7 @@ class DatePicker extends PostInputComponent implements TableCellFactory {
 			->minMaxDate($this->min, $this->max);
 	}
 	function makeTableCellPart($v) {
+		if($v === null) { return null; }
 		// return $value->innerBind(function($v) use($h) {
 			return new OrdinaryTableCell($v->format('n/j/Y'));
 
@@ -866,7 +860,7 @@ class ListComponent implements FormPartFactory, Validatable, NameMatcher,
 	}
 	use Tableize;
 	function makeTableCellPart($v) {
-
+		if($v === null) { return null; }
 		if(count($v) === 1) {
 			$showValue = '(1 item)';
 		} else {
@@ -952,6 +946,7 @@ class IPField implements FieldTableItem, Validatable, TableCellFactory {
 		$this->label = 'IP Address';
 	}
 	function makeTableCellPart($v) {
+		if($v === null) { return null; }
 		return new OrdinaryTableCell($v);
 	}
 	function getByName($name) {
@@ -972,6 +967,7 @@ class TimestampField implements FieldTableItem, Validatable, TableCellFactory {
 		$this->label = 'Timestamp';
 	}
 	function makeTableCellPart($v) {
+		if($v === null) { return null; }
 		return new OrdinaryTableCell($v->format('n/j/Y g:i A'));
 	}
 	function getByName($name) {

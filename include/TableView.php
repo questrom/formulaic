@@ -20,23 +20,15 @@ class ValueCell implements Renderable {
 		$this->h = new HTMLParentlessContext();
 	}
 	function render() {
-
-		return $this->component->asTableCell(
-			$this->h,
-			$this->value === null ? Result::none(null) : Result::ok($this->value),
-			false
-		)
-		->bindNothing(function($x){
-			return Result::ok(
-				$this->h
+		$v = $this->component->makeTableCellPart($this->value);
+		if($v === null) {
+			return $this->h
 				->td->class('disabled')
 					->i->class('ban icon')->end
-				->end
-			);
-		})
-		->innerBind(function($x) {
-			return $x;
-		});
+				->end;
+		} else {
+			return $v->render();
+		}
 	}
 }
 
@@ -45,6 +37,7 @@ class TablePage implements Renderable {
 
 		$this->f = $f;
 		$this->h = new HTMLParentlessContext();
+		// var_dump($f->data);
 	}
 	function render() {
 		return
