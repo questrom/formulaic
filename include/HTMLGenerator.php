@@ -24,7 +24,7 @@ abstract class HTMLGeneratorAbstract {
 
 		$positions = [new ArrayPointer([$this], -1, 0)];
 
-		$out = [];
+		$out = '';
 		while(count($positions)) {
 			$position = array_pop($positions);
 			$input = $position->array;
@@ -58,74 +58,33 @@ abstract class HTMLGeneratorAbstract {
 					$i = -1;
 				} else if($element instanceof DoubleEncode) {
 					$positions[] = new ArrayPointer($input, $i, $escapeCount);
-					$input = [new StartEncoding(), $element->value, new EndEncoding()];
+					$input = [$element->value];
 					$i = -1;
-					// var_dump($escapeCount);
 					$escapeCount++;
 				} else {
-					$out[] = $element;
-				}
-			}
-		}
 
-
-		for($i = 0; $i < count($out); $i++) {
-			if(!isset($out[$i])) {
-				continue;
-			}
-			if($out[$i] instanceof SafeString) {
-				for($j = $i + 1; $j < count($out); $j++) {
-					if($out[$j] instanceof SafeString) {
-						$out[$i] = new SafeString($out[$i]->getValue() . $out[$j]->getValue());
-						unset($out[$j]);
+					if($element instanceof SafeString) {
+						$element = $element->getValue();
 					} else {
-						break;
+						throw new Exception('Invalid HTML generation target!');
 					}
+
+					for($j = 0; $j < $escapeCount; $j++) {
+						$element = htmlspecialchars($element, ENT_QUOTES);
+					}
+
+					$out .= $element;
 				}
-			} else if($out[$i] instanceof StartEncoding) {
-				if(isset($out[$i+1]) && $out[$i+1] instanceof EndEncoding) {
-					unset($out[$i]);
-					unset($out[$i+1]);
-				}
+
 			}
 		}
-
-
-		foreach($out as &$value) {
-			if($value instanceof SafeString) {
-				$value = $value->getValue();
-			}
-		}
-
-		echo '<br><br><br>';
-		var_dump(serialize($out));
-
-
-		$outstr = '';
-		$levels = 0;
-		foreach($out as $value) {
-
-			if($value instanceof StartEncoding) {
-				$levels++;
-			} elseif ($value instanceof EndEncoding) {
-				$levels--;
-			} else {
-				// $value = $value->getValue();
-				for($j = 0; $j < $levels; $j++) {
-					$value = htmlspecialchars($value, ENT_QUOTES);
-				}
-				$outstr .=$value;
-			}
-		}
-		return $outstr;
+		return $out;
 	}
 }
 
 
 // =============================================================================================================
 
-class StartEncoding {}
-class EndEncoding {}
 
 class SafeString {
 	function __construct($value) {
