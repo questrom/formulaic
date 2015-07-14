@@ -53,7 +53,7 @@ class EmailViewRenderable implements Renderable {
 					->table->border(1)
 						->tbody
 							->addH(array_map(function($field) {
-								if($field instanceof TableCellFactory) {
+								if($field instanceof TableCellFactory && $field instanceof FormPartFactory) {
 									return new EmailValueRow( isget($this->data[$field->name], null), $field );
 								} else {
 									return null;

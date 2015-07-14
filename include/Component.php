@@ -737,7 +737,7 @@ class Notice extends BaseNotice {
 
 class ListComponent implements FormPartFactory, Validatable, NameMatcher,
 	XmlDeserializable, TableCellFactory {
-	use Configurable;
+	use Configurable, Tableize;
 	function __construct($args) {
 		$this->items = $args['children'];
 		$this->name = $args['name'];
@@ -864,7 +864,6 @@ class ListComponent implements FormPartFactory, Validatable, NameMatcher,
 			return $result;
 		});
 	}
-	use Tableize;
 	function makeTableCellPart($v) {
 		if($v === null) { return null; }
 		if(count($v) === 1) {
@@ -945,6 +944,7 @@ class Group extends GroupComponent {
 }
 
 class IPField implements Validatable, TableCellFactory, NameMatcher {
+	use Tableize;
 	function __construct() {
 		$this->name = '_ip';
 		$this->label = 'IP Address';
@@ -962,10 +962,11 @@ class IPField implements Validatable, TableCellFactory, NameMatcher {
 	function getAllFields() {
 		return [ $this ];
 	}
-	use Tableize;
+
 }
 
 class TimestampField implements Validatable, TableCellFactory, NameMatcher {
+	use Tableize;
 	function __construct() {
 		$this->name = '_timestamp';
 		$this->label = 'Timestamp';
@@ -983,7 +984,6 @@ class TimestampField implements Validatable, TableCellFactory, NameMatcher {
 	function getAllFields() {
 		return [ $this ];
 	}
-		use Tableize;
 }
 
 
