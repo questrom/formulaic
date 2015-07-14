@@ -1,4 +1,6 @@
 # See https://github.com/h5bp/html5-boilerplate/blob/master/dist/.htaccess
+# and https://gist.github.com/chriso/874000
+
 Options -MultiViews +FollowSymLinks -Indexes
 AddDefaultCharset utf-8
 Header set X-Frame-Options "DENY"
@@ -6,9 +8,10 @@ Header set X-XSS-Protection "1; mode=block"
 
 # Use a whitelist to protect access to sensitive files.
 RewriteEngine On
-RewriteRule ^(.*)\.hash-.*?\.(.*)$ /$1.$2
-RewriteCond %{REQUEST_FILENAME} -f
-RewriteRule !^(index\.php|details\.php|form\.php|submit\.php|styles\.css|client\.js|lib\/.*|img\/.*|view\.php|immutable\/.*)$ - [F,NC]
+RewriteRule ^(.*)\.hash-.*?\.(.*)$ /$1.$2 [PT]
+RewriteRule !^(styles\.css|client\.js|lib\/.*|img\/.*)$ /index.php [END]
+
+# RewriteRule !^(index\.php|details\.php|form\.php|submit\.php|styles\.css|client\.js|lib\/.*|img\/.*|view\.php)$ - [F,NC]
 
 # Caching
 
