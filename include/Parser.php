@@ -140,13 +140,16 @@ class Parser {
 			'{}email' => 'EmailAddr',
 			'{}url' => 'UrlInput',
 			'{}number' => 'NumberInp',
-			'{}mongo' => 'MongoOutput',
+
 			'{}notice' => 'Notice',
 			'{}header' => 'Header',
 			'{}datetime' => 'DateTimePicker',
-			'{}s3' => 'S3Output',
 			'{}file' => 'FileUpload',
 			'{}allow' => 'AllowElem',
+
+			'{}mongo' => 'MongoOutput',
+			'{}s3' => 'S3Output',
+
 			'{}option' => 'TextElem',
 			'{}fields' => 'FieldList',
 			'{}li' => 'TextElem',
