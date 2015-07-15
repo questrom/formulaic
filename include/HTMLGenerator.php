@@ -61,12 +61,14 @@ abstract class HTMLGeneratorAbstract {
 				if(is_scalar($element)) {
 					$element = new DoubleEncode(new SafeString($element));
 				}
+				if(is_array($element)) {
+					$element = genArray($element);
+				}
 
-				if(is_array($element) || $element instanceof Generator) {
+				if($element instanceof Generator) {
 
 					$positions[] = new ArrayPointer($input, $escapeCount);
 					$input = $element;
-					if(is_array($element)) { $input = genArray($element); }
 
 				} else if($element instanceof DoubleEncode) {
 
