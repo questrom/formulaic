@@ -198,3 +198,52 @@ Form fields
 	        allow(ext='jpg', mime='image/jpeg')
 	        allow(ext='png', mime='image/png')
 	      textbox(label='Caption', name='caption', required=true)
+
+	The associated data will be stored in the database as an array.
+
+	.. option:: add-text
+
+		The text displayed on the button which allows the user to add another item to the list.
+
+	.. option:: min-items, max-items
+
+		The minimum/maximum number of items which the user can input.
+
+Other form elements
++++++++++++++++++++
+
+.. object:: header
+
+	Creates a header. The text of the header is provided within the element.
+
+	.. option:: subhead
+
+		Sub header text to display.
+
+	.. option:: icon
+
+		An icon to display next to the header. (These icons come from Semantic UI.)
+
+	.. option:: size
+
+		The size (1-6) of the header.
+
+.. object:: notice
+
+	Creates a notice offset from the surrounding text and form fields. ``li`` elements within the notice can create list items.
+
+	.. option:: text
+
+		The text to place in the notice.
+
+	.. option:: header
+
+		A header to place at the top of the notice.
+
+	.. option:: icon
+
+		An icon to display next to the header. (These icons come from Semantic UI.)
+
+	.. option:: size
+
+		The size (1-6) of the header.
