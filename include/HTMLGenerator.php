@@ -13,6 +13,9 @@ function genArray($arr) {
 	}
 }
 
+class IncrementEscape {}
+class DecrementEscape {}
+
 abstract class HTMLGeneratorAbstract {
 	abstract function addH($arr);
 	abstract function __get($name);
@@ -35,12 +38,11 @@ abstract class HTMLGeneratorAbstract {
 
 		// var_dump(iterator_to_array($this->toStringArray()));
 
-		$positions = [new ArrayPointer(genArray([null, $this]), 0)];
+		$positions = [ genArray([$this]) ];
 
 		while(count($positions)) {
-			$position = array_pop($positions);
-			$input = $position->array;
-			$escapeCount = $position->escapeCount;
+			$input = array_pop($positions);
+
 
 
 			while($input->valid()) {
@@ -48,49 +50,41 @@ abstract class HTMLGeneratorAbstract {
 				$element = $input->current();
 				$input->next();
 
-
-				if($element instanceof Renderable) {
+				if($element instanceof IncrementEscape) {
+					$escapeCount++;
+					$element = null;
+				} else if($element instanceof DecrementEscape) {
+					$escapeCount--;
+					$element = null;
+				} else if($element instanceof Renderable) {
 					$element = $element->render();
 				}
 
 				if ($element instanceof HTMLGeneratorAbstract) {
 					$element = $element->toStringArray();
-				}
-
-
-				if(is_scalar($element)) {
-					$element = new DoubleEncode(new SafeString($element));
-				}
-				if(is_array($element)) {
+				} else if(is_scalar($element)) {
+					$element = genArray([new IncrementEscape(), new SafeString($element), new DecrementEscape()]);
+				} else if(is_array($element)) {
 					$element = genArray($element);
+				} else if($element instanceof DoubleEncode) {
+					$element = genArray([new IncrementEscape(), $element->value, new DecrementEscape()]);
 				}
 
 				if($element instanceof Generator) {
-
-					$positions[] = new ArrayPointer($input, $escapeCount);
+					$positions[] = $input;
 					$input = $element;
-
-				} else if($element instanceof DoubleEncode) {
-
-					$positions[] = new ArrayPointer($input, $escapeCount);
-					$input = genArray([$element->value]);
-					$escapeCount++;
 				} else if(!is_null($element)) {
+					if($element instanceof SafeString) {
+						$element = $element->getValue();
+					} else {
+						throw new Exception('Invalid HTML generation target!');
+					}
 
-						if($element instanceof SafeString) {
-							$element = $element->getValue();
+					for($j = 0; $j < $escapeCount; $j++) {
+						$element = htmlspecialchars($element, ENT_QUOTES);
+					}
 
-						} else {
-							throw new Exception('Invalid HTML generation target!');
-						}
-
-						for($j = 0; $j < $escapeCount; $j++) {
-							$element = htmlspecialchars($element, ENT_QUOTES);
-						}
-
-						yield $element;
-
-
+					yield $element;
 				}
 
 			}
