@@ -58,7 +58,7 @@ abstract class HTMLGeneratorAbstract {
 					$element = new ArrayIterator([new IncrementEscape(), $element->value, new DecrementEscape()]);
 				}
 
-				if($element instanceof Generator || $element instanceof ArrayIterator) {
+				if($element instanceof Iterator) {
 					$positions[] = $input;
 					$input = $element;
 				} else if(!is_null($element)) {
