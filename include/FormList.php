@@ -29,15 +29,15 @@ class FormItemView implements Renderable {
 					->a->href('form.php?form=' . $this->data['id'])
 						->t($this->data['name'])
 					->end
-					->div->class('ui label right floated content')
+					->div->class('ui horizontal right floated label')
 						->t($this->data['count'])
-						->t(' submissions')
+						->t(json_decode('"\u2004"') . 'submissions')
 					->end
 				->end
-				->div
+				// ->h5->class('ui left floated header')->t('Views: ')->end
 					->addH(count($this->data['views']) === 0 ? null :
 						$this->h
-						->div->class('ui horizontal list')
+						->div->class('ui horizontal list low-line-height')
 							->div->class('item header')->t('Views: ')->end
 								->addH(
 									array_map(function($viewInfo) {
@@ -47,7 +47,7 @@ class FormItemView implements Renderable {
 							// ->end
 						->end
 					)
-				->end
+
 			->end;
 	}
 }

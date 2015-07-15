@@ -28,7 +28,8 @@ div[data-show-if-name] > .ui.form .fields:last-child .field {
     margin: 0 0 1em;
 }
 
-.ui.top.fixed.menu + .ui.container { margin-top:50px; }
+.ui.top.fixed.menu + .ui.container { margin-top:60px; }
+
 
 
 /* Reduce padding around file inputs*/
@@ -59,6 +60,7 @@ input[type=range]::-moz-focus-outer { border:0 !important; }
 .nowrap { white-space:nowrap;}
 .no-margin { margin:0 !important;}
 .pull-right { float:right;}
+.low-line-height { line-height: 1 !important; }
 
 /* Simpler styling for groups */
 .group > :first-child.attached {

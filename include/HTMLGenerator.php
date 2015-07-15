@@ -30,9 +30,6 @@ abstract class HTMLGeneratorAbstract {
 
 		while(count($positions)) {
 			$input = array_pop($positions);
-
-
-
 			while($input->valid()) {
 
 				$element = $input->current();
