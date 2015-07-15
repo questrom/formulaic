@@ -1,0 +1,12 @@
+form(title='Event Info', success-message='Event added successfully!')
+  fields
+    date(label='Date of event', name='start_date', max='2016-01-01', required=true)
+    checkbox(label='All day event', name='all_day_event')
+    show-if
+      is-not-checked(name='all_day_event')
+      group
+        time(label='Start time', name='start_time', required=true)
+        time(label='End time', name='end_time', required=true)
+    number(label='Expected number of attendees', name='num_attendees', min='1', max='5', integer=true, required=true)
+  views
+  outputs

@@ -118,9 +118,10 @@ class GroupHeaderFormPart extends FormPart {
 
 class GroupNoticeFormPart extends FormPart {
 	function render() {
+
 		return
 			$this->h
-				->div->class('ui message attached ' . ($this->f->icon === null ? '' : ' icon') . ($this->f->type ? ' ' . $this->f->type : ''))
+				->div->class('ui message attached ' . ($this->f->icon === null ? '' : ' icon') . ($this->f->ntype ? (' ' . $this->f->ntype) : ''))
 				->addH(
 					new BaseNoticeFormPart($this->f)
 				)
@@ -130,9 +131,10 @@ class GroupNoticeFormPart extends FormPart {
 
 class NoticeFormPart extends FormPart {
 	function render() {
+
 		return
 			$this->h
-				->div->class('ui message floating ' . ($this->f->icon === null ? '' : ' icon') . ($this->f->type ? ' ' . $this->f->type : ''))
+				->div->class('ui message floating ' . ($this->f->icon === null ? '' : ' icon') . ($this->f->ntype ? (' ' . $this->f->ntype) : ''))
 				->addH(
 					new BaseNoticeFormPart($this->f)
 				)

@@ -27,7 +27,10 @@ class GraphViewRenderable implements Renderable {
 							->end
 							->t($this->f->title)
 						->end
-						->addH( array_map(function($x) {
+
+						->addH( $this->f->totalCount === 0 ?
+							$this->h->h3->class('ui center aligned header')->t('No results found')->end :
+						array_map(function($x) {
 							return $x['graph']->makeGraphViewPart($x['results']);
 						}, $this->i) )
 				->end
@@ -77,8 +80,10 @@ class GraphView implements XmlDeserializable, View {
 		$data = [];
 
 		$this->totalCount = $this->mongo->count();
-		foreach($this->graphs as $graph) {
-			$data[] = $graph->query($this->mongo);
+		if($this->totalCount > 0) {
+			foreach($this->graphs as $graph) {
+				$data[] = $graph->query($this->mongo);
+			}
 		}
 		return $data;
 	}

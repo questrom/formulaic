@@ -1,0 +1,20 @@
+form(title='Upload Pictures')
+  fields
+    header Upload Pictures
+    textbox(name='album_name', label='Album name')
+    file(label='Cover image', name='cover_image', max-size='10000000', permissions='public-read')
+      allow(ext='jpg', mime='image/jpeg')
+      allow(ext='png', mime='image/png')
+    list(name='pictures', label='Pictures to upload', add-text='Add a picture', min-items='2')
+      file(label='Image file', name='image_file', max-size='10000000', permissions='public-read')
+        allow(ext='jpg', mime='image/jpeg')
+        allow(ext='png', mime='image/png')
+      textbox(label='Caption', name='caption', required=true)
+  views
+    table-view(name='table1', title='Main view', per-page=10)
+      col(name='album_name', header='Album', width=1)
+      col(name='cover_image', header='Cover image', width=1)
+      col(name='pictures', header='Pictures', width=4)
+  outputs
+    s3(bucket='form-builder-uploads')
+    mongo(server='mongodb://localhost:27017', database='forms', collection='upload_pictures')

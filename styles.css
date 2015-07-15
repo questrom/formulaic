@@ -9,6 +9,7 @@ body { overflow-x: auto; }
 
 .ui.container.table-page { width: 1200px !important; max-width:none !important; }
 
+.ui.form .success.message, .ui.form .warning.message, .ui.form .error.message:not(.validation-error-message) { display:block; }
 
 
 /* Darker background*/

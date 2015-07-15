@@ -35,15 +35,18 @@ class FormItemView implements Renderable {
 					->end
 				->end
 				->div
-					->div->class('ui horizontal list')
-						->div->class('item header')->t('Views: ')->end
-
-						->addH(
-							array_map(function($viewInfo) {
-								return new ViewInfoView($viewInfo, $this->data);
-							}, $this->data['views'])
-						)
-					->end
+					->addH(count($this->data['views']) === 0 ? null :
+						$this->h
+						->div->class('ui horizontal list')
+							->div->class('item header')->t('Views: ')->end
+								->addH(
+									array_map(function($viewInfo) {
+										return new ViewInfoView($viewInfo, $this->data);
+									}, $this->data['views'])
+								)
+							// ->end
+						->end
+					)
 				->end
 			->end;
 	}

@@ -11,7 +11,10 @@ trait Configurable {
 		$attrs = $reader->parseAttributes();
 		$tree = $reader->parseInnerTree();
 
+		$attrs['children'] = [];
+		$attrs['innerText'] = '';
 		if(is_array($tree)) {
+
 			$attrs['children'] = array_map(
 				function($x) { return $x['value']; },
 				$tree
@@ -60,7 +63,7 @@ class SubmitCounts {
 
 class Parser {
 	static function getForm($name) {
-		if(is_string($name) && !preg_match('/[^A-za-z0-9_]/', $name) && strlen($name) > 0) {
+		if(is_string($name) && !preg_match('/[^A-za-z0-9_-]/', $name) && strlen($name) > 0) {
 			return 'forms/' . $name . '.jade';
 		} else {
 			throw new Exception('Invalid form name!');
@@ -70,7 +73,7 @@ class Parser {
 		$files = scandir('forms');
 
 		$files = array_values(array_filter($files, function($item) {
-			return preg_match('/^[A-za-z0-9_]+\.jade$/', $item);
+			return preg_match('/^[A-za-z0-9_-]+\.jade$/', $item);
 		}));
 
 		$files = array_map(function($item) {
@@ -106,6 +109,8 @@ class Parser {
 		$cache = $config['cache-xml'] ? new Cache() : new FakeCache();
 		$cache->setPrefixSize(0);
 
+
+
 		$xml = $cache->getOrCreate('xml-' . sha1_file($file), [], function($param) use ($file) {
 			$file = "!!! xml\n" . file_get_contents($file);
 			$jade = new Everzet\Jade\Jade(
@@ -114,6 +119,7 @@ class Parser {
 			);
 			return $jade->render($file);
 		});
+
 
 
 		$reader = new Sabre\Xml\Reader();
@@ -160,6 +166,8 @@ class Parser {
 			'{}is-radio-selected' => 'IsRadioSelectedCondition',
 			'{}views' => 'ViewList'
 		];
+
+		// echo(htmlspecialchars($xml)) . '<br><pre>';
 
 		$reader->xml($xml);
 		$readData = $reader->parse();

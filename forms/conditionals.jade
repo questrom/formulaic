@@ -1,0 +1,16 @@
+form(title='Conditionals')
+  fields
+    radios(label='Marital status', name='marital_status')
+      option Single
+      option Married
+      option Divorced
+    show-if
+      is-radio-selected(name='marital_status', value='Married')
+      group
+        textbox(label='Name of spouse', name='name_of_spouse')
+        checkbox(label='Spouse is a US citizen', name='spouse_is_citizen')
+        show-if
+          is-not-checked(name='spouse_is_citizen')
+          textbox(label='Country of spouse', name='spouse_country')
+  views
+  outputs

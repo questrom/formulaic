@@ -622,14 +622,14 @@ class Notice implements FormPartFactory, XmlDeserializable {
 	final function __construct($args) {
 		$this->__args = $args; // Used by Group later on
 
-		$this->text = $args['text'];
+		$this->text = isset($args['text']) ? $args['text'] : '';
 		$this->header = isset($args['header']) ? $args['header'] : null;
 		$this->icon = isset($args['icon']) ? $args['icon'] : null;
 		$this->list = isset($args['children']) ? $args['children'] : null;
 		if(isset($args['children']) && count($args['children']) === 0) {
 			$this->list = null;
 		}
-		$this->type = isset($args['type']) ? $args['type'] : null;
+		$this->ntype = isset($args['type']) ? $args['type'] : null;
 	}
 	function makeFormPart() {
 		return new NoticeFormPart($this);

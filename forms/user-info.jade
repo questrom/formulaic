@@ -1,0 +1,36 @@
+form(title='User Information')
+	fields
+		header User Information
+		header(size=2) Name
+		textbox(label='First name', name='first_name', required=true)
+		textbox(label='Last name', name='last_name', required=true)
+		header(size=2) Further information
+		phonenumber(label='Phone number', name='phone')
+		email(label='Personal email address', name='email')
+		url(label='Personal website', name='url')
+		header(size=2) BU Information
+		email(label='BU email address', name='bu_email', must-have-domain='bu.edu', required=true)
+		dropdown(label='School within BU', name='school')
+			option College of Arts &amp; Sciences
+			option Graduate School of Arts &amp; Sciences
+			option College of Communication
+			option College of Engineering
+			option College of Fine Arts
+			option College of General Studies
+			option College of Health &amp; Rehabilitation Sciences: Sargent College
+			option Metropolitan College
+			option Henry M. Goldman School of Dental Medicine
+			option School of Education
+			option Frederick S. Pardee School of Global Studies
+			option School of Hospitality Administration
+			option School of Law
+			option Questrom School of Business
+			option School of Medicine
+			option Division of Graduate Medical Sciences
+			option School of Public Health
+			option School of Social Work
+			option School of Theology
+			option Division of Military Education
+			option Arvind and Chandan Nandlal Kilachand Honors College
+	outputs
+	views

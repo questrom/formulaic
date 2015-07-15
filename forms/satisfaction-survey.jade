@@ -1,0 +1,14 @@
+form(title='Client Satisfaction Survey')
+  fields
+    header Client Survey
+    datetime(label='When did you receive services from the company?', name='received_date')
+    range(label='How satisfied were you with your service?', sublabel='1 = Not at all satisfied to 5 = Very satisfied', name='satisfaction_level', min=1, max=5, step=0.05)
+    notice(text='Data will be stored in MongoDB.')
+  views
+    table-view(name='main_table', title='Table of results', per-page='5')
+      col(name='received_date', header='Date when services were received', width=1)
+      col(name='satisfaction_level', header='Level of satisfaction with services', width=2)
+      col(name='_timestamp', header='Form submission date', width=1)
+      col(name='_ip', header='IP address', width=1)
+  outputs
+    mongo(server='mongodb://localhost:27017', database='forms', collection='customer_satisfaction')
