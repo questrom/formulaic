@@ -76,6 +76,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#global-attributes">Global attributes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#form-fields">Form fields</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#other-form-elements">Other form elements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#conditionals">Conditionals</a></li>
 </ul>
 </li>
 </ul>
@@ -461,6 +462,29 @@
 
 </dd></dl>
 
+</div>
+<div class="section" id="conditionals">
+<h3>Conditionals<a class="headerlink" href="#conditionals" title="Permalink to this headline">¶</a></h3>
+<p>The <cite>show-if</cite> element introduces conditional form fields &#8211; form fields that are only shown when a certain condition is met. The first element within a <cite>show-if</cite> must be a condition; the second element specifies the form field. Conditions are as follows:</p>
+<dl class="object">
+<dt>
+<code class="descname">is-checked</code></dt>
+<dd><p>This condition is matched if a checkbox (specified in the <code class="docutils literal"><span class="pre">name</span></code> attribute) is checked).</p>
+</dd></dl>
+
+<dl class="object">
+<dt>
+<code class="descname">is-not-checked</code></dt>
+<dd><p>This condition is matched if a checkbox (specified in the <code class="docutils literal"><span class="pre">name</span></code> attribute) is <strong>NOT</strong> checked).</p>
+</dd></dl>
+
+<dl class="object">
+<dt>
+<code class="descname">is-radio-selected</code></dt>
+<dd><p>This condition is matched if a radio button group (whose name is given by the <code class="docutils literal"><span class="pre">name</span></code> attribute) has a certain value (given by the <code class="docutils literal"><span class="pre">value</span></code> attribute).</p>
+</dd></dl>
+
+<p>See the provided example forms for more details on how exactly this works.</p>
 </div>
 </div>
 </div>

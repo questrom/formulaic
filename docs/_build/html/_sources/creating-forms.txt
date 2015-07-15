@@ -247,3 +247,22 @@ Other form elements
 	.. option:: size
 
 		The size (1-6) of the header.
+
+Conditionals
++++++++++++++
+
+The `show-if` element introduces conditional form fields -- form fields that are only shown when a certain condition is met. The first element within a `show-if` must be a condition; the second element specifies the form field. Conditions are as follows:
+
+.. object:: is-checked
+
+	This condition is matched if a checkbox (specified in the ``name`` attribute) is checked).
+
+.. object:: is-not-checked
+
+	This condition is matched if a checkbox (specified in the ``name`` attribute) is **NOT** checked).
+
+.. object:: is-radio-selected
+
+	This condition is matched if a radio button group (whose name is given by the ``name`` attribute) has a certain value (given by the ``value`` attribute).
+
+See the provided example forms for more details on how exactly this works.
