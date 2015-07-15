@@ -3,6 +3,7 @@ form(title='Upload Pictures')
     header Upload Pictures
     textbox(name='album_name', label='Album name')
     file(label='Cover image', name='cover_image', max-size='10000000', permissions='public-read')
+      //- List of allowed extensions and associated mime types
       allow(ext='jpg', mime='image/jpeg')
       allow(ext='png', mime='image/png')
     list(name='pictures', label='Pictures to upload', add-text='Add a picture', min-items='2')
