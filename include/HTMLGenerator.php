@@ -1,10 +1,15 @@
 <?php
 
 class ArrayPointer {
-	function __construct($array, $index, $escapeCount) {
+	function __construct($array, $escapeCount) {
 		$this->array = $array;
-		$this->index = $index;
 		$this->escapeCount = $escapeCount;
+	}
+}
+
+function genArray($arr) {
+	foreach($arr as $v) {
+		yield $v;
 	}
 }
 
@@ -18,21 +23,31 @@ abstract class HTMLGeneratorAbstract {
 	}
 
 	final function generateString() {
+		$out = '';
+		foreach($this->toFullArray() as $x) {
+			$out .= $x;
+		}
+		return $out;
+	}
+
+	final function toFullArray() {
 		// Based on: http://stackoverflow.com/questions/29991016/
 
-		$positions = [new ArrayPointer([$this], -1, 0)];
+		// var_dump(iterator_to_array($this->toStringArray()));
 
-		$out = '';
+		$positions = [new ArrayPointer(genArray([null, $this]), 0)];
+
 		while(count($positions)) {
 			$position = array_pop($positions);
 			$input = $position->array;
-			$i = $position->index;
 			$escapeCount = $position->escapeCount;
 
-			for($i++; $i < count($input); $i++) {
 
-				// var_dump($input);
-				$element = $input[$i];
+			while($input->valid()) {
+
+				$element = $input->current();
+				$input->next();
+
 
 				if($element instanceof Renderable) {
 					$element = $element->render();
@@ -42,39 +57,42 @@ abstract class HTMLGeneratorAbstract {
 					$element = $element->toStringArray();
 				}
 
+
 				if(is_scalar($element)) {
 					$element = new DoubleEncode(new SafeString($element));
-				} else if(is_null($element)) {
-					$element = new SafeString('');
 				}
 
-				if(is_array($element)) {
-					$positions[] = new ArrayPointer($input, $i, $escapeCount);
-					$input = array_values($element);
-					$i = -1;
+				if(is_array($element) || $element instanceof Generator) {
+
+					$positions[] = new ArrayPointer($input, $escapeCount);
+					$input = $element;
+					if(is_array($element)) { $input = genArray($element); }
+
 				} else if($element instanceof DoubleEncode) {
-					$positions[] = new ArrayPointer($input, $i, $escapeCount);
-					$input = [$element->value];
-					$i = -1;
+
+					$positions[] = new ArrayPointer($input, $escapeCount);
+					$input = genArray([$element->value]);
 					$escapeCount++;
-				} else {
+				} else if(!is_null($element)) {
 
-					if($element instanceof SafeString) {
-						$element = $element->getValue();
-					} else {
-						throw new Exception('Invalid HTML generation target!');
-					}
+						if($element instanceof SafeString) {
+							$element = $element->getValue();
 
-					for($j = 0; $j < $escapeCount; $j++) {
-						$element = htmlspecialchars($element, ENT_QUOTES);
-					}
+						} else {
+							throw new Exception('Invalid HTML generation target!');
+						}
 
-					$out .= $element;
+						for($j = 0; $j < $escapeCount; $j++) {
+							$element = htmlspecialchars($element, ENT_QUOTES);
+						}
+
+						yield $element;
+
+
 				}
 
 			}
 		}
-		return $out;
 	}
 }
 
@@ -123,7 +141,16 @@ class HTMLContentGenerator extends HTMLGeneratorAbstract {
 	}
 
 	function toStringArray() {
-		return $this->children;
+		foreach($this->children as $x) {
+
+			if($x instanceof HTMLGeneratorAbstract) {
+				foreach($x->toStringArray() as $y) {
+					yield $y;
+				}
+			} else {
+				yield $x;
+			}
+		}
 	}
 }
 
@@ -161,12 +188,23 @@ class HTMLTagGenerator extends HTMLGeneratorAbstract {
 	}
 
 	function toStringArray() {
-		$parts = [ new SafeString('<'), $this->tag ];
+		yield new SafeString('<');
+		yield $this->tag;
 		foreach ($this->attrs as $key => $value) {
-			$parts[] = [ new SafeString(' '), $key, new SafeString('="'), $value, new SafeString('"') ];
+			yield new SafeString(' ');
+			yield $key;
+			yield new SafeString('="');
+			yield $value;
+			yield new SafeString('"');
 		}
-		$parts[] = [ new SafeString('>'), $this->contents, new SafeString('</'), $this->tag, new SafeString('>')];
-		return $parts;
+
+		yield new SafeString('>');
+		foreach($this->contents->toStringArray() as $x) {
+			yield $x;
+		}
+		yield new SafeString('</');
+		yield $this->tag;
+		yield new SafeString('>');
 	}
 }
 
@@ -197,7 +235,7 @@ class HTMLParentContext extends HTMLGeneratorAbstract {
 	}
 
 	function toStringArray() {
-		return $this->generator->toStringArray();
+		foreach($this->generator->toStringArray() as $x) { yield $x; }
 	}
 }
 
@@ -215,6 +253,6 @@ class HTMLParentlessContext extends HTMLGeneratorAbstract{
 	}
 
 	function toStringArray() {
-		return $this->generator->toStringArray();
+		foreach($this->generator->toStringArray() as $x) { yield $x; }
 	}
 }
