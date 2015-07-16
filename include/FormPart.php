@@ -3,7 +3,6 @@
 
 class Label implements Renderable {
 	function __construct($label, $sublabel = null) {
-
 		$this->label = $label;
 		$this->customSublabel = $sublabel;
 	}
@@ -33,14 +32,10 @@ class PossibleSublabel implements Renderable {
 	}
 }
 
-abstract class FormPart implements Renderable {
+class BaseHeaderFormPart implements Renderable {
 	public function __construct($field) {
 		$this->f = $field;
 	}
-}
-
-
-class BaseHeaderFormPart extends FormPart {
 	function render() {
 		$inside = h()
 		->t($this->f->text)
@@ -58,7 +53,10 @@ class BaseHeaderFormPart extends FormPart {
 }
 
 
-class BaseNoticeFormPart extends FormPart {
+class BaseNoticeFormPart implements Renderable {
+	public function __construct($field) {
+		$this->f = $field;
+	}
 	function render() {
 		return h()
 		->addH($this->f->icon === null ? null :
@@ -91,7 +89,10 @@ class BaseNoticeFormPart extends FormPart {
 
 
 
-class HeaderFormPart extends FormPart {
+class HeaderFormPart implements Renderable {
+	public function __construct($field) {
+		$this->f = $field;
+	}
 	function render() {
 		$size = ($this->f->size === null) ? 1 : $this->f->size;
 		return h()
@@ -103,7 +104,10 @@ class HeaderFormPart extends FormPart {
 	}
 }
 
-class GroupHeaderFormPart extends FormPart {
+class GroupHeaderFormPart implements Renderable {
+	public function __construct($field) {
+		$this->f = $field;
+	}
 	function render() {
 		$size = ($this->f->size === null) ? 5 : $this->f->size;
 		return h()
@@ -116,7 +120,10 @@ class GroupHeaderFormPart extends FormPart {
 }
 
 
-class GroupNoticeFormPart extends FormPart {
+class GroupNoticeFormPart implements Renderable {
+	public function __construct($field) {
+		$this->f = $field;
+	}
 	function render() {
 
 		return
@@ -129,7 +136,10 @@ class GroupNoticeFormPart extends FormPart {
 	}
 }
 
-class NoticeFormPart extends FormPart {
+class NoticeFormPart implements Renderable {
+	public function __construct($field) {
+		$this->f = $field;
+	}
 	function render() {
 
 		return
@@ -144,7 +154,7 @@ class NoticeFormPart extends FormPart {
 
 
 
-class InputFormPart extends FormPart {
+class InputFormPart implements Renderable {
 	function __construct($field, $type, $icon = null, $mask = null, $sublabel = null) {
 		$this->f = $field;
 
@@ -172,7 +182,7 @@ class InputFormPart extends FormPart {
 	}
 }
 
-class NumberFormPart extends FormPart {
+class NumberFormPart implements Renderable {
 	function __construct($field) {
 		$this->f = $field;
 
@@ -194,7 +204,10 @@ class NumberFormPart extends FormPart {
 	}
 }
 
-class DropdownFormPart extends FormPart {
+class DropdownFormPart implements Renderable {
+	public function __construct($field) {
+		$this->f = $field;
+	}
 	function render() {
 		return h()->div->class('field ' . ($this->f->required ? ' required' : ''))
 			->addH($this->f->getLabel())
@@ -235,7 +248,10 @@ class RadioButton implements Renderable {
 }
 
 
-class RadiosFormPart extends FormPart {
+class RadiosFormPart implements Renderable {
+	public function __construct($field) {
+		$this->f = $field;
+	}
 	public function render() {
 		return h()
 		->div->class('grouped fields validation-root ' . ($this->f->required ? 'required' : ''))
@@ -252,7 +268,10 @@ class RadiosFormPart extends FormPart {
 }
 
 
-class TextareaFormPart extends FormPart {
+class TextareaFormPart implements Renderable {
+	public function __construct($field) {
+		$this->f = $field;
+	}
 	function render() {
 		return h()
 			->div->class('field ' . ($this->f->required ? ' required' : ''))
@@ -271,7 +290,10 @@ function df($date) {
 }
 
 
-class DateTimePickerFormPart extends FormPart {
+class DateTimePickerFormPart implements Renderable {
+	public function __construct($field) {
+		$this->f = $field;
+	}
 	function render() {
 		$sublabel = '';
 
@@ -295,7 +317,10 @@ class DateTimePickerFormPart extends FormPart {
 }
 
 
-class TimeInputFormPart extends FormPart {
+class TimeInputFormPart implements Renderable {
+	public function __construct($field) {
+		$this->f = $field;
+	}
 	function render() {
 		$sublabel = '';
 
@@ -323,7 +348,10 @@ class TimeInputFormPart extends FormPart {
 }
 
 
-class CheckboxFormPart extends FormPart {
+class CheckboxFormPart implements Renderable {
+	public function __construct($field) {
+		$this->f = $field;
+	}
 	function render() {
 		return h()
 		->div->class('field ' . ($this->f->mustCheck ? 'required' : ''))
@@ -336,7 +364,10 @@ class CheckboxFormPart extends FormPart {
 }
 
 
-class ShowIfComponentFormPart extends FormPart {
+class ShowIfComponentFormPart implements Renderable {
+	public function __construct($field) {
+		$this->f = $field;
+	}
 	function render() {
 		// Provide a way of specifying type of cnodition, then read this in client.js
 		return h()
@@ -349,7 +380,10 @@ class ShowIfComponentFormPart extends FormPart {
 }
 
 
-class RangeFormPart extends FormPart {
+class RangeFormPart implements Renderable {
+	public function __construct($field) {
+		$this->f = $field;
+	}
 	function render() {
 		return h()
 		->div->class('ui field')
@@ -372,7 +406,10 @@ class RangeFormPart extends FormPart {
 
 
 
-class ListComponentFormPart extends FormPart {
+class ListComponentFormPart implements Renderable {
+	public function __construct($field) {
+		$this->f = $field;
+	}
 	function render() {
 
 		if(is_finite($this->f->maxItems) && $this->f->minItems > 0) {
@@ -422,7 +459,10 @@ class ListComponentFormPart extends FormPart {
 }
 
 
-class GroupFormPart extends FormPart {
+class GroupFormPart implements Renderable {
+	public function __construct($field) {
+		$this->f = $field;
+	}
 	function render() {
 
 		$items = $this->f->items;
@@ -458,7 +498,10 @@ class GroupFormPart extends FormPart {
 
 
 
-class CheckboxesFormPart extends FormPart {
+class CheckboxesFormPart implements Renderable {
+	public function __construct($field) {
+		$this->f = $field;
+	}
 	function render() {
 		if(is_finite($this->f->maxChoices) && $this->f->minChoices > 0) {
 			$sublabel = 'Please choose between ' . $this->f->minChoices . ' and ' . $this->f->maxChoices . ' items from the list.';
@@ -493,7 +536,10 @@ class CheckboxesFormPart extends FormPart {
 }
 
 
-class CaptchaFormPart extends FormPart {
+class CaptchaFormPart implements Renderable {
+	public function __construct($field) {
+		$this->f = $field;
+	}
 	function render() {
 		return h()
 			->div->class('ui field')
@@ -504,7 +550,10 @@ class CaptchaFormPart extends FormPart {
 }
 
 
-class FormElemFormPart extends FormPart {
+class FormElemFormPart implements Renderable {
+	public function __construct($field) {
+		$this->f = $field;
+	}
 	function render() {
 		// Use the "novalidate" attribute to disable HTML5 form validation,
 		// since we implement our own validation logic.
@@ -574,7 +623,10 @@ class BrowserProblemPart implements Renderable {
 	}
 }
 
-class PageFormPart extends FormPart {
+class PageFormPart implements Renderable {
+	public function __construct($field) {
+		$this->f = $field;
+	}
 	function render() {
 		return h()
 		->html
