@@ -381,6 +381,99 @@ abstract class Validate {
 		});
 	}
 
+	function checkCaptcha()  {
+		return $this->innerBind(function($v) {
+			$recaptcha = new \ReCaptcha\ReCaptcha(Config::get()['recaptcha']['secret-key']);
+				$resp = $recaptcha->verify($v, $_SERVER['REMOTE_ADDR']);
+				if ($resp->isSuccess()) {
+				    return Result::ok(null);
+				} else {
+				    return Result::error('Please prove that you are human.');
+				}
+		});
+	}
+	function noStore() {
+		return $this->innerBind(function($v) {
+			return Result::ok([]);
+		});
+	}
+
+	function listValidate($minItems, $maxItems, $name, $items) {
+		return $this->innerBind(function($list) use ($minItems, $maxItems, $name, $items) {
+
+
+			$result = Result::ok([]);
+			$number = array_merge( array_keys($list[0]), array_keys($list[1]) );
+			$number = (count($number) > 0 ? max( $number ) : -1) + 1;
+
+			if($number < $minItems) {
+				return Result::error([ $name => 'Please provide at least ' . $minItems . ' items' ]);
+			}
+			if($number > $maxItems) {
+				return Result::error([ $name => 'Please provide at most ' . $maxItems . ' items' ]);
+			}
+
+
+			for($index = 0; $index < $number; $index++) {
+
+
+
+				if(!isset($list[0][$index]) && !isset($list[1][$index])) {
+					continue;
+				}
+
+				$validationResult =
+					Result::ok(
+						new ClientData(
+							isget($list[0][$index], []),
+							isget($list[1][$index], [])
+						)
+					)->groupValidate($items);
+
+
+
+
+				$result = $result
+					->innerBind(function($soFar) use($validationResult, $index) {
+						return $validationResult
+							->innerBind(function($fieldResult) use($soFar, $index) {
+								$soFar[$index] = $fieldResult;
+								return Result::ok($soFar);
+							})
+							->ifError(function($fieldError) {
+								return Result::error([]);
+							});
+					})
+					->ifError(function($errorSoFar) use($validationResult, $index, $minItems, $maxItems, $name, $items) {
+						return $validationResult
+							->ifError(function($fieldError) use($errorSoFar, $index, $minItems, $maxItems, $name, $items) {
+								foreach($fieldError as $k => $v) {
+
+									$k = explode('[', $k);
+									$kStart = $k[0];
+									$kRest = (count($k) > 1) ?
+										'[' . implode('[', array_slice($k, 1)) :
+										'';
+
+									$errorSoFar[ $name . '[' . $index . '][' . $kStart . ']' . $kRest  ] = $v;
+								}
+
+								return Result::error($errorSoFar);
+							})
+							->innerBind(function($fieldResult) use($errorSoFar) {
+								return Result::error($errorSoFar);
+							});
+
+					});
+			}
+			$result = $result
+				->innerBind(function($x) use($name) {
+					return Result::ok([$name => array_values($x)]);
+				});
+			return $result;
+		});
+	}
+
 
 	// Groups
 

@@ -241,22 +241,11 @@ class Captcha extends PostInputComponent {
 	}
 	function getMerger($val) {
 		return parent::getMerger($val)
-			->innerBind(function($x) {
-				// Avoid storing captcha-related data.
-				return Result::ok([]);
-			});
+			->noStore();
 	}
 	protected function validate($against) {
 		return $against
-			->innerBind(function($v) {
-				$recaptcha = new \ReCaptcha\ReCaptcha(Config::get()['recaptcha']['secret-key']);
-				$resp = $recaptcha->verify($v, $_SERVER['REMOTE_ADDR']);
-				if ($resp->isSuccess()) {
-				    return Result::ok(null);
-				} else {
-				    return Result::error('Please prove that you are human.');
-				}
-			});
+			->checkCaptcha();
 	}
 }
 
@@ -432,10 +421,7 @@ class Password extends PostInputComponent  {
 	}
 	function getMerger($val) {
 		return parent::getMerger($val)
-			->innerBind(function($x) {
-				// Avoid storing passwords.
-				return Result::ok([]);
-			});
+			->noStore();
 	}
 	function makeTableCellPart($v) {
 		return new PasswordTableCell();
@@ -660,80 +646,7 @@ class ListComponent implements FormPartFactory, XmlDeserializable, TableCellFact
 				is_array($data[1]) ? diverse_array($data[1] ) : []
 			]);
 		})
-		->innerBind(function($list) {
-
-
-
-			$result = Result::ok([]);
-			$number = array_merge( array_keys($list[0]), array_keys($list[1]) );
-			$number = (count($number) > 0 ? max( $number ) : -1) + 1;
-
-			if($number < $this->minItems) {
-				return Result::error([ $this->name => 'Please provide at least ' . $this->minItems . ' items' ]);
-			}
-			if($number > $this->maxItems) {
-				return Result::error([ $this->name => 'Please provide at most ' . $this->maxItems . ' items' ]);
-			}
-
-
-			for($index = 0; $index < $number; $index++) {
-
-
-
-				if(!isset($list[0][$index]) && !isset($list[1][$index])) {
-					continue;
-				}
-
-				$validationResult =
-					Result::ok(
-						new ClientData(
-							isget($list[0][$index], []),
-							isget($list[1][$index], [])
-						)
-					)->groupValidate($this->items);
-
-
-
-
-				$result = $result
-					->innerBind(function($soFar) use($validationResult, $index) {
-						return $validationResult
-							->innerBind(function($fieldResult) use($soFar, $index) {
-								$soFar[$index] = $fieldResult;
-								return Result::ok($soFar);
-							})
-							->ifError(function($fieldError) {
-								return Result::error([]);
-							});
-					})
-					->ifError(function($errorSoFar) use($validationResult, $index) {
-						return $validationResult
-							->ifError(function($fieldError) use($errorSoFar, $index) {
-								foreach($fieldError as $k => $v) {
-
-									$k = explode('[', $k);
-									$kStart = $k[0];
-									$kRest = (count($k) > 1) ?
-										'[' . implode('[', array_slice($k, 1)) :
-										'';
-
-									$errorSoFar[ $this->name . '[' . $index . '][' . $kStart . ']' . $kRest  ] = $v;
-								}
-
-								return Result::error($errorSoFar);
-							})
-							->innerBind(function($fieldResult) use($errorSoFar) {
-								return Result::error($errorSoFar);
-							});
-
-					});
-			}
-			$result = $result
-				->innerBind(function($x) {
-					return Result::ok([$this->name => array_values($x)]);
-				});
-			return $result;
-		});
+		->listValidate($this->minItems, $this->maxItems, $this->name, $this->items);
 	}
 	function makeTableCellPart($v) {
 		if($v === null) { return null; }
