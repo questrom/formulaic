@@ -1,0 +1,12 @@
+RewriteEngine On
+#RewriteBase /
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule !\.(gif|jpg|png|css|js|html|ico|zip|rar|pdf|xml|mp4|mpg|flv|swf|mkv|ogg|avi|woff|svg|eot|ttf|jar)$ index.php [L,QSA]
+
+
+# See http://stackoverflow.com/questions/11532636/prevent-http-file-caching-in-apache-httpd-mamp
+ExpiresActive off
+Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
+Header set Expires "Wed, 11 Jan 1984 05:00:00 GMT"
