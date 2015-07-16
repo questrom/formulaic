@@ -60,10 +60,7 @@ abstract class NamedLabeledComponent implements FormPartFactory, XmlDeserializab
 	}
 
 	final function getAllFields() {
-
-		return [
-			$this->name => $this
-		];
+		return [ $this->name => $this ];
 	}
 
 	final function getLabel($sublabel = '') {
@@ -71,43 +68,31 @@ abstract class NamedLabeledComponent implements FormPartFactory, XmlDeserializab
 	}
 
 	protected abstract function validate($val);
-	function getMerger($val) {
-
-		return $this
-			->validate(
-				$val->innerBind(function($v) {
-					return Result::ok(isset($v[$this->name]) ? $v[$this->name] : null);
-				})
-			)
-			->collapse()
-			->ifSuccess(function($r) {
-				return Result::ok([$this->name => $r]);
-			})
-			->ifError(function($r) {
-				return Result::error([$this->name => $r]);
-			});
-	}
 }
 
 abstract class PostInputComponent extends NamedLabeledComponent {
 	function getMerger($val) {
-		return parent::getMerger(
+		return $this->validate(
 			$val
 			->innerBind(function($x) {
 				return Result::ok($x->post);
 			})
-		);
+			->byName($this->name)
+		)
+		->name($this->name);
 	}
 }
 
 abstract class FileInputComponent extends NamedLabeledComponent {
 	final function getMerger($val) {
-		return parent::getMerger(
+		return $this->validate(
 			$val
 			->innerBind(function($x) {
 				return Result::ok($x->files);
 			})
-		);
+			->byName($this->name)
+		)
+		->name($this->name);
 	}
 }
 

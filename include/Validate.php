@@ -397,6 +397,22 @@ abstract class Validate {
 			return Result::ok([]);
 		});
 	}
+	function byName($name) {
+		return $this->innerBind(function($v) use($name) {
+					return Result::ok(isget($v[$name]));
+				});
+	}
+
+	function name($name) {
+		return $this
+			->collapse()
+			->ifSuccess(function($r) use($name) {
+				return Result::ok([$name => $r]);
+			})
+			->ifError(function($r) use($name)  {
+				return Result::error([$name => $r]);
+			});
+	}
 
 	function listValidate($minItems, $maxItems, $name, $items) {
 		return $this->innerBind(function($list) use ($minItems, $maxItems, $name, $items) {
@@ -484,7 +500,9 @@ abstract class Validate {
 					return $total;
 				}
 				return $field
-					->getMerger(Result::ok($val))
+					->getMerger(
+						Result::ok($val)
+					)
 					->collapse()
 					->ifSuccess(function($r) {
 						return Result::ok(function($total) use ($r) {
