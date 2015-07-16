@@ -14,34 +14,42 @@ abstract class HTMLGeneratorAbstract {
 
 	final function generateString() {
 		$out = '';
+		$escapeCount = 0;
 		foreach($this->toFullArray() as $x) {
-			$out .= $x;
+			if($x instanceof IncrementEscape) {
+				$escapeCount++;
+			} else if ($x instanceof DecrementEscape) {
+				$escapeCount--;
+			} else {
+
+				for($j = 0; $j < $escapeCount; $j++) {
+					$x = htmlspecialchars($x, ENT_QUOTES);
+				}
+				$out .= $x;
+			}
+
 		}
 		return $out;
 	}
 
 	final function toFullArray() {
-		// Based on: http://stackoverflow.com/questions/29991016/
+		$positions = new SplStack();
+		$positions->push(new ArrayIterator([$this]));
 
-		// var_dump(iterator_to_array($this->toStringArray()));
+		while(!$positions->isEmpty()) {
 
-		$positions = [ new ArrayIterator([$this]) ];
-		$escapeCount = 0;
-
-		while(count($positions)) {
-			$input = array_pop($positions);
+			$input = $positions->pop();
 			while($input->valid()) {
 
 				$element = $input->current();
 				$input->next();
 
-				if($element instanceof IncrementEscape) {
-					$escapeCount++;
-					$element = null;
-				} else if($element instanceof DecrementEscape) {
-					$escapeCount--;
-					$element = null;
-				} else if($element instanceof Renderable) {
+				if($element instanceof IncrementEscape || $element instanceof DecrementEscape) {
+					yield $element;
+					continue;
+				}
+
+				if($element instanceof Renderable) {
 					$element = $element->render();
 				}
 
@@ -56,7 +64,7 @@ abstract class HTMLGeneratorAbstract {
 				}
 
 				if($element instanceof Iterator) {
-					$positions[] = $input;
+					$positions->push($input);
 					$input = $element;
 				} else if(!is_null($element)) {
 					if($element instanceof SafeString) {
@@ -65,9 +73,6 @@ abstract class HTMLGeneratorAbstract {
 						throw new Exception('Invalid HTML generation target!');
 					}
 
-					for($j = 0; $j < $escapeCount; $j++) {
-						$element = htmlspecialchars($element, ENT_QUOTES);
-					}
 
 					yield $element;
 				}

@@ -8,9 +8,9 @@ class OrdinaryTableCell implements Renderable {
 	}
 	function render() {
 		return h()
-			->td
-				->t($this->value)
-			->end;
+		->td
+			->t($this->value)
+		->end;
 	}
 }
 
@@ -21,13 +21,13 @@ class ListTableCell implements Renderable {
 	}
 	function render() {
 		return h()
-			->td
-				->ul->class('ui list')
-					->addH(array_map(function($x) {
-						return h()->li->t($x)->end;
-					}, $this->value))
-				->end
-			->end;
+		->td
+			->ul->class('ui list')
+				->addH(array_map(function($x) {
+					return h()->li->t($x)->end;
+				}, $this->value))
+			->end
+		->end;
 	}
 }
 
@@ -39,11 +39,11 @@ class LinkTableCell implements Renderable {
 	}
 	function render() {
 		return h()
-			->td
-				->a->href($this->url)->target('_blank', $this->blank)
-					->t($this->value)
-				->end
-			->end;
+		->td
+			->a->href($this->url)->target('_blank', $this->blank)
+				->t($this->value)
+			->end
+		->end;
 	}
 }
 
@@ -51,11 +51,11 @@ class LinkTableCell implements Renderable {
 class PasswordTableCell implements Renderable {
 	function render() {
 		return h()
-			->td
-				->abbr->title('Passwords are not saved in the database')
-					->t('N/A')
-				->end
-			->end;
+		->td
+			->abbr->title('Passwords are not saved in the database')
+				->t('N/A')
+			->end
+		->end;
 	}
 }
 
@@ -66,12 +66,12 @@ class FileUploadTableCell implements Renderable {
 	}
 	function render() {
 		return h()
-			->td->class('unpadded-cell')
-				->a->href($this->value['url'])->class('ui attached labeled icon button')
-					->i->class('download icon')->end
-					->t('Download')
-				->end
-			->end;
+		->td->class('unpadded-cell')
+			->a->href($this->value['url'])->class('ui attached labeled icon button')
+				->i->class('download icon')->end
+				->t('Download')
+			->end
+		->end;
 	}
 }
 
