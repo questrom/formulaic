@@ -222,7 +222,6 @@ class RadioButton implements Renderable {
 	function __construct($name, $value) {
 		$this->name = $name;
 		$this->value = $value;
-
 	}
 	public function render() {
 		return h()
@@ -239,8 +238,8 @@ class RadioButton implements Renderable {
 class RadiosFormPart extends FormPart {
 	public function render() {
 		return h()
-			->div->class('grouped fields validation-root ' . ($this->f->required ? 'required' : ''))
-				->data('radio-group-name', $this->f->name)
+		->div->class('grouped fields validation-root ' . ($this->f->required ? 'required' : ''))
+			->data('radio-group-name', $this->f->name)
 			->addH($this->f->getLabel())
 			->addH(
 				array_map(
@@ -248,7 +247,7 @@ class RadiosFormPart extends FormPart {
 					$this->f->options
 				)
 			)
-			->end;
+		->end;
 	}
 }
 

@@ -218,7 +218,6 @@ class Checkboxes extends PostInputComponent implements Enumerative {
 		return $this->options;
 	}
 	protected function validate($against) {
-
 		return $against
 			->filterManyChosenFromOptions($this->options)
 			->minMaxChoices($this->minChoices, $this->maxChoices)
@@ -231,24 +230,6 @@ class Checkboxes extends PostInputComponent implements Enumerative {
 		return new ListTableCell($v);
 	}
 }
-
-
-function makeCaptcha() {
-
-	$builder = new CaptchaBuilder;
-	$builder->build(290, 80);
-	if(!isset($_SESSION['phrases'])) {
-		$_SESSION['phrases'] = [];
-	}
-	$id = mt_rand();
-	$_SESSION['phrases'][$id] = $builder->getPhrase();
-
-	return [
-		'data' => $builder->inline(),
-		'id' => $id
-	];
-}
-
 
 class Captcha extends PostInputComponent {
 	function __construct($args) {
