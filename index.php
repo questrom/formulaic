@@ -7,17 +7,18 @@ $klein = new \Klein\Klein();
 
 $klein->onHttpError(function ($code, $router) {
 	// based on klein docs
-    switch ($code) {
-        case 404:
-            $router->response()->body(
-                '404 - Page not found.'
-            );
-            break;
-        default:
-            $router->response()->body(
-                'Error code: ' . $code
-            );
-    }
+	$res = $router->response();
+	$message = h()
+		->h1->style('text-align:center;font-size:72px;')
+			->t($res->status()->getCode())
+		->end
+		->h2->style('text-align:center')
+			->t($res->status()->getMessage())
+		->end;
+   $router->response()->body(
+           '<!DOCTYPE html>' . $message->generateString()
+    );
+
 });
 
 $klein->respond('GET', '/', function() {
