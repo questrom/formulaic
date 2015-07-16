@@ -582,8 +582,6 @@ class DatePicker extends PostInputComponent {
 class Header implements FormPartFactory, XmlDeserializable  {
 	use Configurable;
 	final function __construct($args) {
-		$this->__args = $args;
-
 		$this->text = $args['innerText'];
 		$this->subhead = isset($args['subhead']) ? $args['subhead'] : null;
 		$this->icon = isset($args['icon']) ? $args['icon'] : null;
@@ -601,8 +599,6 @@ class Header implements FormPartFactory, XmlDeserializable  {
 class Notice implements FormPartFactory, XmlDeserializable {
 	use Configurable;
 	final function __construct($args) {
-		$this->__args = $args; // Used by Group later on
-
 		$this->text = isset($args['text']) ? $args['text'] : '';
 		$this->header = isset($args['header']) ? $args['header'] : null;
 		$this->icon = isset($args['icon']) ? $args['icon'] : null;

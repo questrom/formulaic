@@ -71,25 +71,18 @@ abstract class NamedLabeledComponent implements FormPartFactory, XmlDeserializab
 
 	protected abstract function validate($val);
 	function getMerger($val) {
-		$val = $val->innerBind(function($v) {
-			return Result::ok(isset($v[$this->name]) ? $v[$this->name] : null);
-		});
 		return $this
-			->validate($val)
-			->collapse()
-			->innerBind(function($r) {
-				return Result::ok([$this->name => $r]);
-			})
-			->ifError(function($r) {
-				return Result::error([$this->name => $r]);
-			});
+			->validate(new NamedValidator($this->name, $val))
+			->dename()
+			->collapse();
 	}
 }
 
 abstract class PostInputComponent extends NamedLabeledComponent {
 	function getMerger($val) {
 		return parent::getMerger(
-			$val->innerBind(function($x) {
+			$val
+			->innerBind(function($x) {
 				return Result::ok($x->post);
 			})
 		);
@@ -99,7 +92,8 @@ abstract class PostInputComponent extends NamedLabeledComponent {
 abstract class FileInputComponent extends NamedLabeledComponent {
 	final function getMerger($val) {
 		return parent::getMerger(
-			$val->innerBind(function($x) {
+			$val
+			->innerBind(function($x) {
 				return Result::ok($x->files);
 			})
 		);
