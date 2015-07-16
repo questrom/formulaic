@@ -1,26 +1,23 @@
 <p class="lead">
-	<strong>Daux.io</strong> is an documentation generator that uses a simple folder structure and Markdown files to create custom documentation on the fly. It helps you create great looking documentation in a developer friendly way.
+	Build complex webforms using simple, declarative configuration files.
 </p>
 
-<hr/>
-<h3>Features</h3>
-<hr/>
+### Features
 
-<img src="img/app-thumbs.png" alt="alt text" class="img-responsive pull-right"  style="margin-bottom:20px;">
+* **Creates** well-designed, easy-to-use forms for nearly any purpose.
+* **Validates** data provided by the user with helpful feedback.
+* **Sends** data to Amazon S3, MongoDB, or email addresses.
+* **Views** data stored in MongoDB in tabular or graphical form.
 
-* 100% Mobile Responsive
-* Supports GitHub Flavored Markdown
-* Auto created homepage/landing page
-* Auto Syntax Highlighting
-* Auto Generated Navigation
-* 4 Built-In Themes or roll your own
-* Functional, Flat Design Style
-* Shareable/Linkable SEO Friendly URLs
-* Built On Bootstrap
-* No Build Step
-* Git/SVN Friendly
-* Google Analytics
-* Optional code float layout
+### Advantages
 
-<div class="clear"></div>
-<hr/>
+* **Rapid development:** forms can be developed much more quickly using formbuilder than using HTML/CSS/JS/PHP alone: formbuilder takes care of most of the work.
+* **Security:** formbuilder automatically protects against XSS and XSRF attacks.
+* **Robustness:** In accordance with the [robustness principle](https://en.wikipedia.org/wiki/Robustness_principle), it attempts to give very strong guarantees about the data it stores.
+* **Flexibility:** formbuilder allows webforms to be created with complex features such as conditionally hidden/displayed form fields, nested lists, and file uploads.
+* **Extensibility:** formbuilder is built to be extensible, so that it can become even more useful in the future.
+
+### Architecture
+
+* formbuilder is written in **PHP**. It uses several small libraries installed through **Composer**, but it is not based on a large framework.
+* Most of the logic is performed on the **server side** to improve performance and simplicity.
