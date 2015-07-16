@@ -425,7 +425,6 @@ class Password extends PostInputComponent  {
 	}
 	function makeTableCellPart($v) {
 		return new PasswordTableCell();
-
 	}
 }
 
@@ -484,7 +483,6 @@ class EmailAddr extends PostInputComponent  {
 class UrlInput extends PostInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
-
 		$this->required = isset($args['required']);
 	}
 	function makeFormPart() {
@@ -502,6 +500,7 @@ class UrlInput extends PostInputComponent {
 		return new LinkTableCell($v, $v, true);
 	}
 }
+
 class NumberInp extends PostInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
