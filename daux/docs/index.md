@@ -21,3 +21,9 @@
 
 * formbuilder is written in **PHP**. It uses several small libraries installed through **Composer**, but it is not based on a large framework.
 * Most of the logic is performed on the **server side** to improve performance and simplicity.
+
+### Getting started
+
+Going to the main page of the project will produce a list of forms; from this you can access the forms and their associated views. Some sample forms are included with the project; for more information, see the rest of this documentation.
+
+You may need to adjust some of the parameters in `config/config.toml` for certain features to work (e.g. Amazon S3, email sending, CAPTCHAs).

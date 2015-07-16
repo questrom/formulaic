@@ -116,8 +116,8 @@ class DateTimePicker extends PostInputComponent {
 		parent::__construct($args);
 
 		$this->required = isset($args['required']);
-		$this->max = isset($args['max']) ? DateTimeImmutable::createFromFormat('m/d/Y g:i a', $args['max']) : null;
-		$this->min = isset($args['min']) ? DateTimeImmutable::createFromFormat('m/d/Y g:i a', $args['min']) : null;
+		$this->max = isset($args['max']) ? DateTimeImmutable::createFromFormat('Y-m-d g:i a', $args['max']) : null;
+		$this->min = isset($args['min']) ? DateTimeImmutable::createFromFormat('Y-m-d g:i a', $args['min']) : null;
 		$this->step = isset($args['step']) ? $args['step'] : 'any';
 	}
 	function makeFormPart() {

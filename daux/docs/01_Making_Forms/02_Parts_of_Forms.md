@@ -119,235 +119,174 @@ These elements provide textboxes in which the user can only enter phone numbers,
 <hr>
 #### The `number` element
 
+Allows the user to input a precise numeric value.
 
-# UNFINISHED!
+##### Attributes
 
-<code class="descname">number</code></dt>
-<dd><p>Allows the user to input a numeric value.</p>
-<dl class="option">
-<dt id="cmdoption-arg-min">
-<span id="cmdoption-arg-max"></span><code class="descname">min</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">max</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-arg-min" title="Permalink to this definition">¶</a></dt>
-<dd><p>These specify the minimum and maximum values of the number.</p>
-</dd></dl>
+* `min` and `max`
 
-</dd></dl>
+  These specify the minimum and maximum values of the number.
 
-<dl class="object">
-<dt>
-<code class="descname">time</code></dt>
-<dd><p>Allows the user to specify a time of day.</p>
-<dl class="option">
-<dt id="cmdoption-arg-min">
-<span id="cmdoption-arg-max"></span><code class="descname">min</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">max</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-arg-min" title="Permalink to this definition">¶</a></dt>
-<dd><p>These specify, in &#8220;h:mm xm&#8221; format, the minimum and maximum times that can be entered.</p>
-</dd></dl>
+<hr>
+#### The `time` element
 
-<dl class="option">
-<dt id="cmdoption-arg-step">
-<code class="descname">step</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-arg-step" title="Permalink to this definition">¶</a></dt>
-<dd><p>If specified, the time (measured in minutes past midnight) must be a multiple of this number of minutes.</p>
-</dd></dl>
+Allows the user to specify a time of day. Note that this will be stored in the database as a number of *minutes after midnight.*
 
-</dd></dl>
+##### Attributes
 
-<dl class="object">
-<dt>
-<code class="descname">date</code></dt>
-<dd><p>Allows the user to specify a date.</p>
-<dl class="option">
-<dt id="cmdoption-arg-min">
-<span id="cmdoption-arg-max"></span><code class="descname">min</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">max</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-arg-min" title="Permalink to this definition">¶</a></dt>
-<dd><p>These specify, in &#8220;YYYY-MM-DD&#8221; format, the minimum and maximum dates that can be entered.</p>
-</dd></dl>
+* `min` and `max`
 
-</dd></dl>
+  These specify, in "h:mm xm" format, the minimum and maximum times that can be entered.
 
-<dl class="object">
-<dt>
-<code class="descname">datetime</code></dt>
-<dd><p>Allows the user to specify a date and time.</p>
-<dl class="option">
-<dt id="cmdoption-arg-min">
-<span id="cmdoption-arg-max"></span><code class="descname">min</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">max</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-arg-min" title="Permalink to this definition">¶</a></dt>
-<dd><p>These specify, in &#8220;m/d/y hh:mm xm&#8221; format, the minimum and maximum values that can be entered.</p>
-</dd></dl>
+* `step`
 
-<dl class="option">
-<dt id="cmdoption-arg-step">
-<code class="descname">step</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-arg-step" title="Permalink to this definition">¶</a></dt>
-<dd><p>If specified, the time (measured in minutes past midnight) must be a multiple of this number of minutes.</p>
-</dd></dl>
+  If specified, the time (measured in minutes past midnight) must be a multiple of this number.
 
-</dd></dl>
+<hr>
+#### The `date` element
 
-<dl class="object">
-<dt>
-<code class="descname">file</code></dt>
-<dd><p>Allows the user to upload a file.</p>
-<p><cite>allow</cite> elements nested inside of the <cite>file</cite> element specify what types of files are allowed; each <cite>allow</cite> element corresponds to a single file type. The <cite>mime</cite> attribute specifies the MIME type; the <cite>ext</cite> attribute specifies the file extension.</p>
-<dl class="option">
-<dt id="cmdoption-arg-max-size">
-<code class="descname">max-size</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-arg-max-size" title="Permalink to this definition">¶</a></dt>
-<dd><p>The maximum file size, in bytes. Note that the file size limit set in <code class="docutils literal"><span class="pre">php.ini</span></code> will override this.</p>
-</dd></dl>
-
-<dl class="option">
-<dt id="cmdoption-arg-permissions">
-<code class="descname">permissions</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-arg-permissions" title="Permalink to this definition">¶</a></dt>
-<dd><p>The permissions which the file will have in Amazon S3. <code class="docutils literal"><span class="pre">public-read</span></code> is probably what you want.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="object">
-<dt>
-<code class="descname">group</code></dt>
-<dd><p>Creates a border around a group of related form fields. Does not affect the data sent to MongoDB (or other sources) in any way.</p>
-</dd></dl>
-
-<dl class="object">
-<dt>
-<code class="descname">captcha</code></dt>
-<dd><p>Creates a CAPTCHA, which the user must solve in order for the form to be submitted.</p>
-</dd></dl>
-
-<dl class="object">
-<dt>
-<code class="descname">list</code></dt>
-<dd><p>Allows the user to duplicate a set of form fields an arbitrary number of times. For example, to create a list of file uploads with associated captions, one might use:</p>
-<div class="highlight-jade"><div class="highlight"><pre>list(name=&#39;pictures&#39;, label=&#39;Pictures to upload&#39;, add-text=&#39;Add a picture&#39;, min-items=&#39;2&#39;)
-  file(label=&#39;Image file&#39;, name=&#39;image_file&#39;, max-size=&#39;10000000&#39;, permissions=&#39;public-read&#39;)
-    allow(ext=&#39;jpg&#39;, mime=&#39;image/jpeg&#39;)
-    allow(ext=&#39;png&#39;, mime=&#39;image/png&#39;)
-  textbox(label=&#39;Caption&#39;, name=&#39;caption&#39;, required=true)
-</pre></div>
-</div>
-<p>The associated data will be stored in the database as an array.</p>
-<dl class="option">
-<dt id="cmdoption-arg-add-text">
-<code class="descname">add-text</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-arg-add-text" title="Permalink to this definition">¶</a></dt>
-<dd><p>The text displayed on the button which allows the user to add another item to the list.</p>
-</dd></dl>
-
-<dl class="option">
-<dt id="cmdoption-arg-min-items">
-<span id="cmdoption-arg-max-items"></span><code class="descname">min-items</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">max-items</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-arg-min-items" title="Permalink to this definition">¶</a></dt>
-<dd><p>The minimum/maximum number of items which the user can input.</p>
-</dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="other-form-elements">
-<h3>Other form elements<a class="headerlink" href="#other-form-elements" title="Permalink to this headline">¶</a></h3>
-<dl class="object">
-<dt>
-<code class="descname">header</code></dt>
-<dd><p>Creates a header. The text of the header is provided within the element.</p>
-<dl class="option">
-<dt id="cmdoption-arg-subhead">
-<code class="descname">subhead</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-arg-subhead" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sub header text to display.</p>
-</dd></dl>
-
-<dl class="option">
-<dt id="cmdoption-arg-icon">
-<code class="descname">icon</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-arg-icon" title="Permalink to this definition">¶</a></dt>
-<dd><p>An icon to display next to the header. (These icons come from Semantic UI.)</p>
-</dd></dl>
-
-<dl class="option">
-<dt id="cmdoption-arg-size">
-<code class="descname">size</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-arg-size" title="Permalink to this definition">¶</a></dt>
-<dd><p>The size (1-6) of the header.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="object">
-<dt>
-<code class="descname">notice</code></dt>
-<dd><p>Creates a notice offset from the surrounding text and form fields. <code class="docutils literal"><span class="pre">li</span></code> elements within the notice can create list items.</p>
-<dl class="option">
-<dt id="cmdoption-arg-text">
-<code class="descname">text</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-arg-text" title="Permalink to this definition">¶</a></dt>
-<dd><p>The text to place in the notice.</p>
-</dd></dl>
-
-<dl class="option">
-<dt id="cmdoption-arg-header">
-<code class="descname">header</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-arg-header" title="Permalink to this definition">¶</a></dt>
-<dd><p>A header to place at the top of the notice.</p>
-</dd></dl>
-
-<dl class="option">
-<dt id="cmdoption-arg-icon">
-<code class="descname">icon</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-arg-icon" title="Permalink to this definition">¶</a></dt>
-<dd><p>An icon to display next to the header. (These icons come from Semantic UI.)</p>
-</dd></dl>
-
-<dl class="option">
-<dt id="cmdoption-arg-size">
-<code class="descname">size</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-arg-size" title="Permalink to this definition">¶</a></dt>
-<dd><p>The size (1-6) of the header.</p>
-</dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="conditionals">
-<h3>Conditionals<a class="headerlink" href="#conditionals" title="Permalink to this headline">¶</a></h3>
-<p>The <cite>show-if</cite> element introduces conditional form fields &#8211; form fields that are only shown when a certain condition is met. The first element within a <cite>show-if</cite> must be a condition; the second element specifies the form field. Conditions are as follows:</p>
-<dl class="object">
-<dt>
-<code class="descname">is-checked</code></dt>
-<dd><p>This condition is matched if a checkbox (specified in the <code class="docutils literal"><span class="pre">name</span></code> attribute) is checked).</p>
-</dd></dl>
-
-<dl class="object">
-<dt>
-<code class="descname">is-not-checked</code></dt>
-<dd><p>This condition is matched if a checkbox (specified in the <code class="docutils literal"><span class="pre">name</span></code> attribute) is <strong>NOT</strong> checked).</p>
-</dd></dl>
-
-<dl class="object">
-<dt>
-<code class="descname">is-radio-selected</code></dt>
-<dd><p>This condition is matched if a radio button group (whose name is given by the <code class="docutils literal"><span class="pre">name</span></code> attribute) has a certain value (given by the <code class="docutils literal"><span class="pre">value</span></code> attribute).</p>
-</dd></dl>
-
-<p>See the provided example forms for more details on how exactly this works.</p>
-</div>
-</div>
-</div>
+Allows the user to specify a date without an associated time.
 
 
-          </div>
-          <footer>
+##### Attributes
+* `min` and `max`
+
+  These specify, in `YYYY-MM-DD` format, the minimum and maximum dates that can be entered in the form field.
+
+<hr>
+#### The `datetime` element
+
+Allows the user to specify both a date and a time. To improve user-friendliness, use a single `datetime` field instead of separate `date` and `time` fields.
+
+##### Attributes
+* `min` and `max`
   
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-      
-        <a href="index.html" class="btn btn-neutral" title="formbuilder" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
+  These specify, in `YYYY-MM-DD hh:mm xm` format, the minimum and maximum values that can be entered.
+
+* `step`
+
+  If specified, the time (measured in minutes past midnight) must be a multiple of this number.
+
+<hr>
+#### The `file` element
+
+Allows the user to upload a file to Amazon S3. Files are **never** stored locally, though it would be possible to implement this feature.
+
+Note that you must *whitelist* specific pairs of file extensions and MIME types for this to work properly. Use `allow` elements to specify these extension-mimetype pairs -- see the sample forms for an example of how to do this.
+
+##### Attributes
+* `max-size`
+ 
+  The maximum file size, in *bytes.* Note that the file size limit set in `php.ini` can override this.
+
+* `permissions`
+
+  If the file is to be uploaded to Amazon S3, this attribute specifies what permissions the file will have. `public-read` is probably what you want; for a full list of possible values, see [this page](https://github.com/tpyo/amazon-s3-php-class/blob/121318e65e857a994b22ffe0aa04a0c55e832bea/S3.php#L40).
+
+<hr>
+#### The `captcha` element
+
+Creates a CAPTCHA, which the user must solve in order for the form to be submitted. Uses reCAPTCHA.
+
+<hr>
+### Groups of form fields
+
+These elements allow form fields to be grouped and combined.
+
+<hr>
+#### The `group` element
+
+Creates a border around a group of form controls in order to show that they are related. This element is purely cosmetic inasmuch as it does not affect the data stored in the database (or anywhere else).
+
+<hr>
+#### The `list` element
+
+Essentially, this allows the user to duplicate a set of form fields an arbitrary number of times, thus allowing the creation of lists.
+
+For example, to create a list of file uploads with associated captions, one might use:
+
+```jade
+list(name="pictures", label="Pictures to upload", add-text="Add a picture")
+  file(label="Image file", name="image_file", max-size="10000000", permissions="public-read")
+    allow(ext="jpg", mime="image/jpeg")
+    allow(ext="png", mime="image/png")
+  textbox(label="Caption", name="caption", required=true)
+```
+<br>
+The associated data will be stored in the database as an array (in this example, the key for the array will be `pictures`).
+
+##### Attributes
+
+* `add-text`
+
+  At the bottom of a list, there is a button to add an item to the list. This specifies the text on that button.
+
+* `min-items`, `max-items`
+
+  The minimum and maximum number of items that the user can input, respectively.
+
+<hr>
+### Other form elements
+
+These elements, which can also be nested within the "fields" element, do not represent form fields at all; rather, they just display text to the user.
+
+When placed inside of a `group`, these elements format themselves to match.
+
+<hr>
+#### The `header` element
+
+Creates a heading (that is, a `<h1>-<h6>` element). The text of the header is placed inside of the element.
+
+#### Attributes
+* `size`
+
+  The size (1-6) of the header.
+
+* `icon`
   
+  An icon to display next to the header. These icons come from [Semantic UI](http://semantic-ui.com/elements/icon.html).
 
-  <hr/>
+* `subhead`
 
-  <div role="contentinfo">
-    <p>
-        &copy; Copyright 2015, Jason Hansel, Questrom School of Business, Boston University.
-    </p>
-  </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Sub header text to display.
 
-</footer>
+<hr>
+#### The `notice` element
 
-        </div>
-      </div>
+Creates a message offset from the surrounding text and form fields. Optionally, `li` elements can be placed inside of this element to create an unordered list.
 
-    </section>
+#### Attributes
 
-  </div>
-  
+* `text`
+
+  The text of the notice.
+
+* `header`
+
+  A header to be placed at the top of the notice.
+
+* `icon`
+
+  An icon displayed next to the notice. (See the documentation for the `header` element for more details.)
+
+<hr>
+### Conditionals
+
+The `show-if` element is used to create conditional form fields: form fields that are only shown when a certain condition is met. The first child element within a `show-if` must be a condition; the second element must be a form field. See the sample forms to learn more about how this works.
+
+The following elements specify conditions:
+
+<hr>
+#### The `is-checked` element
+
+This condition is only satisfied when a checkbox (specified in the `name` attribute) is checked.
+
+<hr>
+#### The `is-not-checked` element
+
+This condition is only satisfied when a checkbox (specified in the `name` attribute) is **NOT** checked.
+
+<hr>
+### The `is-radio-selected` element
+
+This condition is matched if a radio button (whose value is specified by the `value` attribute) within a `radios` element (whose name is specified in the `name` attribute) is selected.
