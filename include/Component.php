@@ -54,15 +54,21 @@ class Checkbox extends PostInputComponent implements Enumerative {
 		parent::__construct($args);
 		$this->mustCheck = isset($args['must-check']);
 	}
-	function makeFormPart() { return new CheckboxFormPart($this); }
+
+	function makeFormPart() {
+		return new CheckboxFormPart($this);
+	}
+
 	protected function validate($against) {
 		return $against
 			->filterBoolean()
 			->mustBeTrue($this->mustCheck);
 	}
+
 	function getPossibleValues() {
 		return [true, false];
 	}
+
 	function makeTableCellPart($v) {
 		if($v === null) { return null; }
 		return new CheckboxTableCell($v);
@@ -76,7 +82,6 @@ class TimeInput extends PostInputComponent {
 		$this->required = isset($args['required']);
 		$this->max = isset($args['max']) ? $args['max'] : null;
 		$this->min = isset($args['min']) ? $args['min'] : null;
-
 		$this->step = isset($args['step']) ? intval($args['step']) : 'any';
 	}
 	function makeFormPart() {
@@ -113,7 +118,6 @@ class DateTimePicker extends PostInputComponent {
 		$this->required = isset($args['required']);
 		$this->max = isset($args['max']) ? DateTimeImmutable::createFromFormat('m/d/Y g:i a', $args['max']) : null;
 		$this->min = isset($args['min']) ? DateTimeImmutable::createFromFormat('m/d/Y g:i a', $args['min']) : null;
-
 		$this->step = isset($args['step']) ? $args['step'] : 'any';
 	}
 	function makeFormPart() {
@@ -258,7 +262,6 @@ class Textbox extends PostInputComponent {
 		$this->minLength = isset($args['min-length']) ? intval($args['min-length']) : 0;
 		$this->required  = isset($args['required']);
 		$this->mustMatch = isset($args['must-match']) ? $args['must-match'] : null;
-
 	}
 	function makeFormPart() {
 		return new InputFormPart($this, 'text', null);
@@ -272,8 +275,6 @@ class Textbox extends PostInputComponent {
 			->requiredMaybe($this->required);
 	}
 }
-
-
 
 class FileUpload extends FileInputComponent {
 	function __construct($args) {
@@ -711,7 +712,6 @@ class TimestampField implements TableCellFactory {
 		return [ $this->name => $this ];
 	}
 }
-
 
 class FieldList extends GroupComponent {
 	function __construct($args) {

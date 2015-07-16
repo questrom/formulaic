@@ -11,7 +11,6 @@ class ClientData {
 	}
 }
 
-
 class FileInfo {
 	function __construct($file, $filename, $mime, $permissions) {
 		$this->file = $file;
