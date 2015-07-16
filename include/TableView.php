@@ -17,13 +17,13 @@ class ValueCell implements Renderable {
 	function __construct($value, $component) {
 		$this->value = $value;
 		$this->component = $component;
-		$this->h = new HTMLParentlessContext();
+
 	}
 	function render() {
 
 		$v = $this->component->makeTableCellPart($this->value);
 		if($v === null) {
-			return $this->h
+			return h()
 				->td->class('disabled')
 					->i->class('ban icon')->end
 				->end;
@@ -37,14 +37,14 @@ class TablePage implements Renderable {
 	function __construct($f) {
 
 		$this->f = $f;
-		$this->h = new HTMLParentlessContext();
+
 		// var_dump($f->data);
 
 		$this->byName = $this->f->pageData->form->getAllFields();
 	}
 	function render() {
 		return
-		$this->h
+		h()
 		->html
 			->head
 				->meta->charset('utf-8')->end
@@ -61,7 +61,7 @@ class TablePage implements Renderable {
 						->table->class('unstackable ui celled striped compact table table-view sortable')
 							->colgroup
 								->addH(array_map(function($x)  {
-									return $this->h
+									return h()
 										->col->style('width: ' . ($x->width * 100) . '%;')
 									->end;
 								}, $this->f->cols))
@@ -70,7 +70,7 @@ class TablePage implements Renderable {
 							->thead
 								->tr
 									->addH(array_map(function($x)  {
-										return $this->h
+										return h()
 										->th->class(
 											$x->sort === null ? '' :
 											($x->sort === 'asc' ? 'sorted ascending' : 'sorted descending')
@@ -82,7 +82,7 @@ class TablePage implements Renderable {
 								->end
 							->end
 							->addH(array_map(function($row) {
-								return $this->h
+								return h()
 								->tr
 									->addH(array_map(function($col) use($row) {
 											return new ValueCell(
@@ -99,7 +99,7 @@ class TablePage implements Renderable {
 							}, $this->f->data))
 						->end
 						->addH(!$this->f->perPage ? null :
-							$this->h
+							h()
 							->div->class('ui text menu')
 								->div->class('item')
 									->a->class('ui left floated primary labeled icon button '

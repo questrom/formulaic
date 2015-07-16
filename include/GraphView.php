@@ -6,10 +6,10 @@ class GraphViewRenderable implements Renderable {
 	public function __construct($field, $info) {
 		$this->f = $field;
 		$this->i = $info;
-		$this->h = new HTMLParentlessContext();
+
 	}
 	function render() {
-		return $this->h
+		return h()
 		->html
 			->head
 				->meta->charset('utf-8')->end
@@ -29,7 +29,7 @@ class GraphViewRenderable implements Renderable {
 						->end
 
 						->addH( $this->f->totalCount === 0 ?
-							$this->h->h3->class('ui center aligned header')->t('No results found')->end :
+							h()->h3->class('ui center aligned header')->t('No results found')->end :
 						array_map(function($x) {
 							return $x['graph']->makeGraphViewPart($x['results']);
 						}, $this->i) )
@@ -124,7 +124,7 @@ class PieSlice implements Renderable {
 	function __construct($result, $total, $prev) {
 		$this->result = $result;
 		$this->total = $total;
-		$this->h = new HTMLParentlessContext();
+
 		$this->prev = $prev;
 		$this->lastAngle = isset($prev) ? $prev->endAngle : -pi()/2;
 		$this->endAngle = ($this->result['count'] / $total) * 2 * pi() + $this->lastAngle;
@@ -168,7 +168,7 @@ class PieSlice implements Renderable {
 
 		return [
 			$this->prev,
-			$this->h
+			h()
 			->path->fill($color)->stroke('#000')->{'stroke-width'}('2px')->d($path)->end
 			->rect
 				->x(-900)->y(-600 + $this->result['index'] * 50 + 10)
@@ -188,14 +188,14 @@ class PieChartRenderable implements Renderable {
 	function __construct($label, $results) {
 		$this->label = $label;
 		$this->results = $results;
-		$this->h = new HTMLParentlessContext();
+
 	}
 	function render() {
 		$total = array_sum(array_map(function($result) {
 			return $result['count'];
 		}, $this->results));
 
-		return $this->h
+		return h()
 			->div->class('ui fluid card')
 				->div->class('content')
 					->div->class('header')->t($this->label)->end
@@ -215,7 +215,7 @@ class BarGraphRenderable implements Renderable {
 	function __construct($label, $results) {
 		$this->label = $label;
 		$this->results = $results;
-		$this->h = new HTMLParentlessContext();
+
 	}
 	function render() {
 
@@ -229,7 +229,7 @@ class BarGraphRenderable implements Renderable {
 
 
 		// see http://bost.ocks.org/mike/bar/2/
-		return $this->h
+		return h()
 			->div->class('ui fluid card')
 
 				->div->class('content')
@@ -255,7 +255,7 @@ class BarGraphRenderable implements Renderable {
 							if($key === false) { $key = 'No'; $color='#db2828'; }
 							if($key === null) { $key = '(None)'; $color='#777'; }
 
-							return $this->h
+							return h()
 							->g->transform('translate(0, ' . ($result['index'] * 30) . ')')
 								->text
 									->style('dominant-baseline:middle;text-anchor:end;')

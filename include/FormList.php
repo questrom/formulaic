@@ -2,12 +2,12 @@
 
 class ViewInfoView implements Renderable {
 	function __construct($data, $formData) {
-		$this->h = new HTMLParentlessContext();
+
 		$this->formData = $formData;
 		$this->data = $data;
 	}
 	function render() {
-		return $this->h
+		return h()
 				->div->class('item')
 				->a->href('view.php?form=' . $this->formData['id'] . '&view=' . $this->data['id'])->class('item')
 					->i->class($this->data['type'] === 'graph' ? 'area chart icon' : 'table icon')->end
@@ -19,11 +19,11 @@ class ViewInfoView implements Renderable {
 
 class FormItemView implements Renderable {
 	function __construct($data) {
-		$this->h = new HTMLParentlessContext();
+
 		$this->data = $data;
 	}
 	function render() {
-		return $this->h
+		return h()
 			->div->class('item')
 				->div->class('header')
 					->a->href('form.php?form=' . $this->data['id'])
@@ -36,7 +36,7 @@ class FormItemView implements Renderable {
 				->end
 				// ->h5->class('ui left floated header')->t('Views: ')->end
 					->addH(count($this->data['views']) === 0 ? null :
-						$this->h
+						h()
 						->div->class('ui horizontal list low-line-height')
 							->div->class('item header')->t('Views: ')->end
 								->addH(
@@ -54,11 +54,11 @@ class FormItemView implements Renderable {
 
 class FormListView implements Renderable {
 	function __construct($data) {
-		$this->h = new HTMLParentlessContext();
+
 		$this->data = $data;
 	}
 	function render() {
-		return $this->h
+		return h()
 		->html
 			->head
 				->meta->charset('utf-8')->end
@@ -72,7 +72,7 @@ class FormListView implements Renderable {
 			->end
 			->body
 				->addH(new BrowserProblemPart(
-					$this->h
+					h()
 					->addH(new TopHeader())
 					->div->class('ui text container')
 						->h1->class('ui center aligned header')

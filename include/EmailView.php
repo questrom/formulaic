@@ -6,19 +6,19 @@ class EmailValueRow implements Renderable {
 
 		$this->value = $value;
 		$this->component = $component;
-		$this->h = new HTMLParentlessContext();
+
 	}
 	function render() {
 
 
 			$v = $this->component->makeEmailTableCell($this->value);
 			if($v === null) {
-				$v = $this->h
+				$v = h()
 				->td->bgcolor('#ccc')
 					->t('(No value)')
 				->end;
 			}
-			return $this->h
+			return h()
 			->tr
 				->td->class('right aligned collapsing nowrap')
 					->t($this->component->label)
@@ -34,12 +34,12 @@ class EmailViewRenderable implements Renderable {
 	function __construct($title, $pageData, $data) {
 		$this->title = $title;
 		$this->pageData = $pageData;
-		$this->h = new HTMLParentlessContext();
+
 		$this->data = $data;
 	}
 	function render() {
 		return
-		$this->h
+		h()
 		->html
 			->head
 				->meta->charset('utf-8')->end

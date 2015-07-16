@@ -4,11 +4,10 @@
 
 class OrdinaryTableCell implements Renderable {
 	function __construct($value) {
-		$this->h = new HTMLParentlessContext();
 		$this->value = $value;
 	}
 	function render() {
-		return $this->h
+		return h()
 			->td
 				->t($this->value)
 			->end;
@@ -18,15 +17,14 @@ class OrdinaryTableCell implements Renderable {
 
 class ListTableCell implements Renderable {
 	function __construct($value) {
-		$this->h = new HTMLParentlessContext();
 		$this->value = $value;
 	}
 	function render() {
-		return $this->h
+		return h()
 			->td
 				->ul->class('ui list')
 					->addH(array_map(function($x) {
-						return $this->h->li->t($x)->end;
+						return h()->li->t($x)->end;
 					}, $this->value))
 				->end
 			->end;
@@ -35,13 +33,12 @@ class ListTableCell implements Renderable {
 
 class LinkTableCell implements Renderable {
 	function __construct($url, $value, $blank = false) {
-		$this->h = new HTMLParentlessContext();
 		$this->url = $url;
 		$this->value = $value;
 		$this->blank = $blank;
 	}
 	function render() {
-		return $this->h
+		return h()
 			->td
 				->a->href($this->url)->target('_blank', $this->blank)
 					->t($this->value)
@@ -52,11 +49,8 @@ class LinkTableCell implements Renderable {
 
 
 class PasswordTableCell implements Renderable {
-	function __construct() {
-		$this->h = new HTMLParentlessContext();
-	}
 	function render() {
-		return $this->h
+		return h()
 			->td
 				->abbr->title('Passwords are not saved in the database')
 					->t('N/A')
@@ -68,11 +62,10 @@ class PasswordTableCell implements Renderable {
 
 class FileUploadTableCell implements Renderable {
 	function __construct($value) {
-		$this->h = new HTMLParentlessContext();
 		$this->value = $value;
 	}
 	function render() {
-		return $this->h
+		return h()
 			->td->class('unpadded-cell')
 				->a->href($this->value['url'])->class('ui attached labeled icon button')
 					->i->class('download icon')->end
@@ -84,12 +77,11 @@ class FileUploadTableCell implements Renderable {
 
 class FileUploadDetailedTableCell implements Renderable {
 	function __construct($value) {
-		$this->h = new HTMLParentlessContext();
 		$this->value = $value;
 	}
 	function render() {
 		$v = $this->value;
-		return $this->h
+		return h()
 		->td
 			->div->class('ui list')
 				->div->class('item') ->strong->t('URL: ')->end->a->href($v['url'])->t($v['url'])->end->end
@@ -102,11 +94,11 @@ class FileUploadDetailedTableCell implements Renderable {
 
 class TextareaTableCell implements Renderable {
 	function __construct($value) {
-		$this->h = new HTMLParentlessContext();
+
 		$this->value = $value;
 	}
 	function render() {
-		return $this->h
+		return h()
 			->td
 				->pre->t($this->value)->end
 			->end;
@@ -117,10 +109,10 @@ class TextareaTableCell implements Renderable {
 class CheckboxTableCell implements Renderable {
 	function __construct($value) {
 		$this->value = $value;
-		$this->h = new HTMLParentlessContext();
+
 	}
 	function render() {
-		return $this->h
+		return h()
 		->td->class($this->value ? 'positive' : 'negative')
 			->t($this->value ? 'Yes' : 'No')
 		->end;
@@ -130,15 +122,14 @@ class CheckboxTableCell implements Renderable {
 
 class ListEmailTableCell implements Renderable {
 	function __construct($value, $fields) {
-		$this->h = new HTMLParentlessContext();
 		$this->value = $value;
 		$this->fields = $fields;
 	}
 	function render() {
-		return $this->h
+		return h()
 		->td
 			->addH(array_map(function($listitem) {
-				return $this->h->table->border(1)
+				return h()->table->border(1)
 					->addH(array_map(function($field) use ($listitem) {
 						if($field instanceof TableCellFactory) {
 							return (new EmailValueRow( isget($listitem[$field->name]), $field ));
@@ -154,12 +145,11 @@ class ListEmailTableCell implements Renderable {
 
 class ListDetailedTableCell implements Renderable {
 	function __construct($v, $value) {
-		$this->h = new HTMLParentlessContext();
 		$this->value = $value;
 		$this->v = $v;
 	}
 	function render() {
-		return $this->h
+		return h()
 		->td
 			->addH(array_map(function($listitem) {
 				return new ValueTable($this->value, $listitem, false);

@@ -4,18 +4,18 @@ class ValueRow implements Renderable {
 	function __construct($value, $component) {
 		$this->value = $value;
 		$this->component = $component;
-		$this->h = new HTMLParentlessContext();
+
 	}
 
 	function render() {
 		$v = $this->component->makeDetailedTableCell($this->value);
 		if($v === null) {
-			$v = $this->h
+			$v = h()
 			->td->class('disabled')
 				->i->class('ban icon')->end
 			->end;
 		}
-		return $this->h
+		return h()
 		->tr
 			->td->class('right aligned collapsing nowrap')
 				->t($this->component->label)
@@ -30,10 +30,10 @@ class ValueTable implements Renderable {
 		$this->fields = $fields;
 		$this->data = $data;
 		$this->stamp = $stamp;
-		$this->h = new HTMLParentlessContext();
+
 	}
 	function render() {
-		return $this->h
+		return h()
 		->table->class('ui unstackable definition table')
 			->tbody
 				->addH(array_map(function($field) {
@@ -45,7 +45,7 @@ class ValueTable implements Renderable {
 				}, $this->fields ))
 			->end
 			->addH(!$this->stamp ? null :
-				$this->h
+				h()
 				->tfoot->class('full-width')
 					->tr
 						->th->colspan('2')
@@ -68,11 +68,11 @@ class DetailsViewRenderable implements Renderable {
 		$this->fields = $fields;
 		$this->title = $title;
 		$this->data = $data;
-		$this->h = new HTMLParentlessContext();
+
 	}
 	function render() {
 		return
-		$this->h
+		h()
 		->html
 			->head
 				->meta->charset('utf-8')->end

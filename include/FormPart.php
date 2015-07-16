@@ -3,12 +3,12 @@
 
 class Label implements Renderable {
 	function __construct($label, $sublabel = null) {
-		$this->h = new HTMLParentlessContext();
+
 		$this->label = $label;
 		$this->customSublabel = $sublabel;
 	}
 	function render() {
-		return $this->h
+		return h()
 		->label
 			->span->t($this->label)->end
 		->end
@@ -19,13 +19,13 @@ class Label implements Renderable {
 
 class PossibleSublabel implements Renderable {
 	function __construct($sublabel, $right = false) {
-		$this->h = new HTMLParentlessContext();
+
 		$this->sublabel = $sublabel;
 		$this->right = $right;
 	}
 	function render() {
 		if($this->sublabel) {
-			return $this->h
+			return h()
 			->p->class('sublabel')->t($this->sublabel)->end;
 		} else {
 			return null;
@@ -36,19 +36,19 @@ class PossibleSublabel implements Renderable {
 abstract class FormPart implements Renderable {
 	public function __construct($field) {
 		$this->f = $field;
-		$this->h = new HTMLParentlessContext();
 	}
 }
 
 
 class BaseHeaderFormPart extends FormPart {
 	function render() {
-		$inside = $this->h->t($this->f->text)
+		$inside = h()
+		->t($this->f->text)
 		->addH($this->f->subhead === null ? null :
-			$this->h->div->class('sub header')->t($this->f->subhead)->end
+			h()->div->class('sub header')->t($this->f->subhead)->end
 		);
 		return $this->f->icon === null ? $inside :
-			$this->h
+			h()
 			->i->class($this->f->icon . ' icon')->end
 			->div->class('content')
 				->addH($inside)
@@ -60,14 +60,14 @@ class BaseHeaderFormPart extends FormPart {
 
 class BaseNoticeFormPart extends FormPart {
 	function render() {
-		return $this->h
+		return h()
 		->addH($this->f->icon === null ? null :
-			$this->h
+			h()
 			->i->class($this->f->icon . ' icon')->end
 		)
 		->div->class('content')
 			->addH($this->f->header === null ? null :
-				$this->h->div->class('header')
+				h()->div->class('header')
 					->t($this->f->header)
 				->end
 			)
@@ -76,10 +76,10 @@ class BaseNoticeFormPart extends FormPart {
 			->end
 			->addH(
 				$this->f->list === null ? null :
-				$this->h->ul->class('list')
+				h()->ul->class('list')
 					->addH(array_map(
 						function($item) {
-							return $this->h->li->t($item)->end;
+							return h()->li->t($item)->end;
 						},
 						$this->f->list === null ? [] : $this->f->list
 					))
@@ -94,7 +94,7 @@ class BaseNoticeFormPart extends FormPart {
 class HeaderFormPart extends FormPart {
 	function render() {
 		$size = ($this->f->size === null) ? 1 : $this->f->size;
-		return $this->h
+		return h()
 		->{'h' . $size}->class('ui header')
 			->addH(
 				new BaseHeaderFormPart($this->f)
@@ -106,7 +106,7 @@ class HeaderFormPart extends FormPart {
 class GroupHeaderFormPart extends FormPart {
 	function render() {
 		$size = ($this->f->size === null) ? 5 : $this->f->size;
-		return $this->h
+		return h()
 			->{'h' . $size}->class('ui header attached')
 				->addH(
 					new BaseHeaderFormPart($this->f)
@@ -120,7 +120,7 @@ class GroupNoticeFormPart extends FormPart {
 	function render() {
 
 		return
-			$this->h
+			h()
 				->div->class('ui message attached ' . ($this->f->icon === null ? '' : ' icon') . ($this->f->ntype ? (' ' . $this->f->ntype) : ''))
 				->addH(
 					new BaseNoticeFormPart($this->f)
@@ -133,7 +133,7 @@ class NoticeFormPart extends FormPart {
 	function render() {
 
 		return
-			$this->h
+			h()
 				->div->class('ui message floating ' . ($this->f->icon === null ? '' : ' icon') . ($this->f->ntype ? (' ' . $this->f->ntype) : ''))
 				->addH(
 					new BaseNoticeFormPart($this->f)
@@ -147,19 +147,19 @@ class NoticeFormPart extends FormPart {
 class InputFormPart extends FormPart {
 	function __construct($field, $type, $icon = null, $mask = null, $sublabel = null) {
 		$this->f = $field;
-		$this->h = new HTMLParentlessContext();
+
 		$this->type = $type;
 		$this->icon = $icon;
 		$this->mask = $mask;
 		$this->sublabel = $sublabel;
 	}
 	function render() {
-		return $this->h
+		return h()
 		->div->class('ui field ' . ($this->f->required ? 'required' : ''))
 			->addH($this->f->getLabel($this->sublabel))
 			->div->class($this->icon ? 'ui left icon input' : 'ui input')
 				->addH($this->icon === null ? null :
-					$this->h
+					h()
 					->i->class('icon ' . $this->icon)->end
 				)
 				->input
@@ -175,10 +175,10 @@ class InputFormPart extends FormPart {
 class NumberFormPart extends FormPart {
 	function __construct($field) {
 		$this->f = $field;
-		$this->h = new HTMLParentlessContext();
+
 	}
 	function render() {
-		return $this->h
+		return h()
 		->div->class('ui field ' . ($this->f->required ? 'required' : ''))
 			->addH($this->f->getLabel())
 			->div->class('ui input')
@@ -196,7 +196,7 @@ class NumberFormPart extends FormPart {
 
 class DropdownFormPart extends FormPart {
 	function render() {
-		return $this->h->div->class('field ' . ($this->f->required ? ' required' : ''))
+		return h()->div->class('field ' . ($this->f->required ? ' required' : ''))
 			->addH($this->f->getLabel())
 			->div->class('ui fluid dropdown selection')
 				->input->name($this->f->name)->type('hidden')->value('')->end
@@ -205,7 +205,7 @@ class DropdownFormPart extends FormPart {
 				->div->class('menu')
 					->addH(array_map(
 						function($v) {
-							return $this->h
+							return h()
 							->div->class('item')->data('value', $v)
 								->t($v)
 							->end;
@@ -222,10 +222,10 @@ class RadioButton implements Renderable {
 	function __construct($name, $value) {
 		$this->name = $name;
 		$this->value = $value;
-		$this->h = new HTMLParentlessContext();
+
 	}
 	public function render() {
-		return $this->h
+		return h()
 		->div->class('field not-validation-root')
 			->div->class('ui radio checkbox')
 				->input->name($this->name)->type('radio')->value($this->value)->end
@@ -238,7 +238,7 @@ class RadioButton implements Renderable {
 
 class RadiosFormPart extends FormPart {
 	public function render() {
-		return $this->h
+		return h()
 			->div->class('grouped fields validation-root ' . ($this->f->required ? 'required' : ''))
 				->data('radio-group-name', $this->f->name)
 			->addH($this->f->getLabel())
@@ -255,7 +255,7 @@ class RadiosFormPart extends FormPart {
 
 class TextareaFormPart extends FormPart {
 	function render() {
-		return $this->h
+		return h()
 			->div->class('field ' . ($this->f->required ? ' required' : ''))
 				->addH($this->f->getLabel())
 				->textarea
@@ -284,7 +284,7 @@ class DateTimePickerFormPart extends FormPart {
 			$sublabel = 'Please provide a date and time no earlier than ' . df($this->f->min) . '.';
 		}
 
-		return $this->h
+		return h()
 		->div->class('field ' . ($this->f->required ? ' required' : ''))
 			->addH($this->f->getLabel($sublabel))
 			->div->class('ui left icon input')
@@ -308,7 +308,7 @@ class TimeInputFormPart extends FormPart {
 			$sublabel = 'Please provide a time no earlier than ' . ($this->f->min) . '.';
 		}
 
-		return $this->h
+		return h()
 		->div->class('field ' . ($this->f->required ? ' required' : ''))
 			->addH($this->f->getLabel($sublabel))
 			->div->class('ui left icon input')
@@ -326,7 +326,7 @@ class TimeInputFormPart extends FormPart {
 
 class CheckboxFormPart extends FormPart {
 	function render() {
-		return $this->h
+		return h()
 		->div->class('field ' . ($this->f->mustCheck ? 'required' : ''))
 			->div->class('ui checkbox')
 				->input->type('checkbox')->name($this->f->name)->end
@@ -340,7 +340,7 @@ class CheckboxFormPart extends FormPart {
 class ShowIfComponentFormPart extends FormPart {
 	function render() {
 		// Provide a way of specifying type of cnodition, then read this in client.js
-		return $this->h
+		return h()
 			->div
 				->data('show-if-name', $this->f->condition->getName())
 				->data('show-if-condition', $this->f->condition->getCondition())
@@ -352,7 +352,7 @@ class ShowIfComponentFormPart extends FormPart {
 
 class RangeFormPart extends FormPart {
 	function render() {
-		return $this->h
+		return h()
 		->div->class('ui field')
 			->addH($this->f->getLabel())
 			->div
@@ -386,7 +386,7 @@ class ListComponentFormPart extends FormPart {
 			$sublabel = '';
 		}
 
-		return $this->h
+		return h()
 		->div->class('ui field validation-root list-component')->data('count','0')->data('group-name', $this->f->name)
 				->data('validation-name', $this->f->name)
 			->h5->class('top attached ui message')
@@ -398,7 +398,7 @@ class ListComponentFormPart extends FormPart {
 					->addH(
 						// Forcibly HTML-encode things so that nested lists are generated properly...
 						new DoubleEncode(
-							$this->h
+							h()
 							->div->class('ui vertical segment close-item')
 								->div->class('content')
 									->addH( array_map(function($x) { return $x ? $x->makeFormPart() : null; }, $this->f->items) )
@@ -428,7 +428,7 @@ class GroupFormPart extends FormPart {
 
 		$items = $this->f->items;
 
-		return $this->h
+		return h()
 		->div->class('group')
 		->addH(array_map(function($value) {
 			if(is_array($value)) {
@@ -470,7 +470,7 @@ class CheckboxesFormPart extends FormPart {
 		} else {
 			$sublabel = '';
 		}
-		return $this->h
+		return h()
 			->div
 				->class('grouped fields validation-root ' . ($this->f->required ? 'required' : ''))
 				->data('validation-name', $this->f->name)
@@ -479,7 +479,7 @@ class CheckboxesFormPart extends FormPart {
 				->addH(
 					array_map(
 						function($v) {
-							return $this->h->div->class('field not-validation-root')
+							return h()->div->class('field not-validation-root')
 									->div->class('ui checkbox')
 									 ->input->name($this->f->name . '[]')->type('checkbox')->value($v)->end
 									  ->label->t($v)->end
@@ -496,7 +496,7 @@ class CheckboxesFormPart extends FormPart {
 
 class CaptchaFormPart extends FormPart {
 	function render() {
-		return $this->h
+		return h()
 			->div->class('ui field')
 				->label->t('Are you a robot?')->end
 				->div->class('g-recaptcha')->data('sitekey', Config::get()['recaptcha']['site-key'])->end
@@ -509,7 +509,7 @@ class FormElemFormPart extends FormPart {
 	function render() {
 		// Use the "novalidate" attribute to disable HTML5 form validation,
 		// since we implement our own validation logic.
-		return $this->h
+		return h()
 		->form->class('ui form')->action('submit.php')->method('POST')->novalidate(true)
 			->addH( array_map(function($x) { return ($x && $x instanceof FormPartFactory) ? $x->makeFormPart() : null; }, $this->f->items) )
 			->input->type('hidden')->name('__form_name')->value($this->f->id)->end
@@ -540,11 +540,11 @@ class FormElemFormPart extends FormPart {
 
 class TopHeader implements Renderable {
 	function __construct() {
-		$this->h = new HTMLParentlessContext();
+
 		$this->cfg = Config::get();
 	}
 	function render() {
-		return $this->h
+		return h()
 		->div->class('ui top fixed menu')
 			->style('background-color: rgb(' . $this->cfg['branding']['color'] . '); box-shadow: 0px 1px 2px 0px rgba(' . $this->cfg['branding']['color'] . ', 0.25);')
 			->div->class('item')
@@ -577,7 +577,7 @@ class BrowserProblemPart implements Renderable {
 
 class PageFormPart extends FormPart {
 	function render() {
-		return $this->h
+		return h()
 		->html
 			->head
 				->meta->charset('utf-8')->end
@@ -590,7 +590,7 @@ class PageFormPart extends FormPart {
 			->end
 			->body
 				->addH(new BrowserProblemPart(
-					$this->h
+					h()
 					->addH(new TopHeader())
 					->div->class('ui text container')
 						->div->class('ui segment')

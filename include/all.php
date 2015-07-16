@@ -33,7 +33,7 @@ require 'include/Component.php';
 require 'include/Output.php';
 
 // Views
-require 'include/View.php'; // include/ needed hee
+require 'include/View.php';
 require 'include/TableView.php';
 require 'include/DetailsView.php';
 require 'include/GraphView.php';
