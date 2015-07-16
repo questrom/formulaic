@@ -38,7 +38,7 @@ class ShowIfComponent implements FormPartFactory, Storeable, XmlDeserializable {
 	function getMerger($val) {
 		return $val
 			->collapse()
-			->innerBind(function($val) {
+			->ifSuccess(function($val) {
 				if(!($this->condition->evaluate($val))) {
 					return Result::ok([]);
 				} else {

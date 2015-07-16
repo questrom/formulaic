@@ -60,11 +60,6 @@ abstract class NamedLabeledComponent implements FormPartFactory, XmlDeserializab
 	}
 
 	final function getAllFields() {
-		// $x = new NamedValidator($this->name,
-		// 		new Success([$this->name => $this])
-		// 	)
-		// 	->
-		// var_dump($x);
 
 		return [
 			$this->name => $this
@@ -77,12 +72,7 @@ abstract class NamedLabeledComponent implements FormPartFactory, XmlDeserializab
 
 	protected abstract function validate($val);
 	function getMerger($val) {
-		// return $this
-		// 	->validate(new NamedValidator($this->name,
-		// 		$val
-		// 	))
-		// 	->dename()
-		// 	->collapse();
+
 		return $this
 			->validate(
 				$val->innerBind(function($v) {
@@ -90,7 +80,7 @@ abstract class NamedLabeledComponent implements FormPartFactory, XmlDeserializab
 				})
 			)
 			->collapse()
-			->innerBind(function($r) {
+			->ifSuccess(function($r) {
 				return Result::ok([$this->name => $r]);
 			})
 			->ifError(function($r) {

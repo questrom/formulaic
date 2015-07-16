@@ -342,9 +342,15 @@ abstract class Validate {
 
 	// Utility methods
 	function collapse() {
-		return $this->bindNothing(function($x) {
-			return Result::ok($x);
-		});
+		return $this
+			->ifSuccess(function($x) {
+				return new Success(
+					$x
+					->ifSuccess(function($y) { return new Success($y); })
+					->ifError(function($y) { return new Success($y); })
+					->ifSuccess(function($y) { return $y; })
+				);
+			});
 	}
 	function innerBind(callable $x) {
 		return $this->ifSuccess(function($val) use($x) {
@@ -354,7 +360,6 @@ abstract class Validate {
 				})
 				->ifError(function($data) {
 					return new Success(Result::none($data));
-					// return new Success(Result::error($data));
 				})
 				->ifSuccess(function($data) {
 					return $data;
@@ -383,13 +388,12 @@ abstract class Validate {
 		return $this->innerBind(function($val) use ($items) {
 			return array_reduce($items, function($total, $field) use($val) {
 				if(!($field instanceof Storeable)) {
-
 					return $total;
 				}
 				return $field
 					->getMerger(Result::ok($val))
 					->collapse()
-					->innerBind(function($r) {
+					->ifSuccess(function($r) {
 						return Result::ok(function($total) use ($r) {
 							return array_merge($r, $total);
 						});
