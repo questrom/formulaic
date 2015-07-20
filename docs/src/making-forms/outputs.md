@@ -6,38 +6,57 @@ nav_groups:
 nav_sort: 3
 ---
 
-The elements described in this section are used to specify where the data submitted via the form will be sent or stored. They must be placed within the `outputs` element (as described in the Introduction). 
+The elements described on this page are used to specify how the data submitted through a form will be **processed**, **distributed**, and **stored**. They must be placed within the `outputs` section of a [configuration file](introduction.html).
 
-<hr>
-#### The `s3` element
+<h3 class="ui header top attached">
+The `s3` element
+</h3><div class="ui bottom attached segment">
+This element specifies that files uploaded through the form should be stored in Amazon S3. It must be placed **before** any other output elements in the configuration file.
 
-The `s3` output stores file upload data in Amazon S3, which must be configured in the `config.toml` file. It must be placed **before** any other outputs in the configuration file.
+Note that uploaded files will be renamed for security reasons. Also note that S3 is currently the *only* way of storing uploadeded files (they are never stored locally on a permanent basis).
 
-Note that uploaded files will be renamed for security reasons. Also note that S3 is currently the *only* way of storing uploadeded files at the moment.
+##### Attributes:
 
-##### Attributes
-* The `bucket` attribute specifies in which bucket the file uploads will be stored.
+* **`bucket`**
 
-<hr>
-#### The `mongo` element
+  Specifies in which S3 bucket the uploaded files will be stored.
+</div>
 
-The `mongo` output stores submitted form data in MongoDB.
+<h3 class="ui header top attached">
+The `mongo` element
+</h3><div class="ui bottom attached segment">
+This element specifies that form submissions should be stored in MongoDB.
 
-Unlike the other outputs in this section, MongoDB is read-write rather than write-only. For this reason, the first `mongo` element in the configuration file will be used by the "views" described in the following section.
+Unlike the other outputs described on this page, MongoDB is treated as read-write rather than write-only. **For this reason, MongoDB is used by [views](views.html) to retrieve data.** In particular, the first `mongo` element present in a configuration file will be used by the views.
 
-##### Attributes
-* `server` specifies the `mongodb://` url of the database. See [this page from the PHP docs](http://php.net/manual/en/mongoclient.construct.php) for more information about the URL format.
-* `database` and `collection` specify the database and collection where data is to be stored, respectively.
+##### Attributes:
+* **`server`**
 
-<hr>
-#### The `email-to` element
+  Specifies the `mongodb://` URL of the MongoDB server. See [this page from the PHP docs](http://php.net/manual/en/mongoclient.construct.php) for more information about the URL format.
 
-This element specifies a person to whom the form submission will be sent. To send submissions to multiple addresses, enter multiple `email-to` elements as needed.
+* **`database` and `collection`**
+
+  These attributes specify the database and collection in which the data should be stored.
+</div>
+
+<h3 class="ui header top attached">
+The `mongo` element
+</h3><div class="ui bottom attached segment">
+This element specifies that form submissions should be emailed to a particular person. To send submissions to multiple addresses, provide multiple `email-to` elements as needed.
 
 For this to work properly, SMTP must be configured in the `config.toml` file. 
 
-#### Attributes
-* `to` specifies the address to which emails will be sent
-* `from` specifies the From header of the email (e.g. `Form Builder <formbuilder@bu.edu>`)
-* `subject` specifies the email's subject line.
+##### Attributes:
 
+* **`from`**
+
+  Specifies the From header of the email (for example,&nbsp;&nbsp;`Form Builder <formbuilder@bu.edu>` would work).
+
+* **`to`**
+
+  Specifies the email address to which emails will be sent.
+
+* **`subject`**
+
+  Specifies the email's subject line.
+</div>
