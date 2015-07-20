@@ -40,15 +40,14 @@ A few global attributes are shared by most (*not necessarily all*) of the elemen
 The following elements represent form fields; they can be put inside the "fields" element of the form's configuration file.
 
 <hr>
-#### The `checkbox` element
 
-This element creates a checkbox.
-
-##### Attributes
-* `must-check`
+<div class="ui segment"><h3 style="margin:0">checkbox</h3>
+  <p style="margin:0;">This element creates a checkbox.</p>
+  <h4 style="margin:0;margin-top:1em;">Attributes</h4>
+* **must-check**
 
   If provided, this attribute specifies that the user cannot submit the form without checking the checkbox.
-
+</div>
 <hr>
 #### The `textbox` and `textarea` elements
 

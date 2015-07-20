@@ -11,8 +11,6 @@ RewriteEngine On
 RewriteRule ^(.*)\.hash-.*?\.(.*)$ /$1.$2 [PT]
 RewriteRule !^(styles\.css|client\.js|lib\/.*|img\/.*|daux\/.*|docs\/.*)$ /index.php [END]
 
-# RewriteRule !^(index\.php|details\.php|form\.php|submit\.php|styles\.css|client\.js|lib\/.*|img\/.*|view\.php)$ - [F,NC]
-
 # Caching
 
 FileETag All

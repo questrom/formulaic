@@ -8,7 +8,7 @@ var metalsmith  = require('metalsmith');
 
 var markDown    = require('metalsmith-markdown');
 var templates   = require('metalsmith-templates');
-// var assets      = require('metalsmith-assets');
+var assets      = require('metalsmith-assets');
 
 var navigation  = require('metalsmith-navigation');
 // var navigation = require('../../lib/index.js');
@@ -33,10 +33,10 @@ var navSettings = {
 
 var navTask = navigation(navConfigs, navSettings);
 
-// var assetsTask = assets({
-//     source: './assets',
-//     destination: './assets'
-// });
+var assetsTask = assets({
+    source: './assets',
+    destination: './assets'
+});
 
 var markDownTask = markDown();
 
@@ -83,9 +83,16 @@ var metalsmith = metalsmith(__dirname)
     .clean(true)
     .metadata(meta)
     .use(markDownTask)
+    .use(function (files, metalsmith, done){
+        for (var file in files) {
+            // console.log(files[file])
+          // files[file].contents = new Buffer(files[file].contents.toString().replace(/<hr>/g, '<div class="ui divider"></div>'))
+        }
+        done();
+      })
     .use(navTask)
     .use(templatesTask)
-    // .use(assetsTask)
+    .use(assetsTask)
     .build(function(err) {
         if (err) throw err;
     });

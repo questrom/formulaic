@@ -1,10 +1,13 @@
 <html>
 <head>
 	<title>Formulaic Docs - {{title}}</title>
-	<link href="{{relative_path nav_path "../../../../lib/prism.css"}}" rel="stylesheet">
-	<link href="{{relative_path nav_path "../../../../lib/semantic.css"}}" rel="stylesheet">
+	<link href="{{relative_path nav_path "assets/prism.css"}}" rel="stylesheet">
+	<link href="{{relative_path nav_path "assets/semantic.css"}}" rel="stylesheet">
 	<style>
 	li > p:last-child { margin-bottom: 1em; }
+	.ui.attached + .ui.attached.segment:not(.top) {
+    border-top: medium none;
+}
 	</style>
 </head>
 <body>
@@ -23,6 +26,6 @@
 
 		</div>
 	</div>
-	<script src="{{relative_path nav_path "../../../../lib/prism.js"}}"></script>
+	<script src="{{relative_path nav_path "assets/prism.js"}}"></script>
 </body>
 </html>
