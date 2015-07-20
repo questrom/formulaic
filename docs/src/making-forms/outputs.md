@@ -40,7 +40,7 @@ Unlike the other outputs described on this page, MongoDB is treated as read-writ
 </div>
 
 <h3 class="ui header top attached">
-The `mongo` element
+The `email-to` element
 </h3><div class="ui bottom attached segment">
 This element specifies that form submissions should be emailed to a particular person. To send submissions to multiple addresses, provide multiple `email-to` elements as needed.
 
