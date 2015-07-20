@@ -1,0 +1,17 @@
+{{!--
+    currentNavNode.file
+--}}
+
+{{#if children}}
+<div class="item">
+    {{file.title}}
+     <div class="menu">
+        {{#each children}}
+            {{> nav__children}}
+        {{/each}}
+    </div>
+</div>
+{{else}}
+     <a class="item"  href="{{relative_path @root.nav_path path}}">{{file.title}}</a>
+{{/if}}
+

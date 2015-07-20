@@ -1,0 +1,32 @@
+<div class="ui breadcrumb">
+
+    <a class="section" href="{{relative_path @root.nav_path "index.html"}}">Formulaic</a>
+
+    <i class="right chevron icon divider"></i>
+    {{!--
+        navConfig.breadcrumbProperty = 'breadcrumb_path'
+        currentFileObject.breadcrumb_path = ...
+    --}}
+    {{#each breadcrumb_path}}
+
+        {{#if file}}
+            {{!--
+                @root === the template scope of the current file object being rendered
+                @root.nav_path === currentFileObject.nav_path
+                ('nav_path' property can be configured by navConfig.pathProperty = 'nav_path')
+
+                path === currentNavNode.path
+                (path property is set to all nav nodes)
+            --}}
+            <a class="section" href="{{relative_path @root.nav_path path}}">{{file.title}}</a>
+            <i class="right chevron icon divider"></i>
+        {{else}}
+            <div class="section">{{name}}</div>
+            <i class="right chevron icon divider"></i>
+        {{/if}}
+
+    {{/each}}
+    <div class="active section">
+        {{title}}
+    </div>
+</div>

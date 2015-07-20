@@ -1,0 +1,28 @@
+<html>
+<head>
+	<title>Formulaic Docs - {{title}}</title>
+	<link href="{{relative_path nav_path "../../../../lib/prism.css"}}" rel="stylesheet">
+	<link href="{{relative_path nav_path "../../../../lib/semantic.css"}}" rel="stylesheet">
+	<style>
+	li > p:last-child { margin-bottom: 1em; }
+	</style>
+</head>
+<body>
+	<div class="ui container">
+		<div class="ui grid" style="margin-top:1rem">
+
+			<div class="column" style="flex:0;">
+				{{> nav_global}}
+			</div>
+			<div class="twelve wide column">
+				{{> breadcrumbs}}
+				<div>
+					{{{contents}}}
+				</div>
+			</div>
+
+		</div>
+	</div>
+	<script src="{{relative_path nav_path "../../../../lib/prism.js"}}"></script>
+</body>
+</html>
