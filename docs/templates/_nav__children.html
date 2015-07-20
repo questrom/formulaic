@@ -12,6 +12,12 @@
     </div>
 </div>
 {{else}}
-     <a class="item"  href="{{relative_path @root.nav_path path}}">{{file.title}}</a>
+	{{#ifCond @root.nav_path path}}
+		<a class="active item"  href="{{relative_path @root.nav_path path}}">{{file.title}}</a>
+	{{else}}
+		<a class="item"  href="{{relative_path @root.nav_path path}}">{{file.title}}</a>
+	{{/ifCond}}
+
+
 {{/if}}
 

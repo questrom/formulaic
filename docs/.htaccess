@@ -2,3 +2,8 @@
 ExpiresActive off
 Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
 Header set Expires "Wed, 11 Jan 1984 05:00:00 GMT"
+
+# See stackoverflow.com/questions/864507/htaccess-url-rewrite-to-subdirectory
+RewriteEngine On
+RewriteCond %{REQUEST_URI} !build\/.*$
+RewriteRule ^(.*)$ build/$1 [END]

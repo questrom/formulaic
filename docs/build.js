@@ -38,7 +38,9 @@ var assetsTask = assets({
     destination: './assets'
 });
 
-var markDownTask = markDown();
+var markDownTask = markDown({
+    // breaks: true
+});
 
 var templatesTask = templates({
     engine: 'handlebars'
@@ -78,6 +80,14 @@ var relativePathHelper = function(current, target) {
 };
 
 Handlebars.registerHelper('relative_path', relativePathHelper);
+
+// http://stackoverflow.com/questions/8853396/logical-operator-in-a-handlebars-js-if-conditional
+Handlebars.registerHelper('ifCond', function(v1, v2, options) {
+  if(v1 === v2) {
+    return options.fn(this);
+  }
+  return options.inverse(this);
+});
 
 var metalsmith = metalsmith(__dirname)
     .clean(true)

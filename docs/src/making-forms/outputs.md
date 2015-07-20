@@ -5,7 +5,6 @@ nav_groups:
   - primary
 nav_sort: 3
 ---
-## Outputs
 
 The elements described in this section are used to specify where the data submitted via the form will be sent or stored. They must be placed within the `outputs` element (as described in the Introduction). 
 

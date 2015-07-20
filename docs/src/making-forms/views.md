@@ -5,7 +5,6 @@ nav_groups:
   - primary
 nav_sort: 4
 ---
-## Views
 
 The `views` element specifies ways in which the data from the form can be viewed. Currently, there are two types of views: tables (optionally paginated) and graphs (many of which can be shown on a single page).
 

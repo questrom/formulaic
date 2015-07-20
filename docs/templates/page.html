@@ -5,26 +5,33 @@
 	<link href="{{relative_path nav_path "assets/semantic.css"}}" rel="stylesheet">
 	<style>
 	li > p:last-child { margin-bottom: 1em; }
-	.ui.attached + .ui.attached.segment:not(.top) {
+/*	.ui.attached + .ui.attached.segment:not(.top) {
     border-top: medium none;
+}*/
+code, kbd, pre, samp {
+    font-family: Consolas, monospace,monospace;
+    font-size: 1em;
 }
 	</style>
 </head>
 <body>
-	<div class="ui container">
-		<div class="ui grid" style="margin-top:1rem">
+	<div class="ui internally celled grid container" style="max-width: 960px !important; min-height:100%;flex-flow: row;">
 
-			<div class="column" style="flex:0;">
+			<div class="column" style="flex:0; padding-top:1em; ">
+				<h2>Formulaic Docs</h2>
 				{{> nav_global}}
 			</div>
-			<div class="twelve wide column">
-				{{> breadcrumbs}}
+			<div class="twelve wide column" style="flex:1; padding-top:1em; ">
+				{{#ifCond nav_path "index.html"}}
+
+				{{else}}
+					{{> breadcrumbs}}
+				{{/ifCond}}
 				<div>
 					{{{contents}}}
 				</div>
 			</div>
 
-		</div>
 	</div>
 	<script src="{{relative_path nav_path "assets/prism.js"}}"></script>
 </body>

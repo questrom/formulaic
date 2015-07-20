@@ -10,3 +10,4 @@ config.toml
 .phpintel
 .tags
 .tags_sorted_by_file
+node_modules
