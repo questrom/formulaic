@@ -121,24 +121,16 @@ class CheckboxTableCell implements Renderable {
 }
 
 class ListEmailTableCell implements Renderable {
-	function __construct($value, $fields) {
+	function __construct($v, $value) {
 		$this->value = $value;
-		$this->fields = $fields;
+		$this->v = $v;
 	}
 	function render() {
 		return h()
 		->td
 			->addH(array_map(function($listitem) {
-				return h()->table->border(1)
-					->addH(array_map(function($field) use ($listitem) {
-						if($field instanceof TableCellFactory) {
-							return (new EmailValueRow( isget($listitem[$field->name]), $field ));
-						} else {
-							return null;
-						}
-					}, $this->fields))
-				->end;
-			}, $this->value))
+				return new EmailTable($this->value, $listitem, false);
+			}, $this->v))
 		->end;
 	}
 }

@@ -26,6 +26,52 @@ class EmailValueRow implements Renderable {
 	}
 }
 
+class EmailIPTimestampInfo implements Renderable {
+	function __construct($data) {
+		$this->data = $data;
+	}
+	function render() {
+		return h()
+		->tfoot
+			->tr
+				->td->colspan('2')->align('left')
+					->strong->t('Timestamp:' . json_decode('"\u2002"'))->end
+					->t($this->data['_timestamp']->format('Y/m/d g:i A'))
+					->br->end
+					->strong->t('IP:' . json_decode('"\u2002"'))->end
+					->code->t($this->data['_ip'])->end
+				->end
+			->end
+		->end;
+	}
+}
+
+class EmailTable implements Renderable {
+	function __construct($fields, $data, $stamp = false) {
+		$this->fields = $fields;
+		$this->data = $data;
+		$this->stamp = $stamp;
+
+	}
+	function render() {
+		return h()
+		->table->border(1)->width('100%')->style('max-width:800px;')
+			->col->width('30%')->end
+			->col->width('70%')->end
+			->tbody
+				->addH(array_map(function($field) {
+					if($field instanceof TableCellFactory && $field instanceof FormPartFactory) {
+						return new EmailValueRow( isget($this->data[$field->name]), $field );
+					} else {
+						return null;
+					}
+				}, $this->fields ))
+			->end
+			->addH(!$this->stamp ? null : $this->stamp)
+		->end;
+	}
+}
+
 class EmailViewRenderable implements Renderable {
 	function __construct($title, $pageData, $data) {
 		$this->title = $title;
@@ -46,28 +92,7 @@ class EmailViewRenderable implements Renderable {
 					->h1
 						->t($this->title)
 					->end
-					->table->border(1)
-						->tbody
-							->addH(array_map(function($field) {
-								if($field instanceof TableCellFactory && $field instanceof FormPartFactory) {
-									return new EmailValueRow( isget($this->data[$field->name], null), $field );
-								} else {
-									return null;
-								}
-							}, $this->pageData->form->getAllFields() ))
-						->end
-						->tfoot
-							->tr
-								->td->colspan('2')->align('left')
-									->strong->t('Timestamp:' . json_decode('"\u2002"'))->end
-									->t($this->data['_timestamp']->format('Y/m/d g:i A'))
-									->br->end
-									->strong->t('IP:' . json_decode('"\u2002"'))->end
-									->code->t($this->data['_ip'])->end
-								->end
-							->end
-						->end
-					->end
+					->addH( new EmailTable($this->pageData->form->getAllFields(), $this->data, new EmailIPTimestampInfo($this->data)) )
 				->end
 			->end
 		->end;

@@ -19,3 +19,4 @@ form(title='Upload Pictures')
   outputs
     s3(bucket='form-builder-uploads')
     mongo(server='mongodb://localhost:27017', database='forms', collection='upload_pictures')
+    email-to(to='perljason@gmail.com', from='Form Builder <perljason@gmail.com>', subject='Picture Upload')
