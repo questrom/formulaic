@@ -15,7 +15,7 @@ class ShowIfComponent implements FormPartFactory, Storeable, XmlDeserializable {
 	}
 
 	function getAllFields() {
-		if($this->item instanceof Storeable) {
+		if ($this->item instanceof Storeable) {
 			return $this->item->getAllFields();
 		} else {
 			return [];
@@ -38,8 +38,8 @@ class ShowIfComponent implements FormPartFactory, Storeable, XmlDeserializable {
 	function getSubmissionPart($val) {
 		return $val
 			->collapse()
-			->ifSuccess(function($val) {
-				if(!($this->condition->evaluate($val))) {
+			->ifSuccess(function ($val) {
+				if (!($this->condition->evaluate($val))) {
 					return Result::ok([]);
 				} else {
 					return Result::ok($val)->groupValidate([$this->item]);
@@ -70,7 +70,9 @@ class Checkbox extends PostInputComponent implements Enumerative {
 	}
 
 	function makeTableViewPart($v) {
-		if($v === null) { return null; }
+		if ($v === null) {
+			return null;
+		}
 		return new CheckboxTableCell($v);
 	}
 }
@@ -95,15 +97,17 @@ class TimeInput extends PostInputComponent {
 			->stepTime($this->step);
 	}
 	function makeTableViewPart($v) {
-		if($v === null) { return null; }
+		if ($v === null) {
+			return null;
+		}
 		$hour = floor($v / 3600);
 		$minute = ($v % 3600) / 60;
 		$xm = 'am';
-		if($hour > 11) {
+		if ($hour > 11) {
 			$xm = 'pm';
 			$hour -= 12;
 		}
-		if(intval($hour) === 0) {
+		if (intval($hour) === 0) {
 			$hour = 12;
 		}
 		return new OrdinaryTableCell(sprintf('%d:%02d %s', $hour, $minute, $xm));
@@ -131,7 +135,9 @@ class DateTimePicker extends PostInputComponent {
 			->stepDateTime($this->step);
 	}
 	function makeTableViewPart($v) {
-		if($v === null) { return null; }
+		if ($v === null) {
+			return null;
+		}
 		return new OrdinaryTableCell($v->format('n/j/Y g:i A'));
 	}
 }
@@ -142,7 +148,7 @@ class Textarea extends PostInputComponent {
 
 		$this->maxLength = isset($args['max-length']) ? intval($args['max-length']) : INF;
 		$this->minLength = isset($args['min-length']) ? intval($args['min-length']) : 0;
-		$this->required  = isset($args['required']);
+		$this->required = isset($args['required']);
 		$this->mustMatch = isset($args['must-match']) ? $args['must-match'] : null;
 
 	}
@@ -158,11 +164,12 @@ class Textarea extends PostInputComponent {
 			->requiredMaybe($this->required);
 	}
 	function makeTableViewPart($v) {
-		if($v === null) { return null; }
+		if ($v === null) {
+			return null;
+		}
 		return new TextareaTableCell($v);
 	}
 }
-
 
 
 class Dropdown extends PostInputComponent {
@@ -205,7 +212,6 @@ class Radios extends PostInputComponent implements Enumerative {
 }
 
 
-
 class Checkboxes extends PostInputComponent implements Enumerative {
 	function __construct($args) {
 		parent::__construct($args);
@@ -229,8 +235,12 @@ class Checkboxes extends PostInputComponent implements Enumerative {
 			->requiredMaybe($this->required);
 	}
 	function makeTableViewPart($v) {
-		if($v === null) { return null; }
-		if(count($v) === 0) { return null;}
+		if ($v === null) {
+			return null;
+		}
+		if (count($v) === 0) {
+			return null;
+		}
 		return new ListTableCell($v);
 	}
 }
@@ -260,7 +270,7 @@ class Textbox extends PostInputComponent {
 
 		$this->maxLength = isset($args['max-length']) ? intval($args['max-length']) : INF;
 		$this->minLength = isset($args['min-length']) ? intval($args['min-length']) : 0;
-		$this->required  = isset($args['required']);
+		$this->required = isset($args['required']);
 		$this->mustMatch = isset($args['must-match']) ? $args['must-match'] : null;
 	}
 	function makeFormPart() {
@@ -279,9 +289,9 @@ class Textbox extends PostInputComponent {
 class FileUpload extends FileInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
-		$this->required  = isset($args['required']);
+		$this->required = isset($args['required']);
 		$this->allowedExtensions = array_reduce(
-			array_map(function($x) {
+			array_map(function ($x) {
 				return [$x->ext => $x->mime];
 			}, $args['children']),
 			'array_merge',
@@ -299,29 +309,35 @@ class FileUpload extends FileInputComponent {
 	}
 	protected function validate($against) {
 		return $against
-			->innerBind(function($val) {
+			->innerBind(function ($val) {
 				// See http://php.net/manual/en/features.file-upload.php
-				if(!is_array($val) || !isset($val['error']) || is_array($val['error'])) {
+				if (!is_array($val) || !isset($val['error']) || is_array($val['error'])) {
 					return Result::error('Invalid data.');
-				} else if($val['error'] === UPLOAD_ERR_INI_SIZE || $val['error'] === UPLOAD_ERR_FORM_SIZE) {
-					return Result::error('File size exceeds server or form limit.');
-				} else if($val['error'] === UPLOAD_ERR_NO_FILE) {
-					return Result::none(null);
-				} else if($val['error'] === UPLOAD_ERR_OK) {
-					return Result::ok($val);
 				} else {
-					return Result::error('Error uploading file.');
+					if ($val['error'] === UPLOAD_ERR_INI_SIZE || $val['error'] === UPLOAD_ERR_FORM_SIZE) {
+						return Result::error('File size exceeds server or form limit.');
+					} else {
+						if ($val['error'] === UPLOAD_ERR_NO_FILE) {
+							return Result::none(null);
+						} else {
+							if ($val['error'] === UPLOAD_ERR_OK) {
+								return Result::ok($val);
+							} else {
+								return Result::error('Error uploading file.');
+							}
+						}
+					}
 				}
 			})
 			->requiredMaybe($this->required)
-			->innerBind(function($file) {
-				if($file['size'] > $this->maxSize) {
+			->innerBind(function ($file) {
+				if ($file['size'] > $this->maxSize) {
 					return Result::error('File must be under ' . $this->maxSize . ' bytes in size.');
 				} else {
 					return Result::ok($file);
 				}
 			})
-			->innerBind(function($file) {
+			->innerBind(function ($file) {
 
 				$finfo = new finfo(FILEINFO_MIME_TYPE);
 				$mime = $finfo->file($file['tmp_name']);
@@ -332,12 +348,12 @@ class FileUpload extends FileInputComponent {
 					true
 				);
 
-				if($ext === false) {
+				if ($ext === false) {
 					return Result::error('Invalid file type or wrong MIME type. Allowed extensions are: ' .
 						implode(', ', array_keys($this->allowedExtensions)) . '.');
 				}
 
-				if(!is_uploaded_file($file['tmp_name'])) {
+				if (!is_uploaded_file($file['tmp_name'])) {
 					return Result::error('Security error.');
 				}
 
@@ -348,30 +364,38 @@ class FileUpload extends FileInputComponent {
 			});
 	}
 	function makeTableViewPart($v) {
-		if($v === null) { return null; }
-		if(is_string($v) && !isset($v['url'])) { return null; }
+		if ($v === null) {
+			return null;
+		}
+		if (is_string($v) && !isset($v['url'])) {
+			return null;
+		}
 		return new FileUploadTableCell($v);
 	}
 	function makeDetailsViewPart($v) {
 
-			if($v === null) { return null; }
+		if ($v === null) {
+			return null;
+		}
 
-			if(is_string($v) || !isset($v['url'])) {
-				// From old version
-				return null;
-			}
-			return new FileUploadDetailedTableCell($v);
+		if (is_string($v) || !isset($v['url'])) {
+			// From old version
+			return null;
+		}
+		return new FileUploadDetailedTableCell($v);
 
 	}
 	function makeEmailViewPart($v) {
 
-			if($v === null) { return null; }
+		if ($v === null) {
+			return null;
+		}
 
-			if(is_string($v) || !isset($v['url'])) {
-				// From old version
-				return null;
-			}
-			return new FileUploadDetailedTableCell($v);
+		if (is_string($v) || !isset($v['url'])) {
+			// From old version
+			return null;
+		}
+		return new FileUploadDetailedTableCell($v);
 	}
 }
 
@@ -398,15 +422,15 @@ class Range extends PostInputComponent {
 }
 
 
-class Password extends PostInputComponent  {
+class Password extends PostInputComponent {
 
 	function __construct($args) {
 		parent::__construct($args);
 
-		$this->required  = isset($args['required']);
+		$this->required = isset($args['required']);
 		$this->matchHash = isset($args['match-hash']) ? $args['match-hash'] : null;
 
-		if(isset($args['match-hash'])) {
+		if (isset($args['match-hash'])) {
 			$this->required = true;
 		}
 	}
@@ -416,7 +440,7 @@ class Password extends PostInputComponent  {
 	protected function validate($against) {
 		return $against
 			->filterString()
-			->matchHash( isset($this->matchHash) ? $this->matchHash : null )
+			->matchHash(isset($this->matchHash) ? $this->matchHash : null)
 			->filterEmptyString()
 			->requiredMaybe($this->required);
 	}
@@ -446,8 +470,10 @@ class PhoneNumber extends PostInputComponent {
 			->filterPhone();
 	}
 	function makeTableViewPart($v) {
-		if($v === null) { return null; }
-		if(preg_match('/^[0-9]{10}$/', $v)) {
+		if ($v === null) {
+			return null;
+		}
+		if (preg_match('/^[0-9]{10}$/', $v)) {
 			$showValue = '(' . substr($v, 0, 3) . ')' . json_decode('"\u2006"') . substr($v, 3, 3) . json_decode('"\u2006"') . substr($v, 6, 4);
 		} else {
 			$showValue = $v;
@@ -456,7 +482,7 @@ class PhoneNumber extends PostInputComponent {
 	}
 }
 
-class EmailAddr extends PostInputComponent  {
+class EmailAddr extends PostInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -465,7 +491,7 @@ class EmailAddr extends PostInputComponent  {
 	}
 	function makeFormPart() {
 		$innerText = isset($this->mustHaveDomain) ? ('Must be @' . $this->mustHaveDomain) : null;
-		return new InputFormPart($this, 'email', 'mail',  null, $innerText);
+		return new InputFormPart($this, 'email', 'mail', null, $innerText);
 	}
 	protected function validate($against) {
 		return $against
@@ -476,7 +502,9 @@ class EmailAddr extends PostInputComponent  {
 			->mustHaveDomain($this->mustHaveDomain);
 	}
 	function makeTableViewPart($v) {
-		if($v === null) { return null; }
+		if ($v === null) {
+			return null;
+		}
 		return new LinkTableCell('mailto:' . $v, $v);
 	}
 }
@@ -497,7 +525,9 @@ class UrlInput extends PostInputComponent {
 			->filterFilterVar(FILTER_VALIDATE_URL, 'Invalid URL.');
 	}
 	function makeTableViewPart($v) {
-		if($v === null) { return null; }
+		if ($v === null) {
+			return null;
+		}
 		return new LinkTableCell($v, $v, true);
 	}
 }
@@ -517,7 +547,7 @@ class NumberInp extends PostInputComponent {
 	protected function validate($against) {
 		return $against
 			->filterString()
-			->maybeString() // So we end up with a Maybe<> if not required
+			->maybeString()// So we end up with a Maybe<> if not required
 			->requiredMaybe($this->required)
 			->filterNumber($this->integer)
 			->minMaxNumber($this->min, $this->max);
@@ -534,19 +564,23 @@ class DatePicker extends PostInputComponent {
 
 		$this->required = isset($args['required']);
 		$this->min = isset($args['min']) ?
-			DateTimeImmutable::createFromFormat('Y-m-d', $args['min'])->setTime(0,0,0) : null;
+			DateTimeImmutable::createFromFormat('Y-m-d', $args['min'])->setTime(0, 0, 0) : null;
 		$this->max = isset($args['max']) ?
-			DateTimeImmutable::createFromFormat('Y-m-d', $args['max'])->setTime(0,0,0) : null;
+			DateTimeImmutable::createFromFormat('Y-m-d', $args['max'])->setTime(0, 0, 0) : null;
 	}
 	function makeFormPart() {
 		$sublabel = '';
 
-		if(isset($this->max) && isset($this->min)) {
+		if (isset($this->max) && isset($this->min)) {
 			$sublabel = 'Please provide a date between ' . dfd($this->min) . ' and ' . dfd($this->max) . '.';
-		} else if (isset($this->max)) {
-			$sublabel = 'Please provide a date no later than ' . dfd($this->max) . '.';
-		} else if(isset($this->min)) {
-			$sublabel = 'Please provide a date no earlier than ' . dfd($this->min) . '.';
+		} else {
+			if (isset($this->max)) {
+				$sublabel = 'Please provide a date no later than ' . dfd($this->max) . '.';
+			} else {
+				if (isset($this->min)) {
+					$sublabel = 'Please provide a date no earlier than ' . dfd($this->min) . '.';
+				}
+			}
 		}
 
 		return new InputFormPart($this, 'text', 'calendar', " 'alias': 'mm/dd/yyyy' ", $sublabel);
@@ -558,14 +592,15 @@ class DatePicker extends PostInputComponent {
 			->minMaxDate($this->min, $this->max);
 	}
 	function makeTableViewPart($v) {
-		if($v === null) { return null; }
+		if ($v === null) {
+			return null;
+		}
 		return new OrdinaryTableCell($v->format('n/j/Y'));
 	}
 }
 
 
-
-class Header implements FormPartFactory, XmlDeserializable  {
+class Header implements FormPartFactory, XmlDeserializable {
 	use Configurable;
 	final function __construct($args) {
 		$this->text = $args['innerText'];
@@ -589,7 +624,7 @@ class Notice implements FormPartFactory, XmlDeserializable {
 		$this->header = isset($args['header']) ? $args['header'] : null;
 		$this->icon = isset($args['icon']) ? $args['icon'] : null;
 		$this->list = isset($args['children']) ? $args['children'] : null;
-		if(isset($args['children']) && count($args['children']) === 0) {
+		if (isset($args['children']) && count($args['children']) === 0) {
 			$this->list = null;
 		}
 		$this->ntype = isset($args['type']) ? $args['type'] : null;
@@ -603,7 +638,7 @@ class Notice implements FormPartFactory, XmlDeserializable {
 }
 
 class ListComponent implements FormPartFactory, XmlDeserializable,
-    TableViewPartFactory, DetailsViewPartFactory, EmailViewPartFactory, Storeable {
+	TableViewPartFactory, DetailsViewPartFactory, EmailViewPartFactory, Storeable {
 	use Configurable, Tableize, Groupize;
 	function __construct($args) {
 		$this->items = $args['children'];
@@ -615,14 +650,14 @@ class ListComponent implements FormPartFactory, XmlDeserializable,
 	}
 
 	function getAllFields() {
-		return [ $this->name => $this ];
+		return [$this->name => $this];
 	}
 
 	// Borrowed from GroupComponent
 	private function getAllFieldsWithin() {
 		$arr = [];
-		foreach($this->items as $item) {
-			if($item instanceof Storeable) {
+		foreach ($this->items as $item) {
+			if ($item instanceof Storeable) {
 				$arr = array_merge($arr, $item->getAllFields());
 			}
 		}
@@ -633,25 +668,27 @@ class ListComponent implements FormPartFactory, XmlDeserializable,
 	}
 	function getSubmissionPart($val) {
 		return $val
-		->innerBind(function($v) {
-			return Result::ok(
-				[
-					isset($v->post[$this->name]) ? $v->post[$this->name] : null,
-					isset($v->files[$this->name]) ? $v->files[$this->name] : null
-				]
-			);
-		})
-		->innerBind(function($data) {
-			return Result::ok([
-				is_array($data[0]) ? $data[0] : [],
-				is_array($data[1]) ? diverse_array($data[1] ) : []
-			]);
-		})
-		->listValidate($this->minItems, $this->maxItems, $this->name, $this->items);
+			->innerBind(function ($v) {
+				return Result::ok(
+					[
+						isset($v->post[ $this->name ]) ? $v->post[ $this->name ] : null,
+						isset($v->files[ $this->name ]) ? $v->files[ $this->name ] : null
+					]
+				);
+			})
+			->innerBind(function ($data) {
+				return Result::ok([
+					is_array($data[0]) ? $data[0] : [],
+					is_array($data[1]) ? diverse_array($data[1]) : []
+				]);
+			})
+			->listValidate($this->minItems, $this->maxItems, $this->name, $this->items);
 	}
 	function makeTableViewPart($v) {
-		if($v === null) { return null; }
-		if(count($v) === 1) {
+		if ($v === null) {
+			return null;
+		}
+		if (count($v) === 1) {
 			$showValue = '(1 item)';
 		} else {
 			$showValue = '(' . count($v) . ' items)';
@@ -659,11 +696,15 @@ class ListComponent implements FormPartFactory, XmlDeserializable,
 		return new OrdinaryTableCell($showValue);
 	}
 	function makeDetailsViewPart($v) {
-		if($v === null) { return null; }
+		if ($v === null) {
+			return null;
+		}
 		return new ListDetailedTableCell($v, $this->getAllFieldsWithin());
 	}
 	function makeEmailViewPart($v) {
-		if($v === null) { return null; }
+		if ($v === null) {
+			return null;
+		}
 		return new ListEmailTableCell($v, $this->getAllFieldsWithin());
 	}
 }
@@ -684,14 +725,16 @@ class IPField implements TableViewPartFactory, Storeable {
 		$this->label = 'IP Address';
 	}
 	function makeTableViewPart($v) {
-		if($v === null) { return null; }
+		if ($v === null) {
+			return null;
+		}
 		return new OrdinaryTableCell($v);
 	}
 	function getSubmissionPart($val) {
 		return Result::ok(['_ip' => $_SERVER['REMOTE_ADDR']]);
 	}
 	function getAllFields() {
-		return [ $this->name => $this ];
+		return [$this->name => $this];
 	}
 
 }
@@ -703,14 +746,16 @@ class TimestampField implements TableViewPartFactory, Storeable {
 		$this->label = 'Timestamp';
 	}
 	function makeTableViewPart($v) {
-		if($v === null) { return null; }
+		if ($v === null) {
+			return null;
+		}
 		return new OrdinaryTableCell($v->format('n/j/Y g:i A'));
 	}
 	function getSubmissionPart($val) {
 		return Result::ok(['_timestamp' => new DateTimeImmutable()]);
 	}
 	function getAllFields() {
-		return [ $this->name => $this ];
+		return [$this->name => $this];
 	}
 }
 

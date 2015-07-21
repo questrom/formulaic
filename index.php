@@ -10,29 +10,29 @@ $klein->onHttpError(function ($code, $router) {
 	$res = $router->response();
 	$message = h()
 		->h1->style('text-align:center;font-size:72px;')
-			->t($res->status()->getCode())
+		->t($res->status()->getCode())
 		->end
 		->h2->style('text-align:center')
-			->t($res->status()->getMessage())
+		->t($res->status()->getMessage())
 		->end;
-   $router->response()->body(
-        '<!DOCTYPE html>' . $message->generateString()
-   );
+	$router->response()->body(
+		'<!DOCTYPE html>' . $message->generateString()
+	);
 
 });
 
-$klein->respond('GET', '/', function() {
+$klein->respond('GET', '/', function () {
 	$formlist = new FormList(Parser::getFormInfo());
 	return '<!DOCTYPE html>' . fixAssets($formlist->makeFormList()->render()->generateString());
 });
 
-$klein->respond('GET', '/view.php', function() {
+$klein->respond('GET', '/view.php', function () {
 	$page = Parser::parseJade($_GET['form']);
 	$view = $page->getView($_GET['view']);
 	return fixAssets($view->makeView($view->query($_GET))->render()->generateString());
 });
 
-$klein->respond('GET', '/form.php', function() {
+$klein->respond('GET', '/form.php', function () {
 
 
 	$csrf = new \Riimu\Kit\CSRF\CSRFHandler();
@@ -43,7 +43,7 @@ $klein->respond('GET', '/form.php', function() {
 	$cache = $config['cache-forms'] ? new Cache() : new FakeCache();
 
 	$cache->setPrefixSize(0);
-	$html = $cache->getOrCreate('jade-' . sha1_file(Parser::getForm($_GET['form'])) . '-' . sha1_file('config/config.toml'), [], function() {
+	$html = $cache->getOrCreate('jade-' . sha1_file(Parser::getForm($_GET['form'])) . '-' . sha1_file('config/config.toml'), [], function () {
 		$page = Parser::parseJade($_GET['form']);
 		return '<!DOCTYPE html>' . $page->makeFormPart()->render()->generateString();
 	});
@@ -54,7 +54,7 @@ $klein->respond('GET', '/form.php', function() {
 	return fixAssets($html);
 });
 
-$klein->respond('POST', '/submit.php', function() {
+$klein->respond('POST', '/submit.php', function () {
 	$csrf = new \Riimu\Kit\CSRF\CSRFHandler();
 	$csrf->validateRequest(true);
 
@@ -65,17 +65,17 @@ $klein->respond('POST', '/submit.php', function() {
 	return $page
 		->form
 		->getSubmissionPart(Result::ok(new ClientData($_POST, $_FILES)))
-		->ifError(function($val) {
+		->ifError(function ($val) {
 			return Result::error([
 				'success' => false,
-				'errors' =>  $val
+				'errors' => $val
 			]);
 		})
-		->innerBind(function($val) use ($page, $config) {
+		->innerBind(function ($val) use ($page, $config) {
 
 			ob_start();
-				$val = $page->outputs->run($val, $page);
-				var_dump($val);
+			$val = $page->outputs->run($val, $page);
+			var_dump($val);
 			$out = ob_get_clean();
 
 			return Result::ok([
@@ -83,18 +83,18 @@ $klein->respond('POST', '/submit.php', function() {
 				'debugOutput' => $config['debug'] ? $out : ''
 			]);
 		})
-		->ifError(function($val) {
+		->ifError(function ($val) {
 			return Result::ok($val);
 		})
-		->innerBind(function($output) use ($csrf) {
+		->innerBind(function ($output) use ($csrf) {
 			return json_encode([
-			 'data' => $output
+				'data' => $output
 			]);
 		});
 
 });
 
-$klein->respond('GET', '/details.php', function() {
+$klein->respond('GET', '/details.php', function () {
 	$page = Parser::parseJade($_GET['form']);
 	$view = new DetailsView();
 	$view->setPage($page);

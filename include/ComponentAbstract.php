@@ -26,7 +26,7 @@ interface Renderable {
 
 
 interface TableViewPartFactory {
-    public function makeTableViewPart($value);
+	public function makeTableViewPart($value);
 }
 
 interface DetailsViewPartFactory {
@@ -34,7 +34,7 @@ interface DetailsViewPartFactory {
 }
 
 interface EmailViewPartFactory {
-    public function makeEmailViewPart($value);
+	public function makeEmailViewPart($value);
 }
 
 
@@ -54,7 +54,7 @@ trait Tableize {
 }
 
 abstract class NamedLabeledComponent implements FormPartFactory, XmlDeserializable,
-    TableViewPartFactory, DetailsViewPartFactory, EmailViewPartFactory, Storeable {
+	TableViewPartFactory, DetailsViewPartFactory, EmailViewPartFactory, Storeable {
 
 	use Configurable, Tableize, Groupize;
 
@@ -69,7 +69,7 @@ abstract class NamedLabeledComponent implements FormPartFactory, XmlDeserializab
 	}
 
 	final function getAllFields() {
-		return [ $this->name => $this ];
+		return [$this->name => $this];
 	}
 
 	final function getLabel($sublabel = '') {
@@ -81,12 +81,12 @@ abstract class PostInputComponent extends NamedLabeledComponent {
 	function getSubmissionPart($val) {
 		return $this->validate(
 			$val
-			->innerBind(function($x) {
-				return Result::ok($x->post);
-			})
-			->byName($this->name)
+				->innerBind(function ($x) {
+					return Result::ok($x->post);
+				})
+				->byName($this->name)
 		)
-		->name($this->name);
+			->name($this->name);
 	}
 	protected abstract function validate($val);
 }
@@ -95,12 +95,11 @@ abstract class FileInputComponent extends NamedLabeledComponent {
 	final function getSubmissionPart($val) {
 		return $this->validate(
 			$val
-			->innerBind(function($x) {
-				return Result::ok($x->files);
-			})
-			->byName($this->name)
-		)
-		->name($this->name);
+				->innerBind(function ($x) {
+					return Result::ok($x->files);
+				})
+				->byName($this->name)
+		)->name($this->name);
 	}
 	protected abstract function validate($val);
 }
@@ -109,8 +108,8 @@ abstract class GroupComponent implements FormPartFactory, Storeable, XmlDeserial
 	use Configurable, Groupize;
 	final function getAllFields() {
 		$arr = [];
-		foreach($this->items as $item) {
-			if($item instanceof Storeable) {
+		foreach ($this->items as $item) {
+			if ($item instanceof Storeable) {
 				$arr = array_merge($arr, $item->getAllFields());
 			}
 		}
