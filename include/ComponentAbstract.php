@@ -24,7 +24,7 @@ interface Renderable {
 	public function render();
 }
 
-interface NormalTableCellFactory {
+interface TableViewPartFactory {
 	public function makeTableViewPart($value);
 }
 
@@ -50,7 +50,7 @@ trait Tableize {
 }
 
 abstract class NamedLabeledComponent implements FormPartFactory, XmlDeserializable,
-    NormalTableCellFactory, DetailsTableCellFactory, Storeable {
+    TableViewPartFactory, DetailsTableCellFactory, Storeable {
 
 
 	use Configurable, Tableize, Groupize;

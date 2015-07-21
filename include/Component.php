@@ -603,7 +603,7 @@ class Notice implements FormPartFactory, XmlDeserializable {
 }
 
 class ListComponent implements FormPartFactory, XmlDeserializable,
-    NormalTableCellFactory, DetailsTableCellFactory, Storeable {
+    TableViewPartFactory, DetailsTableCellFactory, Storeable {
 	use Configurable, Tableize, Groupize;
 	function __construct($args) {
 		$this->items = $args['children'];
@@ -677,7 +677,7 @@ class Group extends GroupComponent {
 	}
 }
 
-class IPField implements NormalTableCellFactory, Storeable {
+class IPField implements TableViewPartFactory, Storeable {
 
 	function __construct() {
 		$this->name = '_ip';
@@ -696,7 +696,7 @@ class IPField implements NormalTableCellFactory, Storeable {
 
 }
 
-class TimestampField implements NormalTableCellFactory, Storeable {
+class TimestampField implements TableViewPartFactory, Storeable {
 
 	function __construct() {
 		$this->name = '_timestamp';

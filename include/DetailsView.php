@@ -24,7 +24,7 @@ class ValueRow implements Renderable {
 	}
 }
 
-class TablePart implements NormalTableCellFactory, DetailsTableCellFactory {
+class TablePart implements TableViewPartFactory, DetailsTableCellFactory {
 	function __construct($component) {
 		$this->component = $component;
 	}

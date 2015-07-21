@@ -27,10 +27,6 @@ interface View {
 	function makeView($data);
 }
 
-interface TableViewPartFactory {
-	function makeTableViewPart($data);
-}
-
 interface GraphViewPartFactory {
 	function makeGraphViewPart($data);
 }
