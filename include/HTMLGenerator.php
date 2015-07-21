@@ -13,15 +13,7 @@ abstract class HTMLGeneratorAbstract {
 	}
 
 	final function generateString() {
-		$time = microtime(true);
 
-		$out = $this->toFullArray();
-
-		echo '<br><br><br>' . (microtime(true) - $time) * 1000 . 'ms';
-		return $out;
-	}
-
-	final function toFullArray() {
 		$out = '';
 		$positions = new SplStack();
 		$positions->push($this->toStringArray());
