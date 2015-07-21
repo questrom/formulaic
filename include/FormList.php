@@ -4,14 +4,14 @@ class ViewInfoView implements Renderable {
 	function __construct($data, $formData) {
 
 		$this->formData = $formData;
-		$this->data = $data;
+		$this->data = (object) $data;
 	}
 	function render() {
 		return h()
-				->div->class('item')
-				->a->href('view.php?form=' . $this->formData['id'] . '&view=' . $this->data['id'])->class('item')
-					->i->class($this->data['type'] === 'graph' ? 'area chart icon' : 'table icon')->end
-					->t($this->data['title'])
+			->div->class('item')
+				->a->href('view.php?form=' . $this->formData->id . '&view=' . $this->data->id)->class('item')
+					->i->class($this->data->type === 'graph' ? 'area chart icon' : 'table icon')->end
+					->t($this->data->title)
 				->end
 			->end;
 	}
@@ -19,30 +19,29 @@ class ViewInfoView implements Renderable {
 
 class FormItemView implements Renderable {
 	function __construct($data) {
-
-		$this->data = $data;
+		$this->data = (object) $data;
 	}
 	function render() {
 		return h()
 			->div->class('item')
 				->div->class('header')
-					->a->href('form.php?form=' . $this->data['id'])
-						->t($this->data['name'])
+					->a->href('form.php?form=' . $this->data->id)
+						->t($this->data->name)
 					->end
 					->div->class('ui horizontal right floated label')
-						->t($this->data['count'])
+						->t($this->data->count)
 						->t(json_decode('"\u2004"') . 'submissions')
 					->end
 				->end
 				// ->h5->class('ui left floated header')->t('Views: ')->end
-					->addH(count($this->data['views']) === 0 ? null :
+					->addH(count($this->data->views) === 0 ? null :
 						h()
 						->div->class('ui horizontal list low-line-height')
 							->div->class('item header')->t('Views: ')->end
 								->addH(
 									array_map(function($viewInfo) {
 										return new ViewInfoView($viewInfo, $this->data);
-									}, $this->data['views'])
+									}, $this->data->views)
 								)
 							// ->end
 						->end
@@ -54,7 +53,6 @@ class FormItemView implements Renderable {
 
 class FormListView implements Renderable {
 	function __construct($data) {
-
 		$this->data = $data;
 	}
 	function render() {

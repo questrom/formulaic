@@ -43,21 +43,28 @@ class ValueTable implements Renderable {
 					}
 				}, $this->fields ))
 			->end
-			->addH(!$this->stamp ? null :
-				h()
-				->tfoot->class('full-width')
-					->tr
-						->th->colspan('2')
-							->strong->t('Timestamp:' . json_decode('"\u2002"'))->end
-							->t(isset($this->data['_timestamp']) ? $this->data['_timestamp']->format('Y/m/d g:i A') : null)
-							->p
-								->strong->t('IP:' . json_decode('"\u2002"'))->end
-								->code->t( isget($this->data['_ip']) )->end
-							->end
-						->end
+			->addH(!$this->stamp ? null : $this->stamp)
+		->end;
+	}
+}
+
+class IPTimestampInfo implements Renderable {
+	function __construct($data) {
+		$this->data = $data;
+	}
+	function render() {
+		return h()
+		->tfoot->class('full-width')
+			->tr
+				->th->colspan('2')
+					->strong->t('Timestamp:' . json_decode('"\u2002"'))->end
+					->t(isset($this->data['_timestamp']) ? $this->data['_timestamp']->format('Y/m/d g:i A') : null)
+					->p
+						->strong->t('IP:' . json_decode('"\u2002"'))->end
+						->code->t( isget($this->data['_ip']) )->end
 					->end
 				->end
-			)
+			->end
 		->end;
 	}
 }
@@ -85,7 +92,7 @@ class DetailsViewRenderable implements Renderable {
 					->h1
 						->t($this->title)
 					->end
-					->addH( new ValueTable($this->fields, $this->data, true) )
+					->addH( new ValueTable($this->fields, $this->data, new IPTimestampInfo($this->data)) )
 				->end
 			->end
 		->end;

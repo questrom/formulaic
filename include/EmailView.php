@@ -9,24 +9,20 @@ class EmailValueRow implements Renderable {
 
 	}
 	function render() {
-
-
-			$v = $this->component->makeEmailTableCell($this->value);
-			if($v === null) {
-				$v = h()
-				->td->bgcolor('#ccc')
-					->t('(No value)')
-				->end;
-			}
-			return h()
-			->tr
-				->td->class('right aligned collapsing nowrap')
-					->t($this->component->label)
-				->end
-				->addH($v)
+		$v = $this->component->makeEmailTableCell($this->value);
+		if($v === null) {
+			$v = h()
+			->td->bgcolor('#ccc')
+				->t('(No value)')
 			->end;
-
-
+		}
+		return h()
+		->tr
+			->td->class('right aligned collapsing nowrap')
+				->t($this->component->label)
+			->end
+			->addH($v)
+		->end;
 	}
 }
 
