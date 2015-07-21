@@ -24,15 +24,16 @@ interface Renderable {
 	public function render();
 }
 
-interface NormalTableCellFactory extends Storeable {
+interface NormalTableCellFactory {
 	public function makeTableCellPart($value);
 }
 
-interface TableCellFactory extends NormalTableCellFactory {
-
+interface DetailsTableCellFactory {
 	public function makeDetailedTableCell($value);
 	public function makeEmailTableCell($value);
 }
+
+interface TableCellFactory extends NormalTableCellFactory, DetailsTableCellFactory, Storeable {}
 
 trait Groupize {
 	public function makeGroupPart() {

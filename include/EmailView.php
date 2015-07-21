@@ -61,7 +61,7 @@ class EmailTable implements Renderable {
 			->tbody
 				->addH(array_map(function($field) {
 					if($field instanceof TableCellFactory) {
-						return new EmailValueRow( isget($this->data[$field->name]), $field );
+						return ( new TablePart( $field ) )->makeEmailTableCell(  isget($this->data[$field->name]) );
 					} else {
 						return null;
 					}
@@ -92,7 +92,9 @@ class EmailViewRenderable implements Renderable {
 					->h1
 						->t($this->title)
 					->end
-					->addH( new EmailTable($this->pageData->form->getAllFields(), $this->data, new EmailIPTimestampInfo($this->data)) )
+					->addH(
+						(new StampedTable($this->pageData->form->getAllFields()))->makeEmailTableCell($this->data)
+					)
 				->end
 			->end
 		->end;

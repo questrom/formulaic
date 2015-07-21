@@ -24,12 +24,26 @@ class ValueRow implements Renderable {
 	}
 }
 
+class TablePart implements NormalTableCellFactory, DetailsTableCellFactory {
+	function __construct($component) {
+		$this->component = $component;
+	}
+	function makeTableCellPart($value) {
+		return new ValueCell($value, $this->component);
+	}
+	function makeDetailedTableCell($value) {
+		return new ValueRow($value, $this->component);
+	}
+	function makeEmailTableCell($value) {
+		return new EmailValueRow($value, $this->component);
+	}
+}
+
 class ValueTable implements Renderable {
 	function __construct($fields, $data, $stamp = false) {
 		$this->fields = $fields;
 		$this->data = $data;
 		$this->stamp = $stamp;
-
 	}
 	function render() {
 		return h()
@@ -37,7 +51,7 @@ class ValueTable implements Renderable {
 			->tbody
 				->addH(array_map(function($field) {
 					if($field instanceof TableCellFactory) {
-						return new ValueRow( isget($this->data[$field->name]), $field );
+						return ( new TablePart( $field ) )->makeDetailedTableCell(  isget($this->data[$field->name]) );
 					} else {
 						return null;
 					}
@@ -45,6 +59,18 @@ class ValueTable implements Renderable {
 			->end
 			->addH(!$this->stamp ? null : $this->stamp)
 		->end;
+	}
+}
+
+class StampedTable implements DetailsTableCellFactory {
+	function __construct($fields) {
+		$this->fields = $fields;
+	}
+	function makeDetailedTableCell($data) {
+		return new ValueTable($this->fields, $data, new IPTimestampInfo($data));
+	}
+	function makeEmailTableCell($data) {
+		return new EmailTable($this->fields, $data, new EmailIPTimestampInfo($data));
 	}
 }
 
@@ -92,7 +118,9 @@ class DetailsViewRenderable implements Renderable {
 					->h1
 						->t($this->title)
 					->end
-					->addH( new ValueTable($this->fields, $this->data, new IPTimestampInfo($this->data)) )
+					->addH(
+						(new StampedTable($this->fields))->makeDetailedTableCell($this->data)
+					)
 				->end
 			->end
 		->end;

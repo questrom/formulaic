@@ -80,10 +80,7 @@ class TablePage implements Renderable {
 								return h()
 								->tr
 									->addH(array_map(function($col) use($row) {
-											return new ValueCell(
-												isget($row[$col->name]),
-												$this->byName[$col->name]
-											);
+										return ( new TablePart( $this->byName[$col->name] ) )->makeTableCellPart(  isget($row[$col->name]) );
 									}, $this->f->cols))
 									->td->class('center aligned nowrap unpadded-cell')
 										->a->class('ui no-margin compact button')->href('details.php?form=' . $this->f->formID . '&id=' . $row['_id'])

@@ -676,7 +676,7 @@ class Group extends GroupComponent {
 	}
 }
 
-class IPField implements NormalTableCellFactory {
+class IPField implements NormalTableCellFactory, Storeable {
 
 	function __construct() {
 		$this->name = '_ip';
@@ -695,7 +695,7 @@ class IPField implements NormalTableCellFactory {
 
 }
 
-class TimestampField implements NormalTableCellFactory {
+class TimestampField implements NormalTableCellFactory, Storeable {
 
 	function __construct() {
 		$this->name = '_timestamp';
