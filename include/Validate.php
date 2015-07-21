@@ -500,7 +500,7 @@ abstract class Validate {
 					return $total;
 				}
 				return $field
-					->getMerger(
+					->getSubmissionPart(
 						Result::ok($val)
 					)
 					->collapse()

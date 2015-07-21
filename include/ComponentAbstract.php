@@ -12,7 +12,7 @@ interface FormPartFactory {
 }
 
 interface Storeable {
-	public function getMerger($val);
+	public function getSubmissionPart($val);
 	public function getAllFields();
 }
 
@@ -24,8 +24,9 @@ interface Renderable {
 	public function render();
 }
 
+
 interface TableViewPartFactory {
-	public function makeTableViewPart($value);
+    public function makeTableViewPart($value);
 }
 
 interface DetailsViewPartFactory {
@@ -78,7 +79,7 @@ abstract class NamedLabeledComponent implements FormPartFactory, XmlDeserializab
 }
 
 abstract class PostInputComponent extends NamedLabeledComponent {
-	function getMerger($val) {
+	function getSubmissionPart($val) {
 		return $this->validate(
 			$val
 			->innerBind(function($x) {
@@ -92,7 +93,7 @@ abstract class PostInputComponent extends NamedLabeledComponent {
 }
 
 abstract class FileInputComponent extends NamedLabeledComponent {
-	final function getMerger($val) {
+	final function getSubmissionPart($val) {
 		return $this->validate(
 			$val
 			->innerBind(function($x) {
@@ -116,7 +117,7 @@ abstract class GroupComponent implements FormPartFactory, Storeable, XmlDeserial
 		}
 		return $arr;
 	}
-	final function getMerger($val) {
+	final function getSubmissionPart($val) {
 		return $val->groupValidate($this->items);
 	}
 }

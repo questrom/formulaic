@@ -35,7 +35,7 @@ class ShowIfComponent implements FormPartFactory, Storeable, XmlDeserializable {
 		]);
 	}
 
-	function getMerger($val) {
+	function getSubmissionPart($val) {
 		return $val
 			->collapse()
 			->ifSuccess(function($val) {
@@ -243,8 +243,8 @@ class Captcha extends PostInputComponent {
 	function makeFormPart() {
 		return new CaptchaFormPart($this);
 	}
-	function getMerger($val) {
-		return parent::getMerger($val)
+	function getSubmissionPart($val) {
+		return parent::getSubmissionPart($val)
 			->noStore();
 	}
 	protected function validate($against) {
@@ -420,8 +420,8 @@ class Password extends PostInputComponent  {
 			->filterEmptyString()
 			->requiredMaybe($this->required);
 	}
-	function getMerger($val) {
-		return parent::getMerger($val)
+	function getSubmissionPart($val) {
+		return parent::getSubmissionPart($val)
 			->noStore();
 	}
 	function makeTableViewPart($v) {
@@ -631,7 +631,7 @@ class ListComponent implements FormPartFactory, XmlDeserializable,
 	function makeFormPart() {
 		return new ListComponentFormPart($this);
 	}
-	function getMerger($val) {
+	function getSubmissionPart($val) {
 		return $val
 		->innerBind(function($v) {
 			return Result::ok(
@@ -687,7 +687,7 @@ class IPField implements TableViewPartFactory, Storeable {
 		if($v === null) { return null; }
 		return new OrdinaryTableCell($v);
 	}
-	function getMerger($val) {
+	function getSubmissionPart($val) {
 		return Result::ok(['_ip' => $_SERVER['REMOTE_ADDR']]);
 	}
 	function getAllFields() {
@@ -706,7 +706,7 @@ class TimestampField implements TableViewPartFactory, Storeable {
 		if($v === null) { return null; }
 		return new OrdinaryTableCell($v->format('n/j/Y g:i A'));
 	}
-	function getMerger($val) {
+	function getSubmissionPart($val) {
 		return Result::ok(['_timestamp' => new DateTimeImmutable()]);
 	}
 	function getAllFields() {

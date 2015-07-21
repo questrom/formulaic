@@ -64,7 +64,7 @@ $klein->respond('POST', '/submit.php', function() {
 
 	return $page
 		->form
-		->getMerger(Result::ok(new ClientData($_POST, $_FILES)))
+		->getSubmissionPart(Result::ok(new ClientData($_POST, $_FILES)))
 		->ifError(function($val) {
 			return Result::error([
 				'success' => false,
