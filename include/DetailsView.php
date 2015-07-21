@@ -4,7 +4,6 @@ class ValueRow implements Renderable {
 	function __construct($value, $component) {
 		$this->value = $value;
 		$this->component = $component;
-
 	}
 
 	function render() {
