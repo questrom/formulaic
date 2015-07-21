@@ -603,7 +603,7 @@ class Notice implements FormPartFactory, XmlDeserializable {
 }
 
 class ListComponent implements FormPartFactory, XmlDeserializable,
-    TableViewPartFactory, DetailsTableCellFactory, Storeable {
+    TableViewPartFactory, DetailsViewPartFactory, EmailViewPartFactory, Storeable {
 	use Configurable, Tableize, Groupize;
 	function __construct($args) {
 		$this->items = $args['children'];

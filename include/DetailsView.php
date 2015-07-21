@@ -24,7 +24,7 @@ class ValueRow implements Renderable {
 	}
 }
 
-class TablePart implements TableViewPartFactory, DetailsTableCellFactory {
+class TablePart implements TableViewPartFactory, DetailsViewPartFactory, EmailViewPartFactory {
 	function __construct($component) {
 		$this->component = $component;
 	}
@@ -50,7 +50,7 @@ class ValueTable implements Renderable {
 		->table->class('ui unstackable definition table')
 			->tbody
 				->addH(array_map(function($field) {
-					if($field instanceof DetailsTableCellFactory) {
+					if($field instanceof DetailsViewPartFactory) {
 						return ( new TablePart( $field ) )->makeDetailsViewPart(  isget($this->data[$field->name]) );
 					} else {
 						return null;
@@ -62,7 +62,7 @@ class ValueTable implements Renderable {
 	}
 }
 
-class StampedTable implements DetailsTableCellFactory {
+class StampedTable implements DetailsViewPartFactory, EmailViewPartFactory {
 	function __construct($fields) {
 		$this->fields = $fields;
 	}

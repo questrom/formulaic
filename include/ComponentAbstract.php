@@ -28,9 +28,12 @@ interface TableViewPartFactory {
 	public function makeTableViewPart($value);
 }
 
-interface DetailsTableCellFactory {
+interface DetailsViewPartFactory {
 	public function makeDetailsViewPart($value);
-	public function makeEmailViewPart($value);
+}
+
+interface EmailViewPartFactory {
+    public function makeEmailViewPart($value);
 }
 
 
@@ -50,7 +53,7 @@ trait Tableize {
 }
 
 abstract class NamedLabeledComponent implements FormPartFactory, XmlDeserializable,
-    TableViewPartFactory, DetailsTableCellFactory, Storeable {
+    TableViewPartFactory, DetailsViewPartFactory, EmailViewPartFactory, Storeable {
 
 
 	use Configurable, Tableize, Groupize;
