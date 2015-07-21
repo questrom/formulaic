@@ -3,6 +3,7 @@
 class IncrementEscape {}
 class DecrementEscape {}
 
+
 abstract class HTMLGeneratorAbstract {
 	abstract function addH($arr);
 	abstract function __get($name);
@@ -14,6 +15,7 @@ abstract class HTMLGeneratorAbstract {
 
 	final function generateString() {
 
+		// $time = microtime(true);
 		$out = '';
 		$positions = new SplStack();
 		$positions->push($this->toStringArray());
@@ -35,28 +37,24 @@ abstract class HTMLGeneratorAbstract {
 				if ($element instanceof HTMLGeneratorAbstract) {
 					$positions->push($input);
 					$input = $element->toStringArray();
-					continue;
 				} else if(is_scalar($element)) {
 					$x = $element;
 					for($j = $escapeCount + 1; $j > 0; $j--) {
 						$x = htmlspecialchars($x, ENT_QUOTES);
 					}
 					$out .= $x;
-					continue;
 				} else if(is_array($element)) {
-					$element = new ArrayIterator($element);
-
+					$positions->push($input);
+					$input = new ArrayIterator($element);
 				} else if($element instanceof DoubleEncode) {
 					$positions->push($input);
+					$escapeCount++;
 					$input = new ArrayIterator([
-						new IncrementEscape(),
 						$element->value,
 						new DecrementEscape()
 					]);
 					continue;
-				}
-
-				if($element instanceof Iterator) {
+				} else if($element instanceof Iterator) {
 					$positions->push($input);
 					$input = $element;
 				} else if($element instanceof SafeString) {
@@ -74,6 +72,7 @@ abstract class HTMLGeneratorAbstract {
 				}
 			}
 		}
+		// echo '<br><br>' . (microtime(true) - $time)*1000 . ' ms';
 		return $out;
 	}
 }
