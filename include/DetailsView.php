@@ -28,13 +28,13 @@ class TablePart implements NormalTableCellFactory, DetailsTableCellFactory {
 	function __construct($component) {
 		$this->component = $component;
 	}
-	function makeTableCellPart($value) {
+	function makeTableViewPart($value) {
 		return new ValueCell($value, $this->component);
 	}
 	function makeDetailsViewPart($value) {
 		return new ValueRow($value, $this->component);
 	}
-	function makeEmailTableCell($value) {
+	function makeEmailViewPart($value) {
 		return new EmailValueRow($value, $this->component);
 	}
 }
@@ -69,7 +69,7 @@ class StampedTable implements DetailsTableCellFactory {
 	function makeDetailsViewPart($data) {
 		return new ValueTable($this->fields, $data, new IPTimestampInfo($data));
 	}
-	function makeEmailTableCell($data) {
+	function makeEmailViewPart($data) {
 		return new EmailTable($this->fields, $data, new EmailIPTimestampInfo($data));
 	}
 }

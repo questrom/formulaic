@@ -20,7 +20,7 @@ class ValueCell implements Renderable {
 
 	}
 	function render() {
-		$v = $this->component->makeTableCellPart($this->value);
+		$v = $this->component->makeTableViewPart($this->value);
 		if($v === null) {
 			return h()
 				->td->class('disabled')
@@ -80,7 +80,7 @@ class TablePage implements Renderable {
 								return h()
 								->tr
 									->addH(array_map(function($col) use($row) {
-										return ( new TablePart( $this->byName[$col->name] ) )->makeTableCellPart(  isget($row[$col->name]) );
+										return ( new TablePart( $this->byName[$col->name] ) )->makeTableViewPart(  isget($row[$col->name]) );
 									}, $this->f->cols))
 									->td->class('center aligned nowrap unpadded-cell')
 										->a->class('ui no-margin compact button')->href('details.php?form=' . $this->f->formID . '&id=' . $row['_id'])

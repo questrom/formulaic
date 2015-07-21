@@ -9,7 +9,7 @@ class EmailValueRow implements Renderable {
 
 	}
 	function render() {
-		$v = $this->component->makeEmailTableCell($this->value);
+		$v = $this->component->makeEmailViewPart($this->value);
 		if($v === null) {
 			$v = h()
 			->td->bgcolor('#ccc')
@@ -61,7 +61,7 @@ class EmailTable implements Renderable {
 			->tbody
 				->addH(array_map(function($field) {
 					if($field instanceof DetailsTableCellFactory) {
-						return ( new TablePart( $field ) )->makeEmailTableCell(  isget($this->data[$field->name]) );
+						return ( new TablePart( $field ) )->makeEmailViewPart(  isget($this->data[$field->name]) );
 					} else {
 						return null;
 					}
@@ -93,7 +93,7 @@ class EmailViewRenderable implements Renderable {
 						->t($this->title)
 					->end
 					->addH(
-						(new StampedTable($this->pageData->form->getAllFields()))->makeEmailTableCell($this->data)
+						(new StampedTable($this->pageData->form->getAllFields()))->makeEmailViewPart($this->data)
 					)
 				->end
 			->end

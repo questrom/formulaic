@@ -69,7 +69,7 @@ class Checkbox extends PostInputComponent implements Enumerative {
 		return [true, false];
 	}
 
-	function makeTableCellPart($v) {
+	function makeTableViewPart($v) {
 		if($v === null) { return null; }
 		return new CheckboxTableCell($v);
 	}
@@ -94,7 +94,7 @@ class TimeInput extends PostInputComponent {
 			->minMaxTime($this->min, $this->max)
 			->stepTime($this->step);
 	}
-	function makeTableCellPart($v) {
+	function makeTableViewPart($v) {
 		if($v === null) { return null; }
 		$hour = floor($v / 3600);
 		$minute = ($v % 3600) / 60;
@@ -130,7 +130,7 @@ class DateTimePicker extends PostInputComponent {
 			->minMaxDateTime($this->min, $this->max)
 			->stepDateTime($this->step);
 	}
-	function makeTableCellPart($v) {
+	function makeTableViewPart($v) {
 		if($v === null) { return null; }
 		return new OrdinaryTableCell($v->format('n/j/Y g:i A'));
 	}
@@ -157,7 +157,7 @@ class Textarea extends PostInputComponent {
 			->filterEmptyString()
 			->requiredMaybe($this->required);
 	}
-	function makeTableCellPart($v) {
+	function makeTableViewPart($v) {
 		if($v === null) { return null; }
 		return new TextareaTableCell($v);
 	}
@@ -228,7 +228,7 @@ class Checkboxes extends PostInputComponent implements Enumerative {
 			->filterNoChoices()
 			->requiredMaybe($this->required);
 	}
-	function makeTableCellPart($v) {
+	function makeTableViewPart($v) {
 		if($v === null) { return null; }
 		if(count($v) === 0) { return null;}
 		return new ListTableCell($v);
@@ -347,7 +347,7 @@ class FileUpload extends FileInputComponent {
 				return Result::ok(new FileInfo($file, $filename, $mime, $this->permissions));
 			});
 	}
-	function makeTableCellPart($v) {
+	function makeTableViewPart($v) {
 		if($v === null) { return null; }
 		if(is_string($v) && !isset($v['url'])) { return null; }
 		return new FileUploadTableCell($v);
@@ -363,7 +363,7 @@ class FileUpload extends FileInputComponent {
 			return new FileUploadDetailedTableCell($v);
 
 	}
-	function makeEmailTableCell($v) {
+	function makeEmailViewPart($v) {
 
 			if($v === null) { return null; }
 
@@ -424,7 +424,7 @@ class Password extends PostInputComponent  {
 		return parent::getMerger($val)
 			->noStore();
 	}
-	function makeTableCellPart($v) {
+	function makeTableViewPart($v) {
 		return new PasswordTableCell();
 	}
 }
@@ -445,7 +445,7 @@ class PhoneNumber extends PostInputComponent {
 			->requiredMaybe($this->required)
 			->filterPhone();
 	}
-	function makeTableCellPart($v) {
+	function makeTableViewPart($v) {
 		if($v === null) { return null; }
 		if(preg_match('/^[0-9]{10}$/', $v)) {
 			$showValue = '(' . substr($v, 0, 3) . ')' . json_decode('"\u2006"') . substr($v, 3, 3) . json_decode('"\u2006"') . substr($v, 6, 4);
@@ -475,7 +475,7 @@ class EmailAddr extends PostInputComponent  {
 			->filterFilterVar(FILTER_VALIDATE_EMAIL, 'Invalid email address.')
 			->mustHaveDomain($this->mustHaveDomain);
 	}
-	function makeTableCellPart($v) {
+	function makeTableViewPart($v) {
 		if($v === null) { return null; }
 		return new LinkTableCell('mailto:' . $v, $v);
 	}
@@ -496,7 +496,7 @@ class UrlInput extends PostInputComponent {
 			->requiredMaybe($this->required)
 			->filterFilterVar(FILTER_VALIDATE_URL, 'Invalid URL.');
 	}
-	function makeTableCellPart($v) {
+	function makeTableViewPart($v) {
 		if($v === null) { return null; }
 		return new LinkTableCell($v, $v, true);
 	}
@@ -557,7 +557,7 @@ class DatePicker extends PostInputComponent {
 			->requiredMaybe($this->required)
 			->minMaxDate($this->min, $this->max);
 	}
-	function makeTableCellPart($v) {
+	function makeTableViewPart($v) {
 		if($v === null) { return null; }
 		return new OrdinaryTableCell($v->format('n/j/Y'));
 	}
@@ -649,7 +649,7 @@ class ListComponent implements FormPartFactory, XmlDeserializable,
 		})
 		->listValidate($this->minItems, $this->maxItems, $this->name, $this->items);
 	}
-	function makeTableCellPart($v) {
+	function makeTableViewPart($v) {
 		if($v === null) { return null; }
 		if(count($v) === 1) {
 			$showValue = '(1 item)';
@@ -662,7 +662,7 @@ class ListComponent implements FormPartFactory, XmlDeserializable,
 		if($v === null) { return null; }
 		return new ListDetailedTableCell($v, $this->getAllFieldsWithin());
 	}
-	function makeEmailTableCell($v) {
+	function makeEmailViewPart($v) {
 		if($v === null) { return null; }
 		return new ListEmailTableCell($v, $this->getAllFieldsWithin());
 	}
@@ -683,7 +683,7 @@ class IPField implements NormalTableCellFactory, Storeable {
 		$this->name = '_ip';
 		$this->label = 'IP Address';
 	}
-	function makeTableCellPart($v) {
+	function makeTableViewPart($v) {
 		if($v === null) { return null; }
 		return new OrdinaryTableCell($v);
 	}
@@ -702,7 +702,7 @@ class TimestampField implements NormalTableCellFactory, Storeable {
 		$this->name = '_timestamp';
 		$this->label = 'Timestamp';
 	}
-	function makeTableCellPart($v) {
+	function makeTableViewPart($v) {
 		if($v === null) { return null; }
 		return new OrdinaryTableCell($v->format('n/j/Y g:i A'));
 	}

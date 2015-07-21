@@ -25,12 +25,12 @@ interface Renderable {
 }
 
 interface NormalTableCellFactory {
-	public function makeTableCellPart($value);
+	public function makeTableViewPart($value);
 }
 
 interface DetailsTableCellFactory {
 	public function makeDetailsViewPart($value);
-	public function makeEmailTableCell($value);
+	public function makeEmailViewPart($value);
 }
 
 
@@ -42,10 +42,10 @@ trait Groupize {
 
 trait Tableize {
 	function makeDetailsViewPart($v) {
-		return $this->makeTableCellPart($v);
+		return $this->makeTableViewPart($v);
 	}
-	function makeEmailTableCell($v) {
-		return $this->makeTableCellPart($v);
+	function makeEmailViewPart($v) {
+		return $this->makeTableViewPart($v);
 	}
 }
 
@@ -61,7 +61,7 @@ abstract class NamedLabeledComponent implements FormPartFactory, XmlDeserializab
 		$this->customSublabel = isset($args['sublabel']) ? $args['sublabel'] : null;
 	}
 
-	function makeTableCellPart($v) {
+	function makeTableViewPart($v) {
 		return new OrdinaryTableCell($v);
 	}
 
