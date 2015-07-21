@@ -16,8 +16,8 @@ $klein->onHttpError(function ($code, $router) {
 			->t($res->status()->getMessage())
 		->end;
    $router->response()->body(
-           '<!DOCTYPE html>' . $message->generateString()
-    );
+        '<!DOCTYPE html>' . $message->generateString()
+   );
 
 });
 

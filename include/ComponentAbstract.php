@@ -56,7 +56,6 @@ trait Tableize {
 abstract class NamedLabeledComponent implements FormPartFactory, XmlDeserializable,
     TableViewPartFactory, DetailsViewPartFactory, EmailViewPartFactory, Storeable {
 
-
 	use Configurable, Tableize, Groupize;
 
 	function __construct($args) {
