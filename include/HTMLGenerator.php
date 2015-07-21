@@ -14,29 +14,19 @@ abstract class HTMLGeneratorAbstract {
 
 	final function generateString() {
 		$time = microtime(true);
-		$out = '';
-		$escapeCount = 0;
-		foreach($this->toFullArray() as $x) {
-			if($x instanceof IncrementEscape) {
-				$escapeCount++;
-			} else if ($x instanceof DecrementEscape) {
-				$escapeCount--;
-			} else {
 
-				for($j = 0; $j < $escapeCount; $j++) {
-					$x = htmlspecialchars($x, ENT_QUOTES);
-				}
-				$out .= $x;
-			}
+		$out = $this->toFullArray();
 
-		}
 		echo '<br><br><br>' . (microtime(true) - $time) * 1000 . 'ms';
 		return $out;
 	}
 
 	final function toFullArray() {
+		$out = '';
 		$positions = new SplStack();
-		$positions->push(new ArrayIterator([$this]));
+		$positions->push($this->toStringArray());
+
+		$escapeCount = 0;
 
 		while(!$positions->isEmpty()) {
 
@@ -46,54 +36,59 @@ abstract class HTMLGeneratorAbstract {
 				$element = $input->current();
 				$input->next();
 
-				if($element instanceof IncrementEscape || $element instanceof DecrementEscape) {
-					yield $element;
-					continue;
-				}
-
-				if($element instanceof Renderable) {
+				while($element instanceof Renderable) {
 					$element = $element->render();
 				}
 
 				if ($element instanceof HTMLGeneratorAbstract) {
-					$element = $element->toStringArray();
+					$positions->push($input);
+					$input = $element->toStringArray();
+					continue;
 				} else if(is_scalar($element)) {
-					$element = new ArrayIterator([new IncrementEscape(), new SafeString($element), new DecrementEscape()]);
+					$x = $element;
+					for($j = $escapeCount + 1; $j > 0; $j--) {
+						$x = htmlspecialchars($x, ENT_QUOTES);
+					}
+					$out .= $x;
+					continue;
 				} else if(is_array($element)) {
 					$element = new ArrayIterator($element);
+
 				} else if($element instanceof DoubleEncode) {
-					$element = new ArrayIterator([new IncrementEscape(), $element->value, new DecrementEscape()]);
+					$positions->push($input);
+					$input = new ArrayIterator([
+						new IncrementEscape(),
+						$element->value,
+						new DecrementEscape()
+					]);
+					continue;
 				}
 
 				if($element instanceof Iterator) {
 					$positions->push($input);
 					$input = $element;
-				} else if(!is_null($element)) {
-					if($element instanceof SafeString) {
-						$element = $element->getValue();
-					} else {
-						throw new Exception('Invalid HTML generation target!');
+				} else if($element instanceof SafeString) {
+					$x = $element->value;
+					for($j = $escapeCount; $j > 0; $j--) {
+						$x = htmlspecialchars($x, ENT_QUOTES);
 					}
-
-
-					yield $element;
+					$out .= $x;
+				} else if($element instanceof IncrementEscape) {
+					$escapeCount++;
+				} else if($element instanceof DecrementEscape) {
+					$escapeCount--;
+				} else if (!is_null($element)) {
+					throw new Exception('Invalid HTML generation target!');
 				}
-
 			}
 		}
+		return $out;
 	}
 }
-
-
-// =============================================================================================================
-
 
 class SafeString {
 	function __construct($value) {
 		$this->value = $value;
-	}
-	function getValue() {
-		return $this->value;
 	}
 }
 
@@ -130,14 +125,7 @@ class HTMLContentGenerator extends HTMLGeneratorAbstract {
 
 	function toStringArray() {
 		foreach($this->children as $x) {
-
-			if($x instanceof HTMLGeneratorAbstract) {
-				foreach($x->toStringArray() as $y) {
-					yield $y;
-				}
-			} else {
-				yield $x;
-			}
+			yield $x;
 		}
 	}
 }
@@ -176,6 +164,7 @@ class HTMLTagGenerator extends HTMLGeneratorAbstract {
 	}
 
 	function toStringArray() {
+
 		yield new SafeString('<');
 		yield $this->tag;
 		foreach ($this->attrs as $key => $value) {
@@ -187,9 +176,8 @@ class HTMLTagGenerator extends HTMLGeneratorAbstract {
 		}
 
 		yield new SafeString('>');
-		foreach($this->contents->toStringArray() as $x) {
-			yield $x;
-		}
+		yield $this->contents;
+
 		yield new SafeString('</');
 		yield $this->tag;
 		yield new SafeString('>');
@@ -223,7 +211,7 @@ class HTMLParentContext extends HTMLGeneratorAbstract {
 	}
 
 	function toStringArray() {
-		foreach($this->generator->toStringArray() as $x) { yield $x; }
+		yield $this->generator->toStringArray();
 	}
 }
 
@@ -241,7 +229,7 @@ class HTMLParentlessContext extends HTMLGeneratorAbstract{
 	}
 
 	function toStringArray() {
-		foreach($this->generator->toStringArray() as $x) { yield $x; }
+		yield $this->generator->toStringArray();
 	}
 }
 
