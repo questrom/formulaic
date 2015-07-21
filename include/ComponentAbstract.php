@@ -66,8 +66,6 @@ abstract class NamedLabeledComponent implements FormPartFactory, XmlDeserializab
 	final function getLabel($sublabel = '') {
 		return new Label($this->label, isset($this->customSublabel) ? $this->customSublabel : $sublabel);
 	}
-
-	protected abstract function validate($val);
 }
 
 abstract class PostInputComponent extends NamedLabeledComponent {
@@ -81,6 +79,7 @@ abstract class PostInputComponent extends NamedLabeledComponent {
 		)
 		->name($this->name);
 	}
+	protected abstract function validate($val);
 }
 
 abstract class FileInputComponent extends NamedLabeledComponent {
@@ -94,6 +93,7 @@ abstract class FileInputComponent extends NamedLabeledComponent {
 		)
 		->name($this->name);
 	}
+	protected abstract function validate($val);
 }
 
 abstract class GroupComponent implements FormPartFactory, Storeable, XmlDeserializable {
