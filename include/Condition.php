@@ -14,7 +14,7 @@ class IsCheckedCondition implements XmlDeserializable, Condition {
 		$this->name = $args['name'];
 	}
 	function evaluate($cd) {
-		return isset($cd->post[$this->name]) ? $cd->post[$this->name] === 'on' : false;
+		return isset($cd->post[ $this->name ]) ? $cd->post[ $this->name ] === 'on' : false;
 	}
 	function getName() {
 		return $this->name;
@@ -30,7 +30,7 @@ class IsNotCheckedCondition implements XmlDeserializable, Condition {
 		$this->name = $args['name'];
 	}
 	function evaluate($cd) {
-		return !(isset($cd->post[$this->name]) ? $cd->post[$this->name] === 'on' : false);
+		return !(isset($cd->post[ $this->name ]) ? $cd->post[ $this->name ] === 'on' : false);
 	}
 	function getName() {
 		return $this->name;
@@ -47,7 +47,7 @@ class IsRadioSelectedCondition implements XmlDeserializable, Condition {
 		$this->value = $args['value'];
 	}
 	function evaluate($cd) {
-		return isset($cd->post[$this->name]) ? ($cd->post[$this->name] === $this->value) : false;
+		return isset($cd->post[ $this->name ]) ? ($cd->post[ $this->name ] === $this->value) : false;
 	}
 	function getName() {
 		return $this->name;
