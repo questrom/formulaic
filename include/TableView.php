@@ -20,7 +20,6 @@ class ValueCell implements Renderable {
 
 	}
 	function render() {
-
 		$v = $this->component->makeTableCellPart($this->value);
 		if($v === null) {
 			return h()
@@ -35,11 +34,7 @@ class ValueCell implements Renderable {
 
 class TablePage implements Renderable {
 	function __construct($f) {
-
 		$this->f = $f;
-
-		// var_dump($f->data);
-
 		$this->byName = $this->f->pageData->form->getAllFields();
 	}
 	function render() {
