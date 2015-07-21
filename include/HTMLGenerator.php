@@ -15,70 +15,80 @@ abstract class HTMLGeneratorAbstract {
 	final function generateString() {
 		$out = '';
 		$escapeCount = 0;
-		foreach($this->toFullArray() as $x) {
+		// $rec = new RecursiveIteratorIterator(new RecursiveArrayIterator(iterator_to_array($this->toFullArray())));
+
+		$rec = new RecursiveIteratorIterator(new HTMLIterator($this));
+		foreach($rec as $x) {
+			// var_dump($x);
+
 			if($x instanceof IncrementEscape) {
 				$escapeCount++;
 			} else if ($x instanceof DecrementEscape) {
 				$escapeCount--;
-			} else {
+			} else if($x instanceof SafeString) {
+				$x = $x->getValue();
 
 				for($j = 0; $j < $escapeCount; $j++) {
 					$x = htmlspecialchars($x, ENT_QUOTES);
 				}
 				$out .= $x;
+			} else if(is_null($x)) {
+				continue;
+			} else {
+				throw new Exception("Invalid HTML");
 			}
 
 		}
 		return $out;
 	}
 
-	final function toFullArray() {
-		$positions = new SplStack();
-		$positions->push(new ArrayIterator([$this]));
+}
 
-		while(!$positions->isEmpty()) {
-
-			$input = $positions->pop();
-			while($input->valid()) {
-
-				$element = $input->current();
-				$input->next();
-
-				if($element instanceof IncrementEscape || $element instanceof DecrementEscape) {
-					yield $element;
-					continue;
-				}
-
-				if($element instanceof Renderable) {
-					$element = $element->render();
-				}
-
-				if ($element instanceof HTMLGeneratorAbstract) {
-					$element = $element->toStringArray();
-				} else if(is_scalar($element)) {
-					$element = new ArrayIterator([new IncrementEscape(), new SafeString($element), new DecrementEscape()]);
-				} else if(is_array($element)) {
-					$element = new ArrayIterator($element);
-				} else if($element instanceof DoubleEncode) {
-					$element = new ArrayIterator([new IncrementEscape(), $element->value, new DecrementEscape()]);
-				}
-
-				if($element instanceof Iterator) {
-					$positions->push($input);
-					$input = $element;
-				} else if(!is_null($element)) {
-					if($element instanceof SafeString) {
-						$element = $element->getValue();
-					} else {
-						throw new Exception('Invalid HTML generation target!');
-					}
-
-
-					yield $element;
-				}
-
-			}
+class HTMLIterator implements RecursiveIterator {
+	function __construct($iterator) {
+		if(is_array($iterator)) {
+			$this->iterator = new ArrayIterator($iterator);
+		} else if($iterator instanceof HTMLGeneratorAbstract || $iterator instanceof DoubleEncode) {
+			$this->iterator = $iterator->toStringArray();
+		} else {
+			throw new Exception("Invalid HTML");
 		}
+	}
+	function getChildren() {
+		return new HTMLIterator($this->current());
+	}
+	function hasChildren() {
+		$cur = $this->current();
+		return is_array($cur) || $cur instanceof HTMLGeneratorAbstract || $cur instanceof DoubleEncode;
+	}
+	private function process($element) {
+		while($element instanceof Renderable) {
+			$element = $element->render();
+		}
+		if(is_scalar($element)) {
+			return [
+				new IncrementEscape(),
+				new SafeString($element),
+				new DecrementEscape()
+			];
+		} else {
+			return $element;
+		}
+	}
+	function current() {
+		return $this->process($this->iterator->current());
+	}
+	function key() {
+		return $this->iterator->key();
+	}
+	function next() {
+		return $this->process($this->iterator->next());
+	}
+	function rewind() {
+		return $this->iterator->rewind();
+	}
+	function valid() {
+		return $this->iterator->valid();
 	}
 }
 
@@ -98,6 +108,11 @@ class SafeString {
 class DoubleEncode {
 	function __construct($value) {
 		$this->value = $value;
+	}
+	function toStringArray() {
+		yield new IncrementEscape();
+		yield $this->value;
+		yield new DecrementEscape();
 	}
 }
 

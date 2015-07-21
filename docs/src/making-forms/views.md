@@ -6,7 +6,7 @@ nav_groups:
 nav_sort: 4
 ---
 
-The `views` element specifies ways in which the data from the form can be viewed. Currently, there are two types of views: tables (optionally paginated) and graphs (many of which can be shown on a single page).
+The `views` element specifies ways in which the data from the form can be viewed. (The data must be stored in MongoDB; for more information about how to set this up, see [Outputs](outputs.html).) Currently, there are two types of views: tables (optionally paginated) and graphs (many of which can be shown on a single page).
 
 Tables are specified using the `table-view` element, while pages of graphs are specified using the `graph-view` element. These elements have the following attributes:
 

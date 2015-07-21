@@ -11,6 +11,9 @@ body { overflow-x: auto; }
 
 .ui.form .success.message, .ui.form .warning.message, .ui.form .error.message:not(.validation-error-message) { display:block; }
 
+/* Fix table borders */
+.ui.table tr:first-child td { border-top: 1px solid rgba(34, 36, 38, 0.1); }
+.ui.table tr:first-child > td { border-top: medium none; }
 
 /* Darker background*/
 body { background: #F7F7F7; }

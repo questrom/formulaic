@@ -59,6 +59,11 @@ class SubmitCounts {
 		}
 		return isget(self::$data->$formName, 0);
 	}
+	static function increment($formID) {
+		$counts = json_decode(file_get_contents('data/submit-counts.json'));
+		$counts->$formID = isget($counts->$formID, 0) + 1;
+		file_put_contents('data/submit-counts.json', json_encode($counts));
+	}
 }
 
 class Parser {

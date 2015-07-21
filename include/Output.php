@@ -164,9 +164,7 @@ class S3Output implements Output, XmlDeserializable {
 
 class CounterOutput implements Output {
 	function run($data, $page) {
-		$counts = json_decode(file_get_contents('data/submit-counts.json'));
-		$counts->{$page->id} = isget($counts->{$page->id}, 0) + 1;
-		file_put_contents('data/submit-counts.json', json_encode($counts));
+		SubmitCounts::increment($page->id);
 		return $data;
 	}
 }
