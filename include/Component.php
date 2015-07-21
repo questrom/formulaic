@@ -602,7 +602,8 @@ class Notice implements FormPartFactory, XmlDeserializable {
 	}
 }
 
-class ListComponent implements FormPartFactory, XmlDeserializable, TableCellFactory {
+class ListComponent implements FormPartFactory, XmlDeserializable,
+    NormalTableCellFactory, DetailsTableCellFactory, Storeable {
 	use Configurable, Tableize, Groupize;
 	function __construct($args) {
 		$this->items = $args['children'];

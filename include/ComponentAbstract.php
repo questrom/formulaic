@@ -33,7 +33,6 @@ interface DetailsTableCellFactory {
 	public function makeEmailTableCell($value);
 }
 
-interface TableCellFactory extends NormalTableCellFactory, DetailsTableCellFactory, Storeable {}
 
 trait Groupize {
 	public function makeGroupPart() {
@@ -50,7 +49,9 @@ trait Tableize {
 	}
 }
 
-abstract class NamedLabeledComponent implements FormPartFactory, XmlDeserializable, TableCellFactory {
+abstract class NamedLabeledComponent implements FormPartFactory, XmlDeserializable,
+    NormalTableCellFactory, DetailsTableCellFactory, Storeable {
+
 
 	use Configurable, Tableize, Groupize;
 
