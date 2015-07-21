@@ -80,13 +80,11 @@ abstract class NamedLabeledComponent implements FormPartFactory, XmlDeserializab
 abstract class PostInputComponent extends NamedLabeledComponent {
 	function getSubmissionPart($val) {
 		return $this->validate(
-			$val
-				->innerBind(function ($x) {
+			$val->innerBind(function ($x) {
 					return Result::ok($x->post);
 				})
 				->byName($this->name)
-		)
-			->name($this->name);
+		)->name($this->name);
 	}
 	protected abstract function validate($val);
 }

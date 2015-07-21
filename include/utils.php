@@ -3,12 +3,13 @@
 use Yosymfony\Toml\Toml;
 use Gregwar\Cache\Cache;
 
-/* Based on https://github.com/ArtBIT/isget/blob/master/src/isget.php */
+# Shortcut for "isset()" checks
+# Name inspired by https://github.com/ArtBIT/isget/blob/master/src/isget.php
 function isget(&$value, $default = null) {
 	return isset($value) ? $value : $default;
 }
 
-/* Recursively process data from MongoDB to fix date/time info */
+# Process data from MongoDB to convert dates and times
 function fixMongoDates($value) {
 	$config = Config::get();
 	if(is_array($value)) {
@@ -20,7 +21,7 @@ function fixMongoDates($value) {
 	}
 }
 
-/* Manage config data */
+# Get and cache configuration data
 class Config {
 	private static $data = null;
 	static function get() {
@@ -31,14 +32,15 @@ class Config {
 	}
 }
 
-/* Fake cache that doesn't really do anything */
+# A "fake cache" used in place of Gregwar\Cache\Cache when caching is disabled
 class FakeCache extends Cache {
 	public function set($filename, $contents = '') { return $this; }
 	protected function checkConditions($cacheFile, array $conditions = []) { return false; }
 }
 
-
-// See http://php.net/manual/en/reserved.variables.files.php
+# PHP formats the $_FILES array in an extremely unusual way;
+# this function fixes it so that it works more like $_POST.
+# See http://php.net/manual/en/reserved.variables.files.php#109958
 function diverse_array($vector) {
    $result = [];
    foreach($vector as $part => $val) {
@@ -51,11 +53,18 @@ function diverse_array($vector) {
    return $result;
 }
 
-
+# Winner of the "least interesting function of the year" award...
 function midpoint($a, $b) {
 	return $a + (($b - $a) / 2);
 }
 
+# To fix potential issues with HTTP caching, we take the hashes of different assets (i.e., CSS/JS files)
+# and put these hashes into the URLs of those assets. Apache ignores the hashes because of URL rewriting.
+# This is called URL fingerprinting; see https://developers.google.com/speed/docs/insights/LeverageBrowserCaching
+# for further details.
+
+# This class computes the hashes and, if cache-hashes is enabled in the configuration file,
+# caches the hashes so we don't need to re-hash files on every single request.
 class Hashes {
 	private static $data = null;
 	private static $config = null;
@@ -90,6 +99,9 @@ class Hashes {
 	}
 }
 
+# This function writes the URLs, with hashes included, into a page before it is displayed to the user.
+# We have to do this replacement after the page has been generated so that we can cache
+# form UIs properly (when cache-forms is enabled).
 function fixAssets($html) {
 	return preg_replace_callback('/____\{\{asset (.*?)\}\}____/', function($matches) {
 		return preg_replace_callback('/^(.*)\.(.*)$/', function($parts) use($matches) {

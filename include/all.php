@@ -1,16 +1,19 @@
 <?php
 
-// Load dependencies
+# Composer dependencies
 require 'vendor/autoload.php';
+
+# Forked and slightly modified version of Jade.php
+# see: https://github.com/everzet/jade.php
 require 'jade/autoload.php.dist';
 
-// Utils
+# Miscellaneous utility functions
 require 'include/utils.php';
 
-// Misc settings
+# Set the time zone manually so PHP won't complain
 date_default_timezone_set(Config::get()['time-zone']);
 
-// Config parsing
+# Parser for configuration files (and miscellaneous related stuff)
 require 'include/Parser.php';
 
 // Show-if conditions
