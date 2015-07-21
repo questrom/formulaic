@@ -26,7 +26,7 @@ abstract class HTMLGeneratorAbstract implements IteratorAggregate {
 				throw new Exception("Invalid HTML");
 			}
 		}
-		echo '<br><br><br>' . (microtime(true) - $time) * 1000 . 'ms';
+		// echo '<br><br><br>' . (microtime(true) - $time) * 1000 . 'ms';
 		return $out;
 	}
 
