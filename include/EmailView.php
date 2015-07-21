@@ -60,7 +60,7 @@ class EmailTable implements Renderable {
 			->col->width('70%')->end
 			->tbody
 				->addH(array_map(function($field) {
-					if($field instanceof TableCellFactory && $field instanceof FormPartFactory) {
+					if($field instanceof TableCellFactory) {
 						return new EmailValueRow( isget($this->data[$field->name]), $field );
 					} else {
 						return null;

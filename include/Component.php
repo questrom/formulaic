@@ -676,8 +676,8 @@ class Group extends GroupComponent {
 	}
 }
 
-class IPField implements TableCellFactory {
-	use Tableize;
+class IPField implements NormalTableCellFactory {
+
 	function __construct() {
 		$this->name = '_ip';
 		$this->label = 'IP Address';
@@ -695,8 +695,8 @@ class IPField implements TableCellFactory {
 
 }
 
-class TimestampField implements TableCellFactory {
-	use Tableize;
+class TimestampField implements NormalTableCellFactory {
+
 	function __construct() {
 		$this->name = '_timestamp';
 		$this->label = 'Timestamp';

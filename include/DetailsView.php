@@ -36,7 +36,7 @@ class ValueTable implements Renderable {
 		->table->class('ui unstackable definition table')
 			->tbody
 				->addH(array_map(function($field) {
-					if($field instanceof TableCellFactory && $field instanceof FormPartFactory) {
+					if($field instanceof TableCellFactory) {
 						return new ValueRow( isget($this->data[$field->name]), $field );
 					} else {
 						return null;

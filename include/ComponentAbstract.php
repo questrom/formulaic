@@ -24,8 +24,12 @@ interface Renderable {
 	public function render();
 }
 
-interface TableCellFactory extends Storeable {
+interface NormalTableCellFactory extends Storeable {
 	public function makeTableCellPart($value);
+}
+
+interface TableCellFactory extends NormalTableCellFactory {
+
 	public function makeDetailedTableCell($value);
 	public function makeEmailTableCell($value);
 }
