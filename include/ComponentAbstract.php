@@ -29,7 +29,7 @@ interface NormalTableCellFactory {
 }
 
 interface DetailsTableCellFactory {
-	public function makeDetailedTableCell($value);
+	public function makeDetailsViewPart($value);
 	public function makeEmailTableCell($value);
 }
 
@@ -41,7 +41,7 @@ trait Groupize {
 }
 
 trait Tableize {
-	function makeDetailedTableCell($v) {
+	function makeDetailsViewPart($v) {
 		return $this->makeTableCellPart($v);
 	}
 	function makeEmailTableCell($v) {

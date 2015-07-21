@@ -352,7 +352,7 @@ class FileUpload extends FileInputComponent {
 		if(is_string($v) && !isset($v['url'])) { return null; }
 		return new FileUploadTableCell($v);
 	}
-	function makeDetailedTableCell($v) {
+	function makeDetailsViewPart($v) {
 
 			if($v === null) { return null; }
 
@@ -658,7 +658,7 @@ class ListComponent implements FormPartFactory, XmlDeserializable,
 		}
 		return new OrdinaryTableCell($showValue);
 	}
-	function makeDetailedTableCell($v) {
+	function makeDetailsViewPart($v) {
 		if($v === null) { return null; }
 		return new ListDetailedTableCell($v, $this->getAllFieldsWithin());
 	}

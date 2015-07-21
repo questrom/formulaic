@@ -7,7 +7,7 @@ class ValueRow implements Renderable {
 	}
 
 	function render() {
-		$v = $this->component->makeDetailedTableCell($this->value);
+		$v = $this->component->makeDetailsViewPart($this->value);
 		if($v === null) {
 			$v = h()
 			->td->class('disabled')
@@ -31,7 +31,7 @@ class TablePart implements NormalTableCellFactory, DetailsTableCellFactory {
 	function makeTableCellPart($value) {
 		return new ValueCell($value, $this->component);
 	}
-	function makeDetailedTableCell($value) {
+	function makeDetailsViewPart($value) {
 		return new ValueRow($value, $this->component);
 	}
 	function makeEmailTableCell($value) {
@@ -51,7 +51,7 @@ class ValueTable implements Renderable {
 			->tbody
 				->addH(array_map(function($field) {
 					if($field instanceof DetailsTableCellFactory) {
-						return ( new TablePart( $field ) )->makeDetailedTableCell(  isget($this->data[$field->name]) );
+						return ( new TablePart( $field ) )->makeDetailsViewPart(  isget($this->data[$field->name]) );
 					} else {
 						return null;
 					}
@@ -66,7 +66,7 @@ class StampedTable implements DetailsTableCellFactory {
 	function __construct($fields) {
 		$this->fields = $fields;
 	}
-	function makeDetailedTableCell($data) {
+	function makeDetailsViewPart($data) {
 		return new ValueTable($this->fields, $data, new IPTimestampInfo($data));
 	}
 	function makeEmailTableCell($data) {
@@ -119,7 +119,7 @@ class DetailsViewRenderable implements Renderable {
 						->t($this->title)
 					->end
 					->addH(
-						(new StampedTable($this->fields))->makeDetailedTableCell($this->data)
+						(new StampedTable($this->fields))->makeDetailsViewPart($this->data)
 					)
 				->end
 			->end
