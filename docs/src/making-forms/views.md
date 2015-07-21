@@ -6,29 +6,88 @@ nav_groups:
 nav_sort: 4
 ---
 
-The `views` element specifies ways in which the data from the form can be viewed. (The data must be stored in MongoDB; for more information about how to set this up, see [Outputs](outputs.html).) Currently, there are two types of views: tables (optionally paginated) and graphs (many of which can be shown on a single page).
+The elements described on this page are used to create "views" &mdash; pages on which the user can easily view the data submitted through the form. To add a view, place a `table-view` or `graph-view` element (as described below) into the `views` section of a [configuration file](introduction.html).
 
-Tables are specified using the `table-view` element, while pages of graphs are specified using the `graph-view` element. These elements have the following attributes:
+Views can be accessed through the main page of the app, in the links placed below each form.
 
-* `name` specifies the name of the view, to be used primarily in URLs.
-* `title` specifies the title of the view, which the user will see.
-* For table views, `per-page` specifies the number of items that will be shown on each page. If absent, no pagination will occur.
+## Table Views
 
-### More about table views
+<h3 class="ui header top attached">
+The `table-view` element
+</h3><div class="ui bottom attached segment">
+This element creates a table view: a view which shows data as an (optionally paginated) table. Each `table-view` element **must contain one or more `col` elements.**
 
-The `table-view` element must contain at least one `col` element, which specifies a column within the table. The `col` element has the following attributes
+##### Attributes:
+* **`name`**
 
-* `name` specifies the name of the form field whose data will be displayed in the table.
-* `header` specifies the header at the top of the column.
-* `width` specifies the relative width of the column.
+  Specifies the name of the view, to be used in URLs. No two views for the same form can have the same name.
+
+* **`title`**
+
+  Specifies the title of the view, which the user will see.
+
+* **`per-page`**
+
+  If provided, this attribute specifies the number of items that are shown on a page. If not provided, the table will not be paginated.
+</div>
+
+<h3 class="ui header top attached">
+The `col` element
+</h3><div class="ui bottom attached segment">
+This element creates a column within a table view. Each `table-view` element must contain one or more columns.
+
+##### Attributes:
+
+* **`name`**
+
+  The name of the form field whose associated data will be displayed in the column.
+
+* **`header`**
+
+  The header at the top of the column.
+
+* **`width`**
+
+  The *relative* width of the column.
 
   For instance, if there are five columns with `width=1`, each column will take up a fifth of the available space; if one column has `width=2` and another has `width=1`, the former will take up twice as much space as the latter.
 
-* If the `sort` attribute is provided, the table will be sorted by the value of the column. If the attribute is set to `asc`, the sort is ascending; otherwise, it is descending.
+* **`sort`**
 
-### More about graph views
+  If provided, the table will be sorted by the value of this column.
 
-The `graph-view` element contains `bar` and `pie` elements, which represent bar and pie charts, respectively. Both `bar` and `pie` elements have the following attributes:
+  If the attribute is set to `asc`, the sort is ascending; otherwise, it is descending.
+</div>
 
-* `name` specifies the name of the graph, which is used internally and must (like other names) be unique.
-* `label` specifies the label text that will go above the graph.
+## Graph Views
+
+<h3 class="ui header top attached">
+The `graph-view` element
+</h3><div class="ui bottom attached segment">
+This element creates a graph view: a view that displays data as a series of one or more graphs. Each `graph-view` element **must contain one or more `bar` or `pie` elements.**
+
+##### Attributes:
+* **`name`**
+
+  Specifies the name of the view, to be used in URLs. No two views for the same form can have the same name.
+
+* **`title`**
+
+  Specifies the title of the view, which the user will see.
+</div>
+
+<h3 class="ui header top attached">
+The `bar` and `pie` elements
+</h3><div class="ui bottom attached segment">
+These elements, which must be placed within a `graph-view` element, create bar graphs and pie charts, respectively.
+
+##### Attributes:
+
+* **`name`**
+
+  The name of the form field whose associated data will be displayed in the graph.
+
+* **`label`**
+
+  The header text that will be displayed above the graph.
+</div>
