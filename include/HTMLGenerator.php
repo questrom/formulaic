@@ -3,10 +3,10 @@
 class IncrementEscape {}
 class DecrementEscape {}
 
-abstract class HTMLGeneratorAbstract {
+abstract class HTMLGeneratorAbstract implements IteratorAggregate {
 	abstract function addH($arr);
 	abstract function __get($name);
-	abstract function toStringArray();
+	abstract function getIterator();
 
 	final function t($text) {
 		return $this->addH($text);
@@ -15,65 +15,74 @@ abstract class HTMLGeneratorAbstract {
 	final function generateString() {
 		$time = microtime(true);
 		$out = '';
-		$escapeCount = 0;
-		// $rec = new RecursiveIteratorIterator(new RecursiveArrayIterator(iterator_to_array($this->toFullArray())));
 
-		$rec = new RecursiveIteratorIterator(new HTMLIterator($this->toStringArray()));
+
+		$rec = new RecursiveIteratorIterator(new HTMLIterator($this->getIterator(), 0));
+		$rec = iterator_to_array($rec, false);
 		foreach($rec as $x) {
-			if($x instanceof IncrementEscape) {
-				$escapeCount++;
-			} else if ($x instanceof DecrementEscape) {
-				$escapeCount--;
-			} else if($x instanceof SafeString) {
-				$x = $x->getValue();
-
-				for($j = 0; $j < $escapeCount; $j++) {
-					$x = htmlspecialchars($x, ENT_QUOTES);
-				}
+			if(is_scalar($x)) {
 				$out .= $x;
-			} else if(is_null($x)) {
-				continue;
 			} else {
 				throw new Exception("Invalid HTML");
 			}
-
 		}
-		// echo '<br><br><br>' . (microtime(true) - $time);
+		echo '<br><br><br>' . (microtime(true) - $time) * 1000 . 'ms';
 		return $out;
 	}
 
 }
 
 class HTMLIterator implements RecursiveIterator {
-	function __construct($iterator) {
+	function __construct($iterator, $escapeCount) {
 		$this->iterator = $iterator;
+		// var_dump($escapeCount);
+		$this->escapeCount = $escapeCount;
 	}
 	function getChildren() {
-		return new HTMLIterator($this->current());
+		return $this->current();
 	}
 	function hasChildren() {
-		$cur = $this->current();
-		return $cur instanceof Iterator;
+		return $this->current() instanceof HTMLIterator;
 	}
 	private function process($element) {
 		while($element instanceof Renderable) {
 			$element = $element->render();
 		}
 
-		if($element instanceof HTMLGeneratorAbstract || $element instanceof DoubleEncode) {
-			$element = $element->toStringArray();
+		if($element instanceof DoubleEncode) {
+			return new HTMLIterator(new ArrayIterator([
+				$element->value
+			]), $this->escapeCount + 1);
 		}
+
+		if($element instanceof IteratorAggregate) {
+			$element = $element->getIterator();
+		}
+
 		if(is_array($element)) {
-			return new ArrayIterator($element);
+			$element = new ArrayIterator($element);
 		}
+
 		if(is_scalar($element)) {
-			return new ArrayIterator([
-				new IncrementEscape(),
-				new SafeString($element),
-				new DecrementEscape()
-			]);
+			return new HTMLIterator(new ArrayIterator([
+				new SafeString($element)
+			]), $this->escapeCount + 1);
 		}
-		return $element;
+
+		if($element instanceof Iterator) {
+			return new HTMLIterator($element, $this->escapeCount);
+		} else if($element instanceof SafeString) {
+			$element = $element->getValue();
+			for($j = 0; $j < $this->escapeCount; $j++) {
+				$element = htmlspecialchars($element, ENT_QUOTES);
+			}
+			return $element;
+		} else if(is_null($element)) {
+			return '';
+		} else {
+			throw new Exception("Invalid HTML");
+		}
+
 	}
 	function current() {
 		return $this->process($this->iterator->current());
@@ -109,13 +118,6 @@ class DoubleEncode {
 	function __construct($value) {
 		$this->value = $value;
 	}
-	function toStringArray() {
-		return [
-			new IncrementEscape(),
-			$this->value,
-			new DecrementEscape()
-		];
-	}
 }
 
 class AssetUrl extends SafeString {
@@ -143,8 +145,8 @@ class HTMLContentGenerator extends HTMLGeneratorAbstract {
 		return new HTMLContentGenerator($children);
 	}
 
-	function toStringArray() {
-		return $this->children;
+	function getIterator() {
+		return new ArrayIterator($this->children);
 	}
 }
 
@@ -181,7 +183,7 @@ class HTMLTagGenerator extends HTMLGeneratorAbstract {
 		return new HTMLTagGenerator(new HTMLContentGenerator(), $name);
 	}
 
-	function toStringArray() {
+	function getIterator() {
 		yield new SafeString('<');
 		yield $this->tag;
 		foreach ($this->attrs as $key => $value) {
@@ -226,7 +228,7 @@ class HTMLParentContext extends HTMLGeneratorAbstract {
 		}
 	}
 
-	function toStringArray() {
+	function getIterator() {
 		yield $this->generator;
 	}
 }
@@ -244,7 +246,7 @@ class HTMLParentlessContext extends HTMLGeneratorAbstract{
 		return new HTMLParentlessContext($this->generator->addH($arr));
 	}
 
-	function toStringArray() {
+	function getIterator() {
 		yield $this->generator;
 	}
 }
