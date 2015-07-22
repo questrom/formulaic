@@ -2,6 +2,8 @@
 
 use Sabre\Xml\XmlDeserializable;
 
+# Represents the 'views' element in a configuration file.
+# Allows views to be queried.
 class ViewList implements XmlDeserializable {
 	use Configurable;
 	private $views;
@@ -21,12 +23,16 @@ class ViewList implements XmlDeserializable {
 	}
 }
 
+# An interface implemented by every view.
 interface View {
 	function query($args);
 	function setPage($page);
 	function makeView($data);
 }
 
+# Implemented by all elements that can be parts of a graph view.
 interface GraphViewPartFactory {
+
+	# Makes part of a graph view. Should return a Renderable.
 	function makeGraphViewPart($data);
 }

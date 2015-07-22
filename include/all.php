@@ -22,7 +22,7 @@ require 'include/Condition.php';
 # DSL for generating HTML
 require 'include/HTMLGenerator.php';
 
-// Form valdation
+# Form validation helper
 require 'include/Validate.php';
 
 // Components
@@ -35,12 +35,12 @@ require 'include/Component.php';
 # Outputs
 require 'include/Output.php';
 
-// Views
+# Views
 require 'include/View.php';
 require 'include/TableView.php';
 require 'include/DetailsView.php';
 require 'include/GraphView.php';
 require 'include/EmailView.php';
 
-// Main form list
+# Generate the main list of forms
 require 'include/FormList.php';
