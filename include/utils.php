@@ -130,3 +130,22 @@ class SubmitCounts {
 		file_put_contents('data/submit-counts.json', json_encode($counts));
 	}
 }
+
+# Holds data from $_POST and $_FILES in a single data structure
+class ClientData {
+	function __construct($post, $files) {
+		$this->post = $post;
+		$this->files = $files;
+	}
+}
+
+# Stores information about an uploaded file that has *not* yet been
+# uploaded to S3
+class FileInfo {
+	function __construct($file, $filename, $mime, $permissions) {
+		$this->file = $file;
+		$this->filename = $filename;
+		$this->mime = $mime;
+		$this->permissions = $permissions;
+	}
+}

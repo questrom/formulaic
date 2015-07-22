@@ -9,6 +9,66 @@
 # reused by several form fields. These methods could be put
 # on a static class, but that would make the syntax generally uglier.
 abstract class Validate {
+
+	# These functions makes it easier to deal with values created
+	# by the Result class.
+
+
+	# collapse() does the following conversion:
+	# Success(Success($x)) -> Success($x)
+	# Success(Failure($x)) -> Success($x)
+	# Failure($x)          -> Failure($x)
+	function collapse() {
+		return $this
+			->ifSuccess(function($x) {
+				return new Success(
+					$x
+					->ifSuccess(function($y) { return new Success($y); })
+					->ifError(function($y) { return new Success($y); })
+					->ifSuccess(function($y) { return $y; })
+				);
+			});
+	}
+
+	# Bind a Success within a Success.
+	# Basically, if $this is a Success(Success($z)), then
+	# the "callable" provided to this method will be invoked with $z as
+	# its parameter. Then, the return value of the callable will be returned.
+
+	# This lets us ignore Result::none and Result::error values when validating.
+	function innerBind(callable $x) {
+		return $this->ifSuccess(function($val) use($x) {
+			return $val
+				->ifSuccess(function($data) use($val, $x) {
+					return new Success($val->ifSuccess($x));
+				})
+				->ifError(function($data) {
+					return new Success(Result::none($data));
+				})
+				->ifSuccess(function($data) {
+					return $data;
+				});
+		});
+	}
+
+	# Similar to innerBind(), but it binds a Failure within a Success;
+	# it can be used to  make sure a value is a Result::none.
+	function bindNothing(callable $x) {
+		return $this->ifSuccess(function($val) use($x) {
+			return $val
+				->ifSuccess(function($data) {
+					return new Success(Result::ok($data));
+				})
+				->ifError(function($data) use($val, $x) {
+					return new Success($val->ifError($x));
+				})
+				->ifSuccess(function($data) {
+					return $data;
+				});
+		});
+	}
+
+	# Convert a value to a boolean, if possible.
 	function filterBoolean() {
 		return $this->innerBind(function($x) {
 			$value = filter_var($x, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
@@ -22,6 +82,8 @@ abstract class Validate {
 			}
 		});
 	}
+
+	# Make sure a value is a string
 	function filterString() {
 		return $this->innerBind(function($x) {
 			if(is_string($x)) {
@@ -31,6 +93,8 @@ abstract class Validate {
 			}
 		});
 	}
+
+	# Run a value through "filter_var"
 	function filterFilterVar($cons, $msg) {
 		return $this->innerBind(function($x) use ($cons, $msg) {
 			$addr = filter_var($x, $cons);
@@ -41,6 +105,8 @@ abstract class Validate {
 			}
 		});
 	}
+
+	# Check that a value is a member of $options
 	function filterChosenFromOptions($options) {
 		return $this->innerBind(function($x) use($options) {
 			if($x === '' || $x === null) {
@@ -52,6 +118,9 @@ abstract class Validate {
 			}
 		});
 	}
+
+	# Check that a value is an array
+	# All of the array's members mtub e contained in $options
 	function filterManyChosenFromOptions($options) {
 		return $this->innerBind(function($x) use($options) {
 			if($x === null) {
@@ -63,6 +132,8 @@ abstract class Validate {
 			}
 		});
 	}
+
+	# Convert a value into a date, if possible
 	function filterDate() {
 		return $this->innerBind(function($x) {
 			if(trim($x) == '') {
@@ -80,12 +151,14 @@ abstract class Validate {
 			}
 		});
 	}
+
+	# Static helper method to convert a time into second-past-midnight form.
 	static function timeToSeconds($x) {
-
 		$date = DateTimeImmutable::createFromFormat('g:i a', $x);
-
 		return 	($date->format('G') * 3600) + ($date->format('i') * 60);
 	}
+
+	# Convert a value into a time, if possible
 	function filterTime() {
 		return $this->innerBind(function($x) {
 
@@ -103,6 +176,8 @@ abstract class Validate {
 			}
 		});
 	}
+
+	# Convert a value into a date/time, if possible
 	function filterDateTime() {
 		return $this->innerBind(function($x) {
 
@@ -119,6 +194,8 @@ abstract class Validate {
 			}
 		});
 	}
+
+	# Check that a value is a phone number
 	function filterPhone() {
 		return $this->innerBind(function($x) {
 			$phn = preg_replace('/[^x+0-9]/', '', $x);
@@ -129,6 +206,8 @@ abstract class Validate {
 			}
 		});
 	}
+
+	# Check that a value is a number
 	function filterNumber($integer) {
 		return $this->innerBind(function($x) use ($integer) {
 
@@ -145,6 +224,8 @@ abstract class Validate {
 			}
 		});
 	}
+
+	# Marks a result containing an empty string as absent
 	function filterEmptyString() {
 		return $this->innerBind(function($x) {
 			if(trim($x) === '') {
@@ -154,6 +235,8 @@ abstract class Validate {
 			}
 		});
 	}
+
+	# Marks a result containing an empty array as absent
 	function filterNoChoices() {
 		return $this->innerBind(function($x) {
 			if(count($x) === 0) {
@@ -162,7 +245,8 @@ abstract class Validate {
 			return Result::ok($x);
 		});
 	}
-	// Required checkers
+
+	# If a field is "required," make sure it isn't a Result::none
 	function requiredMaybe($enable) {
 		return $this->bindNothing(function($x) use ($enable) {
 			if($enable) {
@@ -172,7 +256,8 @@ abstract class Validate {
 			}
 		});
 	}
-	// More sophisticated checks
+
+	# Check that a specific value is boolean TRUE
 	function mustBeTrue($enable) {
 		return $this->innerBind(function($x) use ($enable) {
 			if($enable && !$x) {
@@ -181,11 +266,12 @@ abstract class Validate {
 			return Result::ok($x);
 		});
 	}
+
+	# Check that an email address has a specific domain
 	function mustHaveDomain($checkDomain) {
 		return $this->innerBind(function($x) use ($checkDomain) {
 			if($checkDomain !== null) {
-				// The simplest way, according to http://stackoverflow.com/questions/6917198/
-				// This seems overly simple, but apparently it works
+				# See http://stackoverflow.com/questions/6917198/
 				$domain = explode('@', $x);
 				$domain = array_pop($domain);
 
@@ -196,6 +282,8 @@ abstract class Validate {
 			return Result::ok($x);
 		});
 	}
+
+	# Check that a date is within a range
 	function minMaxDate($minDate, $maxDate) {
 		return $this->innerBind(function($x) use ($minDate, $maxDate) {
 
@@ -209,6 +297,8 @@ abstract class Validate {
 			}
 		});
 	}
+
+	# Check that the length of a string is within a specific range
 	function minMaxLength($minLength, $maxLength) {
 		return $this->innerBind(function($x) use ($minLength, $maxLength) {
 			if(strlen($x) > $maxLength) {
@@ -220,6 +310,8 @@ abstract class Validate {
 			}
 		});
 	}
+
+	# Check that a string matches a regular expression
 	function matchRegex($regex) {
 		return $this->innerBind(function($x) use ($regex) {
 			if($regex !== null && preg_match($regex, $x) === 0) {
@@ -228,6 +320,9 @@ abstract class Validate {
 			return Result::ok($x);
 		});
 	}
+
+	# Check that a password matches a hashed password created
+	# with PHP's built in password_hash() function
 	function matchHash($hash) {
 		return $this->innerBind(function($x) use ($hash) {
 			if($hash !== null) {
@@ -241,6 +336,8 @@ abstract class Validate {
 			return Result::ok($x);
 		});
 	}
+
+	# Check that an array's length is within a certain range
 	function minMaxChoices($min, $max) {
 		return $this->innerBind(function($x) use($min, $max) {
 			if(count($x) < $min) {
@@ -251,6 +348,10 @@ abstract class Validate {
 			return Result::ok($x);
 		});
 	}
+
+	# If a string is empty, don't bother validating it
+	# (Unless the field is "required", in which case
+	# requiredMaybe will deal with it)
 	function maybeString() {
 		return $this->innerBind(function($x) {
 			if(trim($x) === '') {
@@ -260,6 +361,8 @@ abstract class Validate {
 			}
 		});
 	}
+
+	# Check that a nubmer is within a certain range
 	function minMaxNumber($min, $max) {
 		return $this->innerBind(function($x) use($min, $max) {
 			if($x < $min || $x > $max) {
@@ -268,6 +371,9 @@ abstract class Validate {
 			return Result::ok($x);
 		});
 	}
+
+	# Check that a time (measured in minutes past midnight)
+	# is within a certain range
 	function minMaxTime($min, $max) {
 		$compmin = $min === null ? 0 : self::timeToSeconds($min);
 		$compmax = $max === null ? 86400 : self::timeToSeconds($max);
@@ -287,6 +393,8 @@ abstract class Validate {
 			return Result::ok($x);
 		});
 	}
+
+	# Check that a date/time is within a certain range
 	function minMaxDateTime($min, $max) {
 		return $this->innerBind(function($x) use($min, $max) {
 			if($min !== null && $min->diff($x)->invert === 1) {
@@ -298,6 +406,8 @@ abstract class Validate {
 			return Result::ok($x);
 		});
 	}
+
+	# Check that a number is a multiple of another number
 	function stepNumber($step) {
 		if($step === 'any') {
 			return $this;
@@ -310,6 +420,9 @@ abstract class Validate {
 			});
 		}
 	}
+
+	# Check that a time (measured in minutes past midnight)
+	# is a multiple of a specific number
 	function stepTime($step) {
 		if($step === 'any') {
 			return $this;
@@ -326,6 +439,9 @@ abstract class Validate {
 			});
 		}
 	}
+
+	# Check that the "time" component of a date/time is a multiple
+	# of a specific number
 	function stepDateTime($step) {
 		if($step === 'any') {
 			return $this;
@@ -344,47 +460,7 @@ abstract class Validate {
 		}
 	}
 
-	// Utility methods
-	function collapse() {
-		return $this
-			->ifSuccess(function($x) {
-				return new Success(
-					$x
-					->ifSuccess(function($y) { return new Success($y); })
-					->ifError(function($y) { return new Success($y); })
-					->ifSuccess(function($y) { return $y; })
-				);
-			});
-	}
-	function innerBind(callable $x) {
-		return $this->ifSuccess(function($val) use($x) {
-			return $val
-				->ifSuccess(function($data) use($val, $x) {
-					return new Success($val->ifSuccess($x));
-				})
-				->ifError(function($data) {
-					return new Success(Result::none($data));
-				})
-				->ifSuccess(function($data) {
-					return $data;
-				});
-		});
-	}
-	function bindNothing(callable $x) {
-		return $this->ifSuccess(function($val) use($x) {
-			return $val
-				->ifSuccess(function($data) {
-					return new Success(Result::ok($data));
-				})
-				->ifError(function($data) use($val, $x) {
-					return new Success($val->ifError($x));
-				})
-				->ifSuccess(function($data) {
-					return $data;
-				});
-		});
-	}
-
+	# Validate a CAPTCHA using reCAPTCHA
 	function checkCaptcha()  {
 		return $this->innerBind(function($v) {
 			$recaptcha = new \ReCaptcha\ReCaptcha(Config::get()['recaptcha']['secret-key']);
@@ -396,17 +472,26 @@ abstract class Validate {
 				}
 		});
 	}
+
+	# Upon success, don't store anything in the database
 	function noStore() {
 		return $this->innerBind(function($v) {
 			return Result::ok([]);
 		});
 	}
+
+	# Pull a specific field out of an array and validate that.
+	# In general, this means: get the $_POST data corresponding
+	# to a particular form field.
 	function byName($name) {
 		return $this->innerBind(function($v) use($name) {
-					return Result::ok(isget($v[$name]));
-				});
+			return Result::ok(isget($v[$name]));
+		});
 	}
 
+	# Put the value into an array with the given key.
+	# Generally, this means: allow the data to be merged with other
+	# data and stored in the database.
 	function name($name) {
 		return $this
 			->collapse()
@@ -417,6 +502,8 @@ abstract class Validate {
 				return Result::error([$name => $r]);
 			});
 	}
+
+
 
 	function listValidate($minItems, $maxItems, $name, $items) {
 		return $this->innerBind(function($list) use ($minItems, $maxItems, $name, $items) {

@@ -26,7 +26,6 @@ require 'include/HTMLGenerator.php';
 require 'include/Validate.php';
 
 // Components
-require 'include/ComponentHelpers.php';
 require 'include/ComponentAbstract.php';
 require 'include/FormPart.php';
 require 'include/Cells.php';
