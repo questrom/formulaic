@@ -14,12 +14,45 @@ abstract class HTMLGeneratorAbstract {
 	}
 
 
+	final function buildString($iterator) {
+		$out = '';
+
+		foreach($iterator as $element) {
+			while($element instanceof Renderable) {
+				$element = $element->render();
+			}
+
+			if ($element instanceof HTMLGeneratorAbstract) {
+				$element = $element->toStringArray();
+			}
+
+			if(is_scalar($element)) {
+				$out .= htmlspecialchars($element, ENT_QUOTES);
+			} else if(is_array($element) || $element instanceof Traversable) {
+				$out .= $this->buildString($element);
+			} else if($element instanceof DoubleEncode) {
+				$out .= htmlspecialchars($this->buildString($element), ENT_QUOTES);
+			} else if($element instanceof SafeString) {
+				$out .= $element->value;
+			} else if (!is_null($element)) {
+				throw new Exception('Invalid HTML generation target!');
+			}
+		}
+		return $out;
+	}
 
 	final function generateString() {
 
+
+		$ret = $this->buildString($this->toStringArray());
+		return $ret;
+
+	}
+	final function generateIterative($iterator) {
+		// $time = microtime(true);
 		$out = '';
 		$positions = new SplStack();
-		$arr = $this->toStringArray();
+		$arr = $iterator;
 		if(is_array($arr)) {
 			$arr = new ArrayIterator($arr);
 		}
@@ -92,9 +125,6 @@ abstract class HTMLGeneratorAbstract {
 class SafeString {
 	function __construct($value) {
 		$this->value = $value;
-	}
-	function encode() {
-		return new SafeString(htmlspecialchars($this->value, ENT_QUOTES));
 	}
 }
 
