@@ -1,7 +1,14 @@
 <?php
 
+# In order to understand what this abstract class does, please
+# first read the documentation below it, which describes the nature of
+# the Success, Failure, and Result types.
+
+# This class provides a number of "shortcut" methods for Results
+# so that functions used for the purpose of validation can be
+# reused by several form fields. These methods could be put
+# on a static class, but that would make the syntax generally uglier.
 abstract class Validate {
-	// Type filters
 	function filterBoolean() {
 		return $this->innerBind(function($x) {
 			$value = filter_var($x, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
@@ -531,6 +538,38 @@ abstract class Validate {
 	}
 }
 
+# Below we define the data types used to store and manage form submission data.
+
+# What we need is a type with three variants, so to speak:
+# - One to store values that have been successfully validated and converted
+# - One to store values that have failed to validate properly
+# - One to store values that were never provided (this is especially useful
+#   when we need to make sure "required" fields are provided).
+
+# Below, we first describe two types that are basically monads; they are used
+# to represent successes and failures, respectively. Though this provides a
+# quite elegant approach to the problem, it only gives us *two* types -- not
+# three, as we want.
+
+# In order to get three, we combine these two types together. In particular:
+# - Successful values are stored as a Success within a Success
+# - Absent values are stored as a Failure within a Success
+# - Invalid values are stored as a Failure
+
+# We use Result -- a class with only static methods -- to produce these
+# three types.
+
+# To make it easier to work with values having these three types,
+# three methods in the Validate class are particularly important:
+# bindNothing(), innerBind(), and collapse(). These methods are discussed above.
+
+# This method, though rather complicated, does give us what we want --
+# a type with three separate variants but with the elegance provided
+# by a monadic approach.
+
+# Monad transformers (here, EitherT) may allow this to be simplified.
+# This may be something to investigate in the future, if this codebase
+# becomes important :)
 
 class Success extends Validate {
 	private $value;
