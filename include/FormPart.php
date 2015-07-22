@@ -1,6 +1,10 @@
 <?php
 
+# This file contains a number of Renderables used to create various parts of forms.
+# Some of them are used on other pages as well.
 
+
+# Labels (with possible sublabels)
 class Label implements Renderable {
 	function __construct($label, $sublabel = null) {
 		$this->label = $label;
@@ -15,7 +19,7 @@ class Label implements Renderable {
 	}
 }
 
-
+# A sublabel (if one has been provided)
 class PossibleSublabel implements Renderable {
 	function __construct($sublabel, $right = false) {
 		$this->sublabel = $sublabel;
@@ -31,6 +35,8 @@ class PossibleSublabel implements Renderable {
 	}
 }
 
+# A header, excluding stuff specific to whether the header is being placed
+# within a group or not.
 class BaseHeaderFormPart implements Renderable {
 	public function __construct($field) { $this->f = $field; }
 	function render() {
@@ -49,7 +55,8 @@ class BaseHeaderFormPart implements Renderable {
 	}
 }
 
-
+# A notice, excluding stuff specific to whether the header is being placed
+# within a group or not.
 class BaseNoticeFormPart implements Renderable {
 	public function __construct($field) { $this->f = $field; }
 	function render() {
@@ -81,7 +88,7 @@ class BaseNoticeFormPart implements Renderable {
 }
 
 
-
+# A header outside of a group
 class HeaderFormPart implements Renderable {
 	public function __construct($field) { $this->f = $field; }
 	function render() {
@@ -95,6 +102,7 @@ class HeaderFormPart implements Renderable {
 	}
 }
 
+# A header inside of a group
 class GroupHeaderFormPart implements Renderable {
 	public function __construct($field) { $this->f = $field; }
 	function render() {
@@ -108,25 +116,7 @@ class GroupHeaderFormPart implements Renderable {
 	}
 }
 
-
-class GroupNoticeFormPart implements Renderable {
-	public function __construct($field) { $this->f = $field; }
-	function render() {
-
-		return h()
-		->div
-			->class(
-				'ui message attached ' .
-				($this->f->icon === null ? '' : ' icon') .
-				($this->f->ntype ? (' ' . $this->f->ntype) : '')
-			)
-			->addH(
-				new BaseNoticeFormPart($this->f)
-			)
-		->end;
-	}
-}
-
+# A notice outside of a group
 class NoticeFormPart implements Renderable {
 	public function __construct($field) { $this->f = $field; }
 	function render() {
@@ -145,9 +135,33 @@ class NoticeFormPart implements Renderable {
 	}
 }
 
+# A notice outside of a group
+class GroupNoticeFormPart implements Renderable {
+	public function __construct($field) { $this->f = $field; }
+	function render() {
+
+		return h()
+		->div
+			->class(
+				'ui message attached ' .
+				($this->f->icon === null ? '' : ' icon') .
+				($this->f->ntype ? (' ' . $this->f->ntype) : '')
+			)
+			->addH(
+				new BaseNoticeFormPart($this->f)
+			)
+		->end;
+	}
+}
 
 
+# A generic input field
 class InputFormPart implements Renderable {
+	# $field - the form field being rendered
+	# $type - the type attribute of the input
+	# $icon - the icon going inside the input
+	# $mask - the input mask
+	# $sublabel - the sublabel to use
 	function __construct($field, $type, $icon = null, $mask = null, $sublabel = null) {
 		$this->f = $field;
 		$this->type = $type;
@@ -174,6 +188,7 @@ class InputFormPart implements Renderable {
 	}
 }
 
+# A number input
 class NumberFormPart implements Renderable {
 	function __construct($field) { $this->f = $field; }
 	function render() {
@@ -193,6 +208,7 @@ class NumberFormPart implements Renderable {
 	}
 }
 
+# A dropdown
 class DropdownFormPart implements Renderable {
 	public function __construct($field) { $this->f = $field; }
 	function render() {
@@ -219,6 +235,7 @@ class DropdownFormPart implements Renderable {
 	}
 }
 
+# A single radio button
 class RadioButton implements Renderable {
 	function __construct($name, $value) {
 		$this->name = $name;
@@ -235,7 +252,7 @@ class RadioButton implements Renderable {
 	}
 }
 
-
+# A set of radio buttons
 class RadiosFormPart implements Renderable {
 	public function __construct($field) { $this->f = $field; }
 	public function render() {
@@ -253,7 +270,7 @@ class RadiosFormPart implements Renderable {
 	}
 }
 
-
+# A textarea
 class TextareaFormPart implements Renderable {
 	public function __construct($field) { $this->f = $field; }
 	function render() {
@@ -269,11 +286,12 @@ class TextareaFormPart implements Renderable {
 }
 
 
+# Date formatting helper
 function df($date) {
 	return $date->format('g:ia m/d/Y');
 }
 
-
+# A date/time picker
 class DateTimePickerFormPart implements Renderable {
 	public function __construct($field) { $this->f = $field; }
 	function render() {
@@ -298,7 +316,7 @@ class DateTimePickerFormPart implements Renderable {
 	}
 }
 
-
+# A time picker
 class TimeInputFormPart implements Renderable {
 	public function __construct($field) { $this->f = $field; }
 	function render() {
@@ -327,7 +345,7 @@ class TimeInputFormPart implements Renderable {
 	}
 }
 
-
+# A checkbox
 class CheckboxFormPart implements Renderable {
 	public function __construct($field) { $this->f = $field; }
 	function render() {
@@ -341,13 +359,13 @@ class CheckboxFormPart implements Renderable {
 	}
 }
 
-
+# A show-if
 class ShowIfComponentFormPart implements Renderable {
 	public function __construct($field) { $this->f = $field; }
 	function render() {
-		// Provide a way of specifying type of cnodition, then read this in client.js
 		return h()
 			->div
+				# Expose information about the condition to the client JS code
 				->data('show-if-name', $this->f->condition->getName())
 				->data('show-if-condition', $this->f->condition->getCondition())
 				->addH($this->f->item)
@@ -355,7 +373,7 @@ class ShowIfComponentFormPart implements Renderable {
 	}
 }
 
-
+# A range input
 class RangeFormPart implements Renderable {
 	public function __construct($field) { $this->f = $field; }
 	function render() {
@@ -379,7 +397,7 @@ class RangeFormPart implements Renderable {
 }
 
 
-
+# A list of form fields
 class ListComponentFormPart implements Renderable {
 	public function __construct($field) { $this->f = $field; }
 	function render() {
@@ -404,7 +422,8 @@ class ListComponentFormPart implements Renderable {
 			->div->class('ui bottom attached segment list-items')
 				->script->type('text/template')
 					->addH(
-						// Forcibly HTML-encode things so that nested lists are generated properly...
+						# Put the contents of the list into a <script> tag, which the client JS code will use
+						# Forcibly HTML-encode things so that nested lists are generated properly...
 						new DoubleEncode(
 							h()
 							->div->class('ui vertical segment close-item')
@@ -412,6 +431,7 @@ class ListComponentFormPart implements Renderable {
 									->addH( array_map(function($x) { return $x ? $x->makeFormPart() : null; }, $this->f->items) )
 								->end
 								->button->type('button')->class('ui compact negative icon button delete-btn')
+									# A button for deleting items
 									->i->class('trash icon')->end
 							   ->end
 							->end
@@ -419,6 +439,7 @@ class ListComponentFormPart implements Renderable {
 					)
 				->end
 				->div->class('ui center aligned vertical segment')
+					# A button for adding new items
 					->button->type('button')->class('ui primary labeled icon button add-item')
 						->i->class('plus icon')->end
 						->t($this->f->addText)
@@ -430,7 +451,7 @@ class ListComponentFormPart implements Renderable {
 	}
 }
 
-
+# A "group" element
 class GroupFormPart implements Renderable {
 	public function __construct($field) { $this->f = $field; }
 	function render() {
@@ -443,6 +464,7 @@ class GroupFormPart implements Renderable {
 			if(is_array($value)) {
 				return (new HTMLParentlessContext())->div->class('ui segment attached')
 					->addH(
+						# Use makeGroupPart so that things are formatted for display within a group
 						array_map(function($x) { return $x ? $x->makeGroupPart() : null; }, $value)
 					)
 					->end;
@@ -450,6 +472,8 @@ class GroupFormPart implements Renderable {
 				return $value->makeGroupPart();
 			}
 		}, array_reduce($items, function($carry, $item) {
+			# Group together all adjacent items except headers and notices, which
+			# must be kept separate.
 			if($item instanceof Header || $item instanceof Notice) {
 				$carry[] = $item;
 				return $carry;
@@ -466,8 +490,7 @@ class GroupFormPart implements Renderable {
 }
 
 
-
-
+# A group of checkboxes
 class CheckboxesFormPart implements Renderable {
 	public function __construct($field) { $this->f = $field; }
 	function render() {
@@ -503,7 +526,7 @@ class CheckboxesFormPart implements Renderable {
 	}
 }
 
-
+# A CAPTCHA
 class CaptchaFormPart implements Renderable {
 	public function __construct($field) { $this->f = $field; }
 	function render() {
@@ -515,7 +538,7 @@ class CaptchaFormPart implements Renderable {
 	}
 }
 
-
+# The <form> element itself
 class FormElemFormPart implements Renderable {
 	public function __construct($field) { $this->f = $field; }
 	function render() {
@@ -549,7 +572,7 @@ class FormElemFormPart implements Renderable {
 	}
 }
 
-
+# The header at the top of the page
 class TopHeader implements Renderable {
 	function __construct() { $this->cfg = Config::get(); }
 	function render() {
@@ -563,6 +586,7 @@ class TopHeader implements Renderable {
 	}
 }
 
+# Show an error message in old IE versions
 class BrowserProblemPart implements Renderable {
 	function __construct($inner) { $this->inner = $inner; }
 	function render() {
@@ -582,6 +606,7 @@ class BrowserProblemPart implements Renderable {
 	}
 }
 
+# An entire form page
 class PageFormPart implements Renderable {
 	public function __construct($field) { $this->f = $field; }
 	function render() {
@@ -592,8 +617,8 @@ class PageFormPart implements Renderable {
 				->title->t($this->f->title)->end
 				->link->rel('stylesheet')->href(new AssetUrl('lib/semantic.css'))->end
 				->link->rel('stylesheet')->href(new AssetUrl('styles.css'))->end
-
-				->meta->name('viewport')->content('width=device-width, initial-scale=1')->end // From https://github.com/h5bp/html5-boilerplate/blob/master/src/index.html
+				# From https://github.com/h5bp/html5-boilerplate/blob/master/src/index.html
+				->meta->name('viewport')->content('width=device-width, initial-scale=1')->end
 				->meta->name('format-detection')->content('telephone=no')->end
 			->end
 			->body
