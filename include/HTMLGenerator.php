@@ -28,7 +28,7 @@ abstract class HTMLGeneratorAbstract {
 			} else if($element instanceof DoubleEncode) {
 				$out .= htmlspecialchars($this->buildString($element), ENT_QUOTES);
 			} else if($element instanceof SafeString) {
-				$out .= $element->value;
+				$out .= $element->getValue();
 			} else if (!is_null($element)) {
 				throw new Exception('Invalid HTML generation target!');
 			}
@@ -44,6 +44,9 @@ abstract class HTMLGeneratorAbstract {
 class SafeString {
 	function __construct($value) {
 		$this->value = $value;
+	}
+	function getValue() {
+		return $this->value;
 	}
 }
 
