@@ -49,7 +49,6 @@ class EmailTable implements Renderable {
 		$this->fields = $fields;
 		$this->data = $data;
 		$this->stamp = $stamp;
-
 	}
 	function render() {
 		return h()
