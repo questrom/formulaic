@@ -4,25 +4,38 @@ use Sabre\Xml\XmlDeserializable as XmlDeserializable;
 use Nette\Mail\Message;
 use Nette\Mail\SmtpMailer;
 
+
+# An interface implemented by all elements that can go in the "outputs"
+# section of a configuration file.
 interface Output {
+
+	# $data - the data to be stored
+	# $page - the current form
 	function run($data, $page);
 }
 
-interface Storage {
+# An interface implemented by those outputs which can also be used to retrive
+# data for tables and graphs. Currently, this only includes MongoDB.
+interface Storage extends Output {
 	function count();
 	function getById($id);
 	function getStats($unwindArrays, $name);
 	function getTable($page, $sortBy, $perPage);
 }
 
-class MongoOutput implements Output, XmlDeserializable, Storage {
+# MongoDB storage
+class MongoOutput implements XmlDeserializable, Storage {
 	use Configurable;
+
+	# Construct an object from an element in a configuration file
 	function __construct($args) {
 		$this->server = $args['server'];
 		$this->database = $args['database'];
 		$this->collection = $args['collection'];
 		$this->client = null;
 	}
+
+	# Get the associated MongoDB client
 	private function getClient() {
 		if($this->client === null) {
 			$this->client = (new MongoClient($this->server))
@@ -31,9 +44,13 @@ class MongoOutput implements Output, XmlDeserializable, Storage {
 		}
 		return $this->client;
 	}
+
+	# Count total number of submissions
 	function count() {
 		return $this->getClient()->count();
 	}
+
+	# Store form data in MongoDB
 	function run($data, $page) {
 		$oldData = $data;
 
@@ -52,6 +69,8 @@ class MongoOutput implements Output, XmlDeserializable, Storage {
 
 		return $oldData;
 	}
+
+	# Get a single form submission by ID
 	function getById($id) {
 		$client = $this->getClient();
 
@@ -63,6 +82,9 @@ class MongoOutput implements Output, XmlDeserializable, Storage {
 
 		return $data;
 	}
+
+	# Get statistics to be put in a graph, from the name of a form field.
+	# $unwindArrays is needed if the data being processed consists of arrays.
 	function getStats($unwindArrays, $name) {
 		$client = $this->getClient();
 		if($unwindArrays) {
@@ -101,14 +123,19 @@ class MongoOutput implements Output, XmlDeserializable, Storage {
 
 		return $results['result'];
 	}
+
+	# Get all the data necessary for creating a table.
+
 	function getTable($page, $sortBy, $perPage) {
 
 		$client = $this->getClient();
 		$cursor = $client->find()->sort($sortBy);
 
 		if($perPage !== null) {
-			$max = intval(floor($cursor->count() / $perPage)); // Need intval for the comparison below to work
+			# Use intval so PHP will compare values properly elsewhere in the code.
+			$max = intval(floor($cursor->count() / $perPage));
 		} else {
+			# If $perPage is not specified, no pagination will occur.
 			$max = 1;
 		}
 
@@ -124,13 +151,21 @@ class MongoOutput implements Output, XmlDeserializable, Storage {
 	}
 }
 
+# Amazon S3 storage
 class S3Output implements Output, XmlDeserializable {
 	use Configurable;
+
+	# Create from an element in the configuration file and from options in the config.toml.
+	# Key and secret are stored in config.toml so people with access to the configuration
+	# files can't necessarily see this (sensitive) information.
 	function __construct($args) {
 		$this->secret =Config::get();
 		$this->s3 = new S3($this->secret['s3']['key'], $this->secret['s3']['secret']);
 		$this->bucket = $args['bucket'];
 	}
+
+	# Store files in S3, replacing the FileInfo objects in the data with
+	# information about the objects stored in S3.
 	function run($data, $page) {
 		return array_map(function($x) use ($page) {
 			if(is_array($x)) {
@@ -162,27 +197,7 @@ class S3Output implements Output, XmlDeserializable {
 	}
 }
 
-class CounterOutput implements Output {
-	function run($data, $page) {
-		SubmitCounts::increment($page->id);
-		return $data;
-	}
-}
-
-class SuperOutput implements Output, XmlDeserializable {
-	use Configurable;
-	function __construct($args) {
-		$this->outputs = $args['children'];
-	}
-	function run($data, $page) {
-		(new CounterOutput([]))->run($data, $page);
-		foreach ($this->outputs as $output) {
-			$data = $output->run($data, $page);
-		}
-		return $data;
-	}
-}
-
+# Send form submissions via email
 class EmailOutput implements Output, XmlDeserializable {
 	use Configurable;
 	function __construct($args) {
@@ -193,11 +208,13 @@ class EmailOutput implements Output, XmlDeserializable {
 	}
 	function run($data, $page) {
 
+		# Create an HTML email
 		$view = new EmailView($page);
 		$view->data = $data;
 
 		$html = '<!DOCTYPE html>' . $view->makeEmailView()->render()->generateString();
 
+		# ... and send it using nette/mail
 		$mail = new Message();
 		$mail
 			->setFrom($this->from)
@@ -209,6 +226,32 @@ class EmailOutput implements Output, XmlDeserializable {
 
 		$mailer->send($mail);
 
+		return $data;
+	}
+}
+
+# A special output for counting form submissions.
+class CounterOutput implements Output {
+	function run($data, $page) {
+		SubmitCounts::increment($page->id);
+		return $data;
+	}
+}
+
+# Corresponds to the "outputs" element in the configuration file.
+# Combines multiple outputs together.
+class SuperOutput implements Output, XmlDeserializable {
+	use Configurable;
+	function __construct($args) {
+		$this->outputs = $args['children'];
+	}
+
+	# Run all of the outputs, including CounterOutput
+	function run($data, $page) {
+		(new CounterOutput([]))->run($data, $page);
+		foreach ($this->outputs as $output) {
+			$data = $output->run($data, $page);
+		}
 		return $data;
 	}
 }

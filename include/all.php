@@ -32,7 +32,7 @@ require 'include/FormPart.php';
 require 'include/Cells.php';
 require 'include/Component.php';
 
-// Outputs
+# Outputs
 require 'include/Output.php';
 
 // Views

@@ -1,8 +1,11 @@
 <?php
 
+
+# Display information about a particular view
 class ViewInfoView implements Renderable {
 	function __construct($data, $formData) {
-
+		# $formData holds info about the form as a whole
+		# $data holds info about the particular view
 		$this->formData = $formData;
 		$this->data = (object) $data;
 	}
@@ -17,6 +20,7 @@ class ViewInfoView implements Renderable {
 	}
 }
 
+# Display information about a particular form
 class FormItemView implements Renderable {
 	function __construct($data) {
 		$this->data = (object) $data;
@@ -33,7 +37,7 @@ class FormItemView implements Renderable {
 						->t(json_decode('"\u2004"') . 'submissions')
 					->end
 				->end
-				// ->h5->class('ui left floated header')->t('Views: ')->end
+					# Only show the list if the form actually HAS views
 					->addH(count($this->data->views) === 0 ? null :
 						h()
 						->div->class('ui horizontal list low-line-height')
@@ -43,7 +47,6 @@ class FormItemView implements Renderable {
 										return new ViewInfoView($viewInfo, $this->data);
 									}, $this->data->views)
 								)
-							// ->end
 						->end
 					)
 
@@ -51,6 +54,7 @@ class FormItemView implements Renderable {
 	}
 }
 
+# Display the main list of forms
 class FormListView implements Renderable {
 	function __construct($data) {
 		$this->data = $data;
@@ -64,7 +68,7 @@ class FormListView implements Renderable {
 				->link->rel('stylesheet')->href(new AssetUrl('lib/semantic.css'))->end
 				->link->rel('stylesheet')->href(new AssetUrl('styles.css'))->end
 
-				// From https://github.com/h5bp/html5-boilerplate/blob/master/src/index.html
+				# From https://github.com/h5bp/html5-boilerplate/blob/master/src/index.html
 				->meta->name('viewport')->content('width=device-width, initial-scale=1')->end
 
 			->end
@@ -90,6 +94,8 @@ class FormListView implements Renderable {
 	}
 }
 
+# A factory for a FormListView
+# The data is assumed to come from Parser::getFormInfo()
 class FormList {
 	function __construct($data) {
 		$this->data = $data;

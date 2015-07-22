@@ -22,7 +22,7 @@ $klein->onHttpError(function ($code, $router) {
 });
 
 $klein->respond('GET', '/', function () {
-	echo '<br><br><br><br><br>';
+	// echo '<br><br><br><br><br>';
 
 	// $t = microtime(true);
 	$formlist = new FormList(Parser::getFormInfo());

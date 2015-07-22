@@ -193,7 +193,6 @@ abstract class Validate {
 		return $this->innerBind(function($x) use ($minDate, $maxDate) {
 
 			$x = $x->setTime(0,0,0);
-			// var_dump($min/
 			if($minDate !== null && $minDate > $x) {
 				return Result::error('Please enter a date starting at ' . $minDate->format('Y-m-d'));
 			} else if($maxDate !== null && $maxDate < $x) {

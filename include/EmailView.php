@@ -3,10 +3,8 @@
 
 class EmailValueRow implements Renderable {
 	function __construct($value, $component) {
-
 		$this->value = $value;
 		$this->component = $component;
-
 	}
 	function render() {
 		$v = $this->component->makeEmailViewPart($this->value);

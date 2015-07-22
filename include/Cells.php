@@ -1,7 +1,6 @@
 <?php
 
 
-
 class OrdinaryTableCell implements Renderable {
 	function __construct($value) {
 		$this->value = $value;
