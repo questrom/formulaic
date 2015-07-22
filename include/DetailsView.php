@@ -100,7 +100,6 @@ class DetailsViewRenderable implements Renderable {
 		$this->fields = $fields;
 		$this->title = $title;
 		$this->data = $data;
-
 	}
 	function render() {
 		return
@@ -144,6 +143,6 @@ class DetailsView implements View {
 				$mongo = $output;
 			}
 		}
-		return $mongo->getById($_GET['id']);
+		return $mongo->getById($getData['id']);
 	}
 }

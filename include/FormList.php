@@ -7,12 +7,12 @@ class ViewInfoView implements Renderable {
 		# $formData holds info about the form as a whole
 		# $data holds info about the particular view
 		$this->formData = $formData;
-		$this->data = (object) $data;
+		$this->data = $data;
 	}
 	function render() {
 		return h()
 			->div->class('item')
-				->a->href('view.php?form=' . $this->formData->id . '&view=' . $this->data->id)->class('item')
+				->a->href('view.php?form=' . $this->formData->id . '&view=' . $this->data->name)->class('item')
 					->i->class($this->data->type === 'graph' ? 'area chart icon' : 'table icon')->end
 					->t($this->data->title)
 				->end

@@ -17,8 +17,8 @@ class ValueCell implements Renderable {
 	function __construct($value, $component) {
 		$this->value = $value;
 		$this->component = $component;
-
 	}
+
 	function render() {
 		$v = $this->component->makeTableViewPart($this->value);
 		if($v === null) {

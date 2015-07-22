@@ -97,17 +97,10 @@ class Parser {
 		$files = array_map(function ($item) {
 
 			$page = Parser::parseJade($item);
-			$views = array_map(function ($view) {
-				return [
-					'id' => $view->name,
-					'title' => $view->title,
-					'type' => $view->type
-				];
-			}, $page->views->getAllViews());
 			return [
 				'id' => $item,
 				'name' => $page->title,
-				'views' => $views,
+				'views' => $page->views->getAllViews(),
 				'count' => SubmitCounts::get($item)
 			];
 		}, $files);
