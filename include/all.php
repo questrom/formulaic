@@ -25,11 +25,13 @@ require 'include/HTMLGenerator.php';
 # Form validation helper
 require 'include/Validate.php';
 
-// Components
+# Components (mostly: form fields)
 require 'include/ComponentAbstract.php';
-require 'include/FormPart.php';
-require 'include/Cells.php';
 require 'include/Component.php';
+
+# Things that can be rendered into HTML
+require 'include/FormPart.php'; # as parts of forms
+require 'include/Cells.php';    # as parts of tables
 
 # Outputs
 require 'include/Output.php';

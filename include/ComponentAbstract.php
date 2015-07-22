@@ -92,8 +92,7 @@ abstract class PostInputComponent extends NamedLabeledComponent {
 abstract class FileInputComponent extends NamedLabeledComponent {
 	final function getSubmissionPart($val) {
 		return $this->validate(
-			$val
-				->innerBind(function ($x) {
+			$val->innerBind(function ($x) {
 					return Result::ok($x->files);
 				})
 				->byName($this->name)
