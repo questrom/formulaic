@@ -504,15 +504,24 @@ abstract class Validate {
 	}
 
 
+	# Validate all of the form fields associated with a "list" element.
+
+	# This is made complicated by the horribly complicated format in which HTML
+	# forms send data to the server, and by the horribly complicated way in which
+	# PHP handles this data.
+
+	# See the getSubmissionPart() method in ListComponent for some context.
 
 	function listValidate($minItems, $maxItems, $name, $items) {
 		return $this->innerBind(function($list) use ($minItems, $maxItems, $name, $items) {
 
-
 			$result = Result::ok([]);
+
+			# First, determine how many items are in the list, in total.
 			$number = array_merge( array_keys($list[0]), array_keys($list[1]) );
 			$number = (count($number) > 0 ? max( $number ) : -1) + 1;
 
+			# Make sure the number of items provided is between $minItems and $maxItems
 			if($number < $minItems) {
 				return Result::error([ $name => 'Please provide at least ' . $minItems . ' items' ]);
 			}
@@ -521,14 +530,17 @@ abstract class Validate {
 			}
 
 
+			# For each item in the list...
 			for($index = 0; $index < $number; $index++) {
 
 
-
+				# In case it isn't a "real" list item (yes, this can happen: due to how
+				# the client adds items to the list, there can be odd gaps.)
 				if(!isset($list[0][$index]) && !isset($list[1][$index])) {
 					continue;
 				}
 
+				# Validate all of the fields within the list
 				$validationResult =
 					Result::ok(
 						new ClientData(
@@ -539,21 +551,27 @@ abstract class Validate {
 
 
 
-
+				# Combine the result of this validation with the data validated
+				# in previous iterations of the loop.
 				$result = $result
 					->innerBind(function($soFar) use($validationResult, $index) {
+
 						return $validationResult
 							->innerBind(function($fieldResult) use($soFar, $index) {
+								# Combine two successes
 								$soFar[$index] = $fieldResult;
 								return Result::ok($soFar);
 							})
 							->ifError(function($fieldError) {
+								# If validation fails in one iteration, the end result
+								# must be an error.
 								return Result::error([]);
 							});
 					})
 					->ifError(function($errorSoFar) use($validationResult, $index, $minItems, $maxItems, $name, $items) {
 						return $validationResult
 							->ifError(function($fieldError) use($errorSoFar, $index, $minItems, $maxItems, $name, $items) {
+								# Combine two errors, putting things in a format the client JS code can understand.
 								foreach($fieldError as $k => $v) {
 
 									$k = explode('[', $k);
@@ -568,11 +586,14 @@ abstract class Validate {
 								return Result::error($errorSoFar);
 							})
 							->innerBind(function($fieldResult) use($errorSoFar) {
+								# Error + success = original error
 								return Result::error($errorSoFar);
 							});
 
 					});
 			}
+			# If it's a success, name the resulting data properly
+			# for storage in the database.
 			$result = $result
 				->innerBind(function($x) use($name) {
 					return Result::ok([$name => array_values($x)]);
@@ -582,8 +603,15 @@ abstract class Validate {
 	}
 
 
-	// Groups
+	# This function validates a group of fields.
+	# It passes the data to be validated (usually a ClientData object)
+	# through each of the fields in turn.
 
+	# If it hits any errors, it returns an array of names => associated
+	# error messages. If it does not, it returns the data to be stored
+	# in Mongo (or formatted and set by email, etc.)
+
+	# Used by the "group" and "fields" elements.
 	function groupValidate($items) {
 		return $this->innerBind(function($val) use ($items) {
 			return array_reduce($items, function($total, $field) use($val) {
