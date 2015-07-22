@@ -1,62 +1,86 @@
+/*
 
-/*For chrome*/
+This file contains the custom CSS code, which, along with Semantic UI,
+makes up the CSS for the entire web application.
+
+*/
+
+
+/* Fix a bug in Chrome */
 html, body { height:auto; }
 body { overflow-x: auto; }
-/*End for chrome*/
 
-/*For IE: -ms- prefixed properties among stuff below; nothing besides thse,
-    For Safari, -webkit- */
 
+/* Wider tables in table views */
 .ui.container.table-page { width: 1200px !important; max-width:none !important; }
 
+/* Make messages look nicer */
 .ui.form .success.message, .ui.form .warning.message, .ui.form .error.message:not(.validation-error-message) { display:block; }
 
 /* Fix table borders */
 .ui.table tr:first-child td { border-top: 1px solid rgba(34, 36, 38, 0.1); }
 .ui.table tr:first-child > td { border-top: medium none; }
 
-/* Darker background*/
+/* Darker background */
 body { background: #F7F7F7; }
 
+/* Fix margins */
 .ui.container { margin:20px auto; }
-.table-view { table-layout: fixed; }
 pre { margin:0; }
+
+/* Table view layout shouldn't differ between pages */
+.table-view { table-layout: fixed; }
 
 /* Fix margins within show-if */
 .ui.form div[data-show-if-name] > .field:last-child { margin: 0em 0em 1em; }
-div[data-show-if-name] > .ui.header:last-child { margin: 0 0 1rem; }
-
+div[data-show-if-name] > .ui.header:last-child {
+    margin: 0 0 1rem;
+}
 div[data-show-if-name] > .ui.form .field:last-child,
 div[data-show-if-name] > .ui.form .fields:last-child .field {
     margin: 0 0 1em;
 }
 
+/* Make sure the menu doesn't overlap the content */
 .ui.top.fixed.menu + .ui.container { margin-top:60px; }
-
-
 
 /* Reduce padding around file inputs*/
 .ui.form input[type=file] { padding-top: 5px !important; padding-bottom: 5px !important; }
 
+/* Reduce padding in compact table headers */
 .ui.compact.table th { padding-top: 0.5em; padding-bottom: 0.5em; }
+
+/* Style range inputs */
 input[type=range] { width: 150px; vertical-align: -5px; }
 
 /* See http://stackoverflow.com/questions/18794026/ */
 input[type=range]::-moz-focus-outer { border:0 !important; }
 
+/* Label in top-right of graph view */
 .submit-count-label { margin-top: 3px !important; }
 .submit-count-label .detail { margin-left: 0.55em !important; }
 
+/* Table views are sortable, but the sorting can't change.
+    So don't make them seem clickable. */
 .ui.sortable.table thead th { cursor:auto; }
+
+/* Remove excess margins on headers */
 .ui.header { margin-top: 0; }
+.ui.top.attached.header { margin-top:0 !important; }
+
+/* Improve the appearance of validation erros next ot checkboxes*/
 .ui.checkbox + .ui.red.label.visible { float:left; margin-right: 1000px;}
+
+/* Fix asterisks next to required fields */
 .ui.form .required > label:after,
 .ui.form .required  .ui.checkbox:after { font-size: 1.5rem; top: 5px; right:-10px; left: auto;}
-.ui.top.attached.header { margin-top:0 !important; }
+
+/* Icons in messages/headers should be top-aligned */
 .ui.icon.message { -ms-flex-align: start; }
 .ui.icon.message > .icon:not(.close) { align-self: flex-start; -webkit-align-self:flex-start; }
 .ui.header.attached > .icon { vertical-align: top; }
 
+/* Make validation errors show up properly */
 .red.prompt { display: table; white-space: normal !important; }
 
 /* Utility classes */
@@ -65,7 +89,8 @@ input[type=range]::-moz-focus-outer { border:0 !important; }
 .pull-right { float:right;}
 .low-line-height { line-height: 1 !important; }
 
-/* Simpler styling for groups */
+/* Make sure elements within groups are rendered properly, even
+    if the "attached top" and "attached bottom" classes aren't applied */
 .group > :first-child.attached {
     margin-top: 0px !important;
     margin-bottom: 0em !important;
@@ -85,6 +110,7 @@ input[type=range]::-moz-focus-outer { border:0 !important; }
     border-radius: 0.3125rem 0.3125rem 0.2857rem 0.2857rem !important;
 }
 
+/* List components */
 .close-item {
     display: -ms-flexbox;
     display:-webkit-flex;
@@ -93,7 +119,6 @@ input[type=range]::-moz-focus-outer { border:0 !important; }
     align-items: flex-start;
     -webkit-align-items: flex-start;
 }
-
 .close-item > .content { -ms-flex: 1; -webkit-flex:1; flex: 1; margin-right: 15px; }
 .close-item > button { margin-top:5px !important; }
 .list-component > .segment { padding: 0 15px; }
@@ -102,21 +127,29 @@ input[type=range]::-moz-focus-outer { border:0 !important; }
 .ui.table tr.negative td, .ui.table tr td.negative { background-color: #FFE7E7 !important; }
 .ui.table tr.positive td, .ui.table tr td.positive { background-color: #F7FFE6 !important; }
 
+/* Make lists in table views look mroe compact */
 .table-view li { padding: 0 !important; }
 
 /* Remove hover effect*/
 .ui.sortable.table thead th:hover { background: #F9FAFB; }
 
+/* Table cells without padding */
 .unpadded-cell { padding:0 !important; }
 .unpadded-cell > .ui.icon.button { padding-top:10px !important; padding-bottom:10px !important; }
 .unpadded-cell > .ui.icon.button > .icon { border-radius: 0 !important; }
 
+/* Make text menus more readable*/
 .ui.text.menu .item { color:#000 !important; }
+
+/* Format page numbers */
 .pagenumber { flex: 1 !important; text-align: center !important; display:block !important; }
 
+/* Sublabels */
 .sublabel {  color: rgba(40, 40, 40, 0.7);  margin:-6px 0 6px 0; font-family: Verdana; font-weight: normal; font-size: 82%; }
 
-/* iOS: stackoverflow.com/questions/2989263/disable-auto-zoom-in-input-text-tag-safari-on-iphone */
+/* The following styles fix some bugs present on iOS. */
+
+/* See http://stackoverflow.com/questions/2989263/ */
 .ios select,
 .ios textarea,
 .ios input[type="text"],
@@ -136,11 +169,12 @@ input[type=range]::-moz-focus-outer { border:0 !important; }
     font-size: 16px !important;
 }
 
-
+/* Don't bother trying to get position:fixed to work on mobile */
 .ios .ui.top.fixed.menu {
     position: absolute !important;
 }
 
+/* Fix some issues with list components */
 .ios .close-item {
     position:relative;
     display:block;
@@ -157,4 +191,3 @@ input[type=range]::-moz-focus-outer { border:0 !important; }
     border-top-left-radius:0;
     border-bottom-right-radius:0;
 }
-/* -- end iOS */

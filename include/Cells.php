@@ -1,6 +1,9 @@
 <?php
 
+# This file provides a number of Renderables used to create table cells.
+# Such cells are used by TableView, DetailsView, and EmailView.
 
+# Just contains text
 class OrdinaryTableCell implements Renderable {
 	function __construct($value) {
 		$this->value = $value;
@@ -13,7 +16,7 @@ class OrdinaryTableCell implements Renderable {
 	}
 }
 
-
+# A list of items (from a Checkboxes component, generally)
 class ListTableCell implements Renderable {
 	function __construct($value) {
 		$this->value = $value;
@@ -30,6 +33,7 @@ class ListTableCell implements Renderable {
 	}
 }
 
+# A link, optionally with "target=_blank"
 class LinkTableCell implements Renderable {
 	function __construct($url, $value, $blank = false) {
 		$this->url = $url;
@@ -46,7 +50,7 @@ class LinkTableCell implements Renderable {
 	}
 }
 
-
+# Passwords aren't saved in the DB, so this basically just shows an error message
 class PasswordTableCell implements Renderable {
 	function render() {
 		return h()
@@ -58,7 +62,7 @@ class PasswordTableCell implements Renderable {
 	}
 }
 
-
+# In a TableView, just show a download button for a file upload
 class FileUploadTableCell implements Renderable {
 	function __construct($value) {
 		$this->value = $value;
@@ -74,6 +78,7 @@ class FileUploadTableCell implements Renderable {
 	}
 }
 
+# In a DetailsView or EmailView, show more details about an upload
 class FileUploadDetailedTableCell implements Renderable {
 	function __construct($value) {
 		$this->value = $value;
@@ -91,6 +96,7 @@ class FileUploadDetailedTableCell implements Renderable {
 	}
 }
 
+# Put a <pre> around data from a textarea so that newlines are preserved.
 class TextareaTableCell implements Renderable {
 	function __construct($value) {
 
@@ -105,6 +111,7 @@ class TextareaTableCell implements Renderable {
 }
 
 
+# Format a boolean value nicely
 class CheckboxTableCell implements Renderable {
 	function __construct($value) {
 		$this->value = $value;
@@ -116,8 +123,11 @@ class CheckboxTableCell implements Renderable {
 			->t($this->value ? 'Yes' : 'No')
 		->end;
 	}
-
 }
+
+# In an EmailView or DetailsView, show each item in a list.
+# Otherwise, only the # of items will be shown (see the code
+# for ListComponent.)
 
 class ListEmailTableCell implements Renderable {
 	function __construct($v, $value) {
