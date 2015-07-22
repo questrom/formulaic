@@ -13,13 +13,13 @@ require 'include/utils.php';
 # Set the time zone manually so PHP won't complain
 date_default_timezone_set(Config::get()['time-zone']);
 
-# Parser for configuration files (and miscellaneous related stuff)
+# Parses and manages configuration files
 require 'include/Parser.php';
 
-// Show-if conditions
+# Conditions within "show-if" elements.
 require 'include/Condition.php';
 
-// HTML generation
+# DSL for generating HTML
 require 'include/HTMLGenerator.php';
 
 // Form valdation

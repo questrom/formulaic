@@ -2,12 +2,14 @@
 
 use Sabre\Xml\XmlDeserializable;
 
+# A condition that can be used as the first child of a 'show-if' element.
 interface Condition {
 	public function evaluate($cd);
 	public function getName();
 	public function getCondition();
 }
 
+# A condition that is satisfied when a checkbox is checked.
 class IsCheckedCondition implements XmlDeserializable, Condition {
 	use Configurable;
 	function __construct($args) {
@@ -24,6 +26,7 @@ class IsCheckedCondition implements XmlDeserializable, Condition {
 	}
 }
 
+# A condition that is satisfied when a checkbox is NOT checked.
 class IsNotCheckedCondition implements XmlDeserializable, Condition {
 	use Configurable;
 	function __construct($args) {
@@ -40,6 +43,7 @@ class IsNotCheckedCondition implements XmlDeserializable, Condition {
 	}
 }
 
+# A condition that is satisfied when a radio button within a group is selected.s
 class IsRadioSelectedCondition implements XmlDeserializable, Condition {
 	use Configurable;
 	function __construct($args) {

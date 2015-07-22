@@ -25,7 +25,7 @@ use Everzet\Jade\Node\CodeNode;
  */
 
 /**
- * Jade -> PHP template dumper. 
+ * Jade -> PHP template dumper.
  */
 class PHPDumper implements DumperInterface
 {
@@ -64,7 +64,7 @@ class PHPDumper implements DumperInterface
 
     /**
      * Dump node to string.
-     * 
+     *
      * @param   BlockNode   $node   root node
      *
      * @return  string
@@ -75,8 +75,8 @@ class PHPDumper implements DumperInterface
     }
 
     /**
-     * Register visitee extension. 
-     * 
+     * Register visitee extension.
+     *
      * @param   string              $name       name of the visitable node (code, comment, doctype, filter, tag, text)
      * @param   VisitorInterface    $visitor    visitor object
      */
@@ -94,8 +94,8 @@ class PHPDumper implements DumperInterface
     }
 
     /**
-     * Register filter on dumper. 
-     * 
+     * Register filter on dumper.
+     *
      * @param   string          $alias  filter alias (:javascript for example)
      * @param   FilterInterface $filter filter
      */
@@ -109,8 +109,8 @@ class PHPDumper implements DumperInterface
     }
 
     /**
-     * Dump node to string. 
-     * 
+     * Dump node to string.
+     *
      * @param   Node    $node   node to dump
      * @param   integer $level  indentation level
      *
@@ -124,8 +124,8 @@ class PHPDumper implements DumperInterface
     }
 
     /**
-     * Dump block node to string. 
-     * 
+     * Dump block node to string.
+     *
      * @param   BlockNode   $node   block node
      * @param   integer     $level  indentation level
      *
@@ -151,8 +151,8 @@ class PHPDumper implements DumperInterface
     }
 
     /**
-     * Dump doctype node. 
-     * 
+     * Dump doctype node.
+     *
      * @param   DoctypeNode $node   doctype node
      * @param   integer     $level  indentation level
      *
@@ -172,8 +172,8 @@ class PHPDumper implements DumperInterface
     }
 
     /**
-     * Dump tag node. 
-     * 
+     * Dump tag node.
+     *
      * @param   TagNode $node   tag node
      * @param   integer $level  indentation level
      *
@@ -232,11 +232,11 @@ class PHPDumper implements DumperInterface
     }
 
     /**
-     * Dump text node. 
-     * 
+     * Dump text node.
+     *
      * @param   TextNode    $node   text node
      * @param   integer     $level  indentation level
-     * 
+     *
      * @return  string
      */
     protected function dumpText(TextNode $node, $level = 0)
@@ -251,11 +251,11 @@ class PHPDumper implements DumperInterface
     }
 
     /**
-     * Dump comment node. 
-     * 
+     * Dump comment node.
+     *
      * @param   CommentNode $node   comment node
      * @param   integer     $level  indentation level
-     * 
+     *
      * @return  string
      */
     protected function dumpComment(CommentNode $node, $level = 0)
@@ -295,8 +295,8 @@ class PHPDumper implements DumperInterface
     }
 
     /**
-     * Dump code node. 
-     * 
+     * Dump code node.
+     *
      * @param   CodeNode    $node   code node
      * @param   integer     $level  indentation level
      *
@@ -304,6 +304,7 @@ class PHPDumper implements DumperInterface
      */
     protected function dumpCode(CodeNode $node, $level = 0)
     {
+
         $html = str_repeat('  ', $level);
 
         foreach ($this->visitors['code'] as $visitor) {
@@ -344,11 +345,11 @@ class PHPDumper implements DumperInterface
     }
 
     /**
-     * Dump filter node. 
-     * 
+     * Dump filter node.
+     *
      * @param   FilterNode  $node   filter node
      * @param   integer     $level  indentation level
-     * 
+     *
      * @return  string
      */
     protected function dumpFilter(FilterNode $node, $level = 0)
@@ -366,10 +367,10 @@ class PHPDumper implements DumperInterface
     }
 
     /**
-     * Dump attributes. 
-     * 
+     * Dump attributes.
+     *
      * @param   array   $attributes attributes associative array
-     * 
+     *
      * @return  string
      */
     protected function dumpAttributes(array $attributes)
@@ -390,8 +391,8 @@ class PHPDumper implements DumperInterface
     }
 
     /**
-     * Replace tokenized PHP string in text. 
-     * 
+     * Replace tokenized PHP string in text.
+     *
      * @param   string  $string text
      * @param   boolean $decode decode HTML entitied
      *

@@ -109,3 +109,24 @@ function fixAssets($html) {
 		}, $matches[1]);
 	}, $html);
 }
+
+# This keeps track of the number of times a form has been submitted,
+# so that it can be displayed on the main list of forms.
+# We can't just use Mongo for this, since some forms might not use Mongo.
+class SubmitCounts {
+	private static $data = null;
+	static function update() {
+		self::$data = json_decode(file_get_contents('data/submit-counts.json'));
+	}
+	static function get($formName) {
+		if (self::$data === null) {
+			self::update();
+		}
+		return isget(self::$data->$formName, 0);
+	}
+	static function increment($formID) {
+		$counts = json_decode(file_get_contents('data/submit-counts.json'));
+		$counts->$formID = isget($counts->$formID, 0) + 1;
+		file_put_contents('data/submit-counts.json', json_encode($counts));
+	}
+}

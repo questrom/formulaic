@@ -3,6 +3,17 @@
 use Sabre\Xml\XmlDeserializable;
 use Gregwar\Cache\Cache;
 
+# This trait provides an implementation of the XmlDeserializable interface,
+# which sabre/xml uses to construct PHP objects from XML elements.
+
+# Basically, the XmlDeserializable interface includes a static function xmlDeserialize()
+# which is called with the contents of the XML node. As implemented in Configurable,
+# the xmlDeserialize() method converts these contents into array form, and then
+# creates a new instance of the class using that array.
+
+# Later in this file, a map of XML tag names -> classes implementing XmlDeserializable
+# is given and used to initialize sabre/xml.
+
 trait Configurable {
 	abstract public function __construct($args);
 	static function xmlDeserialize(Sabre\Xml\Reader $reader) {
@@ -29,7 +40,8 @@ trait Configurable {
 	}
 }
 
-
+# A very simple XmlDeserializable implementation used
+# for elements whose sole job is to contain text.
 class TextElem implements XmlDeserializable {
 	static function xmlDeserialize(Sabre\Xml\Reader $reader) {
 		$tree = $reader->parseInnerTree();
@@ -42,6 +54,8 @@ class TextElem implements XmlDeserializable {
 	}
 }
 
+# An XmlDeserializable implementation that is used for the
+# <allow ext="..." mime="..."> element within file upload inputs.
 class AllowElem implements XmlDeserializable {
 	use Configurable;
 	function __construct($args) {
@@ -50,25 +64,12 @@ class AllowElem implements XmlDeserializable {
 	}
 }
 
-class SubmitCounts {
-	private static $data = null;
-	static function update() {
-		self::$data = json_decode(file_get_contents('data/submit-counts.json'));
-	}
-	static function get($formName) {
-		if (self::$data === null) {
-			self::update();
-		}
-		return isget(self::$data->$formName, 0);
-	}
-	static function increment($formID) {
-		$counts = json_decode(file_get_contents('data/submit-counts.json'));
-		$counts->$formID = isget($counts->$formID, 0) + 1;
-		file_put_contents('data/submit-counts.json', json_encode($counts));
-	}
-}
-
+# This class manages and parses configuration files.
 class Parser {
+
+	# Get the configuration file name corresponding to a form ID.
+	# For example, if the input is "test", this function returns
+	# "forms/test.jade".
 	static function getForm($name) {
 		if (is_string($name) && !preg_match('/[^A-za-z0-9_-]/', $name) && strlen($name) > 0) {
 			return 'forms/' . $name . '.jade';
@@ -76,7 +77,12 @@ class Parser {
 			throw new Exception('Invalid form name!');
 		}
 	}
+
+	# This function gets some "global" information about each of the forms.
+	# This information is displayed on the main page of the app, which
+	# provides a lsit of forms and views.
 	static function getFormInfo() {
+
 		$files = scandir('forms');
 
 		$files = array_values(array_filter($files, function ($item) {
@@ -89,6 +95,7 @@ class Parser {
 
 
 		$files = array_map(function ($item) {
+
 			$page = Parser::parseJade($item);
 			$views = array_map(function ($view) {
 				return [
@@ -107,82 +114,105 @@ class Parser {
 
 		return $files;
 	}
-	static function parseJade($id) {
 
-		$file = self::getForm($id);
+	static $reader;
+	static $jade;
 
-		$config = Config::get();
+	# Get an XML reader
+	static function getReader() {
+		if(!isset(self::$reader)) {
+			$reader = self::$reader = new Sabre\Xml\Reader();
 
-		$cache = $config['cache-xml'] ? new Cache() : new FakeCache();
-		$cache->setPrefixSize(0);
+			# The map of XML element names to PHP classes that implement Sabre\Xml\XmlDeserializable.
+			# Usually they implement this interface by means of the Configurable trait given earlier
+			# in this file.
 
+			# Note that each element name must have '{}' prepended to it.
+			$reader->elementMap = [
+				'{}checkbox' => 'Checkbox',
+				'{}textbox' => 'Textbox',
+				'{}password' => 'Password',
+				'{}dropdown' => 'Dropdown',
+				'{}radios' => 'Radios',
+				'{}checkboxes' => 'Checkboxes',
+				'{}textarea' => 'TextArea',
+				'{}range' => 'Range',
+				'{}time' => 'TimeInput',
+				'{}group' => 'Group',
+				'{}date' => 'DatePicker',
+				'{}phonenumber' => 'PhoneNumber',
+				'{}email' => 'EmailAddr',
+				'{}url' => 'UrlInput',
+				'{}number' => 'NumberInp',
 
-		$xml = $cache->getOrCreate('xml-' . sha1_file($file), [], function ($param) use ($file) {
-			$file = "!!! xml\n" . file_get_contents($file);
-			$jade = new Everzet\Jade\Jade(
+				'{}notice' => 'Notice',
+				'{}header' => 'Header',
+				'{}datetime' => 'DateTimePicker',
+				'{}file' => 'FileUpload',
+				'{}allow' => 'AllowElem',
+
+				'{}mongo' => 'MongoOutput',
+				'{}s3' => 'S3Output',
+
+				'{}option' => 'TextElem',
+				'{}fields' => 'FieldList',
+				'{}li' => 'TextElem',
+				'{}outputs' => 'SuperOutput',
+				'{}form' => 'Page',
+				'{}list' => 'ListComponent',
+				'{}show-if' => 'ShowIfComponent',
+				'{}table-view' => 'TableView',
+				'{}col' => 'Column',
+				'{}email-to' => 'EmailOutput',
+				'{}graph-view' => 'GraphView',
+				'{}bar' => 'BarGraph',
+				'{}pie' => 'PieChart',
+				'{}captcha' => 'Captcha',
+				'{}is-checked' => 'IsCheckedCondition',
+				'{}is-not-checked' => 'IsNotCheckedCondition',
+				'{}is-radio-selected' => 'IsRadioSelectedCondition',
+				'{}views' => 'ViewList'
+			];
+		} else {
+			$reader = self::$reader;
+		}
+		return $reader;
+	}
+
+	# Get a jade parser
+	static function getJade() {
+		if(!isset(self::$jade)) {
+			self::$jade = new Everzet\Jade\Jade(
 				new Everzet\Jade\Parser(new Everzet\Jade\Lexer\Lexer()),
 				new Everzet\Jade\Dumper\PHPDumper()
 			);
-			return $jade->render($file);
+		}
+		return self::$jade;
+	}
+
+	# Given a form ID, this gets the contents of the associated configuration file.
+	static function parseJade($id) {
+
+		$file = self::getForm($id);
+		$config = Config::get();
+
+		# If the "cache-xml" setting is enabled, we cache the compiled XML.
+		$cache = $config['cache-xml'] ? new Cache() : new FakeCache();
+		$cache->setPrefixSize(0);
+
+		$xml = $cache->getOrCreate('xml-' . sha1_file($file), [], function ($param) use ($file) {
+			return self::getJade()->render("!!! xml\n" . file_get_contents($file));
 		});
 
 
-		$reader = new Sabre\Xml\Reader();
-
-		$reader->elementMap = [
-			'{}checkbox' => 'Checkbox',
-			'{}textbox' => 'Textbox',
-			'{}password' => 'Password',
-			'{}dropdown' => 'Dropdown',
-			'{}radios' => 'Radios',
-			'{}checkboxes' => 'Checkboxes',
-			'{}textarea' => 'TextArea',
-			'{}range' => 'Range',
-			'{}time' => 'TimeInput',
-			'{}group' => 'Group',
-			'{}date' => 'DatePicker',
-			'{}phonenumber' => 'PhoneNumber',
-			'{}email' => 'EmailAddr',
-			'{}url' => 'UrlInput',
-			'{}number' => 'NumberInp',
-
-			'{}notice' => 'Notice',
-			'{}header' => 'Header',
-			'{}datetime' => 'DateTimePicker',
-			'{}file' => 'FileUpload',
-			'{}allow' => 'AllowElem',
-
-			'{}mongo' => 'MongoOutput',
-			'{}s3' => 'S3Output',
-
-			'{}option' => 'TextElem',
-			'{}fields' => 'FieldList',
-			'{}li' => 'TextElem',
-			'{}outputs' => 'SuperOutput',
-			'{}form' => 'Page',
-			'{}list' => 'ListComponent',
-			'{}show-if' => 'ShowIfComponent',
-			'{}table-view' => 'TableView',
-			'{}col' => 'Column',
-			'{}email-to' => 'EmailOutput',
-			'{}graph-view' => 'GraphView',
-			'{}bar' => 'BarGraph',
-			'{}pie' => 'PieChart',
-			'{}captcha' => 'Captcha',
-			'{}is-checked' => 'IsCheckedCondition',
-			'{}is-not-checked' => 'IsNotCheckedCondition',
-			'{}is-radio-selected' => 'IsRadioSelectedCondition',
-			'{}views' => 'ViewList'
-		];
-
-		// echo(htmlspecialchars($xml)) . '<br><pre>';
-
+		$reader = self::getReader();
 		$reader->xml($xml);
 		$readData = $reader->parse();
 
 		$page = $readData['value'];
-		$page->setId($id);
 
+		# Tell the page data object what its form ID is.
+		$page->setId($id);
 
 		return $page;
 	}

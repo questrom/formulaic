@@ -22,8 +22,19 @@ $klein->onHttpError(function ($code, $router) {
 });
 
 $klein->respond('GET', '/', function () {
+	// echo '<br><br><br><br><br>';
+
+	// $t = microtime(true);
 	$formlist = new FormList(Parser::getFormInfo());
-	return '<!DOCTYPE html>' . fixAssets($formlist->makeFormList()->render()->generateString());
+
+	// echo (microtime(true) - $t) * 1000;
+
+	// echo '<br>';
+	// $t = microtime(true);
+	$ret = '<!DOCTYPE html>' . fixAssets($formlist->makeFormList()->render()->generateString());
+	// echo (microtime(true) - $t) * 1000;
+
+	return $ret;
 });
 
 $klein->respond('GET', '/view.php', function () {
