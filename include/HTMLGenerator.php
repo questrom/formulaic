@@ -15,76 +15,11 @@ abstract class HTMLGeneratorAbstract {
 
 
 
-	final function buildString($iterator, &$stopped, $startAt) {
-		$out = [];
-
-		// Stop if the recursion depth gets too high..
-		if($startAt == 0) {
-			// return [new SafeString('')];
-			$stopped = true;
-			return [$iterator];
-			// return $this->generateIterative($iterator);
-		}
-
-		foreach($iterator as $element) {
-			while($element instanceof Renderable) {
-				$element = $element->render();
-			}
-
-			if ($element instanceof HTMLGeneratorAbstract) {
-				$element = $element->toStringArray();
-			}
-
-			if(is_scalar($element)) {
-				$out[] = (new SafeString($element))->encode();
-			} else if(is_array($element) || $element instanceof Traversable) {
-				$out = array_merge($out, $this->buildString($element, $stopped, $startAt - 1));
-			} else if($element instanceof DoubleEncode) {
-
-				$data = $element->value;
-				if($data instanceof HTMLGeneratorAbstract) {
-					$data = $data->toStringArray();
-				}
-				$out = array_merge($out, array_map(function($x) {
-					if($x instanceof SafeString) {
-						return $x->encode();
-					} else {
-						return new DoubleEncode($x);
-					}
-				}, $this->buildString($data, $stopped, $startAt - 1)));
-			} else if($element instanceof SafeString) {
-				$out[] = $element;
-			} else if (!is_null($element)) {
-				throw new Exception('Invalid HTML generation target!');
-			}
-		}
-		return $out;
-	}
-
 	final function generateString() {
 
-		$stopped = true;
-		$ret = $this->toStringArray();
-		while($stopped) {
-			$stopped = false;
-			$ret = $this->buildString($ret, $stopped, 50);
-		}
-
-		$ret = array_map(function($x) {
-			if(!($x instanceof SafeString)) {
-				throw new Exception();
-			}
-			return $x->value;
-		}, $ret);
-		return implode($ret);
-
-	}
-	final function generateIterative($iterator) {
-		// var_dump($iterator);
-		// $time = microtime(true);
 		$out = '';
 		$positions = new SplStack();
-		$arr = $iterator;
+		$arr = $this->toStringArray();
 		if(is_array($arr)) {
 			$arr = new ArrayIterator($arr);
 		}
