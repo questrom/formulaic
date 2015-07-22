@@ -13,6 +13,7 @@ abstract class HTMLGeneratorAbstract {
 		return $this->addH($text);
 	}
 
+	# May exceed call stack - if so change php conf.
 
 	final function buildString($iterator) {
 		$out = '';
@@ -23,10 +24,8 @@ abstract class HTMLGeneratorAbstract {
 			}
 
 			if ($element instanceof HTMLGeneratorAbstract) {
-				$element = $element->toStringArray();
-			}
-
-			if(is_scalar($element)) {
+				$out .= $this->buildString($element->toStringArray());
+			} else if(is_scalar($element)) {
 				$out .= htmlspecialchars($element, ENT_QUOTES);
 			} else if(is_array($element) || $element instanceof Traversable) {
 				$out .= $this->buildString($element);

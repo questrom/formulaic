@@ -57,10 +57,10 @@ $klein->respond('GET', '/form.php', function () {
 	$html = $cache->getOrCreate('jade-' . sha1_file(Parser::getForm($_GET['form'])) . '-' . sha1_file('config/config.toml'), [], function () {
 		$page = Parser::parseJade($_GET['form']);
 
-		echo '<br><br><br><br>';
-		$t = microtime(true);
+		// echo '<br><br><br><br>';
+		// $t = microtime(true);
 		$r =  '<!DOCTYPE html>' . $page->makeFormPart()->render()->generateString();
-		echo (microtime(true) - $t) * 1000;
+		// echo (microtime(true) - $t) * 1000;
 		return $r;
 	});
 
