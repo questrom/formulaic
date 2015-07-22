@@ -22,11 +22,14 @@ form(title='Very Long Form', success-message='Lorem ipsum!')
         allow(ext='jpg', mime='image/jpeg')
     list(name='phone_list', label='Clients', add-text='Add a client', min-items='1', max-items='5')
       list(name='inner_list_tset', label='Inner')
-        group
-          header Client Info
-          phonenumber(label='Phone number', name='phone')
-          url(label='Website',name='url',required=true)
-        checkbox(label='An actual client', name='is_actual')
+        list(name='inner_list_tset', label='Inner')
+          list(name='inner_list_tset', label='Inner')
+            list(name='inner_list_tset', label='Inner')
+              group
+                header Client Info
+                phonenumber(label='Phone number', name='phone')
+                url(label='Website',name='url',required=true)
+              checkbox(label='An actual client', name='is_actual')
     phonenumber(label='Phone number', name='phone')
     url(label='Website',name='url',required=true)
     email(label='Email address', name='email', must-have-domain='bu.edu')

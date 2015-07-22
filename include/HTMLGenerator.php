@@ -13,19 +13,93 @@ abstract class HTMLGeneratorAbstract {
 		return $this->addH($text);
 	}
 
+
+
+	final function buildString($iterator, &$stopped, $startAt) {
+		$out = [];
+
+		// Stop if the recursion depth gets too high..
+		if($startAt == 0) {
+			// return [new SafeString('')];
+			$stopped = true;
+			return [$iterator];
+			// return $this->generateIterative($iterator);
+		}
+
+		foreach($iterator as $element) {
+			while($element instanceof Renderable) {
+				$element = $element->render();
+			}
+
+			if ($element instanceof HTMLGeneratorAbstract) {
+				$element = $element->toStringArray();
+			}
+
+			if(is_scalar($element)) {
+				$out[] = (new SafeString($element))->encode();
+			} else if(is_array($element) || $element instanceof Traversable) {
+				$out = array_merge($out, $this->buildString($element, $stopped, $startAt - 1));
+			} else if($element instanceof DoubleEncode) {
+
+				$data = $element->value;
+				if($data instanceof HTMLGeneratorAbstract) {
+					$data = $data->toStringArray();
+				}
+				$out = array_merge($out, array_map(function($x) {
+					if($x instanceof SafeString) {
+						return $x->encode();
+					} else {
+						return new DoubleEncode($x);
+					}
+				}, $this->buildString($data, $stopped, $startAt - 1)));
+			} else if($element instanceof SafeString) {
+				$out[] = $element;
+			} else if (!is_null($element)) {
+				throw new Exception('Invalid HTML generation target!');
+			}
+		}
+		return $out;
+	}
+
 	final function generateString() {
 
+		$stopped = true;
+		$ret = $this->toStringArray();
+		while($stopped) {
+			$stopped = false;
+			$ret = $this->buildString($ret, $stopped, 50);
+		}
+
+		$ret = array_map(function($x) {
+			if(!($x instanceof SafeString)) {
+				throw new Exception();
+			}
+			return $x->value;
+		}, $ret);
+		return implode($ret);
+
+	}
+	final function generateIterative($iterator) {
+		// var_dump($iterator);
 		// $time = microtime(true);
 		$out = '';
 		$positions = new SplStack();
-		$positions->push($this->toStringArray());
+		$arr = $iterator;
+		if(is_array($arr)) {
+			$arr = new ArrayIterator($arr);
+		}
+		$positions->push($arr);
 
 		$escapeCount = 0;
 
 		while(!$positions->isEmpty()) {
 
+
+
+
 			$input = $positions->pop();
 			while($input->valid()) {
+
 
 				$element = $input->current();
 				$input->next();
@@ -36,7 +110,11 @@ abstract class HTMLGeneratorAbstract {
 
 				if ($element instanceof HTMLGeneratorAbstract) {
 					$positions->push($input);
-					$input = $element->toStringArray();
+					$element = $element->toStringArray();
+					if(is_array($element)) {
+						$element = new ArrayIterator($element);
+					}
+					$input = $element;
 				} else if(is_scalar($element)) {
 					$x = $element;
 					for($j = $escapeCount + 1; $j > 0; $j--) {
@@ -72,7 +150,6 @@ abstract class HTMLGeneratorAbstract {
 				}
 			}
 		}
-		// echo '<br><br>' . (microtime(true) - $time)*1000 . ' ms';
 		return $out;
 	}
 }
@@ -80,6 +157,9 @@ abstract class HTMLGeneratorAbstract {
 class SafeString {
 	function __construct($value) {
 		$this->value = $value;
+	}
+	function encode() {
+		return new SafeString(htmlspecialchars($this->value, ENT_QUOTES));
 	}
 }
 
@@ -115,9 +195,7 @@ class HTMLContentGenerator extends HTMLGeneratorAbstract {
 	}
 
 	function toStringArray() {
-		foreach($this->children as $x) {
-			yield $x;
-		}
+		return $this->children;
 	}
 }
 
@@ -156,22 +234,24 @@ class HTMLTagGenerator extends HTMLGeneratorAbstract {
 
 	function toStringArray() {
 
-		yield new SafeString('<');
-		yield $this->tag;
+		$arr = [];
+		$arr[] = new SafeString('<');
+		$arr[] = $this->tag;
 		foreach ($this->attrs as $key => $value) {
-			yield new SafeString(' ');
-			yield $key;
-			yield new SafeString('="');
-			yield $value;
-			yield new SafeString('"');
+			$arr[] = new SafeString(' ');
+			$arr[] = $key;
+			$arr[] = new SafeString('="');
+			$arr[] = $value;
+			$arr[] = new SafeString('"');
 		}
 
-		yield new SafeString('>');
-		yield $this->contents;
+		$arr[] = new SafeString('>');
+		$arr[] = $this->contents;
 
-		yield new SafeString('</');
-		yield $this->tag;
-		yield new SafeString('>');
+		$arr[] = new SafeString('</');
+		$arr[] = $this->tag;
+		$arr[] = new SafeString('>');
+		return $arr;
 	}
 }
 
@@ -202,7 +282,7 @@ class HTMLParentContext extends HTMLGeneratorAbstract {
 	}
 
 	function toStringArray() {
-		yield $this->generator->toStringArray();
+		return $this->generator->toStringArray();
 	}
 }
 
@@ -220,7 +300,7 @@ class HTMLParentlessContext extends HTMLGeneratorAbstract{
 	}
 
 	function toStringArray() {
-		yield $this->generator->toStringArray();
+		return $this->generator->toStringArray();
 	}
 }
 

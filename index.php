@@ -22,7 +22,7 @@ $klein->onHttpError(function ($code, $router) {
 });
 
 $klein->respond('GET', '/', function () {
-	// echo '<br><br><br><br><br>';
+	echo '<br><br><br><br><br>';
 
 	// $t = microtime(true);
 	$formlist = new FormList(Parser::getFormInfo());
@@ -56,7 +56,12 @@ $klein->respond('GET', '/form.php', function () {
 	$cache->setPrefixSize(0);
 	$html = $cache->getOrCreate('jade-' . sha1_file(Parser::getForm($_GET['form'])) . '-' . sha1_file('config/config.toml'), [], function () {
 		$page = Parser::parseJade($_GET['form']);
-		return '<!DOCTYPE html>' . $page->makeFormPart()->render()->generateString();
+
+		echo '<br><br><br><br>';
+		$t = microtime(true);
+		$r =  '<!DOCTYPE html>' . $page->makeFormPart()->render()->generateString();
+		echo (microtime(true) - $t) * 1000;
+		return $r;
 	});
 
 	// Do the replacement here so that it won't be cached...
