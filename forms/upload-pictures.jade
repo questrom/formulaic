@@ -11,6 +11,7 @@ form(title='Upload Pictures')
         allow(ext='jpg', mime='image/jpeg')
         allow(ext='png', mime='image/png')
       textbox(label='Caption', name='caption', required=true)
+      checkbox(name='favorite', label='A favorite picture')
   views
     table-view(name='table1', title='Main view', per-page=10)
       col(name='album_name', header='Album', width=1)

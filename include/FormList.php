@@ -29,7 +29,7 @@ class FormItemView implements Renderable {
 		return h()
 			->div->class('item')
 				->div->class('header')
-					->a->href('form?form=' . $this->data->id)
+					->a->href('forms/' . $this->data->id)
 						->t($this->data->name)
 					->end
 					->div->class('ui horizontal right floated label')

@@ -517,9 +517,13 @@ abstract class Validate {
 
 			$result = Result::ok([]);
 
+
+			# Get the indices of the list to test
+			$indices = array_unique( array_merge( array_keys($list[0]), array_keys($list[1]) ) );
+			sort($indices);
+
 			# First, determine how many items are in the list, in total.
-			$number = array_merge( array_keys($list[0]), array_keys($list[1]) );
-			$number = (count($number) > 0 ? max( $number ) : -1) + 1;
+			$number = count($indices);
 
 			# Make sure the number of items provided is between $minItems and $maxItems
 			if($number < $minItems) {
@@ -531,14 +535,7 @@ abstract class Validate {
 
 
 			# For each item in the list...
-			for($index = 0; $index < $number; $index++) {
-
-
-				# In case it isn't a "real" list item (yes, this can happen: due to how
-				# the client adds items to the list, there can be odd gaps.)
-				if(!isset($list[0][$index]) && !isset($list[1][$index])) {
-					continue;
-				}
+			foreach($indices as $index) {
 
 				# Validate all of the fields within the list
 				$validationResult =
@@ -568,9 +565,9 @@ abstract class Validate {
 								return Result::error([]);
 							});
 					})
-					->ifError(function($errorSoFar) use($validationResult, $index, $minItems, $maxItems, $name, $items) {
+					->ifError(function($errorSoFar) use($validationResult, $index, $name) {
 						return $validationResult
-							->ifError(function($fieldError) use($errorSoFar, $index, $minItems, $maxItems, $name, $items) {
+							->ifError(function($fieldError) use($errorSoFar, $index, $name) {
 								# Combine two errors, putting things in a format the client JS code can understand.
 								foreach($fieldError as $k => $v) {
 
