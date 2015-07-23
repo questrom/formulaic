@@ -285,12 +285,6 @@ class TextareaFormPart implements Renderable {
 	}
 }
 
-
-# Date formatting helper
-function df($date) {
-	return $date->format('g:ia m/d/Y');
-}
-
 # A date/time picker
 class DateTimePickerFormPart implements Renderable {
 	public function __construct($field) { $this->f = $field; }

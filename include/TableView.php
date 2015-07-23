@@ -1,8 +1,8 @@
 <?php
 
+
+
 class Column implements Configurable {
-
-
 	function __construct($args) {
 		$this->name = $args['name'];
 		$this->header = $args['header'];

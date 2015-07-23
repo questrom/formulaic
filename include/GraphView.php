@@ -1,11 +1,14 @@
 <?php
 use \Colors\RandomColor;
 
+# This file includes a number of classes related to implementing graph views --
+# that is, views which display a series of graphs.
+
+# Displays a graph view
 class GraphViewRenderable implements Renderable {
 	public function __construct($field, $info) {
 		$this->f = $field;
 		$this->i = $info;
-
 	}
 	function render() {
 		return h()
@@ -38,6 +41,8 @@ class GraphViewRenderable implements Renderable {
 	}
 }
 
+# The logic behind a graph view
+# See the ConfigurableView interface in View.php for more info about each method.
 class GraphView implements ConfigurableView {
 
 	function makeView($data) {
@@ -61,6 +66,7 @@ class GraphView implements ConfigurableView {
 		$this->title = $args['title'];
 		$this->graphs = $args['children'];
 	}
+
 	function setPage($page) {
 		$this->pageData = $page;
 
@@ -78,6 +84,7 @@ class GraphView implements ConfigurableView {
 			$graph->setComponent($byName[$graph->name]);
 		}
 	}
+
 	function query($getArgs) {
 		$data = [];
 
@@ -91,15 +98,20 @@ class GraphView implements ConfigurableView {
 	}
 }
 
+# An abstract class used to implement both pie and bar charts.
 abstract class Graph implements Configurable, GraphViewPartFactory  {
 
 	function __construct($args) {
 		$this->name = $args['name'];
 		$this->label = $args['label'];
 	}
+
+	# Set the form field whose data will be displayed.
 	function setComponent($comp) {
 		$this->component = $comp;
 	}
+
+	# Query MongoDB for the relevant data
 	function query($mongo) {
 		$results = $mongo->getStats($this->component instanceof Checkboxes, $this->name);
 		$ids = array_map(function($x) {

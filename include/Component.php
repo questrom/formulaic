@@ -1,19 +1,24 @@
 <?php
 
-// Full components
-// ===============
+# These classes are mostly components: that is, Configurables that can create Renderables.
+# Each one corresponds to an element in the configruation file.
 
+# The __construct($args) method, which is needed to implement Configurable,
+# creates an instance of the component from attributes given in the configuration file.
+
+# The "show-if" element
 class ShowIfComponent implements FormPartFactory, Storeable, Configurable {
 
 	function __construct($args) {
-		$this->item = $args['children'][1];
 		$this->condition = $args['children'][0];
+		$this->item = $args['children'][1];
 	}
 
 	function getAllFields() {
 		if ($this->item instanceof Storeable) {
 			return $this->item->getAllFields();
 		} else {
+			# In case the field to be hidden/shown is, say, a header.
 			return [];
 		}
 	}
@@ -36,6 +41,7 @@ class ShowIfComponent implements FormPartFactory, Storeable, Configurable {
 			->collapse()
 			->ifSuccess(function ($val) {
 				if (!($this->condition->evaluate($val))) {
+					# Don't submit anything if the form field was hidden
 					return Result::ok([]);
 				} else {
 					return Result::ok($val)->groupValidate([$this->item]);
@@ -44,10 +50,15 @@ class ShowIfComponent implements FormPartFactory, Storeable, Configurable {
 	}
 }
 
-
+# The "checkbox" element
 class Checkbox extends PostInputComponent implements Enumerative {
 	function __construct($args) {
 		parent::__construct($args);
+
+		# This attribute that the box MUST be checked
+
+		# There is no "required" attribute for checkboxes,
+		# since they would duplicate the functionality of "must-check."
 		$this->mustCheck = isset($args['must-check']);
 	}
 
@@ -73,6 +84,7 @@ class Checkbox extends PostInputComponent implements Enumerative {
 	}
 }
 
+# The "time" element
 class TimeInput extends PostInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
@@ -93,7 +105,9 @@ class TimeInput extends PostInputComponent {
 			->stepTime($this->step);
 	}
 	function makeTableViewPart($v) {
+		# Convert a time for display in a table view.
 		if ($v === null) {
+			# In case there isn't any value.
 			return null;
 		}
 		$hour = floor($v / 3600);
@@ -111,6 +125,7 @@ class TimeInput extends PostInputComponent {
 }
 
 
+# The "datetime" element
 class DateTimePicker extends PostInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
@@ -138,6 +153,7 @@ class DateTimePicker extends PostInputComponent {
 	}
 }
 
+# The "textarea" element
 class Textarea extends PostInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
@@ -167,7 +183,7 @@ class Textarea extends PostInputComponent {
 	}
 }
 
-
+# The "dropdown" element
 class Dropdown extends PostInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
@@ -186,7 +202,7 @@ class Dropdown extends PostInputComponent {
 	}
 }
 
-
+# The "radios" element
 class Radios extends PostInputComponent implements Enumerative {
 	function __construct($args) {
 		parent::__construct($args);
@@ -207,7 +223,7 @@ class Radios extends PostInputComponent implements Enumerative {
 	}
 }
 
-
+# The "checkboxes" element
 class Checkboxes extends PostInputComponent implements Enumerative {
 	function __construct($args) {
 		parent::__construct($args);
@@ -235,21 +251,31 @@ class Checkboxes extends PostInputComponent implements Enumerative {
 			return null;
 		}
 		if (count($v) === 0) {
+			# Don't display anything if nothing was checked.
 			return null;
 		}
 		return new ListTableCell($v);
 	}
 }
 
+# The "captcha" element
 class Captcha extends PostInputComponent {
 	function __construct($args) {
-		$this->name = 'g-recaptcha-response'; // Google sets this name
+		# Google requires us to use this name for all CAPTCHA elements.
+		# Hence, the CAPTCHA element lacks a "name" attribute.
+		$this->name = 'g-recaptcha-response';
+
 		$this->label = 'CAPTCHA';
 	}
 	function makeFormPart() {
 		return new CaptchaFormPart($this);
 	}
 	function getSubmissionPart($val) {
+		# Don't store the results of the submission in the database.
+
+		# Presumably you don't need to determine what CAPTCHA
+		# someone had to solve after the fact :)
+		# Presumably...
 		return parent::getSubmissionPart($val)
 			->noStore();
 	}
@@ -259,7 +285,7 @@ class Captcha extends PostInputComponent {
 	}
 }
 
-
+# The "textbox" element
 class Textbox extends PostInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
@@ -273,6 +299,8 @@ class Textbox extends PostInputComponent {
 		return new InputFormPart($this, 'text', null);
 	}
 	protected function validate($against) {
+		# As with other "validate()" methods, this just chains together a bunch
+		# of the methods on "Result" types -- see Validate.php for details
 		return $against
 			->filterString()
 			->minMaxLength($this->minLength, $this->maxLength)
@@ -282,6 +310,7 @@ class Textbox extends PostInputComponent {
 	}
 }
 
+# The "file" element
 class FileUpload extends FileInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
@@ -304,9 +333,15 @@ class FileUpload extends FileInputComponent {
 		return new InputFormPart($this, 'file', null, null, $innerText);
 	}
 	protected function validate($against) {
+		# Validating file inputs is a rather difficult task.
+		# This solution is based on: http://php.net/manual/en/features.file-upload.php#114004
+
+		# It should be pretty bullet-proof, which is important because
+		# it is easy to create security vulnerabilities with file uploads.
+
 		return $against
 			->innerBind(function ($val) {
-				// See http://php.net/manual/en/features.file-upload.php
+				# See http://php.net/manual/en/features.file-upload.php
 				if (!is_array($val) || !isset($val['error']) || is_array($val['error'])) {
 					return Result::error('Invalid data.');
 				} else {
@@ -364,6 +399,8 @@ class FileUpload extends FileInputComponent {
 			return null;
 		}
 		if (is_string($v) && !isset($v['url'])) {
+			# In case the file upload is from an older version of the app,
+			# which stored things in a rather unsual manner
 			return null;
 		}
 		return new FileUploadTableCell($v);
@@ -375,7 +412,8 @@ class FileUpload extends FileInputComponent {
 		}
 
 		if (is_string($v) || !isset($v['url'])) {
-			// From old version
+			# In case the file upload is from an older version of the app,
+			# which stored things in a rather unsual manner
 			return null;
 		}
 		return new FileUploadDetailedTableCell($v);
@@ -388,13 +426,15 @@ class FileUpload extends FileInputComponent {
 		}
 
 		if (is_string($v) || !isset($v['url'])) {
-			// From old version
+			# In case the file upload is from an older version of the app,
+			# which stored things in a rather unsual manner
 			return null;
 		}
 		return new FileUploadDetailedTableCell($v);
 	}
 }
 
+# The "range" element
 class Range extends PostInputComponent {
 	function __construct($args) {
 
@@ -418,12 +458,16 @@ class Range extends PostInputComponent {
 }
 
 
+# The "password" element
 class Password extends PostInputComponent {
 
 	function __construct($args) {
 		parent::__construct($args);
 
 		$this->required = isset($args['required']);
+
+		# Strictly speaking, "match-hash" isn't required, but there's no real reason
+		# not to set it.
 		$this->matchHash = isset($args['match-hash']) ? $args['match-hash'] : null;
 
 		if (isset($args['match-hash'])) {
@@ -441,6 +485,8 @@ class Password extends PostInputComponent {
 			->requiredMaybe($this->required);
 	}
 	function getSubmissionPart($val) {
+		# Don't store passwords in the DB, as they are in plaintext
+		# and would present a security risk.
 		return parent::getSubmissionPart($val)
 			->noStore();
 	}
@@ -449,6 +495,7 @@ class Password extends PostInputComponent {
 	}
 }
 
+# The "phone" element
 class PhoneNumber extends PostInputComponent {
 
 	function __construct($args) {
@@ -469,6 +516,8 @@ class PhoneNumber extends PostInputComponent {
 		if ($v === null) {
 			return null;
 		}
+		# Format the phone number with pretty unicode spaces
+		# before displaying it in a table
 		if (preg_match('/^[0-9]{10}$/', $v)) {
 			$showValue = '(' . substr($v, 0, 3) . ')' . json_decode('"\u2006"') . substr($v, 3, 3) . json_decode('"\u2006"') . substr($v, 6, 4);
 		} else {
@@ -478,6 +527,7 @@ class PhoneNumber extends PostInputComponent {
 	}
 }
 
+# The "email" element
 class EmailAddr extends PostInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
@@ -505,6 +555,7 @@ class EmailAddr extends PostInputComponent {
 	}
 }
 
+# The "url" element
 class UrlInput extends PostInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
@@ -528,6 +579,7 @@ class UrlInput extends PostInputComponent {
 	}
 }
 
+# The "number" element
 class NumberInp extends PostInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
@@ -543,17 +595,14 @@ class NumberInp extends PostInputComponent {
 	protected function validate($against) {
 		return $against
 			->filterString()
-			->maybeString()// So we end up with a Maybe<> if not required
+			->maybeString()
 			->requiredMaybe($this->required)
 			->filterNumber($this->integer)
 			->minMaxNumber($this->min, $this->max);
 	}
 }
 
-function dfd($date) {
-	return $date->format('m/d/Y');
-}
-
+# The "date" element
 class DatePicker extends PostInputComponent {
 	function __construct($args) {
 		parent::__construct($args);
@@ -566,6 +615,13 @@ class DatePicker extends PostInputComponent {
 	}
 	function makeFormPart() {
 		$sublabel = '';
+
+		# Create a message giving the minimum and maximum, since input masks don't give us any way
+		# of preventing the user from entering values outside a specific range.
+
+		# In the future, it might be better to use a "proper" (calendar-style) datepicker.
+		# It might also be good to use HTML5 date/time input types, but this might create issues
+		# with cross-browser compatibility if input masks are used at the same time.
 
 		if (isset($this->max) && isset($this->min)) {
 			$sublabel = 'Please provide a date between ' . dfd($this->min) . ' and ' . dfd($this->max) . '.';
@@ -595,10 +651,9 @@ class DatePicker extends PostInputComponent {
 	}
 }
 
-
+# The "Header" element
 class Header implements FormPartFactory, Configurable {
-
-	final function __construct($args) {
+	function __construct($args) {
 		$this->text = $args['innerText'];
 		$this->subhead = isset($args['subhead']) ? $args['subhead'] : null;
 		$this->icon = isset($args['icon']) ? $args['icon'] : null;
@@ -612,10 +667,9 @@ class Header implements FormPartFactory, Configurable {
 	}
 }
 
-
+# The "notice" element
 class Notice implements FormPartFactory, Configurable {
-
-	final function __construct($args) {
+	function __construct($args) {
 		$this->text = isset($args['text']) ? $args['text'] : '';
 		$this->header = isset($args['header']) ? $args['header'] : null;
 		$this->icon = isset($args['icon']) ? $args['icon'] : null;
@@ -633,6 +687,8 @@ class Notice implements FormPartFactory, Configurable {
 	}
 }
 
+# The "list" element.
+# The implementation is, unfortunately, quite complex.
 class ListComponent implements FormPartFactory, Configurable,
 	TableViewPartFactory, DetailsViewPartFactory, EmailViewPartFactory, Storeable {
 	use Tableize, Groupize;
@@ -645,11 +701,13 @@ class ListComponent implements FormPartFactory, Configurable,
 		$this->addText = isset($args['add-text']) ? $args['add-text'] : 'Add an item';
 	}
 
+
+	# The same as NamedLabeledComponent
 	function getAllFields() {
 		return [$this->name => $this];
 	}
 
-	// Borrowed from GroupComponent
+	# This is the same as the getAllFields element of GroupComponent.
 	private function getAllFieldsWithin() {
 		$arr = [];
 		foreach ($this->items as $item) {
@@ -659,10 +717,14 @@ class ListComponent implements FormPartFactory, Configurable,
 		}
 		return $arr;
 	}
+
+	# Generates a UI for adding/removing items
 	function makeFormPart() {
 		return new ListComponentFormPart($this);
 	}
 	function getSubmissionPart($val) {
+		# Get the relevant parts of $_POST/$_FILES,
+		# converting $_FILES with diverse_array if need be.
 		return $val
 			->innerBind(function ($v) {
 				return Result::ok(
@@ -680,6 +742,8 @@ class ListComponent implements FormPartFactory, Configurable,
 			})
 			->listValidate($this->minItems, $this->maxItems, $this->name, $this->items);
 	}
+
+	# Only in details/email view do we actually show the individual list items.
 	function makeTableViewPart($v) {
 		if ($v === null) {
 			return null;
@@ -705,6 +769,7 @@ class ListComponent implements FormPartFactory, Configurable,
 	}
 }
 
+# The "group" element
 class Group extends GroupComponent {
 	function __construct($args) {
 		$this->items = $args['children'];
@@ -714,8 +779,10 @@ class Group extends GroupComponent {
 	}
 }
 
+# Keeps track of the IP address associated with a form submission.
+# This is never displayed as part of the form, so it doesn't
+# implement FormPartFactory.
 class IPField implements TableViewPartFactory, Storeable {
-
 	function __construct() {
 		$this->name = '_ip';
 		$this->label = 'IP Address';
@@ -735,6 +802,9 @@ class IPField implements TableViewPartFactory, Storeable {
 
 }
 
+# Keeps track of the timestamp associated with a form submission.
+# This is never displayed as part of the form, so it doesn't
+# implement FormPartFactory.
 class TimestampField implements TableViewPartFactory, Storeable {
 
 	function __construct() {
@@ -755,6 +825,7 @@ class TimestampField implements TableViewPartFactory, Storeable {
 	}
 }
 
+# The "fields" element
 class FieldList extends GroupComponent {
 	function __construct($args) {
 		$this->items = $args['children'];
@@ -766,6 +837,8 @@ class FieldList extends GroupComponent {
 	}
 }
 
+# The main "form" element, which is the root eleemnt of any
+# configuration file.
 class Page implements Configurable {
 
 	function __construct($args) {
@@ -777,14 +850,19 @@ class Page implements Configurable {
 		$this->outputs = $args['byTag']['outputs'];
 		$this->views = $args['byTag']['views'];
 	}
+
 	function makeFormPart() {
 		return new PageFormPart($this);
 	}
+
+	# Obtain a view and tell it what page it's on
 	function getView($name) {
 		$view = $this->views->getByName($name);
 		$view->setPage($this);
 		return $view;
 	}
+
+	# Set the form's ID based on the URL
 	function setId($id) {
 		$this->id = $id;
 		$this->form->id = $id;

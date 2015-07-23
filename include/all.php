@@ -1,5 +1,7 @@
 <?php
 
+# Various things =========================================================================
+
 # Composer dependencies
 require 'vendor/autoload.php';
 
@@ -25,23 +27,62 @@ require 'include/HTMLGenerator.php';
 # Form validation helper
 require 'include/Validate.php';
 
-# Components (mostly: form fields)
+# Components =========================================================================
+
+# These files contain some (not all) "components": that is, classes with two properties:
+# - They implement the Configurable interface, and thus can be created from
+#   elements placed inside configuration files.
+# - They have methods which create Renderable objects -- in other words,
+#   they allow the creation of HTML elements.
+# Many are also Storeable: i.e., they have associated data that can be stored
+# inside of, say, MongoDB.
+
+# More specifically, ComponentAbstract.php contains some interfaces, traits, and
+# abstract classes used by components, while Component.php contains the
+# components themselves.
+
 require 'include/ComponentAbstract.php';
 require 'include/Component.php';
 
-# Things that can be rendered into HTML
-require 'include/FormPart.php'; # as parts of forms
-require 'include/Cells.php';    # as parts of tables
+# Renderables ========================================================================
 
-# Outputs
+# These files contain some (not all) classes implementing Renderable. Such classes
+# can be turned into HTML.
+
+# More specifically, FormPart.php contains Renderables primarily used within forms,
+# while Cells.php contains ones primarily used within tables.
+
+require 'include/FormPart.php';
+require 'include/Cells.php';
+
+# Outputs ===========================================================================
+
+# This file includes various classes that act as Outputs - places where data from form
+# submissions can be sent, stored, or otherwise handled.
+
 require 'include/Output.php';
 
-# Views
+# Views =============================================================================
+
+# These files include various classes related to views -- that is, ways in which data
+# from form submissions can be displayed.
+
+# More specifically:
+# View - General interfaces and helpers
+# TableView - Things related to table views
+# GraphView - Things related to graph views
+# DetailsView - The view shown after clicking the "Details" button in a table
+# EmailView - Used by the "email-to" output
+
 require 'include/View.php';
 require 'include/TableView.php';
-require 'include/DetailsView.php';
 require 'include/GraphView.php';
+require 'include/DetailsView.php';
 require 'include/EmailView.php';
 
-# Generate the main list of forms
+# FormList =============================================================================
+
+# This file includes classes used to generate the main list of forms shown upon entering
+# the application.
+
 require 'include/FormList.php';

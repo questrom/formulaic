@@ -150,3 +150,21 @@ class FileInfo {
 		$this->permissions = $permissions;
 	}
 }
+
+
+# Simple date formatting helpers.
+function dfd($date) {
+	return $date->format('m/d/Y');
+}
+function df($date) {
+	return $date->format('g:ia m/d/Y');
+}
+
+# array_map btu with keys as well as values
+function kvmap(callable $fn, $array) {
+	$result = [];
+	foreach($array as $key => $value) {
+		$result[$key] = $fn($key, $value);
+	}
+	return $result;
+}
