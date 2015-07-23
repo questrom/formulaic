@@ -3,6 +3,7 @@
 use Yosymfony\Toml\Toml;
 use Gregwar\Cache\Cache;
 
+
 # Shortcut for "isset()" checks
 # Name inspired by https://github.com/ArtBIT/isget/blob/master/src/isget.php
 function isget(&$value, $default = null) {

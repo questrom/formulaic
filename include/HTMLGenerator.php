@@ -1,5 +1,6 @@
 <?php
 
+
 abstract class HTMLGeneratorAbstract {
 	abstract function addH($arr);
 	abstract function __get($name);

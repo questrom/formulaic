@@ -462,7 +462,7 @@ class GroupFormPart implements Renderable {
 		->div->class('group')
 		->addH(array_map(function($value) {
 			if(is_array($value)) {
-				return (new HTMLParentlessContext())->div->class('ui segment attached')
+				return h()->div->class('ui segment attached')
 					->addH(
 						# Use makeGroupPart so that things are formatted for display within a group
 						array_map(function($x) { return $x ? $x->makeGroupPart() : null; }, $value)
