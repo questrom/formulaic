@@ -39,6 +39,7 @@ interface FormPartFactory {
 
 # Implemented by classes that create Renderables to be
 # displayed as parts of a table view.
+# - $value is the data to be displayed in the table cell.
 interface TableViewPartFactory {
 	public function makeTableViewPart($value);
 }
@@ -46,12 +47,14 @@ interface TableViewPartFactory {
 # Implemented by classes that create Renderables to be
 # displayed as parts of the view displayed when the user
 # presses the "Details" button in a table.
+# - $value is the data to be displayed in the table cell.
 interface DetailsViewPartFactory {
 	public function makeDetailsViewPart($value);
 }
 
 # Implemented by classes that create Renderables to be
 # displayed as parts of the view displayed in HTML emails.
+# - $value is the data to be displayed in the table cell.
 interface EmailViewPartFactory {
 	public function makeEmailViewPart($value);
 }

@@ -134,6 +134,7 @@ abstract class Graph implements Configurable, GraphViewPartFactory  {
 	}
 }
 
+# An individual slice within a pie chart
 class PieSlice implements Renderable {
 	function __construct($result, $total, $prev) {
 		$this->result = $result;
@@ -162,6 +163,8 @@ class PieSlice implements Renderable {
 			$color = RandomColor::one([
 				'luminosity' => 'bright',
 				'prng' => function($min, $max) use ($key) {
+					# Get the color by hashing the text
+					# So it stays the same when the page is refreshed
 					return (hexdec(substr(md5($key), 0, 2)) / pow(16, 2))  * ($max - $min) + $min;
 				}
 			]);
@@ -177,6 +180,7 @@ class PieSlice implements Renderable {
 		$endX = cos($pct) * 600;
 		$endY = sin($pct) * 600;
 
+		# Generate the arc
 		$path = "M 0 0 L $startX $startY A 600 600 0 $largeSweep 1 $endX $endY L 0 0";
 
 
@@ -198,6 +202,7 @@ class PieSlice implements Renderable {
 	}
 }
 
+# Displays a pie chart
 class PieChartRenderable implements Renderable {
 	function __construct($label, $results) {
 		$this->label = $label;
@@ -225,6 +230,7 @@ class PieChartRenderable implements Renderable {
 	}
 }
 
+# Displays a bar graph
 class BarGraphRenderable implements Renderable {
 	function __construct($label, $results) {
 		$this->label = $label;
@@ -261,6 +267,9 @@ class BarGraphRenderable implements Renderable {
 							$color = RandomColor::one([
 								'luminosity' => 'bright',
 								'prng' => function($min, $max) use ($key) {
+
+									# Get the color by hashing the text
+									# So it stays the same when the page is refreshed
 									return (hexdec(substr(md5($key), 0, 2)) / pow(16, 2))  * ($max - $min) + $min;
 								}
 							]);
@@ -292,21 +301,14 @@ class BarGraphRenderable implements Renderable {
 	}
 }
 
-
+# A pie chart itself
 class PieChart extends Graph {
 	function makeGraphViewPart($data) {
 		return new PieChartRenderable($this->label, $data);
 	}
 }
 
-function kvmap(callable $fn, $array) {
-	$result = [];
-	foreach($array as $key => $value) {
-		$result[$key] = $fn($key, $value);
-	}
-	return $result;
-}
-
+# A bar graph itself
 class BarGraph extends Graph {
 	function makeGraphViewPart($data) {
 		return new BarGraphRenderable($this->label, $data);
