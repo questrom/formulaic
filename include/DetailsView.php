@@ -1,32 +1,10 @@
 <?php
 
-class TablePart implements TableViewPartFactory, DetailsViewPartFactory, EmailViewPartFactory {
-	function __construct($component) {
-		$this->component = $component;
-	}
-	function makeTableViewPart($value) {
-		return new ValueCell($value, $this->component);
-	}
-	function makeDetailsViewPart($value) {
-		return new ValueRow($value, $this->component);
-	}
-	function makeEmailViewPart($value) {
-		return new EmailValueRow($value, $this->component);
-	}
-}
+# The details view, used to display the DB item with a particular ID.
+# Just a simple implementation of the View interface.
 
-class StampedTable implements DetailsViewPartFactory, EmailViewPartFactory {
-	function __construct($fields) {
-		$this->fields = $fields;
-	}
-	function makeDetailsViewPart($data) {
-		return new ValueTable($this->fields, $data, new IPTimestampInfo($data));
-	}
-	function makeEmailViewPart($data) {
-		return new EmailTable($this->fields, $data, new EmailIPTimestampInfo($data));
-	}
-}
-
+# Note that there are NO restrictions on what ID can be entered,
+# since there is no authentication for views in general.
 
 class DetailsView implements View {
 	function makeView($data) {

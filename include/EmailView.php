@@ -1,5 +1,6 @@
 <?php
 
+# The email view, used to display data within an HTML email.
 
 class EmailView {
 

@@ -69,12 +69,14 @@ require 'include/Output.php';
 
 # More specifically:
 # View - General interfaces and helpers
+# GeneralTable - shared among TableView/DetailsView/EmailView
 # TableView - Things related to table views
 # GraphView - Things related to graph views
 # DetailsView - The view shown after clicking the "Details" button in a table
 # EmailView - Used by the "email-to" output
 
 require 'include/View.php';
+require 'include/GeneralTable.php';
 require 'include/TableView.php';
 require 'include/GraphView.php';
 require 'include/DetailsView.php';

@@ -424,6 +424,7 @@ class TablePage implements Renderable {
 							->thead
 								->tr
 									->addH(array_map(function($x)  {
+										# Show how the table is sorted
 										return h()
 										->th->class(
 											$x->sort === null ? '' :
@@ -441,6 +442,7 @@ class TablePage implements Renderable {
 									->addH(array_map(function($col) use($row) {
 										return ( new TablePart( $this->byName[$col->name] ) )->makeTableViewPart(  isget($row[$col->name]) );
 									}, $this->f->cols))
+									# After the columns, show the Details button
 									->td->class('center aligned nowrap unpadded-cell')
 										->a->class('ui no-margin compact button')->href('details?form=' . $this->f->formID . '&id=' . $row['_id'])
 											->t('Details')
@@ -450,6 +452,7 @@ class TablePage implements Renderable {
 							}, $this->f->data))
 						->end
 						->addH(!$this->f->perPage ? null :
+							# Pagination menu
 							h()
 							->div->class('ui text menu')
 								->div->class('item')

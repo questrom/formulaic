@@ -1,7 +1,9 @@
 <?php
 
+# These Configurables are used within table views.
 
-
+# The "col" element. Just holds data from the attributes
+# in the configuration file.
 class Column implements Configurable {
 	function __construct($args) {
 		$this->name = $args['name'];
@@ -12,10 +14,9 @@ class Column implements Configurable {
 }
 
 
-
-
+# The "table-view" element itself. For mroe info about each method,
+# see ConfigurableView in View.php.
 class TableView implements ConfigurableView {
-
 
 	function makeView($data) {
 		$this->data = $data['data'];
@@ -45,7 +46,11 @@ class TableView implements ConfigurableView {
 			}
 		}
 		$sortBy['_timestamp'] = -1;
-		$sortBy['_id'] = -1; // Ensure determinism so we don't break pagination
+
+		# This line ensures that the sort will be deterministic,
+		# so page refreshes or moving between pages won't cause the
+		# sort order to change.
+		$sortBy['_id'] = -1;
 
 		$this->sortBy = $sortBy;
 
