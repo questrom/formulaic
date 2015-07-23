@@ -1,81 +1,5 @@
 <?php
 
-class StringBuilder {
-	function __construct($arr, $escapeCount) {
-		$this->arr = $arr;
-		$this->escapeCount = $escapeCount;
-	}
-	function process($element) {
-		if ($element instanceof HTMLGeneratorAbstract) {
-			return $this->buildString($element->toStringArray());
-		} else if(is_scalar($element)) {
-			return new StringBuilder($element, $this->escapeCount + 1);
-			// return htmlspecialchars((string) $element, ENT_QUOTES);
-		} else if(is_array($element) || $element instanceof Traversable) {
-			return $this->buildString($element);
-		} else if($element instanceof DoubleEncode) {
-			return new StringBuilder($element, $this->escapeCount + 1);
-		} else if($element instanceof SafeString) {
-			return $element->getValue();
-		} else if (!is_null($element)) {
-			throw new Exception('Invalid HTML generation target!');
-		}
-	}
-}
-
-class StackLocation {
-	function __construct($iterator, $escapeCount = 0, $out = '') {
-		$this->iterator = $iterator;
-		$this->escapeCount = $escapeCount;
-		$this->out = $out;
-	}
-	function escape($text) {
-		for($j = 0; $j < $this->escapeCount; $j++) {
-			$text = htmlspecialchars($text, ENT_QUOTES);
-		}
-		return $text;
-	}
-	function process() {
-		if(count($this->iterator) === 0) {
-		 	return $this->out;
-		}
-
-		 $element = $this->iterator[0];
-
-		while($element instanceof Renderable) {
-			$element = $element->render();
-		}
-
-		if(is_scalar($element)) {
-			$element = new DoubleEncode(new SafeString($element));
-		}
-		if(is_null($element)) {
-			$element = new SafeString('');
-		}
-		if ($element instanceof HTMLGeneratorAbstract) {
-			$element = $element->toStringArray();
-		}
-
-		if(is_array($element)) {
-			$element = new ArrayIterator($element);
-		}
-
-		if($element instanceof DoubleEncode) {
-			return new StackLocation([
-				$element->value
-			], $this->escapeCount + 1, $this->out);
-		} else if($element instanceof Iterator) {
-			return new StackLocation(iterator_to_array($element), $this->escapeCount, $this->out);
-		} else if($element instanceof SafeString) {
-
-			return new StackLocation(array_slice($this->iterator, 1), $this->escapeCount, $this->out . $this->escape($element->getValue()));
-		} else {
-			throw new Exception('Invalid HTML generation target!');
-		}
-	}
-
-}
-
 abstract class HTMLGeneratorAbstract {
 	abstract function addH($arr);
 	abstract function __get($name);
@@ -85,48 +9,8 @@ abstract class HTMLGeneratorAbstract {
 		return $this->addH($text);
 	}
 
-	# May exceed xdebug call stack - if so change php conf.
- final function generateString() {
-
-		 // $time = microtime(true);
-		 $out = '';
-		 $positions = new SplStack();
-		 $positions->push(
-			new StackLocation($this->toStringArray())
-		 );
-
-
-		 $count = 10;
-
-		 while(!$positions->isEmpty()) {
-
-				 $item = $positions->pop();
-
-				 while($item instanceof StackLocation) {
-
-				 	$positions->push($item);
-
-					$item = $item->process();
-				 }
-				 $out .= $item;
-
-
-				 if($count-- == 0) {
-				 	var_dump($out);
-					 die();
-				}
-
-
-
-		 }
-		 return $out;
-   }
 	final function buildString($iterator) {
-
-		/*
-$out = '';
-
-
+		$out = '';
 		foreach($iterator as $element) {
 			while($element instanceof Renderable) {
 				$element = $element->render();
@@ -147,12 +31,11 @@ $out = '';
 			}
 		}
 		return $out;
-		*/
 	}
 
-	// final function generateString() {
-	// 	return $this->buildString($this->toStringArray());
-	// }
+	final function generateString() {
+		return $this->buildString($this->toStringArray());
+	}
 
 }
 
