@@ -50,10 +50,10 @@ require 'include/Component.php';
 # can be turned into HTML.
 
 # More specifically, FormPart.php contains Renderables primarily used within forms,
-# while Cells.php contains ones primarily used within tables.
+# while TablePart.php contains ones primarily used within tables.
 
 require 'include/FormPart.php';
-require 'include/Cells.php';
+require 'include/TablePart.php';
 
 # Outputs ===========================================================================
 
