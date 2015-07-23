@@ -1,11 +1,9 @@
 <?php
 
-use Sabre\Xml\XmlDeserializable;
-
 # Represents the 'views' element in a configuration file.
 # Allows views to be queried.
-class ViewList implements XmlDeserializable {
-	use Configurable;
+class ViewList implements Configurable {
+
 	private $views;
 	function __construct($args) {
 		$this->views = $args['children'];
@@ -37,6 +35,6 @@ interface GraphViewPartFactory {
 	function makeGraphViewPart($data);
 }
 
-interface ConfigurableView extends View, XmlDeserializable {
+interface ConfigurableView extends View, Configurable {
 	public function getIcon();
 }

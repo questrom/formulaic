@@ -1,76 +1,91 @@
 <?php
 
-use Sabre\Xml\XmlDeserializable;
 use Gregwar\Cache\Cache;
 
-# This trait provides an implementation of the XmlDeserializable interface,
-# which sabre/xml uses to construct PHP objects from XML elements.
-
-# Basically, the XmlDeserializable interface includes a static function xmlDeserialize()
-# which is called with the contents of the XML node. As implemented in Configurable,
-# the xmlDeserialize() method converts these contents into array form, and then
-# creates a new instance of the class using that array.
-
-# Later in this file, a map of XML tag names -> classes implementing XmlDeserializable
-# is given and used to initialize sabre/xml.
-
-
-trait Configurable {
-	abstract public function __construct($args);
-	static function xmlDeserialize(Sabre\Xml\Reader $reader) {
-		$attrs = $reader->parseAttributes();
-		$tree = $reader->parseInnerTree();
-
-		$attrs['children'] = [];
-		$attrs['innerText'] = '';
-
-		if (is_array($tree)) {
-			$attrs['children'] = array_map(
-				function ($x) { return $x['value']; },
-				$tree
-			);
-		} else if (is_string($tree)) {
-			$attrs['innerText'] = $tree;
-		}
-
-		return new static($attrs);
-	}
-}
-
-# An implementation of XmlDeserializable that does things by-tag
-trait ByTagConfigurable {
-	static function xmlDeserialize(Sabre\Xml\Reader $reader) {
-		$attrs = $reader->parseAttributes();
-		$attrs['byTag'] = Sabre\Xml\Element\KeyValue::xmlDeserialize($reader);
-
-		return new static($attrs);
-	}
-}
-
-# A very simple XmlDeserializable implementation used
-# for elements whose sole job is to contain text.
-class TextElem implements XmlDeserializable {
-	static function xmlDeserialize(Sabre\Xml\Reader $reader) {
-		$tree = $reader->parseInnerTree();
-		return is_string($tree) ? $tree : '';
-	}
+# This interface indicates that a class can be instantiated from data
+# obtained from a configuration file. $args is an array of attributes,
+# with special "children" and "innerText" keys used to store
+# the children or text inside of the element, respectively.
+interface Configurable {
+	public function __construct($args);
 }
 
 # Used for the <allow ext="..." mime="..."> element within file upload inputs.
-class AllowElem implements XmlDeserializable {
-	use Configurable;
+class AllowElem implements Configurable {
 	function __construct($args) {
 		$this->ext = $args['ext'];
 		$this->mime = $args['mime'];
 	}
 }
 
-# Doesn't really do anything at the moment
-function caller($class) {
-	return function(Sabre\Xml\Reader $reader) use($class) {
+# A version of XMLReader that converts XML elements to things that extend Configurable.
+# This code is based on Sabre/XML - see https://github.com/fruux/sabre-xml/blob/master/lib/Reader.php
+class BetterReader extends XMLReader {
+	function parseCurrentElement() {
 
-		return call_user_func([$class, 'xmlDeserialize'], ($reader));
-	};
+		$name = $this->localName;
+
+		$attrs = [];
+		while ($this->moveToNextAttribute()) {
+			$attrs[$this->localName] = $this->value;
+		}
+		$this->moveToElement();
+
+		$text = '';
+		$elements = [];
+		$attributes = [];
+		if ($this->nodeType === self::ELEMENT && $this->isEmptyElement) {
+			$this->next();
+		} else {
+			$this->read();
+			while (true) {
+				switch ($this->nodeType) {
+					case self::ELEMENT:
+						$elements[] = $this->parseCurrentElement();
+						break;
+					case self::TEXT:
+					case self::CDATA:
+						$text .= $this->value;
+						$this->read();
+						break;
+					case self::END_ELEMENT:
+						// Ensuring we are moving the cursor after the end element.
+						$this->read();
+						break 2;
+					default:
+						// Advance to the next element
+						$this->read();
+						break;
+				}
+			}
+		}
+
+		if($this->elementMap[$name] !== '_text') {
+			if(!is_subclass_of($this->elementMap[$name], 'Configurable')) {
+				throw new Exception('Only put configurables in ElementMap');
+			}
+			# Create an object
+
+			$attrs['children'] = [];
+			$attrs['innerText'] = $text;
+
+			foreach($elements as $item) {
+				$attrs['byTag'][$item['name']] = $item['value'];
+				$attrs['children'][] = $item['value'];
+			}
+
+			return [
+				'name' => $name,
+				'value' => new $this->elementMap[$name]($attrs)
+			];
+		} else {
+			# Just turn the element into a string
+			return [
+				'name' => $name,
+				'value' => $text
+			];
+		}
+	}
 }
 
 # This class manages and parses configuration files.
@@ -123,57 +138,53 @@ class Parser {
 	# Get an XML reader
 	static function getReader() {
 		if(!isset(self::$reader)) {
-			$reader = self::$reader = new Sabre\Xml\Reader();
+			$reader = self::$reader = new BetterReader();
 
-			# The map of XML element names to PHP classes that implement Sabre\Xml\XmlDeserializable.
-			# Usually they implement this interface by means of the Configurable trait given earlier
-			# in this file.
-
-			# Note that each element name must have '{}' prepended to it.
+			# The map of XML element names to PHP classes that implement Configurable.
 			$reader->elementMap = [
-				'{}checkbox' => 'Checkbox',
-				'{}textbox' => 'Textbox',
-				'{}password' => 'Password',
-				'{}dropdown' => 'Dropdown',
-				'{}radios' => 'Radios',
-				'{}checkboxes' => 'Checkboxes',
-				'{}textarea' => 'TextArea',
-				'{}range' => 'Range',
-				'{}time' => 'TimeInput',
-				'{}group' => 'Group',
-				'{}date' => 'DatePicker',
-				'{}phonenumber' => 'PhoneNumber',
-				'{}email' => 'EmailAddr',
-				'{}url' => 'UrlInput',
-				'{}number' => 'NumberInp',
+				'checkbox' => 'Checkbox',
+				'textbox' => 'Textbox',
+				'password' => 'Password',
+				'dropdown' => 'Dropdown',
+				'radios' => 'Radios',
+				'checkboxes' => 'Checkboxes',
+				'textarea' => 'TextArea',
+				'range' => 'Range',
+				'time' => 'TimeInput',
+				'group' => 'Group',
+				'date' => 'DatePicker',
+				'phonenumber' => 'PhoneNumber',
+				'email' => 'EmailAddr',
+				'url' => 'UrlInput',
+				'number' => 'NumberInp',
 
-				'{}notice' => 'Notice',
-				'{}header' => 'Header',
-				'{}datetime' => 'DateTimePicker',
-				'{}file' => 'FileUpload',
-				'{}allow' => 'AllowElem',
+				'notice' => 'Notice',
+				'header' => 'Header',
+				'datetime' => 'DateTimePicker',
+				'file' => 'FileUpload',
+				'allow' => 'AllowElem',
 
-				'{}mongo' => 'MongoOutput',
-				'{}s3' => 'S3Output',
+				'mongo' => 'MongoOutput',
+				's3' => 'S3Output',
 
-				'{}option' => 'TextElem',
-				'{}fields' => 'FieldList',
-				'{}li' => 'TextElem',
-				'{}outputs' => 'SuperOutput',
-				'{}form' => 'Page',
-				'{}list' => 'ListComponent',
-				'{}show-if' => 'ShowIfComponent',
-				'{}table-view' => 'TableView',
-				'{}col' => 'Column',
-				'{}email-to' => 'EmailOutput',
-				'{}graph-view' => 'GraphView',
-				'{}bar' => 'BarGraph',
-				'{}pie' => 'PieChart',
-				'{}captcha' => 'Captcha',
-				'{}is-checked' => 'IsCheckedCondition',
-				'{}is-not-checked' => 'IsNotCheckedCondition',
-				'{}is-radio-selected' => 'IsRadioSelectedCondition',
-				'{}views' => 'ViewList'
+				'option' => '_text',
+				'fields' => 'FieldList',
+				'li' => '_text',
+				'outputs' => 'SuperOutput',
+				'form' => 'Page',
+				'list' => 'ListComponent',
+				'show-if' => 'ShowIfComponent',
+				'table-view' => 'TableView',
+				'col' => 'Column',
+				'email-to' => 'EmailOutput',
+				'graph-view' => 'GraphView',
+				'bar' => 'BarGraph',
+				'pie' => 'PieChart',
+				'captcha' => 'Captcha',
+				'is-checked' => 'IsCheckedCondition',
+				'is-not-checked' => 'IsNotCheckedCondition',
+				'is-radio-selected' => 'IsRadioSelectedCondition',
+				'views' => 'ViewList'
 			];
 		} else {
 			$reader = self::$reader;
@@ -206,10 +217,15 @@ class Parser {
 			return self::getJade()->render("!!! xml\n" . file_get_contents($file));
 		});
 
-
+		// $t = microtime(true);
 		$reader = self::getReader();
 		$reader->xml($xml);
-		$readData = $reader->parse();
+
+		while ($reader->nodeType !== XMLReader::ELEMENT) {
+			$reader->read();
+		}
+		$readData = $reader->parseCurrentElement();
+		// echo '<br><br><br>' . (microtime(true) - $t)*1000;
 
 		$page = $readData['value'];
 

@@ -1,6 +1,5 @@
 <?php
 
-use Sabre\Xml\XmlDeserializable;
 
 # A condition that can be used as the first child of a 'show-if' element.
 interface Condition {
@@ -10,8 +9,8 @@ interface Condition {
 }
 
 # A condition that is satisfied when a checkbox is checked.
-class IsCheckedCondition implements XmlDeserializable, Condition {
-	use Configurable;
+class IsCheckedCondition implements Configurable, Condition {
+
 	function __construct($args) {
 		$this->name = $args['name'];
 	}
@@ -27,8 +26,8 @@ class IsCheckedCondition implements XmlDeserializable, Condition {
 }
 
 # A condition that is satisfied when a checkbox is NOT checked.
-class IsNotCheckedCondition implements XmlDeserializable, Condition {
-	use Configurable;
+class IsNotCheckedCondition implements Configurable, Condition {
+
 	function __construct($args) {
 		$this->name = $args['name'];
 	}
@@ -44,8 +43,8 @@ class IsNotCheckedCondition implements XmlDeserializable, Condition {
 }
 
 # A condition that is satisfied when a radio button within a group is selected.s
-class IsRadioSelectedCondition implements XmlDeserializable, Condition {
-	use Configurable;
+class IsRadioSelectedCondition implements Configurable, Condition {
+
 	function __construct($args) {
 		$this->name = $args['name'];
 		$this->value = $args['value'];

@@ -1,14 +1,12 @@
 <?php
 
 use Gregwar\Captcha\CaptchaBuilder;
-use Sabre\Xml\XmlDeserializable as XmlDeserializable;
-
 
 // Full components
 // ===============
 
-class ShowIfComponent implements FormPartFactory, Storeable, XmlDeserializable {
-	use Configurable;
+class ShowIfComponent implements FormPartFactory, Storeable, Configurable {
+
 	function __construct($args) {
 		$this->item = $args['children'][1];
 		$this->condition = $args['children'][0];
@@ -600,8 +598,8 @@ class DatePicker extends PostInputComponent {
 }
 
 
-class Header implements FormPartFactory, XmlDeserializable {
-	use Configurable;
+class Header implements FormPartFactory, Configurable {
+
 	final function __construct($args) {
 		$this->text = $args['innerText'];
 		$this->subhead = isset($args['subhead']) ? $args['subhead'] : null;
@@ -617,8 +615,8 @@ class Header implements FormPartFactory, XmlDeserializable {
 }
 
 
-class Notice implements FormPartFactory, XmlDeserializable {
-	use Configurable;
+class Notice implements FormPartFactory, Configurable {
+
 	final function __construct($args) {
 		$this->text = isset($args['text']) ? $args['text'] : '';
 		$this->header = isset($args['header']) ? $args['header'] : null;
@@ -637,9 +635,9 @@ class Notice implements FormPartFactory, XmlDeserializable {
 	}
 }
 
-class ListComponent implements FormPartFactory, XmlDeserializable,
+class ListComponent implements FormPartFactory, Configurable,
 	TableViewPartFactory, DetailsViewPartFactory, EmailViewPartFactory, Storeable {
-	use Configurable, Tableize, Groupize;
+	use Tableize, Groupize;
 	function __construct($args) {
 		$this->items = $args['children'];
 		$this->name = $args['name'];
@@ -770,16 +768,16 @@ class FieldList extends GroupComponent {
 	}
 }
 
-class Page implements XmlDeserializable {
-	use ByTagConfigurable;
+class Page implements Configurable {
+
 	function __construct($args) {
-		$this->form = $args['byTag']['{}fields'];
+		$this->form = $args['byTag']['fields'];
 
 		$this->title = isset($args['title']) ? $args['title'] : 'Form';
 		$this->successMessage = isset($args['success-message']) ? $args['success-message'] :
 			'The form was submitted successfully.';
-		$this->outputs = $args['byTag']['{}outputs'];
-		$this->views = $args['byTag']['{}views'];
+		$this->outputs = $args['byTag']['outputs'];
+		$this->views = $args['byTag']['views'];
 	}
 	function makeFormPart() {
 		return new PageFormPart($this);

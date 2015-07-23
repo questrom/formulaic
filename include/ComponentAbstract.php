@@ -1,7 +1,5 @@
 <?php
 
-use Sabre\Xml\XmlDeserializable as XmlDeserializable;
-
 
 // Abstract component classes
 // ==========================
@@ -53,10 +51,10 @@ trait Tableize {
 	}
 }
 
-abstract class NamedLabeledComponent implements FormPartFactory, XmlDeserializable,
+abstract class NamedLabeledComponent implements FormPartFactory, Configurable,
 	TableViewPartFactory, DetailsViewPartFactory, EmailViewPartFactory, Storeable {
 
-	use Configurable, Tableize, Groupize;
+	use Tableize, Groupize;
 
 	function __construct($args) {
 		$this->label = $args['label'];
@@ -101,8 +99,8 @@ abstract class FileInputComponent extends NamedLabeledComponent {
 	protected abstract function validate($val);
 }
 
-abstract class GroupComponent implements FormPartFactory, Storeable, XmlDeserializable {
-	use Configurable, Groupize;
+abstract class GroupComponent implements FormPartFactory, Storeable, Configurable {
+	use Groupize;
 	final function getAllFields() {
 		$arr = [];
 		foreach ($this->items as $item) {

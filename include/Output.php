@@ -1,6 +1,5 @@
 <?php
 
-use Sabre\Xml\XmlDeserializable as XmlDeserializable;
 use Nette\Mail\Message;
 use Nette\Mail\SmtpMailer;
 
@@ -24,8 +23,8 @@ interface Storage extends Output {
 }
 
 # MongoDB storage
-class MongoOutput implements XmlDeserializable, Storage {
-	use Configurable;
+class MongoOutput implements Configurable, Storage {
+
 
 	# Construct an object from an element in a configuration file
 	function __construct($args) {
@@ -152,8 +151,8 @@ class MongoOutput implements XmlDeserializable, Storage {
 }
 
 # Amazon S3 storage
-class S3Output implements Output, XmlDeserializable {
-	use Configurable;
+class S3Output implements Output, Configurable {
+
 
 	# Create from an element in the configuration file and from options in the config.toml.
 	# Key and secret are stored in config.toml so people with access to the configuration
@@ -198,8 +197,8 @@ class S3Output implements Output, XmlDeserializable {
 }
 
 # Send form submissions via email
-class EmailOutput implements Output, XmlDeserializable {
-	use Configurable;
+class EmailOutput implements Output, Configurable {
+
 	function __construct($args) {
 		$this->to = $args['to'];
 		$this->from = $args['from'];
@@ -240,8 +239,8 @@ class CounterOutput implements Output {
 
 # Corresponds to the "outputs" element in the configuration file.
 # Combines multiple outputs together.
-class SuperOutput implements Output, XmlDeserializable {
-	use Configurable;
+class SuperOutput implements Output, Configurable {
+
 	function __construct($args) {
 		$this->outputs = $args['children'];
 	}

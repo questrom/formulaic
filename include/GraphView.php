@@ -1,5 +1,4 @@
 <?php
-use Sabre\Xml\XmlDeserializable as XmlDeserializable;
 use \Colors\RandomColor;
 
 class GraphViewRenderable implements Renderable {
@@ -40,7 +39,7 @@ class GraphViewRenderable implements Renderable {
 }
 
 class GraphView implements ConfigurableView {
-	use Configurable;
+
 	function makeView($data) {
 		$info = [];
 		foreach($data as $index => $piece) {
@@ -92,8 +91,8 @@ class GraphView implements ConfigurableView {
 	}
 }
 
-abstract class Graph implements XmlDeserializable, GraphViewPartFactory  {
-	use Configurable;
+abstract class Graph implements Configurable, GraphViewPartFactory  {
+
 	function __construct($args) {
 		$this->name = $args['name'];
 		$this->label = $args['label'];

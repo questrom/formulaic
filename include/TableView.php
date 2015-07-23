@@ -1,8 +1,7 @@
 <?php
-use Sabre\Xml\XmlDeserializable as XmlDeserializable;
 
-class Column implements XmlDeserializable {
-	use Configurable;
+class Column implements Configurable {
+
 
 	function __construct($args) {
 		$this->name = $args['name'];
@@ -121,7 +120,7 @@ class TablePage implements Renderable {
 }
 
 class TableView implements ConfigurableView {
-	use Configurable;
+
 
 	function makeView($data) {
 		$this->data = $data['data'];
