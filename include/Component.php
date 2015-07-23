@@ -1,7 +1,5 @@
 <?php
 
-use Gregwar\Captcha\CaptchaBuilder;
-
 // Full components
 // ===============
 
