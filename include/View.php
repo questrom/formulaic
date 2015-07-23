@@ -36,3 +36,7 @@ interface GraphViewPartFactory {
 	# Makes part of a graph view. Should return a Renderable.
 	function makeGraphViewPart($data);
 }
+
+interface ConfigurableView extends View, XmlDeserializable {
+	public function getIcon();
+}

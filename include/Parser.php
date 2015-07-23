@@ -17,8 +17,6 @@ use Gregwar\Cache\Cache;
 trait Configurable {
 	abstract public function __construct($args);
 	static function xmlDeserialize(Sabre\Xml\Reader $reader) {
-		$attrs = [];
-
 		$attrs = $reader->parseAttributes();
 		$tree = $reader->parseInnerTree();
 
@@ -40,28 +38,41 @@ trait Configurable {
 	}
 }
 
-# A very simple XmlDeserializable implementation used
-# for elements whose sole job is to contain text.
-class TextElem implements XmlDeserializable {
+# An implementation of XmlDeserializable that does things by-tag
+trait ByTagConfigurable {
 	static function xmlDeserialize(Sabre\Xml\Reader $reader) {
-		$tree = $reader->parseInnerTree();
+		$attrs = $reader->parseAttributes();
+		$attrs['byTag'] = Sabre\Xml\Element\KeyValue::xmlDeserialize($reader);
 
-		if (is_string($tree)) {
-			return $tree;
-		} else {
-			return '';
-		}
+		return new static($attrs);
 	}
 }
 
-# An XmlDeserializable implementation that is used for the
-# <allow ext="..." mime="..."> element within file upload inputs.
+# A very simple XmlDeserializable implementation used
+# for elements whose sole job is to contain text.
+class TextElem implements XmlDeserializable {
+	// use Configurable;
+	static function xmlDeserialize(Sabre\Xml\Reader $reader) {
+		$tree = $reader->parseInnerTree();
+		return is_string($tree) ? $tree : '';
+	}
+}
+
+# Used for the <allow ext="..." mime="..."> element within file upload inputs.
 class AllowElem implements XmlDeserializable {
 	use Configurable;
 	function __construct($args) {
 		$this->ext = $args['ext'];
 		$this->mime = $args['mime'];
 	}
+}
+
+# Doesn't really do anything at the moment
+function caller($class) {
+	return function(Sabre\Xml\Reader $reader) use($class) {
+
+		return call_user_func([$class, 'xmlDeserialize'], ($reader));
+	};
 }
 
 # This class manages and parses configuration files.
@@ -122,49 +133,49 @@ class Parser {
 
 			# Note that each element name must have '{}' prepended to it.
 			$reader->elementMap = [
-				'{}checkbox' => 'Checkbox',
-				'{}textbox' => 'Textbox',
-				'{}password' => 'Password',
-				'{}dropdown' => 'Dropdown',
-				'{}radios' => 'Radios',
-				'{}checkboxes' => 'Checkboxes',
-				'{}textarea' => 'TextArea',
-				'{}range' => 'Range',
-				'{}time' => 'TimeInput',
-				'{}group' => 'Group',
-				'{}date' => 'DatePicker',
-				'{}phonenumber' => 'PhoneNumber',
-				'{}email' => 'EmailAddr',
-				'{}url' => 'UrlInput',
-				'{}number' => 'NumberInp',
+				'{}checkbox' => caller('Checkbox'),
+				'{}textbox' => caller('Textbox'),
+				'{}password' => caller('Password'),
+				'{}dropdown' => caller('Dropdown'),
+				'{}radios' => caller('Radios'),
+				'{}checkboxes' => caller('Checkboxes'),
+				'{}textarea' => caller('TextArea'),
+				'{}range' => caller('Range'),
+				'{}time' => caller('TimeInput'),
+				'{}group' => caller('Group'),
+				'{}date' => caller('DatePicker'),
+				'{}phonenumber' => caller('PhoneNumber'),
+				'{}email' => caller('EmailAddr'),
+				'{}url' => caller('UrlInput'),
+				'{}number' => caller('NumberInp'),
 
-				'{}notice' => 'Notice',
-				'{}header' => 'Header',
-				'{}datetime' => 'DateTimePicker',
-				'{}file' => 'FileUpload',
-				'{}allow' => 'AllowElem',
+				'{}notice' => caller('Notice'),
+				'{}header' => caller('Header'),
+				'{}datetime' => caller('DateTimePicker'),
+				'{}file' => caller('FileUpload'),
+				'{}allow' => caller('AllowElem'),
 
-				'{}mongo' => 'MongoOutput',
-				'{}s3' => 'S3Output',
+				'{}mongo' => caller('MongoOutput'),
+				'{}s3' => caller('S3Output'),
 
-				'{}option' => 'TextElem',
-				'{}fields' => 'FieldList',
-				'{}li' => 'TextElem',
-				'{}outputs' => 'SuperOutput',
-				'{}form' => 'Page',
-				'{}list' => 'ListComponent',
-				'{}show-if' => 'ShowIfComponent',
-				'{}table-view' => 'TableView',
-				'{}col' => 'Column',
-				'{}email-to' => 'EmailOutput',
-				'{}graph-view' => 'GraphView',
-				'{}bar' => 'BarGraph',
-				'{}pie' => 'PieChart',
-				'{}captcha' => 'Captcha',
-				'{}is-checked' => 'IsCheckedCondition',
-				'{}is-not-checked' => 'IsNotCheckedCondition',
-				'{}is-radio-selected' => 'IsRadioSelectedCondition',
-				'{}views' => 'ViewList'
+				'{}option' => caller('TextElem'),
+				'{}fields' => caller('FieldList'),
+				'{}li' => caller('TextElem'),
+				'{}outputs' => caller('SuperOutput'),
+				'{}form' => caller('Page'),
+				'{}list' => caller('ListComponent'),
+				'{}show-if' => caller('ShowIfComponent'),
+				'{}table-view' => caller('TableView'),
+				'{}col' => caller('Column'),
+				'{}email-to' => caller('EmailOutput'),
+				'{}graph-view' => caller('GraphView'),
+				'{}bar' => caller('BarGraph'),
+				'{}pie' => caller('PieChart'),
+				'{}captcha' => caller('Captcha'),
+				'{}is-checked' => caller('IsCheckedCondition'),
+				'{}is-not-checked' => caller('IsNotCheckedCondition'),
+				'{}is-radio-selected' => caller('IsRadioSelectedCondition'),
+				'{}views' => caller('ViewList')
 			];
 		} else {
 			$reader = self::$reader;

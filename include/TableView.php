@@ -120,7 +120,7 @@ class TablePage implements Renderable {
 	}
 }
 
-class TableView implements XmlDeserializable, View {
+class TableView implements ConfigurableView {
 	use Configurable;
 
 	function makeView($data) {
@@ -130,6 +130,11 @@ class TableView implements XmlDeserializable, View {
 		$this->formID = $data['formID'];
 
 		return new TablePage($this);
+	}
+
+
+	function getIcon() {
+		return 'table icon';
 	}
 
 	function __construct($args) {
@@ -152,7 +157,6 @@ class TableView implements XmlDeserializable, View {
 
 		$this->perPage = isset($args['per-page']) ? $args['per-page'] : null;
 
-		$this->type = 'table';
 	}
 	function query($getData) {
 		$page = intval(isset($getData['page']) ? $getData['page'] : 1);

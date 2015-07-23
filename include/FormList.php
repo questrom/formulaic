@@ -3,20 +3,20 @@
 
 # Display information about a particular view
 class ViewInfoView implements Renderable {
-	function __construct($data, $formData) {
+	function __construct($view, $formData) {
 		# $formData holds info about the form as a whole
-		# $data holds info about the particular view
+		# $view holds info about the particular view
 		$this->formData = $formData;
-		$this->data = $data;
+		$this->v = $view;
 	}
 	function render() {
 		return h()
-			->div->class('item')
-				->a->href('view.php?form=' . $this->formData->id . '&view=' . $this->data->name)->class('item')
-					->i->class($this->data->type === 'graph' ? 'area chart icon' : 'table icon')->end
-					->t($this->data->title)
+			->div->class('item')->addH(
+				h()->a->href('view.php?form=' . $this->formData->id . '&view=' . $this->v->name)->class('item')
+					->i->class($this->v->getIcon())->end
+					->t($this->v->title)
 				->end
-			->end;
+			);
 	}
 }
 
@@ -43,8 +43,8 @@ class FormItemView implements Renderable {
 						->div->class('ui horizontal list low-line-height')
 							->div->class('item header')->t('Views: ')->end
 								->addH(
-									array_map(function($viewInfo) {
-										return new ViewInfoView($viewInfo, $this->data);
+									array_map(function($view) {
+										return new ViewInfoView($view, $this->data);
 									}, $this->data->views)
 								)
 						->end

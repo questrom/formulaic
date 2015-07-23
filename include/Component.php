@@ -771,12 +771,7 @@ class FieldList extends GroupComponent {
 }
 
 class Page implements XmlDeserializable {
-	static function xmlDeserialize(Sabre\Xml\Reader $reader) {
-		$attrs = $reader->parseAttributes();
-		$attrs['byTag'] = Sabre\Xml\Element\KeyValue::xmlDeserialize($reader);
-
-		return new static($attrs);
-	}
+	use ByTagConfigurable;
 	function __construct($args) {
 		$this->form = $args['byTag']['{}fields'];
 

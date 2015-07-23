@@ -40,6 +40,7 @@ abstract class HTMLGeneratorAbstract {
 	final function generateString() {
 		return $this->buildString($this->toStringArray());
 	}
+
 }
 
 class SafeString {

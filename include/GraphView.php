@@ -39,7 +39,7 @@ class GraphViewRenderable implements Renderable {
 	}
 }
 
-class GraphView implements XmlDeserializable, View {
+class GraphView implements ConfigurableView {
 	use Configurable;
 	function makeView($data) {
 		$info = [];
@@ -53,11 +53,14 @@ class GraphView implements XmlDeserializable, View {
 		return new GraphViewRenderable($this, $info);
 	}
 
+	function getIcon() {
+		return 'area chart icon';
+	}
+
 	function __construct($args) {
 		$this->name = $args['name'];
 		$this->title = $args['title'];
 		$this->graphs = $args['children'];
-		$this->type = 'graph';
 	}
 	function setPage($page) {
 		$this->pageData = $page;
