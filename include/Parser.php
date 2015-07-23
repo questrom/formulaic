@@ -20,6 +20,8 @@ class AllowElem implements Configurable {
 
 # A version of XMLReader that converts XML elements to things that extend Configurable.
 # This code is based on Sabre/XML - see https://github.com/fruux/sabre-xml/blob/master/lib/Reader.php
+
+# Note that, since XMLReader's error handling is not very good, errors may result in infinite loops :(
 class BetterReader extends XMLReader {
 	function parseCurrentElement() {
 
@@ -29,11 +31,12 @@ class BetterReader extends XMLReader {
 		while ($this->moveToNextAttribute()) {
 			$attrs[$this->localName] = $this->value;
 		}
+
 		$this->moveToElement();
 
 		$text = '';
 		$elements = [];
-		$attributes = [];
+
 		if ($this->nodeType === self::ELEMENT && $this->isEmptyElement) {
 			$this->next();
 		} else {
