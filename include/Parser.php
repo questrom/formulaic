@@ -15,26 +15,6 @@ use Gregwar\Cache\Cache;
 # is given and used to initialize sabre/xml.
 
 
-class Configuration implements ArrayAccess {
-	function __construct($reader) {
-		$this->reader = $reader;
-	}
-	public function offsetUnset($offset) {
-		throw new Exception("Cannot alter configuration");
-	}
-	public function offsetSet($offset, $value) {
-		throw new Exception("Cannot alter configuration");
-	}
-
-	public function offsetExists($offset) {
-		return isset($this->reader->$offset);
-	}
-
-	public function offsetGet($offset) {
-		return $this->reader->$offset;
-	}
-}
-
 trait Configurable {
 	abstract public function __construct($args);
 	static function xmlDeserialize(Sabre\Xml\Reader $reader) {
@@ -53,7 +33,7 @@ trait Configurable {
 			$attrs['innerText'] = $tree;
 		}
 
-		return new static(new Configuration((object) $attrs));
+		return new static($attrs);
 	}
 }
 
