@@ -23,7 +23,7 @@ abstract class HTMLGeneratorAbstract {
 			if ($element instanceof HTMLGeneratorAbstract) {
 				$out .= $this->buildString($element->toStringArray());
 			} else if(is_scalar($element)) {
-				$out .= htmlspecialchars($element, ENT_QUOTES);
+				$out .= htmlspecialchars((string) $element, ENT_QUOTES);
 			} else if(is_array($element) || $element instanceof Traversable) {
 				$out .= $this->buildString($element);
 			} else if($element instanceof DoubleEncode) {
