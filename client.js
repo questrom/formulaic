@@ -170,7 +170,7 @@ $(function() {
 
 		var formData = new FormData($('form')[0]);
 
-		$.ajax('submit.php', {
+		$.ajax($('form').attr('action'), {
 			data: formData,
 			method: 'POST',
 			// http://stackoverflow.com/questions/10899384/uploading-both-data-and-files-in-one-form-using-ajax

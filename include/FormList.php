@@ -12,7 +12,7 @@ class ViewInfoView implements Renderable {
 	function render() {
 		return h()
 			->div->class('item')->addH(
-				h()->a->href('view.php?form=' . $this->formData->id . '&view=' . $this->v->name)->class('item')
+				h()->a->href('view?form=' . $this->formData->id . '&view=' . $this->v->name)->class('item')
 					->i->class($this->v->getIcon())->end
 					->t($this->v->title)
 				->end
@@ -29,7 +29,7 @@ class FormItemView implements Renderable {
 		return h()
 			->div->class('item')
 				->div->class('header')
-					->a->href('form.php?form=' . $this->data->id)
+					->a->href('form?form=' . $this->data->id)
 						->t($this->data->name)
 					->end
 					->div->class('ui horizontal right floated label')
