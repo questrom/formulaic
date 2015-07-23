@@ -51,7 +51,6 @@ trait ByTagConfigurable {
 # A very simple XmlDeserializable implementation used
 # for elements whose sole job is to contain text.
 class TextElem implements XmlDeserializable {
-	// use Configurable;
 	static function xmlDeserialize(Sabre\Xml\Reader $reader) {
 		$tree = $reader->parseInnerTree();
 		return is_string($tree) ? $tree : '';
