@@ -51,7 +51,7 @@ abstract class HTMLGeneratorAbstract {
 	# given at this link: http://stackoverflow.com/questions/29991016/
 
 	final function generateString() {
-		$t = microtime(true);
+		// $t = microtime(true);
 		# The HTML output
 		$out = '';
 
@@ -128,7 +128,7 @@ abstract class HTMLGeneratorAbstract {
 
 		}
 
-		echo '<br><br><br>'.(microtime(true)-$t)*1000;
+		// echo '<br><br><br>'.(microtime(true)-$t)*1000;
 
 		return $out;
 	}
