@@ -11,6 +11,7 @@ abstract class HTMLGeneratorAbstract {
 
 	final function generateString() {
 
+		$t = microtime(true);
 		$stack = [];
 		$out = '';
 
@@ -42,7 +43,7 @@ abstract class HTMLGeneratorAbstract {
 				];
 			} else {
 				if(!is_array($element) && $element !== null && $element !== '') {
-					$element = (string) (is_scalar($element) ? htmlspecialchars($element, ENT_QUOTES) : $element->value);
+					$element = (!($element instanceof SafeString) ? htmlspecialchars((string) $element, ENT_QUOTES) : (string) $element->value);
 
 					for($j = $escapeCount; $j--;) {
 						$element = htmlspecialchars($element, ENT_QUOTES);
@@ -54,7 +55,7 @@ abstract class HTMLGeneratorAbstract {
 				$escapeCount = $x['escapeCount'];
 			}
 		}
-
+		// echo '<br><br><Br>' . (microtime(true) - $t)*1000;
 		return $out;
 	}
 }
@@ -71,7 +72,7 @@ class DoubleEncode {
 	}
 }
 
-class AssetUrl {
+class AssetUrl extends SafeString{
 	function __construct($value) {
 		$this->value = '____{{asset ' . $value . '}}____';;
 	}
