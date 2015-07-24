@@ -6,16 +6,16 @@
 
 # Labels (with possible sublabels)
 class Label implements Renderable {
-	function __construct($label, $sublabel = null) {
-		$this->label = $label;
-		$this->customSublabel = $sublabel;
+	function __construct($field, $sublabel = '') {
+		$this->f = $field;
+		$this->sublabel = isset($this->f->customSublabel) ? $this->f->customSublabel : $sublabel;
 	}
 	function render() {
 		return h()
 		->label
-			->span->c($this->label)->end
+			->span->c($this->f->label)->end
 		->end
-		->c(new PossibleSublabel($this->customSublabel, false));
+		->c(new PossibleSublabel($this->sublabel, false));
 	}
 }
 
@@ -172,7 +172,7 @@ class InputFormPart implements Renderable {
 	function render() {
 		return h()
 		->div->class('ui field ' . ($this->f->required ? 'required' : ''))
-			->c($this->f->getLabel($this->sublabel))
+			->c(new Label($this->f, $this->sublabel))
 			->div->class($this->icon ? 'ui left icon input' : 'ui input')
 				->c($this->icon === null ? null :
 					h()
@@ -194,7 +194,7 @@ class NumberFormPart implements Renderable {
 	function render() {
 		return h()
 		->div->class('ui field ' . ($this->f->required ? 'required' : ''))
-			->c($this->f->getLabel())
+			->c(new Label($this->f))
 			->div->class('ui input')
 				->input
 					->type('number')
@@ -214,7 +214,7 @@ class DropdownFormPart implements Renderable {
 	function render() {
 		return h()
 		->div->class('field ' . ($this->f->required ? ' required' : ''))
-			->c($this->f->getLabel())
+			->c(new Label($this->f))
 			->div->class('ui fluid dropdown selection')
 				->input->name($this->f->name)->type('hidden')->value('')->end
 				->div->class('default text')->c('Please choose an option...')->end
@@ -259,7 +259,7 @@ class RadiosFormPart implements Renderable {
 		return h()
 		->div->class('grouped fields validation-root ' . ($this->f->required ? 'required' : ''))
 			->data('radio-group-name', $this->f->name)
-			->c($this->f->getLabel())
+			->c(new Label($this->f))
 			->c(
 				array_map(
 					function($v) { return new RadioButton($this->f->name, $v); },
@@ -276,7 +276,7 @@ class TextareaFormPart implements Renderable {
 	function render() {
 		return h()
 		->div->class('field ' . ($this->f->required ? ' required' : ''))
-			->c($this->f->getLabel())
+			->c(new Label($this->f))
 			->textarea
 				->name($this->f->name)
 				->maxlength($this->f->maxLength, is_finite($this->f->maxLength))
@@ -301,7 +301,7 @@ class DateTimePickerFormPart implements Renderable {
 
 		return h()
 		->div->class('field ' . ($this->f->required ? ' required' : ''))
-			->c($this->f->getLabel($sublabel))
+			->c(new Label($this->f, $sublabel))
 			->div->class('ui left icon input')
 				->i->class('calendar icon')->end
 				->input->type('text')->name($this->f->name)->data('inputmask', " 'alias': 'proper-datetime' ")->end
@@ -326,7 +326,7 @@ class TimeInputFormPart implements Renderable {
 
 		return h()
 		->div->class('field ' . ($this->f->required ? ' required' : ''))
-			->c($this->f->getLabel($sublabel))
+			->c(new Label($this->f, $sublabel))
 			->div->class('ui left icon input')
 				->i->class('clock icon')->end
 				->input
@@ -347,7 +347,7 @@ class CheckboxFormPart implements Renderable {
 		->div->class('field ' . ($this->f->mustCheck ? 'required' : ''))
 			->div->class('ui checkbox')
 				->input->type('checkbox')->name($this->f->name)->end
-				->c($this->f->getLabel())
+				->c(new Label($this->f))
 			->end
 		->end;
 	}
@@ -373,7 +373,7 @@ class RangeFormPart implements Renderable {
 	function render() {
 		return h()
 		->div->class('ui field')
-			->c($this->f->getLabel())
+			->c(new Label($this->f))
 			->div
 				->input
 					->type('range')
@@ -502,7 +502,7 @@ class CheckboxesFormPart implements Renderable {
 				->class('grouped fields validation-root ' . ($this->f->required ? 'required' : ''))
 				->data('validation-name', $this->f->name)
 
-				->c($this->f->getLabel($sublabel))
+				->c(new Label($this->f, $sublabel))
 				->c(
 					array_map(
 						function($v) {

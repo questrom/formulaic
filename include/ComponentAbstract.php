@@ -99,9 +99,6 @@ abstract class NamedLabeledComponent implements FormPartFactory, Configurable,
 		return [$this->name => $this];
 	}
 
-	final function getLabel($sublabel = '') {
-		return new Label($this->label, isset($this->customSublabel) ? $this->customSublabel : $sublabel);
-	}
 }
 
 # A NamedLabeledComponent that gets its data from $_POST.
