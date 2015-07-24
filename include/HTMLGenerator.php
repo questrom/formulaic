@@ -9,6 +9,8 @@
 # equals:
 #   <div class="test"><span id="hello">Hello world</span></div>
 
+# (More complex examples are present throughout the codebase.)
+
 # More simply: this lets us embed HTML inside of PHP without having
 # to use <?php and ?\>. This makes the code more elegant and less
 # confusing.
