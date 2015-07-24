@@ -9,9 +9,10 @@ abstract class HTMLGeneratorAbstract {
 		return $this->addH($text);
 	}
 
+	# Iterative to avoid call stack overflow
 	final function generateString() {
 
-		$t = microtime(true);
+		// $t = microtime(true);
 		$stack = [];
 		$out = '';
 

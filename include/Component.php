@@ -340,7 +340,7 @@ class FileUpload extends FileInputComponent {
 		# it is easy to create security vulnerabilities with file uploads.
 
 		return $against
-			->innerBind(function ($val) {
+			->ifOk(function ($val) {
 				# See http://php.net/manual/en/features.file-upload.php
 				if (!is_array($val) || !isset($val['error']) || is_array($val['error'])) {
 					return Result::error('Invalid data.');
@@ -361,14 +361,14 @@ class FileUpload extends FileInputComponent {
 				}
 			})
 			->requiredMaybe($this->required)
-			->innerBind(function ($file) {
+			->ifOk(function ($file) {
 				if ($file['size'] > $this->maxSize) {
 					return Result::error('File must be under ' . $this->maxSize . ' bytes in size.');
 				} else {
 					return Result::ok($file);
 				}
 			})
-			->innerBind(function ($file) {
+			->ifOk(function ($file) {
 
 				$finfo = new finfo(FILEINFO_MIME_TYPE);
 				$mime = $finfo->file($file['tmp_name']);
@@ -726,7 +726,7 @@ class ListComponent implements FormPartFactory, Configurable,
 		# Get the relevant parts of $_POST/$_FILES,
 		# converting $_FILES with diverse_array if need be.
 		return $val
-			->innerBind(function ($v) {
+			->ifOk(function ($v) {
 				return Result::ok(
 					[
 						isset($v->post[ $this->name ]) ? $v->post[ $this->name ] : null,
@@ -734,7 +734,7 @@ class ListComponent implements FormPartFactory, Configurable,
 					]
 				);
 			})
-			->innerBind(function ($data) {
+			->ifOk(function ($data) {
 				return Result::ok([
 					is_array($data[0]) ? $data[0] : [],
 					is_array($data[1]) ? diverse_array($data[1]) : []

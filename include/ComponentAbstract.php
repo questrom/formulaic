@@ -108,7 +108,7 @@ abstract class NamedLabeledComponent implements FormPartFactory, Configurable,
 abstract class PostInputComponent extends NamedLabeledComponent {
 	function getSubmissionPart($val) {
 		return $this->validate(
-			$val->innerBind(function ($x) {
+			$val->ifOk(function ($x) {
 					return Result::ok($x->post);
 				})
 				->byName($this->name)
@@ -121,7 +121,7 @@ abstract class PostInputComponent extends NamedLabeledComponent {
 abstract class FileInputComponent extends NamedLabeledComponent {
 	final function getSubmissionPart($val) {
 		return $this->validate(
-			$val->innerBind(function ($x) {
+			$val->ifOk(function ($x) {
 					return Result::ok($x->files);
 				})
 				->byName($this->name)

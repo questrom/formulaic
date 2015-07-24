@@ -84,7 +84,7 @@ $klein->respond('POST', '/submit', function () {
 				'errors' => $val
 			]);
 		})
-		->innerBind(function ($val) use ($page, $config) {
+		->ifOk(function ($val) use ($page, $config) {
 
 			ob_start();
 			$val = $page->outputs->run($val, $page);
@@ -99,7 +99,7 @@ $klein->respond('POST', '/submit', function () {
 		->ifError(function ($val) {
 			return Result::ok($val);
 		})
-		->innerBind(function ($output) use ($csrf) {
+		->ifOk(function ($output) use ($csrf) {
 			return json_encode([
 				'data' => $output
 			]);
