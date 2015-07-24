@@ -9,42 +9,59 @@ abstract class HTMLGeneratorAbstract {
 		return $this->addH($text);
 	}
 
-	final function buildString($iterator) {
+	final function generateString() {
+
+		$stack = [];
 		$out = '';
-		foreach($iterator as $element) {
+
+		$x = [];
+		$element = $this;
+		$escapeCount = 0;
+
+		while($x !== null) {
+
+
+
 			while($element instanceof Renderable) {
 				$element = $element->render();
 			}
 
-			if ($element instanceof HTMLGeneratorAbstract) {
-				$out .= $this->buildString($element->toStringArray());
-			} else if(is_scalar($element)) {
-				$out .= htmlspecialchars((string) $element, ENT_QUOTES);
-			} else if(is_array($element) || $element instanceof Traversable) {
-				$out .= $this->buildString($element);
-			} else if($element instanceof DoubleEncode) {
-				$out .= htmlspecialchars($this->buildString($element), ENT_QUOTES);
-			} else if($element instanceof SafeString) {
-				$out .= $element->getValue();
-			} else if (!is_null($element)) {
-				throw new Exception('Invalid HTML generation target!');
+			if($element instanceof HTMLGeneratorAbstract) {
+				$element = $element->toStringArray();
+			} elseif ($element instanceof DoubleEncode) {
+				$element = [$element->value];
+				$escapeCount++;
+			}
+
+
+
+			if (is_array($element) && count($element) > 0) {
+				$stack[] = [
+					'element' => array_pop($element),
+					'escapeCount' => $escapeCount
+				];
+			} else {
+				if(!is_array($element) && $element !== null && $element !== '') {
+					$element = (string) (is_scalar($element) ? htmlspecialchars($element, ENT_QUOTES) : $element->value);
+
+					for($j = $escapeCount; $j--;) {
+						$element = htmlspecialchars($element, ENT_QUOTES);
+					}
+					$out .= $element;
+				}
+				$x = array_pop($stack);
+				$element = $x['element'];
+				$escapeCount = $x['escapeCount'];
 			}
 		}
+
 		return $out;
 	}
-
-	final function generateString() {
-		return $this->buildString($this->toStringArray());
-	}
-
 }
 
 class SafeString {
 	function __construct($value) {
 		$this->value = $value;
-	}
-	function getValue() {
-		return $this->value;
 	}
 }
 
@@ -54,12 +71,9 @@ class DoubleEncode {
 	}
 }
 
-class AssetUrl extends SafeString {
+class AssetUrl {
 	function __construct($value) {
-		$this->value = $value;
-	}
-	function getValue() {
-		return '____{{asset ' . $this->value . '}}____';
+		$this->value = '____{{asset ' . $value . '}}____';;
 	}
 }
 
