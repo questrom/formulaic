@@ -18,3 +18,5 @@ nav_sort: 2
 Going to the main page of the project will produce a list of forms; from this you can access the forms and their associated views. Some sample forms are included with the project.
 
 To learn how to make a form, go to [the next page of this documentation](making-forms/introduction.html).
+
+To learn more about the code base, go to [Understanding the Code](understanding-the-code/introduction.html).
