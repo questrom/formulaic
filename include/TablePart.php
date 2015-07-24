@@ -14,7 +14,7 @@ class OrdinaryTableCell implements Renderable {
 	function render() {
 		return h()
 		->td
-			->t($this->value)
+			->c($this->value)
 		->end;
 	}
 }
@@ -28,8 +28,8 @@ class ListTableCell implements Renderable {
 		return h()
 		->td
 			->ul->class('ui list')
-				->addH(array_map(function($x) {
-					return h()->li->t($x)->end;
+				->c(array_map(function($x) {
+					return h()->li->c($x)->end;
 				}, $this->value))
 			->end
 		->end;
@@ -47,7 +47,7 @@ class LinkTableCell implements Renderable {
 		return h()
 		->td
 			->a->href($this->url)->target('_blank', $this->blank)
-				->t($this->value)
+				->c($this->value)
 			->end
 		->end;
 	}
@@ -59,7 +59,7 @@ class PasswordTableCell implements Renderable {
 		return h()
 		->td
 			->abbr->title('Passwords are not saved in the database')
-				->t('N/A')
+				->c('N/A')
 			->end
 		->end;
 	}
@@ -75,7 +75,7 @@ class FileUploadTableCell implements Renderable {
 		->td->class('unpadded-cell')
 			->a->href($this->value['url'])->class('ui attached labeled icon button')
 				->i->class('download icon')->end
-				->t('Download')
+				->c('Download')
 			->end
 		->end;
 	}
@@ -91,9 +91,9 @@ class FileUploadDetailedTableCell implements Renderable {
 		return h()
 		->td
 			->div->class('ui list')
-				->div->class('item') ->strong->t('URL: ')->end->a->href($v['url'])->t($v['url'])->end->end
-				->div->class('item') ->strong->t('Original Filename: ')->end->t($v['originalName'])->end
-				->div->class('item') ->strong->t('Type: ')->end->t($v['mime'])->end
+				->div->class('item') ->strong->c('URL: ')->end->a->href($v['url'])->c($v['url'])->end->end
+				->div->class('item') ->strong->c('Original Filename: ')->end->c($v['originalName'])->end
+				->div->class('item') ->strong->c('Type: ')->end->c($v['mime'])->end
 			->end
 		->end;
 	}
@@ -108,7 +108,7 @@ class TextareaTableCell implements Renderable {
 	function render() {
 		return h()
 			->td
-				->pre->t($this->value)->end
+				->pre->c($this->value)->end
 			->end;
 	}
 }
@@ -123,7 +123,7 @@ class CheckboxTableCell implements Renderable {
 	function render() {
 		return h()
 		->td->class($this->value ? 'positive' : 'negative')
-			->t($this->value ? 'Yes' : 'No')
+			->c($this->value ? 'Yes' : 'No')
 		->end;
 	}
 }
@@ -140,7 +140,7 @@ class ListEmailTableCell implements Renderable {
 	function render() {
 		return h()
 		->td
-			->addH(array_map(function($listitem) {
+			->c(array_map(function($listitem) {
 				return new EmailTable($this->value, $listitem, false);
 			}, $this->v))
 		->end;
@@ -155,7 +155,7 @@ class ListDetailedTableCell implements Renderable {
 	function render() {
 		return h()
 		->td
-			->addH(array_map(function($listitem) {
+			->c(array_map(function($listitem) {
 				return new ValueTable($this->value, $listitem, false);
 			}, $this->v))
 		->end;
@@ -175,15 +175,15 @@ class EmailValueRow implements Renderable {
 		if($v === null) {
 			$v = h()
 			->td->bgcolor('#ccc')
-				->t('(No value)')
+				->c('(No value)')
 			->end;
 		}
 		return h()
 		->tr
 			->td->class('right aligned collapsing nowrap')
-				->t($this->component->label)
+				->c($this->component->label)
 			->end
-			->addH($v)
+			->c($v)
 		->end;
 	}
 }
@@ -206,9 +206,9 @@ class ValueRow implements Renderable {
 		return h()
 		->tr
 			->td->class('right aligned collapsing nowrap')
-				->t($this->component->label)
+				->c($this->component->label)
 			->end
-			->addH($v)
+			->c($v)
 		->end;
 	}
 }
@@ -223,11 +223,11 @@ class EmailIPTimestampInfo implements Renderable {
 		->tfoot
 			->tr
 				->td->colspan('2')->align('left')
-					->strong->t('Timestamp:' . json_decode('"\u2002"'))->end
-					->t($this->data['_timestamp']->format('Y/m/d g:i A'))
+					->strong->c('Timestamp:' . json_decode('"\u2002"'))->end
+					->c($this->data['_timestamp']->format('Y/m/d g:i A'))
 					->br->end
-					->strong->t('IP:' . json_decode('"\u2002"'))->end
-					->code->t($this->data['_ip'])->end
+					->strong->c('IP:' . json_decode('"\u2002"'))->end
+					->code->c($this->data['_ip'])->end
 				->end
 			->end
 		->end;
@@ -244,11 +244,11 @@ class IPTimestampInfo implements Renderable {
 		->tfoot->class('full-width')
 			->tr
 				->th->colspan('2')
-					->strong->t('Timestamp:' . json_decode('"\u2002"'))->end
-					->t(isset($this->data['_timestamp']) ? $this->data['_timestamp']->format('Y/m/d g:i A') : null)
+					->strong->c('Timestamp:' . json_decode('"\u2002"'))->end
+					->c(isset($this->data['_timestamp']) ? $this->data['_timestamp']->format('Y/m/d g:i A') : null)
 					->p
-						->strong->t('IP:' . json_decode('"\u2002"'))->end
-						->code->t( isget($this->data['_ip']) )->end
+						->strong->c('IP:' . json_decode('"\u2002"'))->end
+						->code->c( isget($this->data['_ip']) )->end
 					->end
 				->end
 			->end
@@ -270,7 +270,7 @@ class EmailTable implements Renderable {
 			->col->width('30%')->end
 			->col->width('70%')->end
 			->tbody
-				->addH(array_map(function($field) {
+				->c(array_map(function($field) {
 					if($field instanceof EmailViewPartFactory) {
 						return ( new TablePart( $field ) )->makeEmailViewPart(  isget($this->data[$field->name]) );
 					} else {
@@ -278,7 +278,7 @@ class EmailTable implements Renderable {
 					}
 				}, $this->fields ))
 			->end
-			->addH(!$this->stamp ? null : $this->stamp)
+			->c(!$this->stamp ? null : $this->stamp)
 		->end;
 	}
 }
@@ -294,7 +294,7 @@ class ValueTable implements Renderable {
 		return h()
 		->table->class('ui unstackable definition table')
 			->tbody
-				->addH(array_map(function($field) {
+				->c(array_map(function($field) {
 					if($field instanceof DetailsViewPartFactory) {
 						return ( new TablePart( $field ) )->makeDetailsViewPart(  isget($this->data[$field->name]) );
 					} else {
@@ -302,7 +302,7 @@ class ValueTable implements Renderable {
 					}
 				}, $this->fields ))
 			->end
-			->addH(!$this->stamp ? null : $this->stamp)
+			->c(!$this->stamp ? null : $this->stamp)
 		->end;
 	}
 }
@@ -341,14 +341,14 @@ class EmailViewRenderable implements Renderable {
 		->html
 			->head
 				->meta->charset('utf-8')->end
-				->title->t($this->title)->end
+				->title->c($this->title)->end
 			->end
 			->body
 				->div->class('ui container wide-page')
 					->h1
-						->t($this->title)
+						->c($this->title)
 					->end
-					->addH(
+					->c(
 						(new StampedTable($this->pageData->form->getAllFields()))->makeEmailViewPart($this->data)
 					)
 				->end
@@ -370,17 +370,17 @@ class DetailsViewRenderable implements Renderable {
 		->html
 			->head
 				->meta->charset('utf-8')->end
-				->title->t($this->title)->end
+				->title->c($this->title)->end
 				->link->rel('stylesheet')->href(new AssetUrl('lib/semantic.css'))->end
 				->link->rel('stylesheet')->href(new AssetUrl('styles.css'))->end
 			->end
 			->body
-				->addH(new TopHeader())
+				->c(new TopHeader())
 				->div->class('ui container wide-page')
 					->h1
-						->t($this->title)
+						->c($this->title)
 					->end
-					->addH(
+					->c(
 						(new StampedTable($this->fields))->makeDetailsViewPart($this->data)
 					)
 				->end
@@ -402,19 +402,19 @@ class TablePage implements Renderable {
 		->html
 			->head
 				->meta->charset('utf-8')->end
-				->title->t($this->f->title)->end
+				->title->c($this->f->title)->end
 				->link->rel('stylesheet')->href(new AssetUrl('lib/semantic.css'))->end
 				->link->rel('stylesheet')->href(new AssetUrl('styles.css'))->end
 			->end
 			->body
-				->addH(new TopHeader())
+				->c(new TopHeader())
 				->div->class('ui fluid container table-page')
 						->h1
-							->t($this->f->title)
+							->c($this->f->title)
 						->end
 						->table->class('unstackable ui celled striped compact table table-view sortable')
 							->colgroup
-								->addH(array_map(function($x)  {
+								->c(array_map(function($x)  {
 									return h()
 										->col->style('width: ' . ($x->width * 100) . '%;')
 									->end;
@@ -423,35 +423,35 @@ class TablePage implements Renderable {
 							->end
 							->thead
 								->tr
-									->addH(array_map(function($x)  {
+									->c(array_map(function($x)  {
 										# Show how the table is sorted
 										return h()
 										->th->class(
 											$x->sort === null ? '' :
 											($x->sort === 'asc' ? 'sorted ascending' : 'sorted descending')
 										)
-											->t($x->header)
+											->c($x->header)
 										->end;
 									}, $this->f->cols))
 									->th->end
 								->end
 							->end
-							->addH(array_map(function($row) {
+							->c(array_map(function($row) {
 								return h()
 								->tr
-									->addH(array_map(function($col) use($row) {
+									->c(array_map(function($col) use($row) {
 										return ( new TablePart( $this->byName[$col->name] ) )->makeTableViewPart(  isget($row[$col->name]) );
 									}, $this->f->cols))
 									# After the columns, show the Details button
 									->td->class('center aligned nowrap unpadded-cell')
 										->a->class('ui no-margin compact button')->href('details?form=' . $this->f->formID . '&id=' . $row['_id'])
-											->t('Details')
+											->c('Details')
 										->end
 									->end
 								->end;
 							}, $this->f->data))
 						->end
-						->addH(!$this->f->perPage ? null :
+						->c(!$this->f->perPage ? null :
 							# Pagination menu
 							h()
 							->div->class('ui text menu')
@@ -460,18 +460,18 @@ class TablePage implements Renderable {
 											. ($this->f->page === 1 ? 'disabled' : ''))
 										->href('view?form=' . $this->f->formID . '&view=' . $this->f->name . '&page=' . ($this->f->page - 1))
 										->i->class('left chevron icon')->end
-										->t('Previous')
+										->c('Previous')
 									->end
 								->end
 								->div->class('item pagenumber')
-									->t('Page ' . ($this->f->page) . ' of ' . ($this->f->max + 1))
+									->c('Page ' . ($this->f->page) . ' of ' . ($this->f->max + 1))
 								->end
 								->div->class('right item')
 									->a->class('ui right floated primary right labeled icon button '
 											. ((($this->f->page - 1) === $this->f->max) ? 'disabled' : ''))
 										->href('view?form=' . $this->f->formID . '&view=' . $this->f->name . '&page=' . ($this->f->page + 1))
 										->i->class('right chevron icon')->end
-										->t('Next')
+										->c('Next')
 									->end
 								->end
 							->end

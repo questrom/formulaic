@@ -12,10 +12,10 @@ $klein->onHttpError(function ($code, $router) {
 	$res = $router->response();
 	$message = h()
 		->h1->style('text-align:center;font-size:72px;')
-			->t($res->status()->getCode())
+			->c($res->status()->getCode())
 		->end
 		->h2->style('text-align:center')
-			->t($res->status()->getMessage())
+			->c($res->status()->getMessage())
 		->end;
 	$router->response()->body(
 		'<!DOCTYPE html>' . $message->generateString()

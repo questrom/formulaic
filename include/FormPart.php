@@ -13,9 +13,9 @@ class Label implements Renderable {
 	function render() {
 		return h()
 		->label
-			->span->t($this->label)->end
+			->span->c($this->label)->end
 		->end
-		->addH(new PossibleSublabel($this->customSublabel, false));
+		->c(new PossibleSublabel($this->customSublabel, false));
 	}
 }
 
@@ -28,7 +28,7 @@ class PossibleSublabel implements Renderable {
 	function render() {
 		if($this->sublabel) {
 			return h()
-			->p->class('sublabel')->t($this->sublabel)->end;
+			->p->class('sublabel')->c($this->sublabel)->end;
 		} else {
 			return null;
 		}
@@ -41,15 +41,15 @@ class BaseHeaderFormPart implements Renderable {
 	public function __construct($field) { $this->f = $field; }
 	function render() {
 		$inside = h()
-		->t($this->f->text)
-		->addH($this->f->subhead === null ? null :
-			h()->div->class('sub header')->t($this->f->subhead)->end
+		->c($this->f->text)
+		->c($this->f->subhead === null ? null :
+			h()->div->class('sub header')->c($this->f->subhead)->end
 		);
 		return $this->f->icon === null ? $inside :
 			h()
 			->i->class($this->f->icon . ' icon')->end
 			->div->class('content')
-				->addH($inside)
+				->c($inside)
 			->end
 		;
 	}
@@ -61,23 +61,23 @@ class BaseNoticeFormPart implements Renderable {
 	public function __construct($field) { $this->f = $field; }
 	function render() {
 		return h()
-		->addH($this->f->icon === null ? null :
+		->c($this->f->icon === null ? null :
 			h()
 			->i->class($this->f->icon . ' icon')->end
 		)
 		->div->class('content')
-			->addH($this->f->header === null ? null :
+			->c($this->f->header === null ? null :
 				h()->div->class('header')
-					->t($this->f->header)
+					->c($this->f->header)
 				->end
 			)
-			->p->t($this->f->text)->end
-			->addH(
+			->p->c($this->f->text)->end
+			->c(
 				$this->f->list === null ? null :
 				h()->ul->class('list')
-					->addH(array_map(
+					->c(array_map(
 						function($item) {
-							return h()->li->t($item)->end;
+							return h()->li->c($item)->end;
 						},
 						$this->f->list === null ? [] : $this->f->list
 					))
@@ -95,7 +95,7 @@ class HeaderFormPart implements Renderable {
 		$size = ($this->f->size === null) ? 1 : $this->f->size;
 		return h()
 		->{'h' . $size}->class('ui header')
-			->addH(
+			->c(
 				new BaseHeaderFormPart($this->f)
 			)
 		->end;
@@ -109,7 +109,7 @@ class GroupHeaderFormPart implements Renderable {
 		$size = ($this->f->size === null) ? 5 : $this->f->size;
 		return h()
 			->{'h' . $size}->class('ui header attached')
-				->addH(
+				->c(
 					new BaseHeaderFormPart($this->f)
 				)
 			->end;
@@ -128,7 +128,7 @@ class NoticeFormPart implements Renderable {
 				($this->f->icon === null ? '' : ' icon') .
 				($this->f->ntype ? (' ' . $this->f->ntype) : '')
 			)
-			->addH(
+			->c(
 				new BaseNoticeFormPart($this->f)
 			)
 		->end;
@@ -147,7 +147,7 @@ class GroupNoticeFormPart implements Renderable {
 				($this->f->icon === null ? '' : ' icon') .
 				($this->f->ntype ? (' ' . $this->f->ntype) : '')
 			)
-			->addH(
+			->c(
 				new BaseNoticeFormPart($this->f)
 			)
 		->end;
@@ -172,9 +172,9 @@ class InputFormPart implements Renderable {
 	function render() {
 		return h()
 		->div->class('ui field ' . ($this->f->required ? 'required' : ''))
-			->addH($this->f->getLabel($this->sublabel))
+			->c($this->f->getLabel($this->sublabel))
 			->div->class($this->icon ? 'ui left icon input' : 'ui input')
-				->addH($this->icon === null ? null :
+				->c($this->icon === null ? null :
 					h()
 					->i->class('icon ' . $this->icon)->end
 				)
@@ -194,7 +194,7 @@ class NumberFormPart implements Renderable {
 	function render() {
 		return h()
 		->div->class('ui field ' . ($this->f->required ? 'required' : ''))
-			->addH($this->f->getLabel())
+			->c($this->f->getLabel())
 			->div->class('ui input')
 				->input
 					->type('number')
@@ -214,17 +214,17 @@ class DropdownFormPart implements Renderable {
 	function render() {
 		return h()
 		->div->class('field ' . ($this->f->required ? ' required' : ''))
-			->addH($this->f->getLabel())
+			->c($this->f->getLabel())
 			->div->class('ui fluid dropdown selection')
 				->input->name($this->f->name)->type('hidden')->value('')->end
-				->div->class('default text')->t('Please choose an option...')->end
+				->div->class('default text')->c('Please choose an option...')->end
 				->i->class('dropdown icon')->end
 				->div->class('menu')
-					->addH(array_map(
+					->c(array_map(
 						function($v) {
 							return h()
 							->div->class('item')->data('value', $v)
-								->t($v)
+								->c($v)
 							->end;
 						},
 						$this->f->options
@@ -246,7 +246,7 @@ class RadioButton implements Renderable {
 		->div->class('field not-validation-root')
 			->div->class('ui radio checkbox')
 				->input->name($this->name)->type('radio')->value($this->value)->end
-				->label->t($this->value)->end
+				->label->c($this->value)->end
 			->end
 		->end;
 	}
@@ -259,8 +259,8 @@ class RadiosFormPart implements Renderable {
 		return h()
 		->div->class('grouped fields validation-root ' . ($this->f->required ? 'required' : ''))
 			->data('radio-group-name', $this->f->name)
-			->addH($this->f->getLabel())
-			->addH(
+			->c($this->f->getLabel())
+			->c(
 				array_map(
 					function($v) { return new RadioButton($this->f->name, $v); },
 					$this->f->options
@@ -276,7 +276,7 @@ class TextareaFormPart implements Renderable {
 	function render() {
 		return h()
 		->div->class('field ' . ($this->f->required ? ' required' : ''))
-			->addH($this->f->getLabel())
+			->c($this->f->getLabel())
 			->textarea
 				->name($this->f->name)
 				->maxlength($this->f->maxLength, is_finite($this->f->maxLength))
@@ -301,7 +301,7 @@ class DateTimePickerFormPart implements Renderable {
 
 		return h()
 		->div->class('field ' . ($this->f->required ? ' required' : ''))
-			->addH($this->f->getLabel($sublabel))
+			->c($this->f->getLabel($sublabel))
 			->div->class('ui left icon input')
 				->i->class('calendar icon')->end
 				->input->type('text')->name($this->f->name)->data('inputmask', " 'alias': 'proper-datetime' ")->end
@@ -326,7 +326,7 @@ class TimeInputFormPart implements Renderable {
 
 		return h()
 		->div->class('field ' . ($this->f->required ? ' required' : ''))
-			->addH($this->f->getLabel($sublabel))
+			->c($this->f->getLabel($sublabel))
 			->div->class('ui left icon input')
 				->i->class('clock icon')->end
 				->input
@@ -347,7 +347,7 @@ class CheckboxFormPart implements Renderable {
 		->div->class('field ' . ($this->f->mustCheck ? 'required' : ''))
 			->div->class('ui checkbox')
 				->input->type('checkbox')->name($this->f->name)->end
-				->addH($this->f->getLabel())
+				->c($this->f->getLabel())
 			->end
 		->end;
 	}
@@ -362,7 +362,7 @@ class ShowIfComponentFormPart implements Renderable {
 				# Expose information about the condition to the client JS code
 				->data('show-if-name', $this->f->condition->getName())
 				->data('show-if-condition', $this->f->condition->getCondition())
-				->addH($this->f->item)
+				->c($this->f->item)
 			->end;
 	}
 }
@@ -373,7 +373,7 @@ class RangeFormPart implements Renderable {
 	function render() {
 		return h()
 		->div->class('ui field')
-			->addH($this->f->getLabel())
+			->c($this->f->getLabel())
 			->div
 				->input
 					->type('range')
@@ -410,19 +410,19 @@ class ListComponentFormPart implements Renderable {
 		->div->class('ui field validation-root list-component')->data('count','0')->data('group-name', $this->f->name)
 				->data('validation-name', $this->f->name)
 			->h5->class('top attached ui message')
-				->t($this->f->label)
-				->addH(new PossibleSublabel($sublabel, true))
+				->c($this->f->label)
+				->c(new PossibleSublabel($sublabel, true))
 			->end
 			->div->class('ui bottom attached segment list-items')
 				->script->type('text/template')
-					->addH(
+					->c(
 						# Put the contents of the list into a <script> tag, which the client JS code will use
 						# Forcibly HTML-encode things so that nested lists are generated properly...
 						new DoubleEncode(
 							h()
 							->div->class('ui vertical segment close-item')
 								->div->class('content')
-									->addH( array_map(function($x) { return $x ? $x->makeFormPart() : null; }, $this->f->items) )
+									->c( array_map(function($x) { return $x ? $x->makeFormPart() : null; }, $this->f->items) )
 								->end
 								->button->type('button')->class('ui compact negative icon button delete-btn')
 									# A button for deleting items
@@ -436,7 +436,7 @@ class ListComponentFormPart implements Renderable {
 					# A button for adding new items
 					->button->type('button')->class('ui primary labeled icon button add-item')
 						->i->class('plus icon')->end
-						->t($this->f->addText)
+						->c($this->f->addText)
 					->end
 				->end
 			->end
@@ -454,10 +454,10 @@ class GroupFormPart implements Renderable {
 
 		return h()
 		->div->class('group')
-		->addH(array_map(function($value) {
+		->c(array_map(function($value) {
 			if(is_array($value)) {
 				return h()->div->class('ui segment attached')
-					->addH(
+					->c(
 						# Use makeGroupPart so that things are formatted for display within a group
 						array_map(function($x) { return $x ? $x->makeGroupPart() : null; }, $value)
 					)
@@ -502,14 +502,14 @@ class CheckboxesFormPart implements Renderable {
 				->class('grouped fields validation-root ' . ($this->f->required ? 'required' : ''))
 				->data('validation-name', $this->f->name)
 
-				->addH($this->f->getLabel($sublabel))
-				->addH(
+				->c($this->f->getLabel($sublabel))
+				->c(
 					array_map(
 						function($v) {
 							return h()->div->class('field not-validation-root')
 									->div->class('ui checkbox')
 									 ->input->name($this->f->name . '[]')->type('checkbox')->value($v)->end
-									  ->label->t($v)->end
+									  ->label->c($v)->end
 									->end
 								->end;
 						},
@@ -526,7 +526,7 @@ class CaptchaFormPart implements Renderable {
 	function render() {
 		return h()
 			->div->class('ui field')
-				->label->t('Are you a robot?')->end
+				->label->c('Are you a robot?')->end
 				->div->class('g-recaptcha')->data('sitekey', Config::get()['recaptcha']['site-key'])->end
 			->end;
 	}
@@ -540,7 +540,7 @@ class FormElemFormPart implements Renderable {
 		// since we implement our own validation logic.
 		return h()
 		->form->class('ui form')->action('../../submit')->method('POST')->novalidate(true)
-			->addH( array_map(function($x) { return ($x && $x instanceof FormPartFactory) ? $x->makeFormPart() : null; }, $this->f->items) )
+			->c( array_map(function($x) { return ($x && $x instanceof FormPartFactory) ? $x->makeFormPart() : null; }, $this->f->items) )
 			->input->type('hidden')->name('__form_name')->value($this->f->id)->end
 			->input
 				->type('hidden')
@@ -549,17 +549,17 @@ class FormElemFormPart implements Renderable {
 			->end
 			->div->class('ui floating error message validation-error-message')
 				->div->class('header')
-					->t('Error validating data')
+					->c('Error validating data')
 				->end
 				->p
-					->t('Unfortunately, the data you provided contains errors. Please see above for more information. ')
-					->t('After you have corrected the errors, press the button below to try again.')
+					->c('Unfortunately, the data you provided contains errors. Please see above for more information. ')
+					->c('After you have corrected the errors, press the button below to try again.')
 				->end
 			->end
 			->div->class('ui vertically padded center aligned grid')
 				->button->type('submit')->class('ui labeled icon positive big button')->data('submit', 'true')
 					->i->class('checkmark icon')->end
-					->span->t('Submit Form')->end
+					->span->c('Submit Form')->end
 				->end
 			->end
 		->end;
@@ -608,7 +608,7 @@ class PageFormPart implements Renderable {
 		->html
 			->head
 				->meta->charset('utf-8')->end
-				->title->t($this->f->title)->end
+				->title->c($this->f->title)->end
 				->link->rel('stylesheet')->href(new AssetUrl('lib/semantic.css'))->end
 				->link->rel('stylesheet')->href(new AssetUrl('styles.css'))->end
 				# From https://github.com/h5bp/html5-boilerplate/blob/master/src/index.html
@@ -616,34 +616,34 @@ class PageFormPart implements Renderable {
 				->meta->name('format-detection')->content('telephone=no')->end
 			->end
 			->body
-				->addH(new BrowserProblemPart(
+				->c(new BrowserProblemPart(
 					h()
-					->addH(new TopHeader())
+					->c(new TopHeader())
 					->div->class('ui text container')
 						->div->class('ui segment')
-							->addH($this->f->form->makeFormPart())
+							->c($this->f->form->makeFormPart())
 						->end
 					->end
 					->div->class('success-modal ui small modal')
 						->div->class('header')
-							->t('Submission complete')
+							->c('Submission complete')
 						->end
 						->div->class('content')
-							->p->t($this->f->successMessage)->end
+							->p->c($this->f->successMessage)->end
 						->end
 						->div->class('actions')
-							->button->type('button')->class('ui primary button approve')->t('OK')->end
+							->button->type('button')->class('ui primary button approve')->c('OK')->end
 						->end
 					->end
 					->div->class('failure-modal ui small modal')
 						->div->class('red ui header')
-							->t('Submission failed')
+							->c('Submission failed')
 						->end
 						->div->class('content')
-							->p->t('The server encountered an error when processing your request. Please try again.')->end
+							->p->c('The server encountered an error when processing your request. Please try again.')->end
 						->end
 						->div->class('actions')
-							->button->type('button')->class('ui primary button approve')->t('OK')->end
+							->button->type('button')->class('ui primary button approve')->c('OK')->end
 						->end
 					->end
 					->script->src(new AssetUrl('lib/jquery.js'))->end

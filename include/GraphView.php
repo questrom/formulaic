@@ -15,23 +15,23 @@ class GraphViewRenderable implements Renderable {
 		->html
 			->head
 				->meta->charset('utf-8')->end
-				->title->t($this->f->title)->end
+				->title->c($this->f->title)->end
 				->link->rel('stylesheet')->href(new AssetUrl('lib/semantic.css'))->end
 				->link->rel('stylesheet')->href(new AssetUrl('styles.css'))->end
 			->end
 			->body
-				->addH(new TopHeader())
+				->c(new TopHeader())
 				->div->class('ui text container')
 						->h1->class('ui header')
 							->div->class('pull-right ui large label submit-count-label')
-								->t($this->f->totalCount)
-								->div->class('detail')->t('total submissions')->end
+								->c($this->f->totalCount)
+								->div->class('detail')->c('total submissions')->end
 							->end
-							->t($this->f->title)
+							->c($this->f->title)
 						->end
 
-						->addH( $this->f->totalCount === 0 ?
-							h()->h3->class('ui center aligned header')->t('No results found')->end :
+						->c( $this->f->totalCount === 0 ?
+							h()->h3->class('ui center aligned header')->c('No results found')->end :
 						array_map(function($x) {
 							return $x['graph']->makeGraphViewPart($x['results']);
 						}, $this->i) )
@@ -196,7 +196,7 @@ class PieSlice implements Renderable {
 			->text
 				->style('dominant-baseline:text-before-edge;text-anchor:start;font-size: 40px;')
 				->x(-900 + 40)->y(-600 + $this->result['index'] * 50)
-				->t($key . ' (' . round($percent * 100, 1) . '%)')
+				->c($key . ' (' . round($percent * 100, 1) . '%)')
 			->end
 		];
 	}
@@ -217,11 +217,11 @@ class PieChartRenderable implements Renderable {
 		return h()
 			->div->class('ui fluid card')
 				->div->class('content')
-					->div->class('header')->t($this->label)->end
+					->div->class('header')->c($this->label)->end
 				->end
 				->div->class('content')
 					->svg->viewBox('-900 -600 1800 1200')->style('background:#fff;width:100%;')
-						->addH(array_reduce($this->results, function($carry, $result) use($total) {
+						->c(array_reduce($this->results, function($carry, $result) use($total) {
 							return new PieSlice($result, $total, $carry);
 						}))
 					->end
@@ -253,11 +253,11 @@ class BarGraphRenderable implements Renderable {
 			->div->class('ui fluid card')
 
 				->div->class('content')
-					->div->class('header')->t($this->label)->end
+					->div->class('header')->c($this->label)->end
 				->end
 				->div->class('content')
 					->svg->viewBox('0 0 700 ' . count($this->results) * 30 )->style('background:#fff;width:100%;')
-						->addH(array_map(function($result) use($max) {
+						->c(array_map(function($result) use($max) {
 							$barWidth = ($result['count']/$max) * 500;
 							$labelAtRight = $barWidth < 40;
 
@@ -283,7 +283,7 @@ class BarGraphRenderable implements Renderable {
 								->text
 									->style('dominant-baseline:middle;text-anchor:end;')
 									->x(140)->y(15)
-									->t($key)
+									->c($key)
 								->end
 								->rect->width( $barWidth )->y(5)->x(150)->height(20)->fill($color)->end
 								->text
@@ -291,7 +291,7 @@ class BarGraphRenderable implements Renderable {
 									->y(15)
 									->fill($labelAtRight ? 'black' : 'white')
 									->style('dominant-baseline:middle;text-anchor:' . ($labelAtRight ? 'start;' : 'end;'))
-									->t($result['count'])
+									->c($result['count'])
 								->end
 							->end;
 						}, $this->results))

@@ -1,13 +1,9 @@
 <?php
 
 abstract class HTMLGeneratorAbstract {
-	abstract function addH($arr);
+	abstract function c($arr);
 	abstract function __get($name);
 	abstract function toStringArray();
-
-	final function t($text) {
-		return $this->addH($text);
-	}
 
 	# Iterative to avoid call stack overflow
 	final function generateString() {
@@ -89,7 +85,7 @@ class HTMLContentGenerator extends HTMLGeneratorAbstract {
 		return new HTMLTagGenerator(new HTMLContentGenerator(), $name);
 	}
 
-	function addH($arr) {
+	function c($arr) {
 		$children = $this->children;
 		$children[] = $arr;
 		return new HTMLContentGenerator($children);
@@ -125,8 +121,8 @@ class HTMLTagGenerator extends HTMLGeneratorAbstract {
 		return new HTMLTagGenerator($this->contents, $this->tag, array_merge($this->attrs, [  'data-' . $key => $val ] ));
 	}
 
-	function addH($arr) {
-		return new HTMLTagGenerator($this->contents->addH($arr), $this->tag, $this->attrs);
+	function c($arr) {
+		return new HTMLTagGenerator($this->contents->c($arr), $this->tag, $this->attrs);
 	}
 
 	function __get($name) {
@@ -166,8 +162,8 @@ class HTMLParentContext extends HTMLGeneratorAbstract {
 		return new HTMLParentContext($this->parent, $this->generator->__call($name, $args));
 	}
 
-	function addH($arr) {
-		return new HTMLParentContext($this->parent, $this->generator->addH($arr));
+	function c($arr) {
+		return new HTMLParentContext($this->parent, $this->generator->c($arr));
 	}
 
 	function data($key, $val, $cond = true) {
@@ -176,7 +172,7 @@ class HTMLParentContext extends HTMLGeneratorAbstract {
 
 	function __get($name) {
 		if($name === 'end') {
-			return $this->parent->addH($this);
+			return $this->parent->c($this);
 		} else {
 			return new HTMLParentContext($this, $this->generator->__get($name));
 		}
@@ -196,8 +192,8 @@ class HTMLParentlessContext extends HTMLGeneratorAbstract{
 		return new HTMLParentContext($this, $this->generator->__get($name));
 	}
 
-	function addH($arr) {
-		return new HTMLParentlessContext($this->generator->addH($arr));
+	function c($arr) {
+		return new HTMLParentlessContext($this->generator->c($arr));
 	}
 
 	function toStringArray() {
