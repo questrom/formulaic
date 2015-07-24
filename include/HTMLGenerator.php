@@ -66,6 +66,7 @@ abstract class HTMLGeneratorAbstract {
 		# lists to work properly.
 		$escapeCount = 0;
 
+		# Algorithm runs in O(infinity) time. </sarcasm>
 		while(true) {
 
 			if($element instanceof Renderable) {
