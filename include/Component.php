@@ -194,6 +194,10 @@ class Dropdown extends PostInputComponent {
 	function makeFormPart() {
 		return new DropdownFormPart($this);
 	}
+	function makeTableViewPart($v) {
+		return new OrdinaryTableCell($v);
+	}
+
 
 	protected function validate($against) {
 		return $against
@@ -212,6 +216,9 @@ class Radios extends PostInputComponent implements Enumerative {
 	}
 	function makeFormPart() {
 		return new RadiosFormPart($this);
+	}
+	function makeTableViewPart($v) {
+		return new OrdinaryTableCell($v);
 	}
 	function getPossibleValues() {
 		return $this->options;
@@ -270,6 +277,10 @@ class Captcha extends PostInputComponent {
 	function makeFormPart() {
 		return new CaptchaFormPart($this);
 	}
+	function makeTableViewPart($v) {
+		return new OrdinaryTableCell($v);
+	}
+
 	function getSubmissionPart($val) {
 		# Don't store the results of the submission in the database.
 
@@ -298,6 +309,10 @@ class Textbox extends PostInputComponent {
 	function makeFormPart() {
 		return new InputFormPart($this, 'text', null);
 	}
+	function makeTableViewPart($v) {
+		return new OrdinaryTableCell($v);
+	}
+
 	protected function validate($against) {
 		# As with other "validate()" methods, this just chains together a bunch
 		# of the methods on "Result" types -- see Validate.php for details
@@ -448,6 +463,10 @@ class Range extends PostInputComponent {
 	function makeFormPart() {
 		return new RangeFormPart($this);
 	}
+	function makeTableViewPart($v) {
+		return new OrdinaryTableCell($v);
+	}
+
 	protected function validate($against) {
 		return $against
 			->filterString()
@@ -588,6 +607,9 @@ class NumberInp extends PostInputComponent {
 		$this->min = isset($args['min']) ? intval($args['min']) : -INF;
 		$this->max = isset($args['max']) ? intval($args['max']) : INF;
 		$this->integer = isset($args['integer']);
+	}
+	function makeTableViewPart($v) {
+		return new OrdinaryTableCell($v);
 	}
 	function makeFormPart() {
 		return new NumberFormPart($this);

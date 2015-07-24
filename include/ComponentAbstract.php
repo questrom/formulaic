@@ -91,14 +91,9 @@ abstract class NamedLabeledComponent implements FormPartFactory, Configurable,
 		$this->customSublabel = isset($args['sublabel']) ? $args['sublabel'] : null;
 	}
 
-	function makeTableViewPart($v) {
-		return new OrdinaryTableCell($v);
-	}
-
 	final function getAllFields() {
 		return [$this->name => $this];
 	}
-
 }
 
 # A NamedLabeledComponent that gets its data from $_POST.
