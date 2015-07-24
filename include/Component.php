@@ -51,7 +51,7 @@ class ShowIfComponent implements FormPartFactory, Storeable, Configurable {
 }
 
 # The "checkbox" element
-class Checkbox extends PostInputComponent implements Enumerative {
+class Checkbox extends NamedLabeledComponent implements Enumerative {
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -66,10 +66,12 @@ class Checkbox extends PostInputComponent implements Enumerative {
 		return new CheckboxFormPart($this);
 	}
 
-	protected function validate($against) {
+	function getSubmissionPart($against) {
 		return $against
+			->post($this->name)
 			->filterBoolean()
-			->mustBeTrue($this->mustCheck);
+			->mustBeTrue($this->mustCheck)
+			->name($this->name);
 	}
 
 	function getPossibleValues() {
@@ -85,7 +87,7 @@ class Checkbox extends PostInputComponent implements Enumerative {
 }
 
 # The "time" element
-class TimeInput extends PostInputComponent {
+class TimeInput extends NamedLabeledComponent {
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -97,12 +99,14 @@ class TimeInput extends PostInputComponent {
 	function makeFormPart() {
 		return new TimeInputFormPart($this);
 	}
-	protected function validate($against) {
+	function getSubmissionPart($against) {
 		return $against
+			->post($this->name)
 			->filterTime()
 			->requiredMaybe($this->required)
 			->minMaxTime($this->min, $this->max)
-			->stepTime($this->step);
+			->stepTime($this->step)
+			->name($this->name);
 	}
 	function makeTableViewPart($v) {
 		# Convert a time for display in a table view.
@@ -126,7 +130,7 @@ class TimeInput extends PostInputComponent {
 
 
 # The "datetime" element
-class DateTimePicker extends PostInputComponent {
+class DateTimePicker extends NamedLabeledComponent {
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -138,12 +142,14 @@ class DateTimePicker extends PostInputComponent {
 	function makeFormPart() {
 		return new DateTimePickerFormPart($this);
 	}
-	protected function validate($against) {
+	function getSubmissionPart($against) {
 		return $against
+			->post($this->name)
 			->filterDateTime()
 			->requiredMaybe($this->required)
 			->minMaxDateTime($this->min, $this->max)
-			->stepDateTime($this->step);
+			->stepDateTime($this->step)
+			->name($this->name);
 	}
 	function makeTableViewPart($v) {
 		if ($v === null) {
@@ -154,7 +160,7 @@ class DateTimePicker extends PostInputComponent {
 }
 
 # The "textarea" element
-class Textarea extends PostInputComponent {
+class Textarea extends NamedLabeledComponent {
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -167,13 +173,15 @@ class Textarea extends PostInputComponent {
 	function makeFormPart() {
 		return new TextareaFormPart($this);
 	}
-	protected function validate($against) {
+	function getSubmissionPart($against) {
 		return $against
+			->post($this->name)
 			->filterString()
 			->minMaxLength($this->minLength, $this->maxLength)
 			->matchRegex($this->mustMatch)
 			->filterEmptyString()
-			->requiredMaybe($this->required);
+			->requiredMaybe($this->required)
+			->name($this->name);
 	}
 	function makeTableViewPart($v) {
 		if ($v === null) {
@@ -184,7 +192,7 @@ class Textarea extends PostInputComponent {
 }
 
 # The "dropdown" element
-class Dropdown extends PostInputComponent {
+class Dropdown extends NamedLabeledComponent {
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -199,15 +207,17 @@ class Dropdown extends PostInputComponent {
 	}
 
 
-	protected function validate($against) {
+	function getSubmissionPart($against) {
 		return $against
+			->post($this->name)
 			->filterChosenFromOptions($this->options)
-			->requiredMaybe($this->required);
+			->requiredMaybe($this->required)
+			->name($this->name);
 	}
 }
 
 # The "radios" element
-class Radios extends PostInputComponent implements Enumerative {
+class Radios extends NamedLabeledComponent implements Enumerative {
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -223,15 +233,17 @@ class Radios extends PostInputComponent implements Enumerative {
 	function getPossibleValues() {
 		return $this->options;
 	}
-	protected function validate($against) {
+	function getSubmissionPart($against) {
 		return $against
+			->post($this->name)
 			->filterChosenFromOptions($this->options)
-			->requiredMaybe($this->required);
+			->requiredMaybe($this->required)
+			->name($this->name);
 	}
 }
 
 # The "checkboxes" element
-class Checkboxes extends PostInputComponent implements Enumerative {
+class Checkboxes extends NamedLabeledComponent implements Enumerative {
 	function __construct($args) {
 		parent::__construct($args);
 		$this->options = $args['children'];
@@ -246,12 +258,14 @@ class Checkboxes extends PostInputComponent implements Enumerative {
 	function getPossibleValues() {
 		return $this->options;
 	}
-	protected function validate($against) {
+	function getSubmissionPart($against) {
 		return $against
+			->post($this->name)
 			->filterManyChosenFromOptions($this->options)
 			->minMaxChoices($this->minChoices, $this->maxChoices)
 			->filterNoChoices()
-			->requiredMaybe($this->required);
+			->requiredMaybe($this->required)
+			->name($this->name);
 	}
 	function makeTableViewPart($v) {
 		if ($v === null) {
@@ -266,7 +280,7 @@ class Checkboxes extends PostInputComponent implements Enumerative {
 }
 
 # The "captcha" element
-class Captcha extends PostInputComponent {
+class Captcha extends NamedLabeledComponent {
 	function __construct($args) {
 		# Google requires us to use this name for all CAPTCHA elements.
 		# Hence, the CAPTCHA element lacks a "name" attribute.
@@ -281,23 +295,22 @@ class Captcha extends PostInputComponent {
 		return new OrdinaryTableCell($v);
 	}
 
-	function getSubmissionPart($val) {
-		# Don't store the results of the submission in the database.
-
-		# Presumably you don't need to determine what CAPTCHA
-		# someone had to solve after the fact :)
-		# Presumably...
-		return parent::getSubmissionPart($val)
-			->noStore();
-	}
-	protected function validate($against) {
+	function getSubmissionPart($against) {
 		return $against
-			->checkCaptcha();
+			->post($this->name)
+			->checkCaptcha()
+			->name($this->name)
+			# Don't store the results of the submission in the database.
+
+			# Presumably you don't need to determine what CAPTCHA
+			# someone had to solve after the fact :)
+			# Presumably...
+			->noStore();
 	}
 }
 
 # The "textbox" element
-class Textbox extends PostInputComponent {
+class Textbox extends NamedLabeledComponent {
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -313,20 +326,22 @@ class Textbox extends PostInputComponent {
 		return new OrdinaryTableCell($v);
 	}
 
-	protected function validate($against) {
+	function getSubmissionPart($against) {
 		# As with other "validate()" methods, this just chains together a bunch
 		# of the methods on "Result" types -- see Validate.php for details
 		return $against
+			->post($this->name)
 			->filterString()
 			->minMaxLength($this->minLength, $this->maxLength)
 			->matchRegex($this->mustMatch)
 			->filterEmptyString()
-			->requiredMaybe($this->required);
+			->requiredMaybe($this->required)
+			->name($this->name);
 	}
 }
 
 # The "file" element
-class FileUpload extends FileInputComponent {
+class FileUpload extends NamedLabeledComponent {
 	function __construct($args) {
 		parent::__construct($args);
 		$this->required = isset($args['required']);
@@ -347,7 +362,7 @@ class FileUpload extends FileInputComponent {
 			' Max file size: ' . ByteUnits\Metric::bytes($this->maxSize)->format(0);
 		return new InputFormPart($this, 'file', null, null, $innerText);
 	}
-	protected function validate($against) {
+	function getSubmissionPart($against) {
 		# Validating file inputs is a rather difficult task.
 		# This solution is based on: http://php.net/manual/en/features.file-upload.php#114004
 
@@ -355,6 +370,7 @@ class FileUpload extends FileInputComponent {
 		# it is easy to create security vulnerabilities with file uploads.
 
 		return $against
+			->files($this->name)
 			->ifOk(function ($val) {
 				# See http://php.net/manual/en/features.file-upload.php
 				if (!is_array($val) || !isset($val['error']) || is_array($val['error'])) {
@@ -407,7 +423,8 @@ class FileUpload extends FileInputComponent {
 				$filename = sha1_file($file['tmp_name']) . '-' . floor(microtime(true)) . '.' . $ext;
 
 				return Result::ok(new FileInfo($file, $filename, $mime, $this->permissions));
-			});
+			})
+			->name($this->name);
 	}
 	function makeTableViewPart($v) {
 		if ($v === null) {
@@ -450,7 +467,7 @@ class FileUpload extends FileInputComponent {
 }
 
 # The "range" element
-class Range extends PostInputComponent {
+class Range extends NamedLabeledComponent {
 	function __construct($args) {
 
 		parent::__construct($args);
@@ -467,18 +484,20 @@ class Range extends PostInputComponent {
 		return new OrdinaryTableCell($v);
 	}
 
-	protected function validate($against) {
+	function getSubmissionPart($against) {
 		return $against
+			->post($this->name)
 			->filterString()
 			->filterNumber(false)
 			->minMaxNumber($this->min, $this->max)
-			->stepNumber($this->step);
+			->stepNumber($this->step)
+			->name($this->name);
 	}
 }
 
 
 # The "password" element
-class Password extends PostInputComponent {
+class Password extends NamedLabeledComponent {
 
 	function __construct($args) {
 		parent::__construct($args);
@@ -496,17 +515,16 @@ class Password extends PostInputComponent {
 	function makeFormPart() {
 		return new InputFormPart($this, 'password', null);
 	}
-	protected function validate($against) {
+	function getSubmissionPart($against) {
 		return $against
+			->post($this->name)
 			->filterString()
 			->matchHash(isset($this->matchHash) ? $this->matchHash : null)
 			->filterEmptyString()
-			->requiredMaybe($this->required);
-	}
-	function getSubmissionPart($val) {
-		# Don't store passwords in the DB, as they are in plaintext
-		# and would present a security risk.
-		return parent::getSubmissionPart($val)
+			->requiredMaybe($this->required)
+			->name($this->name)
+			# Don't store passwords in the DB, as they are in plaintext
+			# and would present a security risk.
 			->noStore();
 	}
 	function makeTableViewPart($v) {
@@ -515,7 +533,7 @@ class Password extends PostInputComponent {
 }
 
 # The "phone" element
-class PhoneNumber extends PostInputComponent {
+class PhoneNumber extends NamedLabeledComponent {
 
 	function __construct($args) {
 		parent::__construct($args);
@@ -524,12 +542,14 @@ class PhoneNumber extends PostInputComponent {
 	function makeFormPart() {
 		return new InputFormPart($this, 'tel', 'call');
 	}
-	protected function validate($against) {
+	function getSubmissionPart($against) {
 		return $against
+			->post($this->name)
 			->filterString()
 			->filterEmptyString()
 			->requiredMaybe($this->required)
-			->filterPhone();
+			->filterPhone()
+			->name($this->name);
 	}
 	function makeTableViewPart($v) {
 		if ($v === null) {
@@ -547,7 +567,7 @@ class PhoneNumber extends PostInputComponent {
 }
 
 # The "email" element
-class EmailAddr extends PostInputComponent {
+class EmailAddr extends NamedLabeledComponent {
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -558,13 +578,15 @@ class EmailAddr extends PostInputComponent {
 		$innerText = isset($this->mustHaveDomain) ? ('Must be @' . $this->mustHaveDomain) : null;
 		return new InputFormPart($this, 'email', 'mail', null, $innerText);
 	}
-	protected function validate($against) {
+	function getSubmissionPart($against) {
 		return $against
+			->post($this->name)
 			->filterString()
 			->filterEmptyString()
 			->requiredMaybe($this->required)
 			->filterFilterVar(FILTER_VALIDATE_EMAIL, 'Invalid email address.')
-			->mustHaveDomain($this->mustHaveDomain);
+			->mustHaveDomain($this->mustHaveDomain)
+			->name($this->name);
 	}
 	function makeTableViewPart($v) {
 		if ($v === null) {
@@ -575,7 +597,7 @@ class EmailAddr extends PostInputComponent {
 }
 
 # The "url" element
-class UrlInput extends PostInputComponent {
+class UrlInput extends NamedLabeledComponent {
 	function __construct($args) {
 		parent::__construct($args);
 		$this->required = isset($args['required']);
@@ -583,12 +605,14 @@ class UrlInput extends PostInputComponent {
 	function makeFormPart() {
 		return new InputFormPart($this, 'url', 'world');
 	}
-	protected function validate($against) {
+	function getSubmissionPart($against) {
 		return $against
+			->post($this->name)
 			->filterString()
 			->filterEmptyString()
 			->requiredMaybe($this->required)
-			->filterFilterVar(FILTER_VALIDATE_URL, 'Invalid URL.');
+			->filterFilterVar(FILTER_VALIDATE_URL, 'Invalid URL.')
+			->name($this->name);
 	}
 	function makeTableViewPart($v) {
 		if ($v === null) {
@@ -599,7 +623,7 @@ class UrlInput extends PostInputComponent {
 }
 
 # The "number" element
-class NumberInp extends PostInputComponent {
+class NumberInp extends NamedLabeledComponent {
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -614,18 +638,20 @@ class NumberInp extends PostInputComponent {
 	function makeFormPart() {
 		return new NumberFormPart($this);
 	}
-	protected function validate($against) {
+	function getSubmissionPart($against) {
 		return $against
+			->post($this->name)
 			->filterString()
 			->maybeString()
 			->requiredMaybe($this->required)
 			->filterNumber($this->integer)
-			->minMaxNumber($this->min, $this->max);
+			->minMaxNumber($this->min, $this->max)
+			->name($this->name);
 	}
 }
 
 # The "date" element
-class DatePicker extends PostInputComponent {
+class DatePicker extends NamedLabeledComponent {
 	function __construct($args) {
 		parent::__construct($args);
 
@@ -659,11 +685,13 @@ class DatePicker extends PostInputComponent {
 
 		return new InputFormPart($this, 'text', 'calendar', " 'alias': 'mm/dd/yyyy' ", $sublabel);
 	}
-	protected function validate($against) {
+	function getSubmissionPart($against) {
 		return $against
+			->post($this->name)
 			->filterDate()
 			->requiredMaybe($this->required)
-			->minMaxDate($this->min, $this->max);
+			->minMaxDate($this->min, $this->max)
+			->name($this->name);
 	}
 	function makeTableViewPart($v) {
 		if ($v === null) {
@@ -713,7 +741,7 @@ class Notice implements FormPartFactory, Configurable {
 # The implementation is, unfortunately, quite complex.
 class ListComponent implements FormPartFactory, Configurable,
 	TableViewPartFactory, DetailsViewPartFactory, EmailViewPartFactory, Storeable {
-	use Tableize, Groupize;
+	use Tableize, Groupize, Fieldize;
 	function __construct($args) {
 		$this->items = $args['children'];
 		$this->name = $args['name'];
@@ -721,12 +749,6 @@ class ListComponent implements FormPartFactory, Configurable,
 		$this->maxItems = isset($args['max-items']) ? intval($args['max-items']) : INF;
 		$this->minItems = isset($args['min-items']) ? intval($args['min-items']) : 0;
 		$this->addText = isset($args['add-text']) ? $args['add-text'] : 'Add an item';
-	}
-
-
-	# The same as NamedLabeledComponent
-	function getAllFields() {
-		return [$this->name => $this];
 	}
 
 	# This is the same as the getAllFields element of GroupComponent.
@@ -805,6 +827,7 @@ class Group extends GroupComponent {
 # This is never displayed as part of the form, so it doesn't
 # implement FormPartFactory.
 class IPField implements TableViewPartFactory, Storeable {
+	use Fieldize;
 	function __construct() {
 		$this->name = '_ip';
 		$this->label = 'IP Address';
@@ -818,17 +841,13 @@ class IPField implements TableViewPartFactory, Storeable {
 	function getSubmissionPart($val) {
 		return Result::ok(['_ip' => $_SERVER['REMOTE_ADDR']]);
 	}
-	function getAllFields() {
-		return [$this->name => $this];
-	}
-
 }
 
 # Keeps track of the timestamp associated with a form submission.
 # This is never displayed as part of the form, so it doesn't
 # implement FormPartFactory.
 class TimestampField implements TableViewPartFactory, Storeable {
-
+	use Fieldize;
 	function __construct() {
 		$this->name = '_timestamp';
 		$this->label = 'Timestamp';
@@ -841,9 +860,6 @@ class TimestampField implements TableViewPartFactory, Storeable {
 	}
 	function getSubmissionPart($val) {
 		return Result::ok(['_timestamp' => new DateTimeImmutable()]);
-	}
-	function getAllFields() {
-		return [$this->name => $this];
 	}
 }
 

@@ -78,48 +78,25 @@ trait Tableize {
 	}
 }
 
+# A field which can be identified by its name.
+trait Fieldize {
+	function getAllFields() {
+		return [$this->name => $this];
+	}
+}
+
 # A general component with a name and a label, that implements
 # a number of the interfaces described above.
 abstract class NamedLabeledComponent implements FormPartFactory, Configurable,
 	TableViewPartFactory, DetailsViewPartFactory, EmailViewPartFactory, Storeable {
 
-	use Tableize, Groupize;
+	use Tableize, Groupize, Fieldize;
 
 	function __construct($args) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
 		$this->customSublabel = isset($args['sublabel']) ? $args['sublabel'] : null;
 	}
-
-	final function getAllFields() {
-		return [$this->name => $this];
-	}
-}
-
-# A NamedLabeledComponent that gets its data from $_POST.
-abstract class PostInputComponent extends NamedLabeledComponent {
-	function getSubmissionPart($val) {
-		return $this->validate(
-			$val->ifOk(function ($x) {
-					return Result::ok($x->post);
-				})
-				->byName($this->name)
-		)->name($this->name);
-	}
-	protected abstract function validate($val);
-}
-
-# A NamedLabeledComponent that gets its data from $_FILES.
-abstract class FileInputComponent extends NamedLabeledComponent {
-	final function getSubmissionPart($val) {
-		return $this->validate(
-			$val->ifOk(function ($x) {
-					return Result::ok($x->files);
-				})
-				->byName($this->name)
-		)->name($this->name);
-	}
-	protected abstract function validate($val);
 }
 
 # A component that represents a group of other form fields.

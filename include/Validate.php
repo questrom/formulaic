@@ -503,6 +503,25 @@ abstract class Validate {
 			});
 	}
 
+	# Given a ClientData object wrapped in a Result::ok,
+	# get the $_POST data corresponding to a form field with
+	# the name $name.
+	function post($name) {
+		return $this->ifOk(function ($x) {
+			return Result::ok($x->post);
+		})
+		->byName($name);
+	}
+
+	# Given a ClientData object wrapped in a Result::ok,
+	# get the $_FILES data corresponding to a form field with
+	# the name $name.
+	function files($name) {
+		return $this->ifOk(function ($x) {
+			return Result::ok($x->files);
+		})
+		->byName($name);
+	}
 
 	# Validate all of the form fields associated with a "list" element.
 
