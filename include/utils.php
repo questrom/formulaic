@@ -68,11 +68,10 @@ function midpoint($a, $b) {
 # caches the hashes so we don't need to re-hash files on every single request.
 class Hashes {
 	private static $data = null;
-	private static $config = null;
 	static function getData() {
-		self::$config = Config::get();
+		$config = Config::get();
 
-		if(!self::$config['cache-hashes']) {
+		if(!$config['cache-hashes']) {
 			self::$data = [];
 			self::write();
 		} else if(file_exists('cache/hashes.json')) {
@@ -115,9 +114,9 @@ function fixAssets($html) {
 		$fileName = isget($assetMap[$matches[1]], $matches[1]);
 
 		return preg_replace_callback('/^(.*)\.(.*)$/', function($parts) use($matches, $config) {
-
 			return $config['asset-prefix'] . $parts[1] . '.hash-' . Hashes::get($matches[1]) . '.' . $parts[2];
 		}, $fileName);
+
 	}, $html);
 }
 
