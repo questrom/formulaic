@@ -125,14 +125,14 @@ function fixAssets($html) {
 # We can't just use Mongo for this, since some forms might not use Mongo.
 class SubmitCounts {
 	private static $data = null;
-	static function update() {
+	private static function update() {
 		if(file_exists('data/submit-counts.json')) {
 			self::$data = json_decode(file_get_contents('data/submit-counts.json'));
 		} else {
 			self::$data = (object) [];
 		}
 	}
-	static function write() {
+	private static function write() {
 		if(!is_dir('data')) {
 			mkdir('data');
 		}

@@ -252,4 +252,18 @@ class SuperOutput implements Output, Configurable {
 		}
 		return $data;
 	}
+
+	# Get the MongoOutput associated with the form
+	function getMongo() {
+		$mongo = null;
+		foreach($this->outputs as $output) {
+			if($output instanceof MongoOutput) {
+				$mongo = $output;
+			}
+		}
+		if($mongo) {
+			return $mongo;
+		}
+		throw new Exception('No MongoOutput found!');
+	}
 }
