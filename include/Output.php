@@ -124,7 +124,6 @@ class MongoOutput implements Configurable, Storage {
 	}
 
 	# Get all the data necessary for creating a table.
-
 	function getTable($page, $sortBy, $perPage) {
 
 		$client = $this->getClient();
