@@ -1,3 +1,6 @@
+# NOTE: you may want to alter this file to support
+# your own OS, text editor, and other tools.
+
 # Stuff from various editors/tools
 *.sublime-workspace
 .idea
