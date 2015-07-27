@@ -11,6 +11,7 @@ interface Output {
 	# $data - the data to be stored
 	# $page - the current form
 	function run($data, $page);
+
 }
 
 # An interface implemented by those outputs which can also be used to retrive
@@ -178,7 +179,7 @@ class S3Output implements Output, Configurable {
 					[ 'Content-Type' => $x->mime ]
 				);
 
-				// Based on code from amazon-s3-php-class
+				# Based on code from amazon-s3-php-class
 				$url = 'https://s3.amazonaws.com/' . $this->bucket . '/' . rawurlencode($x->filename);
 
 				return [
@@ -253,17 +254,17 @@ class SuperOutput implements Output, Configurable {
 		return $data;
 	}
 
-	# Get the MongoOutput associated with the form
-	function getMongo() {
-		$mongo = null;
+	# Get the storage associated with the form
+	function getStorage() {
+		$store = null;
 		foreach($this->outputs as $output) {
-			if($output instanceof MongoOutput) {
-				$mongo = $output;
+			if($output instanceof Storage) {
+				$store = $output;
 			}
 		}
-		if($mongo) {
-			return $mongo;
+		if($store) {
+			return $store;
 		}
-		throw new Exception('No MongoOutput found!');
+		throw new Exception('No Storage found!');
 	}
 }

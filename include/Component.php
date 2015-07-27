@@ -908,7 +908,7 @@ class Page implements Configurable {
 
 	# Get the MongoOutput associated with the form
 	function getMongo() {
-		return $this->outputs->getMongo();
+		return $this->outputs->getStorage();
 	}
 }
 
