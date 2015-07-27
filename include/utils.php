@@ -127,7 +127,17 @@ function fixAssets($html) {
 class SubmitCounts {
 	private static $data = null;
 	static function update() {
-		self::$data = json_decode(file_get_contents('data/submit-counts.json'));
+		if(file_exists('data/submit-counts.json')) {
+			self::$data = json_decode(file_get_contents('data/submit-counts.json'));
+		} else {
+			self::$data = (object) [];
+		}
+	}
+	static function write() {
+		if(!is_dir('data')) {
+			mkdir('data');
+		}
+		file_put_contents('data/submit-counts.json', json_encode(self::$data));
 	}
 	static function get($formName) {
 		if (self::$data === null) {
@@ -136,9 +146,11 @@ class SubmitCounts {
 		return isget(self::$data->$formName, 0);
 	}
 	static function increment($formID) {
-		$counts = json_decode(file_get_contents('data/submit-counts.json'));
+		self::update();
+		$counts = self::$data;
 		$counts->$formID = isget($counts->$formID, 0) + 1;
-		file_put_contents('data/submit-counts.json', json_encode($counts));
+		self::$data = $counts;
+		self::write();
 	}
 }
 
