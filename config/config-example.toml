@@ -1,7 +1,8 @@
 # This enables debug mode. In production, enabling this
 # may expose sensitive information! In general, this flag
 # enables the display of extra debug information to the user
-# (e.g. after submitting a form).
+# (e.g. after submitting a form). Also, it will allow
+# unminified assets to be sent to the client.
 debug = true
 
 # Caching settings

@@ -105,9 +105,19 @@ class Hashes {
 # form UIs properly (when cache-forms is enabled).
 function fixAssets($html) {
 	return preg_replace_callback('/____\{\{asset (.*?)\}\}____/', function($matches) {
-		return preg_replace_callback('/^(.*)\.(.*)$/', function($parts) use($matches) {
-			return Config::get()['asset-prefix'] . $parts[1] . '.hash-' . Hashes::get($matches[1]) . '.' . $parts[2];
-		}, $matches[1]);
+		$config = Config::get();
+		$assetMap = $config['debug'] ? [] : [
+			'lib/semantic.css' => 'lib/semantic.min.css',
+			'lib/semantic.js' => 'lib/semantic.min.js',
+			'lib/jquery.js' => 'lib/jquery.min.js',
+			'lib/jquery.inputmask.bundle.js' => 'lib/jquery.inputmask.bundle.min.js'
+		];
+		$fileName = isget($assetMap[$matches[1]], $matches[1]);
+
+		return preg_replace_callback('/^(.*)\.(.*)$/', function($parts) use($matches, $config) {
+
+			return $config['asset-prefix'] . $parts[1] . '.hash-' . Hashes::get($matches[1]) . '.' . $parts[2];
+		}, $fileName);
 	}, $html);
 }
 
