@@ -1,0 +1,27 @@
+debug = true
+
+cache-forms = false
+cache-xml = false
+cache-hashes = false
+
+time-zone = 'America/New_York'
+
+asset-prefix='/'
+
+[branding]
+image='/img/logo.jpg'
+color='0, 130, 130' # in RGB
+
+[s3]
+key = ""
+secret = ""
+
+[smtp]
+host = "smtp.gmail.com"
+username = "test@gmail.com"
+password = ""
+secure = "ssl"
+
+[recaptcha]
+site-key = ""
+secret-key = ""

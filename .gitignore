@@ -5,8 +5,7 @@ s3-secret.yml
 .idea
 password.txt
 cache/
-config/
-config.toml
+config/config.toml
 .phpintel
 .tags
 .tags_sorted_by_file
