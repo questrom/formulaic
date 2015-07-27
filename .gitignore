@@ -12,9 +12,6 @@
 vendor/
 node_modules
 
-# Cached data
-cache/
-
 # Other files
 the.todo
 config/config.toml
