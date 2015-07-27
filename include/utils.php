@@ -68,7 +68,7 @@ function midpoint($a, $b) {
 # caches the hashes so we don't need to re-hash files on every single request.
 class Hashes {
 	private static $data = null;
-	static function getData() {
+	private static function getData() {
 		$config = Config::get();
 
 		if(!$config['cache-hashes']) {
@@ -80,7 +80,7 @@ class Hashes {
 			self::$data = [];
 		}
 	}
-	static function write() {
+	private static function write() {
 		file_put_contents('cache/hashes.json', json_encode(self::$data));
 	}
 	static function get($key) {
