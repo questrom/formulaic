@@ -13,16 +13,10 @@ class DetailsView implements View {
 
 	function setPage($page) {
 		$this->pageData = $page;
+		$this->mongo = $page->getMongo();
 	}
 
 	function query($getData) {
-		$page = $this->pageData;
-		$mongo = null;
-		foreach($page->outputs->outputs as $output) {
-			if($output instanceof MongoOutput) {
-				$mongo = $output;
-			}
-		}
-		return $mongo->getById($getData['id']);
+		return $this->mongo->getById($getData['id']);
 	}
 }

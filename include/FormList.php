@@ -3,6 +3,7 @@
 
 # Display information about a particular view
 class ViewInfoView implements Renderable {
+	private $formData, $v;
 	function __construct($view, $formData) {
 		# $formData holds info about the form as a whole
 		# $view holds info about the particular view
@@ -22,6 +23,7 @@ class ViewInfoView implements Renderable {
 
 # Display information about a particular form
 class FormItemView implements Renderable {
+	private $data;
 	function __construct($data) {
 		$this->data = (object) $data;
 	}
@@ -56,6 +58,7 @@ class FormItemView implements Renderable {
 
 # Display the main list of forms
 class FormListView implements Renderable {
+	private $data;
 	function __construct($data) {
 		$this->data = $data;
 	}
@@ -97,6 +100,7 @@ class FormListView implements Renderable {
 # A factory for a FormListView
 # The data is assumed to come from Parser::getFormInfo()
 class FormList {
+	private $data;
 	function __construct($data) {
 		$this->data = $data;
 	}
