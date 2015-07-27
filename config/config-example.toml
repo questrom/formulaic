@@ -1,27 +1,57 @@
+# This enables debug mode. In production, enabling this
+# may expose sensitive information! In general, this flag
+# enables the display of extra debug information to the user
+# (e.g. after submitting a form).
 debug = true
 
+# Caching settings
+# Note that, after disabling caching, you will want to remove
+# the previously cached files before reenabling it!
+
+
+# Cache the HTML for each form in cache/jade-* files.
+# Disable if you are altering how form HTML gets generated.
 cache-forms = false
+
+# Cache the XML for each form in cache/xml-* files.
+# Disable if you are altering how Jade is compiled
+# into XML.
 cache-xml = false
+
+# Cache the hashes of various assets (CSS, JS, etc.) in
+# cache/hashes.json Disable if you are changing these files.
 cache-hashes = false
 
+# Set the time zone used throughout the app.
 time-zone = 'America/New_York'
 
+# This string will be prepended to the URLs used for assets
+# (CSS, JS, et cetera).
 asset-prefix='/'
 
 [branding]
+# The image to use for the top menu of the app.
 image='/img/logo.jpg'
-color='0, 130, 130' # in RGB
+# The color to use for this menu, in "R, G, B" form.
+color='0, 130, 130'
 
+
+# Key/Secret for Amazon S3. The buckets and permissions
+# for uploaded files can be set on a per-form basis.
 [s3]
 key = ""
 secret = ""
 
+# Settings to provide to nette/mail for mail sending.
+# This uses SMTP instead of PHP's normal "mail()" function
+# for a variety of reasons.
 [smtp]
 host = "smtp.gmail.com"
 username = "test@gmail.com"
 password = ""
 secure = "ssl"
 
+# reCAPTCHA settings. Needed for CAPTCHA generation.
 [recaptcha]
 site-key = ""
 secret-key = ""

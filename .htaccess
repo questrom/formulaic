@@ -1,28 +1,102 @@
 # See https://github.com/h5bp/html5-boilerplate/blob/master/dist/.htaccess
-# and https://gist.github.com/chriso/874000
+# and https://gist.github.com/chriso/874000 for more information
+# about some of these directives.
 
-Options -MultiViews +FollowSymLinks -Indexes
+# Everything is UTF-8
 AddDefaultCharset utf-8
+AddCharset utf-8 .atom \
+				.bbaw \
+				.css \
+				.geojson \
+				.js \
+				.json \
+				.jsonld \
+				.manifest \
+				.rdf \
+				.rss \
+				.topojson \
+				.vtt \
+				.webapp \
+				.webmanifest \
+				.xloc \
+				.xml
+
+# No directory listings (for security)
+<IfModule mod_autoindex.c>
+	Options -Indexes
+</IfModule>
+
+# Avoid rewriting issues
+Options -MultiViews
+
+# Alter HTTP headers for improved security
+Header set X-Content-Type-Options "nosniff"
 Header set X-Frame-Options "DENY"
 Header set X-XSS-Protection "1; mode=block"
+Header unset X-Powered-By
 
-# Use a whitelist to protect access to sensitive files.
-RewriteEngine On
-RewriteRule ^(.*)\.hash-.*?\.(.*)$ /$1.$2 [PT]
-RewriteRule !^(styles\.css|client\.js|lib\/.*|img\/.*|daux\/.*|docs\/.*)$ /index.php [END]
+# Hide Apache somewhat (see html5boilerplate for details)
+ServerSignature Off
 
-# Caching
+# GZip settings from html5boilerplate
+<IfModule mod_deflate.c>
+SetEnvIfNoCase ^(Accept-EncodXng|X-cept-Encoding|X{15}|~{15}|-{15})$ ^((gzip|deflate)\s*,?\s*)+|[X~-]{4,13}$ HAVE_Accept-Encoding
+RequestHeader append Accept-Encoding "gzip,deflate" env=HAVE_Accept-Encoding
+AddOutputFilterByType DEFLATE "application/atom+xml" \
+							"application/javascript" \
+							"application/json" \
+							"application/ld+json" \
+							"application/manifest+json" \
+							"application/rdf+xml" \
+							"application/rss+xml" \
+							"application/schema+json" \
+							"application/vnd.geo+json" \
+							"application/vnd.ms-fontobject" \
+							"application/x-font-ttf" \
+							"application/x-javascript" \
+							"application/x-web-app-manifest+json" \
+							"application/xhtml+xml" \
+							"application/xml" \
+							"font/eot" \
+							"font/opentype" \
+							"image/bmp" \
+							"image/svg+xml" \
+							"image/vnd.microsoft.icon" \
+							"image/x-icon" \
+							"text/cache-manifest" \
+							"text/css" \
+							"text/html" \
+							"text/javascript" \
+							"text/plain" \
+							"text/vcard" \
+							"text/vnd.rim.location.xloc" \
+							"text/vtt" \
+							"text/x-component" \
+							"text/x-cross-domain-policy" \
+							"text/xml"
+</IfModule>
 
-FileETag All
-
+# Don't let proxies create problems
 Header merge Cache-Control "no-transform"
+
+RewriteEngine On
+# Rewrite cache-busting urls
+RewriteRule ^(.*)\.hash-.*?\.(.*)$ /$1.$2 [PT]
+# Except for specific (whitelisted) files, rewrite everything to index.php
+# for appropriate routing.
+RewriteRule !^(styles\.css|client\.js|lib\/.*|img\/.*|docs\/.*)$ /index.php [END]
+
+# Misc. caching settings
+FileETag All
 Header merge Cache-Control "private"
 
+# For ordinary (noncachebusted) files, set a very short expiration time.
 ExpiresActive on
 ExpiresDefault "access plus 0 seconds"
 
-# We use cachebusting URLs for this anyway...
+# Because we use cachebusting URLs, we can set "expires"
+# very far in the future.
 ExpiresByType text/css "access plus 1 year"
-ExpiresByType application/javascript                "access plus 1 year"
-ExpiresByType application/x-javascript              "access plus 1 year"
-ExpiresByType text/javascript                       "access plus 1 year"
+ExpiresByType application/javascript "access plus 1 year"
+ExpiresByType application/x-javascript "access plus 1 year"
+ExpiresByType text/javascript "access plus 1 year"

@@ -1,5 +1,6 @@
 'use strict';
 
+// Based on metalsmith-navigation example
 var path        = require('path');
 
 var Handlebars  = require('handlebars');
