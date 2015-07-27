@@ -145,7 +145,7 @@ This element allows the user to input a precise numeric value.
 <h3 class="ui header top attached">
 The `time` element
 </h3><div class="ui bottom attached segment">
-This element allows the user to specify a time of day. Note that this will be stored in the database as the number of *minutes after midnight,* to avoid possible issues with date/time conversions.
+This element allows the user to specify a time of day. Note that this will be stored in the database as the number of *seconds after midnight,* to avoid possible issues with date/time conversions.
 
 ##### Attributes:
 
@@ -155,7 +155,7 @@ This element allows the user to specify a time of day. Note that this will be st
 
 * **`step`**
 
-  If specified, the time (measured in minutes past midnight) must be a multiple of this number.
+  If specified, the time (measured in *minutes* past midnight) must be a multiple of this number.
 </div>
 
 <h3 class="ui header top attached">

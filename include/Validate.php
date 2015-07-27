@@ -372,7 +372,7 @@ abstract class Validate {
 		});
 	}
 
-	# Check that a time (measured in minutes past midnight)
+	# Check that a time (measured in seconds past midnight)
 	# is within a certain range
 	function minMaxTime($min, $max) {
 		$compmin = $min === null ? 0 : self::timeToSeconds($min);
@@ -421,8 +421,8 @@ abstract class Validate {
 		}
 	}
 
-	# Check that a time (measured in minutes past midnight)
-	# is a multiple of a specific number
+	# Check that a time (measured in seconds past midnight)
+	# is a multiple of a specific number of minutes
 	function stepTime($step) {
 		if($step === 'any') {
 			return $this;
@@ -441,7 +441,7 @@ abstract class Validate {
 	}
 
 	# Check that the "time" component of a date/time is a multiple
-	# of a specific number
+	# of a specific number of minutes
 	function stepDateTime($step) {
 		if($step === 'any') {
 			return $this;
