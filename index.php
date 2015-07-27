@@ -115,5 +115,11 @@ $klein->respond('GET', '/details', function () {
 	return '<!DOCTYPE html>' . fixAssets($view->makeView($view->query($_GET))->render()->generateString());
 });
 
+# See https://github.com/chriso/klein.php/wiki/Sub-Directory-Installation
+$config = Config::get();
+$request = \Klein\Request::createFromGlobals();
+$uri = $request->server()->get('REQUEST_URI');
+$request->server()->set('REQUEST_URI', substr($uri, strlen($config['app-path'])));
+
 # Route!
-$klein->dispatch();
+$klein->dispatch($request);

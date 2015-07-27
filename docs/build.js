@@ -1,4 +1,5 @@
-// Based on metalsmith-navigation example
+// This folder is based on the example included
+// with metalsmith-navigation.
 
 var path = require('path'),
 	Handlebars = require('handlebars'),

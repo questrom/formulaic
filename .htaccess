@@ -81,10 +81,10 @@ Header merge Cache-Control "no-transform"
 
 RewriteEngine On
 # Rewrite cache-busting urls
-RewriteRule ^(.*)\.hash-.*?\.(.*)$ /$1.$2 [PT]
+RewriteRule ^(.*)\.hash-.*?\.(.*)$ $1.$2 [PT]
 # Except for specific (whitelisted) files, rewrite everything to index.php
 # for appropriate routing.
-RewriteRule !^(styles\.css|client\.js|lib\/.*|img\/.*|docs\/.*)$ /index.php [END]
+RewriteRule !^(styles\.css|client\.js|lib\/.*|img\/.*|docs\/.*)$ index.php [END]
 
 # Misc. caching settings
 FileETag All

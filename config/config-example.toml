@@ -30,6 +30,9 @@ time-zone = 'America/New_York'
 # (CSS, JS, et cetera).
 asset-prefix='/'
 
+# The path (e.g. subdirectory) at which the app is hosted
+app-path=''
+
 [branding]
 # The image to use for the top menu of the app.
 image='/img/logo.jpg'

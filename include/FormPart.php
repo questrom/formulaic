@@ -539,7 +539,7 @@ class FormElemFormPart implements Renderable {
 		// Use the "novalidate" attribute to disable HTML5 form validation,
 		// since we implement our own validation logic.
 		return h()
-		->form->class('ui form')->action('../../submit')->method('POST')->novalidate(true)
+		->form->class('ui form')->action('../submit')->method('POST')->novalidate(true)
 			->c( array_map(function($x) { return ($x && $x instanceof FormPartFactory) ? $x->makeFormPart() : null; }, $this->f->items) )
 			->input->type('hidden')->name('__form_name')->value($this->f->id)->end
 			->input
