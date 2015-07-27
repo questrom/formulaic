@@ -28,6 +28,7 @@ The following dependencies are required in production.
 1. Copy the files from the main project directory to the server.
 2. Run `composer install` to install all PHP dependencies
 3. Copy the `config/config-example.toml` file into `config/config.toml`. Modify this file as needed; some features will not work without proper configuration.
+4. Test the app's features to make sure things are working. In particular, make sure the `.htaccess` settings have taken effect.
 
 
 ### Basic usage
