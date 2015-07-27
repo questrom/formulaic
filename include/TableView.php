@@ -17,21 +17,6 @@ class Column implements Configurable {
 # The "table-view" element itself. For mroe info about each method,
 # see ConfigurableView in View.php.
 class TableView implements ConfigurableView {
-
-	function makeView($data) {
-		$this->data = $data['data'];
-		$this->max = $data['max'];
-		$this->page = $data['pageNum'];
-		$this->formID = $data['formID'];
-
-		return new TablePage($this);
-	}
-
-
-	function getIcon() {
-		return 'table icon';
-	}
-
 	function __construct($args) {
 
 		$this->name = $args['name'];
@@ -57,6 +42,20 @@ class TableView implements ConfigurableView {
 		$this->perPage = isset($args['per-page']) ? $args['per-page'] : null;
 
 	}
+
+	function makeView($data) {
+		$this->data = $data['data'];
+		$this->max = $data['max'];
+		$this->page = $data['pageNum'];
+		$this->formID = $data['formID'];
+
+		return new TablePage($this);
+	}
+
+	function getIcon() {
+		return 'table icon';
+	}
+
 	function query($getData) {
 		$page = intval(isset($getData['page']) ? $getData['page'] : 1);
 
@@ -65,9 +64,9 @@ class TableView implements ConfigurableView {
 		$result['formID'] = $getData['form'];
 		return $result;
 	}
+
 	function setPage($page) {
 		$this->pageData = $page;
-
 		$this->mongo = $page->getMongo();
 	}
 }
