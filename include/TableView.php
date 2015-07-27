@@ -68,12 +68,6 @@ class TableView implements ConfigurableView {
 	function setPage($page) {
 		$this->pageData = $page;
 
-		$mongo = null;
-		foreach($page->outputs->outputs as $output) {
-			if($output instanceof MongoOutput) {
-				$mongo = $output;
-			}
-		}
-		$this->mongo = $mongo;
+		$this->mongo = $page->getMongo();
 	}
 }
