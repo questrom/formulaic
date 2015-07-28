@@ -20,7 +20,7 @@ interface Storage extends Output {
 	function count();
 	function getById($id);
 	function getStats($unwindArrays, $name);
-	function getTable($page, $sortBy, $perPage);
+	function getTable($page, $sortBy, $start, $count);
 }
 
 # MongoDB storage
@@ -125,28 +125,17 @@ class MongoOutput implements Configurable, Storage {
 	}
 
 	# Get all the data necessary for creating a table.
-	function getTable($page, $sortBy, $perPage) {
+	function getTable($page, $sortBy, $start, $count) {
 
 		$client = $this->getClient();
 		$cursor = $client->find()->sort($sortBy);
 
-		if($perPage !== null) {
-			# Use intval so PHP will compare values properly elsewhere in the code.
-			$max = intval(floor($cursor->count() / $perPage));
-		} else {
-			# If $perPage is not specified, no pagination will occur.
-			$max = 1;
+		if($count !== null) {
+			$cursor->skip($start);
+			$cursor->limit($count);
 		}
 
-		if($perPage !== null) {
-			$cursor->skip(($page - 1) * $perPage);
-			$cursor->limit($perPage);
-		}
-
-		return [
-			'data' => fixMongoDates(array_values(iterator_to_array($cursor))),
-			'max' => $max
-		];
+		return fixMongoDates(array_values(iterator_to_array($cursor)));
 	}
 }
 

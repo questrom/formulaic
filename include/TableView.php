@@ -56,12 +56,22 @@ class TableView implements ConfigurableView {
 		return 'table icon';
 	}
 
-	function query($getData) {
-		$page = intval(isset($getData['page']) ? $getData['page'] : 1);
+	function query($page) {
+		if($this->perPage !== null) {
+			# Use intval so PHP will compare values properly elsewhere in the code.
+			$max = intval(floor($this->mongo->count() / $this->perPage));
+		} else {
+			# If $perPage is not specified, no pagination will occur.
+			$max = 1;
+		}
 
-		$result = $this->mongo->getTable($page, $this->sortBy, $this->perPage);
+		# Retreive all necssary data
+		$result = [];
+		$result['data'] = $this->mongo->getTable($page, $this->sortBy, ($page - 1) * $this->perPage, $this->perPage);
 		$result['pageNum'] = $page;
-		$result['formID'] = $getData['form'];
+		$result['formID'] = $this->pageData->id;
+		$result['max'] = $max;
+
 		return $result;
 	}
 
