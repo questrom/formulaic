@@ -16,10 +16,28 @@ function fixMongoDates($value) {
 	if(is_array($value)) {
 		return array_map('fixMongoDates', $value);
 	} else if($value instanceof MongoDate) {
-		return DateTimeImmutable::createFromFormat('U', $value->sec)->setTimezone(new DateTimeZone($config['time-zone']));
+		# Don't just use the 'U' format in case of pre-1970 date
+		$date = (new DateTimeImmutable())->setTimestamp($value->sec);
+		return $date->setTimezone(new DateTimeZone($config['time-zone']));
 	} else {
 		return $value;
 	}
+}
+
+# Convert output for storage in MongoDB
+function buildMongoOutput($data) {
+	return array_map(function($x) {
+		if($x instanceof DateTimeImmutable) {
+			$stamp = $x->getTimestamp();
+			return new MongoDate($stamp);
+		} else if($x instanceof FileInfo) {
+			throw new Exception('Unexpected file!');
+		} else if(is_array($x)) {
+			return buildMongoOutput($x);
+		} else {
+			return $x;
+		}
+	}, $data);
 }
 
 # Get and cache configuration data

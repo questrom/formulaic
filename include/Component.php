@@ -152,7 +152,7 @@ class DateTimePicker extends NamedLabeledComponent {
 			->name($this->name);
 	}
 	function makeTableViewPart($v) {
-		if ($v === null) {
+		if ($v === null || !is_object($v)) {
 			return null;
 		}
 		return new OrdinaryTableCell($v->format('n/j/Y g:i A'));
