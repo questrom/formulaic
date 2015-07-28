@@ -61,15 +61,15 @@ class FakeCache extends Cache {
 # this function fixes it so that it works more like $_POST.
 # See http://php.net/manual/en/reserved.variables.files.php#109958
 function diverse_array($vector) {
-   $result = [];
-   foreach($vector as $part => $val) {
-   		foreach($val as $index => $ival) {
-   			foreach($ival as $name => $info) {
-   				$result[$index][$name][$part] = $info;
-   			}
-   		}
-   }
-   return $result;
+	$result = [];
+	foreach($vector as $part => $val) {
+		foreach($val as $index => $ival) {
+			foreach($ival as $name => $info) {
+				$result[$index][$name][$part] = $info;
+			}
+		}
+	}
+	return $result;
 }
 
 # Winner of the "least interesting function of the year" award...

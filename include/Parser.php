@@ -23,6 +23,51 @@ class AllowElem implements Configurable {
 
 # Note that, since XMLReader's error handling is not very good, errors may result in infinite loops :(
 class BetterReader extends XMLReader {
+	private $elementMap = [
+				'checkbox' => 'Checkbox',
+				'textbox' => 'Textbox',
+				'password' => 'Password',
+				'dropdown' => 'Dropdown',
+				'radios' => 'Radios',
+				'checkboxes' => 'Checkboxes',
+				'textarea' => 'TextArea',
+				'range' => 'Range',
+				'time' => 'TimeInput',
+				'group' => 'Group',
+				'date' => 'DatePicker',
+				'phonenumber' => 'PhoneNumber',
+				'email' => 'EmailAddr',
+				'url' => 'UrlInput',
+				'number' => 'NumberInp',
+
+				'notice' => 'Notice',
+				'header' => 'Header',
+				'datetime' => 'DateTimePicker',
+				'file' => 'FileUpload',
+				'allow' => 'AllowElem',
+
+				'mongo' => 'MongoOutput',
+				's3' => 'S3Output',
+
+				'option' => '_text',
+				'fields' => 'FieldList',
+				'li' => '_text',
+				'outputs' => 'SuperOutput',
+				'form' => 'Page',
+				'list' => 'ListComponent',
+				'show-if' => 'ShowIfComponent',
+				'table-view' => 'TableView',
+				'col' => 'Column',
+				'email-to' => 'EmailOutput',
+				'graph-view' => 'GraphView',
+				'bar' => 'BarGraph',
+				'pie' => 'PieChart',
+				'captcha' => 'Captcha',
+				'is-checked' => 'IsCheckedCondition',
+				'is-not-checked' => 'IsNotCheckedCondition',
+				'is-radio-selected' => 'IsRadioSelectedCondition',
+				'views' => 'ViewList'
+			];
 	function parseCurrentElement($cfg) {
 
 		$name = $this->localName;
@@ -141,51 +186,7 @@ class Parser {
 			$reader = $this->reader = new BetterReader();
 
 			# The map of XML element names to PHP classes that implement Configurable.
-			$reader->elementMap = [
-				'checkbox' => 'Checkbox',
-				'textbox' => 'Textbox',
-				'password' => 'Password',
-				'dropdown' => 'Dropdown',
-				'radios' => 'Radios',
-				'checkboxes' => 'Checkboxes',
-				'textarea' => 'TextArea',
-				'range' => 'Range',
-				'time' => 'TimeInput',
-				'group' => 'Group',
-				'date' => 'DatePicker',
-				'phonenumber' => 'PhoneNumber',
-				'email' => 'EmailAddr',
-				'url' => 'UrlInput',
-				'number' => 'NumberInp',
 
-				'notice' => 'Notice',
-				'header' => 'Header',
-				'datetime' => 'DateTimePicker',
-				'file' => 'FileUpload',
-				'allow' => 'AllowElem',
-
-				'mongo' => 'MongoOutput',
-				's3' => 'S3Output',
-
-				'option' => '_text',
-				'fields' => 'FieldList',
-				'li' => '_text',
-				'outputs' => 'SuperOutput',
-				'form' => 'Page',
-				'list' => 'ListComponent',
-				'show-if' => 'ShowIfComponent',
-				'table-view' => 'TableView',
-				'col' => 'Column',
-				'email-to' => 'EmailOutput',
-				'graph-view' => 'GraphView',
-				'bar' => 'BarGraph',
-				'pie' => 'PieChart',
-				'captcha' => 'Captcha',
-				'is-checked' => 'IsCheckedCondition',
-				'is-not-checked' => 'IsNotCheckedCondition',
-				'is-radio-selected' => 'IsRadioSelectedCondition',
-				'views' => 'ViewList'
-			];
 		} else {
 			$reader = $this->reader;
 		}

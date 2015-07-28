@@ -7,11 +7,13 @@
 # since there is no authentication for views in general.
 
 class DetailsView implements View {
+	private $pageData, $mongo;
 	function makeView($data) {
 		return new DetailsViewRenderable($this->pageData->form->getAllFields(), $this->pageData->title, $data);
 	}
 
 	function setPage($page) {
+		/** @noinspection PhpUndefinedFieldInspection */
 		$this->pageData = $page;
 		$this->mongo = $page->getMongo();
 	}

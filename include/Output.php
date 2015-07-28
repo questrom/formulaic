@@ -23,13 +23,13 @@ interface Storage extends Output {
 	function getTable($page, $sortBy, $start, $count);
 }
 
-
 # MongoDB storage
 class MongoOutput implements Configurable, Storage {
 
 
 	# Construct an object from an element in a configuration file
 	function __construct($args) {
+
 		$this->server = $args['server'];
 		$this->database = $args['database'];
 		$this->collection = $args['collection'];
@@ -147,7 +147,7 @@ class S3Output implements Output, Configurable {
 			if(is_array($x)) {
 				return $this->run($x, $page);
 			} else if($x instanceof FileInfo) {
-				$ret = $this->s3->putObject(
+				$this->s3->putObject(
 					S3::inputFile($x->file['tmp_name'], false),
 					$this->bucket,
 					$x->filename,

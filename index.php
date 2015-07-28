@@ -38,7 +38,14 @@ $klein->respond('GET', '/view', function ($req) use($parser) {
 	$page = $parser->parseJade($_GET['form']);
 	$view = $page->getView($_GET['view']);
 
-	return fixAssets($view->makeView($view->query( $req->paramsGet()->get('page',1) ))->render()->generateString());
+	return fixAssets(
+		$view
+		->makeView(
+			$view->query( $req->paramsGet()->get('page', 1) )
+		)
+		->render()
+		->generateString()
+	);
 });
 
 # A form itself

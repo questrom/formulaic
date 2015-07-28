@@ -105,7 +105,7 @@ abstract class HTMLGeneratorAbstract {
 						# Strings and other primitive types must be escaped.
 						$element = htmlspecialchars($element, ENT_QUOTES | ENT_HTML5);
 					} else {
-						throw new Error("Invalid HTML component!");
+						throw new Exception("Invalid HTML component!");
 					}
 
 					# Handle the escapeCount by escaping extra times.

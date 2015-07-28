@@ -48,7 +48,6 @@ class TableView implements ConfigurableView {
 		$this->max = $data['max'];
 		$this->page = $data['pageNum'];
 		$this->formID = $data['formID'];
-
 		return new TablePage($this);
 	}
 
