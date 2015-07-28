@@ -6,6 +6,9 @@ use Gregwar\Cache\Cache;
 # Klein is used as the router.
 $klein = new \Klein\Klein();
 
+# Create a config file parser
+$parser = new Parser();
+
 # Display simple error messages.
 # Based on code from the Klein documentation.
 $klein->onHttpError(function ($code, $router) {
@@ -23,21 +26,21 @@ $klein->onHttpError(function ($code, $router) {
 });
 
 # The main list of forms
-$klein->respond('GET', '/', function () {
-	$formlist = new FormList(Parser::getFormInfo());
+$klein->respond('GET', '/', function () use($parser) {
+	$formlist = new FormList($parser->getFormInfo());
 	$ret = '<!DOCTYPE html>' . fixAssets($formlist->makeFormList()->render()->generateString());
 	return $ret;
 });
 
 # A view
-$klein->respond('GET', '/view', function () {
-	$page = Parser::parseJade($_GET['form']);
+$klein->respond('GET', '/view', function () use($parser) {
+	$page = $parser->parseJade($_GET['form']);
 	$view = $page->getView($_GET['view']);
 	return fixAssets($view->makeView($view->query($_GET))->render()->generateString());
 });
 
 # A form itself
-$klein->respond('GET', '/forms/[:formID]', function($request) {
+$klein->respond('GET', '/forms/[:formID]', function($request) use($parser) {
 
 	# Create a XSRF token
 	$csrf = new \Riimu\Kit\CSRF\CSRFHandler();
@@ -48,10 +51,14 @@ $klein->respond('GET', '/forms/[:formID]', function($request) {
 	# This code caches the HTML associated with a form if "cache-forms" is enabled
 	$cache = $config['cache-forms'] ? new Cache() : new FakeCache();
 	$cache->setPrefixSize(0);
-	$html = $cache->getOrCreate('jade-' . sha1_file(Parser::getForm($request->formID)) . '-' . sha1_file('config/config.toml'), [], function () use($request) {
-		$page = Parser::parseJade($request->formID);
-		return '<!DOCTYPE html>' . $page->makeFormPart()->render()->generateString();
-	});
+	$html = $cache->getOrCreate(
+		'jade-' . sha1_file($parser->getForm($request->formID)) . '-' . sha1_file('config/config.toml'),
+		[],
+		function () use($request, $parser) {
+			$page = $parser->parseJade($request->formID);
+			return '<!DOCTYPE html>' . $page->makeFormPart()->render()->generateString();
+		}
+	);
 
 	# Add a CSRF token. We do this outside of the getOrCreate function
 	# so that it won't be cached.
@@ -60,7 +67,7 @@ $klein->respond('GET', '/forms/[:formID]', function($request) {
 	return fixAssets($html);
 });
 
-$klein->respond('POST', '/submit', function () {
+$klein->respond('POST', '/submit', function () use($parser) {
 
 	# Check for XSRF
 	$csrf = new \Riimu\Kit\CSRF\CSRFHandler();
@@ -70,7 +77,7 @@ $klein->respond('POST', '/submit', function () {
 
 	# The name of the form is provided in the $_POST data,
 	# not the URL!
-	$page = Parser::parseJade($_POST['__form_name']);
+	$page = $parser->parseJade($_POST['__form_name']);
 	$config = Config::get();
 
 	# Do the form submission and create data that is
@@ -108,8 +115,8 @@ $klein->respond('POST', '/submit', function () {
 });
 
 # Get the details of a particular table entry.
-$klein->respond('GET', '/details', function () {
-	$page = Parser::parseJade($_GET['form']);
+$klein->respond('GET', '/details', function () use($parser) {
+	$page = $parser->parseJade($_GET['form']);
 	$view = new DetailsView();
 	$view->setPage($page);
 	return '<!DOCTYPE html>' . fixAssets($view->makeView($view->query($_GET))->render()->generateString());

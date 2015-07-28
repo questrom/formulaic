@@ -97,7 +97,7 @@ class Parser {
 	# Get the configuration file name corresponding to a form ID.
 	# For example, if the input is "test", this function returns
 	# "forms/test.jade".
-	static function getForm($name) {
+	function getForm($name) {
 		if (is_string($name) && !preg_match('/[^A-za-z0-9_-]/', $name) && strlen($name) > 0) {
 			return 'forms/' . $name . '.jade';
 		} else {
@@ -108,7 +108,7 @@ class Parser {
 	# This function gets some "global" information about each of the forms.
 	# This information is displayed on the main page of the app, which
 	# provides a lsit of forms and views.
-	static function getFormInfo() {
+	function getFormInfo() {
 
 		$files = scandir('forms');
 
@@ -123,7 +123,7 @@ class Parser {
 
 		$files = array_map(function ($item) {
 
-			$page = Parser::parseJade($item);
+			$page = $this->parseJade($item);
 			return [
 				'id' => $page->id,
 				'name' => $page->title,
@@ -135,13 +135,10 @@ class Parser {
 		return $files;
 	}
 
-	static $reader;
-	static $jade;
-
 	# Get an XML reader
-	static function getReader() {
-		if(!isset(self::$reader)) {
-			$reader = self::$reader = new BetterReader();
+	function getReader() {
+		if(!isset($this->reader)) {
+			$reader = $this->reader = new BetterReader();
 
 			# The map of XML element names to PHP classes that implement Configurable.
 			$reader->elementMap = [
@@ -190,26 +187,26 @@ class Parser {
 				'views' => 'ViewList'
 			];
 		} else {
-			$reader = self::$reader;
+			$reader = $this->reader;
 		}
 		return $reader;
 	}
 
 	# Get a jade parser
-	static function getJade() {
-		if(!isset(self::$jade)) {
-			self::$jade = new Everzet\Jade\Jade(
+	function getJade() {
+		if(!isset($this->jade)) {
+			$this->jade = new Everzet\Jade\Jade(
 				new Everzet\Jade\Parser(new Everzet\Jade\Lexer\Lexer()),
 				new Everzet\Jade\Dumper\PHPDumper()
 			);
 		}
-		return self::$jade;
+		return $this->jade;
 	}
 
 	# Given a form ID, this gets the contents of the associated configuration file.
-	static function parseJade($id) {
+	function parseJade($id) {
 
-		$file = self::getForm($id);
+		$file = $this->getForm($id);
 		$config = Config::get();
 
 		# If the "cache-xml" setting is enabled, we cache the compiled XML.
@@ -217,11 +214,11 @@ class Parser {
 		$cache->setPrefixSize(0);
 
 		$xml = $cache->getOrCreate('xml-' . sha1_file($file), [], function ($param) use ($file) {
-			return self::getJade()->render("!!! xml\n" . file_get_contents($file));
+			return $this->getJade()->render("!!! xml\n" . file_get_contents($file));
 		});
 
 		// $t = microtime(true);
-		$reader = self::getReader();
+		$reader = $this->getReader();
 		$reader->xml($xml);
 
 		while ($reader->nodeType !== XMLReader::ELEMENT) {

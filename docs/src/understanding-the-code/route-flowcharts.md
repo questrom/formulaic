@@ -17,7 +17,7 @@ Note that this does not include information about all possible query string para
     <i class="info icon"></i>
     <div class="content">
       <div class="title">Get info about each form</div>
-      <div class="description">`Parser::getFormInfo`</div>
+      <div class="description">`Parser->getFormInfo`</div>
     </div>
   </div>
   <div class="step">
@@ -45,7 +45,7 @@ This route gets the main list of forms.
     <i class="file text outline icon"></i>
     <div class="content">
       <div class="title">Parse config. file</div>
-      <div class="description">`Parser::parseJade`</div>
+      <div class="description">`Parser->parseJade`</div>
     </div>
   </div>
   <div class="step">
@@ -87,7 +87,7 @@ This route displays a specific view of a specific form. The configuration file t
     <i class="file text outline icon"></i>
     <div class="content">
       <div class="title">Parse config. file</div>
-      <div class="description">`Parser::parseJade`</div>
+      <div class="description">`Parser->parseJade`</div>
     </div>
   </div>
   <div class="step">
@@ -115,7 +115,7 @@ This route displays a particular form. The configuration file to use is specifie
     <i class="file text outline icon"></i>
     <div class="content">
       <div class="title">Parse config. file</div>
-      <div class="description">`Parser::parseJade`</div>
+      <div class="description">`Parser->parseJade`</div>
     </div>
   </div>
   <div class="step">
@@ -150,7 +150,7 @@ This route submits a form, returning either validation errors or a confirmation 
     <i class="file text outline icon"></i>
     <div class="content">
       <div class="title">Parse config. file</div>
-      <div class="description">`Parser::parseJade`</div>
+      <div class="description">`Parser->parseJade`</div>
     </div>
   </div>
   <div class="step">

@@ -98,7 +98,7 @@ class FormListView implements Renderable {
 }
 
 # A factory for a FormListView
-# The data is assumed to come from Parser::getFormInfo()
+# The data is assumed to come from Parser->getFormInfo()
 class FormList {
 	private $data;
 	function __construct($data) {
