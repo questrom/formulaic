@@ -35,7 +35,8 @@
         "ext-SPL": "*",
         "ext-mbstring": "*",
         "ext-json": "*",
-        "ext-fileinfo": "^1.0.5"
+        "ext-fileinfo": "^1.0.5",
+        "phpoffice/phpexcel": "^1.8"
     },
     "config": {
         "__comment__" : "Use the below line so that component-installer won't create an extra directory...",
