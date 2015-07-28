@@ -23,7 +23,7 @@ class AllowElem implements Configurable {
 
 # Note that, since XMLReader's error handling is not very good, errors may result in infinite loops :(
 class BetterReader extends XMLReader {
-	function parseCurrentElement() {
+	function parseCurrentElement($cfg) {
 
 		$name = $this->localName;
 
@@ -44,7 +44,7 @@ class BetterReader extends XMLReader {
 			while (true) {
 				switch ($this->nodeType) {
 					case self::ELEMENT:
-						$elements[] = $this->parseCurrentElement();
+						$elements[] = $this->parseCurrentElement($cfg);
 						break;
 					case self::TEXT:
 					case self::CDATA:
@@ -79,7 +79,7 @@ class BetterReader extends XMLReader {
 
 			return [
 				'name' => $name,
-				'value' => new $this->elementMap[$name]($attrs)
+				'value' => new $this->elementMap[$name]($attrs, $cfg)
 			];
 		} else {
 			# Just turn the element into a string
@@ -224,7 +224,8 @@ class Parser {
 		while ($reader->nodeType !== XMLReader::ELEMENT) {
 			$reader->read();
 		}
-		$readData = $reader->parseCurrentElement();
+		$cfg =  Config::get();
+		$readData = $reader->parseCurrentElement($cfg);
 		// echo '<br><br><br>' . (microtime(true) - $t)*1000;
 
 		$page = $readData['value'];

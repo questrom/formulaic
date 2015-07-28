@@ -285,7 +285,6 @@ class Captcha extends NamedLabeledComponent {
 		# Google requires us to use this name for all CAPTCHA elements.
 		# Hence, the CAPTCHA element lacks a "name" attribute.
 		$this->name = 'g-recaptcha-response';
-
 		$this->label = 'CAPTCHA';
 	}
 	function makeFormPart() {
