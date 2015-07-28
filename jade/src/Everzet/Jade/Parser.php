@@ -273,7 +273,7 @@ class Parser
                 case 'id':
                 case 'class':
                     $token = $this->lexer->getAdvancedToken();
-                    $node->setAttribute($token->type, $token->value);
+                    $node->setAttribute($token->type === 'id' ? 'name' : $token->type, $token->value);
                     continue;
                 case 'attributes':
                     foreach ($this->lexer->getAdvancedToken()->attributes as $name => $value) {

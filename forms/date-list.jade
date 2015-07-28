@@ -1,11 +1,11 @@
 form(title='Event Dates')
   fields
-    list(name='dates', label='Event dates', add-text='Add a date')
-      datetime(name='date', label='Date of event', required=true)
+    list#dates(label='Event dates', add-text='Add a date')
+      datetime#date(label='Date of event', required=true)
   views
-    table-view(name='table', title='Main view')
-      col(name='dates', header='Dates', width=1)
-      col(name='_ip', header='IP Address', width=1)
-      col(name='_timestamp', header='Timestamp', width=1)
+    table-view#table(title='Main view')
+      col#dates(header='Dates', width=1)
+      col#_ip(header='IP Address', width=1)
+      col#_timestamp(header='Timestamp', width=1)
   outputs
     mongo(server='mongodb://localhost:27017', database='forms', collection='event_dates')
