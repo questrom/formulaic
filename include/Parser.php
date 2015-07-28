@@ -125,10 +125,10 @@ class Parser {
 
 			$page = Parser::parseJade($item);
 			return [
-				'id' => $item,
+				'id' => $page->id,
 				'name' => $page->title,
 				'views' => $page->views->getAllViews(),
-				'count' => SubmitCounts::get($item)
+				'count' => SubmitCounts::get($page->id)
 			];
 		}, $files);
 
