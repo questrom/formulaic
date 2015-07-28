@@ -53,15 +53,9 @@ class MongoOutput implements Configurable, Storage {
 
 	# Store form data in MongoDB
 	function run($data, $page) {
-		$oldData = $data;
-
-		$data = buildMongoOutput($data);
-		// var_dump($data);
-
 		$collection = $this->getClient();
-		$collection->insert($data);
-
-		return $oldData;
+		$collection->insert(buildMongoOutput($data));
+		return $data;
 	}
 
 	# Get a single form submission by ID
