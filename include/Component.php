@@ -357,8 +357,10 @@ class FileUpload extends NamedLabeledComponent {
 
 	}
 	function makeFormPart() {
-		$innerText = 'Allowed file types: ' . implode(', ', array_keys($this->allowedExtensions)) . ' ' . json_decode('"\u00B7"') .
-			' Max file size: ' . ByteUnits\Metric::bytes($this->maxSize)->format(0);
+		$innerText = 'Allowed file types: ' .
+			implode(', ', array_keys($this->allowedExtensions)) .
+			' ' . json_decode('"\u00B7"') . ' Max file size: ' .
+			ByteUnits\Metric::bytes($this->maxSize)->format(0);
 		return new InputFormPart($this, 'file', null, null, $innerText);
 	}
 	function getSubmissionPart($against) {
@@ -417,7 +419,6 @@ class FileUpload extends NamedLabeledComponent {
 				if (!is_uploaded_file($file['tmp_name'])) {
 					return Result::error('Security error.');
 				}
-
 
 				$filename = sha1_file($file['tmp_name']) . '-' . floor(microtime(true)) . '.' . $ext;
 
@@ -557,7 +558,9 @@ class PhoneNumber extends NamedLabeledComponent {
 		# Format the phone number with pretty unicode spaces
 		# before displaying it in a table
 		if (preg_match('/^[0-9]{10}$/', $v)) {
-			$showValue = '(' . substr($v, 0, 3) . ')' . json_decode('"\u2006"') . substr($v, 3, 3) . json_decode('"\u2006"') . substr($v, 6, 4);
+			$showValue = '(' . mb_substr($v, 0, 3) . ')' .
+				json_decode('"\u2006"') . mb_substr($v, 3, 3) . json_decode('"\u2006"') .
+				mb_substr($v, 6, 4);
 		} else {
 			$showValue = $v;
 		}

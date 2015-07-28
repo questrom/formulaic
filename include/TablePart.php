@@ -440,11 +440,13 @@ class TablePage implements Renderable {
 								return h()
 								->tr
 									->c(array_map(function($col) use($row) {
-										return ( new TablePart( $this->byName[$col->name] ) )->makeTableViewPart(  isget($row[$col->name]) );
+										return ( new TablePart( $this->byName[$col->name] ) )
+											->makeTableViewPart(  isget($row[$col->name]) );
 									}, $this->f->cols))
 									# After the columns, show the Details button
 									->td->class('center aligned nowrap unpadded-cell')
-										->a->class('ui no-margin compact button')->href('details?form=' . $this->f->formID . '&id=' . $row['_id'])
+										->a->class('ui no-margin compact button')
+											->href('details?form=' . $this->f->formID . '&id=' . $row['_id'])
 											->c('Details')
 										->end
 									->end
@@ -458,7 +460,11 @@ class TablePage implements Renderable {
 								->div->class('item')
 									->a->class('ui left floated primary labeled icon button '
 											. ($this->f->page === 1 ? 'disabled' : ''))
-										->href('view?form=' . $this->f->formID . '&view=' . $this->f->name . '&page=' . ($this->f->page - 1))
+										->href(
+											'view?form=' . $this->f->formID .
+											'&view=' . $this->f->name .
+											'&page=' . ($this->f->page - 1)
+										)
 										->i->class('left chevron icon')->end
 										->c('Previous')
 									->end
@@ -469,7 +475,11 @@ class TablePage implements Renderable {
 								->div->class('right item')
 									->a->class('ui right floated primary right labeled icon button '
 											. ((($this->f->page - 1) === $this->f->max) ? 'disabled' : ''))
-										->href('view?form=' . $this->f->formID . '&view=' . $this->f->name . '&page=' . ($this->f->page + 1))
+										->href(
+											'view?form=' . $this->f->formID .
+											'&view=' . $this->f->name .
+											'&page=' . ($this->f->page + 1)
+										)
 										->i->class('right chevron icon')->end
 										->c('Next')
 									->end

@@ -3,7 +3,6 @@
 use Yosymfony\Toml\Toml;
 use Gregwar\Cache\Cache;
 
-
 # Shortcut for "isset()" checks
 # Name inspired by https://github.com/ArtBIT/isget/blob/master/src/isget.php
 function isget(&$value, $default = null) {
@@ -15,7 +14,7 @@ function fixMongoDates($value) {
 	$config = Config::get();
 	if(is_array($value)) {
 		return array_map('fixMongoDates', $value);
-	} else if($value instanceof MongoDate) {
+	} elseif ($value instanceof MongoDate) {
 		# Don't just use the 'U' format in case of pre-1970 date
 		$date = (new DateTimeImmutable())->setTimestamp($value->sec);
 		return $date->setTimezone(new DateTimeZone($config['time-zone']));
@@ -30,9 +29,9 @@ function buildMongoOutput($data) {
 		if($x instanceof DateTimeImmutable) {
 			$stamp = $x->getTimestamp();
 			return new MongoDate($stamp);
-		} else if($x instanceof FileInfo) {
+		} elseif ($x instanceof FileInfo) {
 			throw new Exception('Unexpected file!');
-		} else if(is_array($x)) {
+		} elseif (is_array($x)) {
 			return buildMongoOutput($x);
 		} else {
 			return $x;
@@ -92,7 +91,7 @@ class Hashes {
 		if(!$config['cache-hashes']) {
 			self::$data = [];
 			self::write();
-		} else if(file_exists('cache/hashes.json')) {
+		} elseif (file_exists('cache/hashes.json')) {
 			self::$data = (array) json_decode(file_get_contents('cache/hashes.json'));
 		} else {
 			self::$data = [];

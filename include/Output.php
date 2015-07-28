@@ -3,7 +3,6 @@
 use Nette\Mail\Message;
 use Nette\Mail\SmtpMailer;
 
-
 # An interface implemented by all elements that can go in the "outputs"
 # section of a configuration file.
 interface Output {
@@ -146,7 +145,7 @@ class S3Output implements Output, Configurable {
 		return array_map(function($x) use ($page) {
 			if(is_array($x)) {
 				return $this->run($x, $page);
-			} else if($x instanceof FileInfo) {
+			} elseif ($x instanceof FileInfo) {
 				$this->s3->putObject(
 					S3::inputFile($x->file['tmp_name'], false),
 					$this->bucket,

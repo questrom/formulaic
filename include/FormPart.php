@@ -50,8 +50,7 @@ class BaseHeaderFormPart implements Renderable {
 			->i->class($this->f->icon . ' icon')->end
 			->div->class('content')
 				->c($inside)
-			->end
-		;
+			->end;
 	}
 }
 
@@ -292,10 +291,11 @@ class DateTimePickerFormPart implements Renderable {
 		$sublabel = '';
 
 		if(isset($this->f->max) && isset($this->f->min)) {
-			$sublabel = 'Please provide a date and time between ' . df($this->f->min) . ' and ' . df($this->f->max) . '.';
-		} else if (isset($this->f->max)) {
+			$sublabel = 'Please provide a date and time between ' .
+				df($this->f->min) . ' and ' . df($this->f->max) . '.';
+		} elseif (isset($this->f->max)) {
 			$sublabel = 'Please provide a date and time no later than ' . df($this->f->max) . '.';
-		} else if(isset($this->f->min)) {
+		} elseif(isset($this->f->min)) {
 			$sublabel = 'Please provide a date and time no earlier than ' . df($this->f->min) . '.';
 		}
 
@@ -318,9 +318,9 @@ class TimeInputFormPart implements Renderable {
 
 		if(isset($this->f->max) && isset($this->f->min)) {
 			$sublabel = 'Please provide a time between ' . ($this->f->min) . ' and ' . ($this->f->max) . '.';
-		} else if (isset($this->f->max)) {
+		} elseif (isset($this->f->max)) {
 			$sublabel = 'Please provide a time no later than ' . ($this->f->max) . '.';
-		} else if(isset($this->f->min)) {
+		} elseif(isset($this->f->min)) {
 			$sublabel = 'Please provide a time no earlier than ' . ($this->f->min) . '.';
 		}
 
@@ -398,16 +398,16 @@ class ListComponentFormPart implements Renderable {
 
 		if(is_finite($this->f->maxItems) && $this->f->minItems > 0) {
 			$sublabel = 'Please provide between ' . $this->f->minItems . ' and ' . $this->f->maxItems . ' items.';
-		} else if (is_finite($this->f->maxItems)) {
+		} elseif (is_finite($this->f->maxItems)) {
 			$sublabel = 'Please provide no more than ' . $this->f->maxItems . ' items.';
-		} else if($this->f->minItems > 0) {
+		} elseif($this->f->minItems > 0) {
 			$sublabel = 'Please provide at least ' . $this->f->minItems . ' items.';
 		} else {
 			$sublabel = '';
 		}
 
 		return h()
-		->div->class('ui field validation-root list-component')->data('count','0')->data('group-name', $this->f->name)
+		->div->class('ui field validation-root list-component')->data('count', '0')->data('group-name', $this->f->name)
 				->data('validation-name', $this->f->name)
 			->h5->class('top attached ui message')
 				->c($this->f->label)
@@ -422,7 +422,11 @@ class ListComponentFormPart implements Renderable {
 							h()
 							->div->class('ui vertical segment close-item')
 								->div->class('content')
-									->c( array_map(function($x) { return $x ? $x->makeFormPart() : null; }, $this->f->items) )
+									->c(
+										array_map(function($x) {
+											return $x ? $x->makeFormPart() : null;
+										}, $this->f->items)
+									)
 								->end
 								->button->type('button')->class('ui compact negative icon button delete-btn')
 									# A button for deleting items
@@ -471,7 +475,7 @@ class GroupFormPart implements Renderable {
 			if($item instanceof Header || $item instanceof Notice) {
 				$carry[] = $item;
 				return $carry;
-			} else if( is_array(end($carry)) ) {
+			} elseif (is_array(end($carry))) {
 				$carry[count($carry)-1][] = $item;
 				return $carry;
 			} else {
@@ -489,10 +493,12 @@ class CheckboxesFormPart implements Renderable {
 	public function __construct($field) { $this->f = $field; }
 	function render() {
 		if(is_finite($this->f->maxChoices) && $this->f->minChoices > 0) {
-			$sublabel = 'Please choose between ' . $this->f->minChoices . ' and ' . $this->f->maxChoices . ' items from the list.';
-		} else if (is_finite($this->f->maxChoices)) {
+			$sublabel = 'Please choose between ' .
+				$this->f->minChoices . ' and ' . $this->f->maxChoices .
+				' items from the list.';
+		} elseif (is_finite($this->f->maxChoices)) {
 			$sublabel = 'Please choose no more than ' . $this->f->maxChoices . ' items from the list.';
-		} else if($this->f->minChoices > 0) {
+		} elseif($this->f->minChoices > 0) {
 			$sublabel = 'Please choose at least ' . $this->f->minChoices . ' items from the list.';
 		} else {
 			$sublabel = '';
@@ -574,7 +580,13 @@ class TopHeader implements Renderable {
 	function render() {
 		return h()
 		->div->class('ui top fixed menu')
-			->style('background-color: rgb(' . $this->cfg['branding']['color'] . '); box-shadow: 0px 1px 2px 0px rgba(' . $this->cfg['branding']['color'] . ', 0.25);')
+			->style(
+				'background-color: rgb(' .
+				$this->cfg['branding']['color'] .
+				'); box-shadow: 0px 1px 2px 0px rgba('  .
+				$this->cfg['branding']['color'] .
+				', 0.25);'
+			)
 			->div->class('item')
 				->img->src($this->cfg['branding']['image'])->end
 			->end
@@ -592,7 +604,8 @@ class BrowserProblemPart implements Renderable {
 				'<!--[if lt IE 10]>'
 				. '<div style="text-align:center">'
 						. '<h1>You are using an unsupported web browser.</h1>'
-						. '<p>Please <a href="http://browsehappy.com/">upgrade your browser</a> to use this webpage.</p>'
+						. '<p>Please <a href="http://browsehappy.com/">upgrade your browser</a>'
+						. 'to use this webpage.</p>'
 					. '</div>'
 				. '<![endif]--><!--[if gte IE 10]> -->'
 			),
@@ -642,7 +655,9 @@ class PageFormPart implements Renderable {
 							->c('Submission failed')
 						->end
 						->div->class('content')
-							->p->c('The server encountered an error when processing your request. Please try again.')->end
+							->p
+								->c('The server encountered an error when processing your request. Please try again.')
+							->end
 						->end
 						->div->class('actions')
 							->button->type('button')->class('ui primary button approve')->c('OK')->end

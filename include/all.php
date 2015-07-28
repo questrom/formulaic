@@ -2,6 +2,9 @@
 
 # Various things =========================================================================
 
+# Charset
+mb_internal_encoding('UTF-8');
+
 # Composer dependencies
 require 'vendor/autoload.php';
 
@@ -10,22 +13,22 @@ require 'vendor/autoload.php';
 require 'jade/autoload.php.dist';
 
 # Miscellaneous utility functions
-require 'include/utils.php';
+require 'utils.php';
 
 # Set the time zone manually so PHP won't complain
 date_default_timezone_set(Config::get()['time-zone']);
 
 # Parses and manages configuration files
-require 'include/Parser.php';
+require 'Parser.php';
 
 # Conditions within "show-if" elements.
-require 'include/Condition.php';
+require 'Condition.php';
 
 # DSL for generating HTML
-require 'include/HTMLGenerator.php';
+require 'HTMLGenerator.php';
 
 # Form validation helper
-require 'include/Validate.php';
+require 'Validate.php';
 
 # Components =========================================================================
 
@@ -41,8 +44,8 @@ require 'include/Validate.php';
 # abstract classes used by components, while Component.php contains the
 # components themselves.
 
-require 'include/ComponentAbstract.php';
-require 'include/Component.php';
+require 'ComponentAbstract.php';
+require 'Component.php';
 
 # Renderables ========================================================================
 
@@ -52,19 +55,19 @@ require 'include/Component.php';
 # More specifically, FormPart.php contains Renderables primarily used within forms,
 # while TablePart.php contains ones primarily used within tables.
 
-require 'include/FormPart.php';
-require 'include/TablePart.php';
+require 'FormPart.php';
+require 'TablePart.php';
 
 # Outputs ===========================================================================
 
-# This file includes various classes that act as Outputs - places where data from form
+# This file  various classes that act as Outputs - places where data from form
 # submissions can be sent, stored, or otherwise handled.
 
-require 'include/Output.php';
+require 'Output.php';
 
 # Views =============================================================================
 
-# These files include various classes related to views -- that is, ways in which data
+# These files various classes related to views -- that is, ways in which data
 # from form submissions can be displayed.
 
 # More specifically:
@@ -75,16 +78,16 @@ require 'include/Output.php';
 # DetailsView - The view shown after clicking the "Details" button in a table
 # EmailView - Used by the "email-to" output
 
-require 'include/View.php';
-require 'include/GeneralTable.php';
-require 'include/TableView.php';
-require 'include/GraphView.php';
-require 'include/DetailsView.php';
-require 'include/EmailView.php';
+require 'View.php';
+require 'GeneralTable.php';
+require 'TableView.php';
+require 'GraphView.php';
+require 'DetailsView.php';
+require 'EmailView.php';
 
 # FormList =============================================================================
 
-# This file includes classes used to generate the main list of forms shown upon entering
+# This file  classes used to generate the main list of forms shown upon entering
 # the application.
 
-require 'include/FormList.php';
+require 'FormList.php';

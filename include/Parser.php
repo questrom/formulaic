@@ -143,7 +143,7 @@ class Parser {
 	# For example, if the input is "test", this function returns
 	# "forms/test.jade".
 	function getForm($name) {
-		if (is_string($name) && !preg_match('/[^A-za-z0-9_-]/', $name) && strlen($name) > 0) {
+		if (is_string($name) && !preg_match('/[^A-za-z0-9_-]/', $name) && mb_strlen($name) > 0) {
 			return 'forms/' . $name . '.jade';
 		} else {
 			throw new Exception('Invalid form name!');
@@ -164,7 +164,6 @@ class Parser {
 		$files = array_map(function ($item) {
 			return preg_replace('/\.jade$/', '', $item);
 		}, $files);
-
 
 		$files = array_map(function ($item) {
 

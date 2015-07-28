@@ -75,7 +75,7 @@ abstract class Validate {
 
 			if($value === true) {
 				return Result::ok(true);
-			} else if($value === false) {
+			} elseif ($value === false) {
 				return Result::ok(false);
 			} else {
 				return Result::error('Invalid data!');
@@ -111,7 +111,7 @@ abstract class Validate {
 		return $this->ifOk(function($x) use($options) {
 			if($x === '' || $x === null) {
 				return Result::none(null);
-			} else if(in_array($x, $options, true)) {
+			} elseif (in_array($x, $options, true)) {
 				return Result::ok($x);
 			} else {
 				return Result::error('Invalid data!');
@@ -125,7 +125,7 @@ abstract class Validate {
 		return $this->ifOk(function($x) use($options) {
 			if($x === null) {
 				return Result::ok([]);
-			} else if(is_array($x) && count(array_diff($x, $options)) === 0 ) {
+			} elseif (is_array($x) && count(array_diff($x, $options)) === 0 ) {
 				return Result::ok($x);
 			} else {
 				return Result::error('Invalid data!');
@@ -155,7 +155,7 @@ abstract class Validate {
 	# Static helper method to convert a time into second-past-midnight form.
 	static function timeToSeconds($x) {
 		$date = DateTimeImmutable::createFromFormat('g:i a', $x);
-		return 	($date->format('G') * 3600) + ($date->format('i') * 60);
+		return ($date->format('G') * 3600) + ($date->format('i') * 60);
 	}
 
 	# Convert a value into a time, if possible
@@ -199,7 +199,7 @@ abstract class Validate {
 	function filterPhone() {
 		return $this->ifOk(function($x) {
 			$phn = preg_replace('/[^x+0-9]/', '', $x);
-			if(strlen($phn) >= 10 || $x === '') {
+			if(mb_strlen($phn) >= 10 || $x === '') {
 				return Result::ok($phn);
 			} else {
 				return Result::error('Invalid phone number.');
@@ -287,10 +287,10 @@ abstract class Validate {
 	function minMaxDate($minDate, $maxDate) {
 		return $this->ifOk(function($x) use ($minDate, $maxDate) {
 
-			$x = $x->setTime(0,0,0);
+			$x = $x->setTime(0, 0, 0);
 			if($minDate !== null && $minDate > $x) {
 				return Result::error('Please enter a date starting at ' . $minDate->format('Y-m-d'));
-			} else if($maxDate !== null && $maxDate < $x) {
+			} elseif ($maxDate !== null && $maxDate < $x) {
 				return Result::error('Please enter a date ending at ' . $maxDate->format('Y-m-d'));
 			} else {
 				return Result::ok($x);
@@ -301,9 +301,9 @@ abstract class Validate {
 	# Check that the length of a string is within a specific range
 	function minMaxLength($minLength, $maxLength) {
 		return $this->ifOk(function($x) use ($minLength, $maxLength) {
-			if(strlen($x) > $maxLength) {
+			if(mb_strlen($x) > $maxLength) {
 				return Result::error('The input is too long. Maximum is ' . $maxLength . ' characters.');
-			} else if(strlen($x) < $minLength) {
+			} elseif(mb_strlen($x) < $minLength) {
 				return Result::error('The input is too short. Minimum is ' . $minLength . ' characters.');
 			} else {
 				return Result::ok($x);
@@ -342,7 +342,7 @@ abstract class Validate {
 		return $this->ifOk(function($x) use($min, $max) {
 			if(count($x) < $min) {
 				return Result::error('Please choose at least ' . $min . ' options.');
-			} else if(count($x) > $max) {
+			} elseif (count($x) > $max) {
 				return Result::error('At most ' . $max . ' choices are allowed.');
 			}
 			return Result::ok($x);
@@ -464,12 +464,12 @@ abstract class Validate {
 	function checkCaptcha()  {
 		return $this->ifOk(function($v) {
 			$recaptcha = new \ReCaptcha\ReCaptcha(Config::get()['recaptcha']['secret-key']);
-				$resp = $recaptcha->verify($v, $_SERVER['REMOTE_ADDR']);
-				if ($resp->isSuccess()) {
-				    return Result::ok(null);
-				} else {
-				    return Result::error('Please prove that you are human.');
-				}
+			$resp = $recaptcha->verify($v, $_SERVER['REMOTE_ADDR']);
+			if ($resp->isSuccess()) {
+			    return Result::ok(null);
+			} else {
+			    return Result::error('Please prove that you are human.');
+			}
 		});
 	}
 
@@ -536,7 +536,6 @@ abstract class Validate {
 
 			$result = Result::ok([]);
 
-
 			# Get the indices of the list to test
 			$indices = array_unique( array_merge( array_keys($list[0]), array_keys($list[1]) ) );
 			sort($indices);
@@ -552,20 +551,16 @@ abstract class Validate {
 				return Result::error([ $name => 'Please provide at most ' . $maxItems . ' items' ]);
 			}
 
-
 			# For each item in the list...
 			foreach($indices as $index) {
 
 				# Validate all of the fields within the list
-				$validationResult =
-					Result::ok(
-						new ClientData(
-							isget($list[0][$index], []),
-							isget($list[1][$index], [])
-						)
-					)->groupValidate($items);
-
-
+				$validationResult = Result::ok(
+					new ClientData(
+						isget($list[0][$index], []),
+						isget($list[1][$index], [])
+					)
+				)->groupValidate($items);
 
 				# Combine the result of this validation with the data validated
 				# in previous iterations of the loop.

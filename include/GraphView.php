@@ -29,12 +29,13 @@ class GraphViewRenderable implements Renderable {
 							->end
 							->c($this->f->title)
 						->end
-
-						->c( $this->f->totalCount === 0 ?
-							h()->h3->class('ui center aligned header')->c('No results found')->end :
-						array_map(function($x) {
-							return $x['graph']->makeGraphViewPart($x['results']);
-						}, $this->i) )
+						->c(
+							$this->f->totalCount === 0 ?
+								h()->h3->class('ui center aligned header')->c('No results found')->end :
+								array_map(function($x) {
+									return $x['graph']->makeGraphViewPart($x['results']);
+								}, $this->i)
+						)
 				->end
 			->end
 		->end;
@@ -146,10 +147,10 @@ class PieSlice implements Renderable {
 		if($key === true) {
 			$key = 'Yes';
 			$color='#21ba45';
-		} else if($key === false) {
+		} elseif ($key === false) {
 			$key = 'No';
 			$color='#db2828';
-		} else if($key === null) {
+		} elseif ($key === null) {
 			$key = '(None)';
 			$color='#777';
 		} else {
@@ -158,13 +159,12 @@ class PieSlice implements Renderable {
 				'prng' => function($min, $max) use ($key) {
 					# Get the color by hashing the text
 					# So it stays the same when the page is refreshed
-					return (hexdec(substr(md5($key), 0, 2)) / pow(16, 2))  * ($max - $min) + $min;
+					return (hexdec(mb_substr(md5($key), 0, 2)) / pow(16, 2))  * ($max - $min) + $min;
 				}
 			]);
 		}
 
 		$pct = $this->endAngle;
-
 
 		$largeSweep = ($percent >= 0.5) ? 1 : 0;
 
@@ -175,7 +175,6 @@ class PieSlice implements Renderable {
 
 		# Generate the arc
 		$path = "M 0 0 L $startX $startY A 600 600 0 $largeSweep 1 $endX $endY L 0 0";
-
 
 		return [
 			$this->prev,
@@ -240,7 +239,6 @@ class BarGraphRenderable implements Renderable {
 			$max = 0;
 		}
 
-
 		// see http://bost.ocks.org/mike/bar/2/
 		return h()
 			->div->class('ui fluid card')
@@ -256,20 +254,26 @@ class BarGraphRenderable implements Renderable {
 
 							$key = $result['_id'];
 
-
 							$color = RandomColor::one([
 								'luminosity' => 'bright',
 								'prng' => function($min, $max) use ($key) {
 
 									# Get the color by hashing the text
 									# So it stays the same when the page is refreshed
-									return (hexdec(substr(md5($key), 0, 2)) / pow(16, 2))  * ($max - $min) + $min;
+									return (hexdec(mb_substr(md5($key), 0, 2)) / pow(16, 2))  * ($max - $min) + $min;
 								}
 							]);
 
-							if($key === true) { $key = 'Yes'; $color='#21ba45'; }
-							if($key === false) { $key = 'No'; $color='#db2828'; }
-							if($key === null) { $key = '(None)'; $color='#777'; }
+							if($key === true) {
+								$key = 'Yes';
+								$color='#21ba45';
+							} elseif($key === false) {
+								$key = 'No';
+								$color='#db2828';
+							} elseif($key === null) {
+								$key = '(None)';
+								$color='#777';
+							}
 
 							return h()
 							->g->transform('translate(0, ' . ($result['index'] * 30) . ')')
@@ -283,7 +287,10 @@ class BarGraphRenderable implements Renderable {
 									->x(150 + $barWidth + ($labelAtRight ? 2 : -5))
 									->y(15)
 									->fill($labelAtRight ? 'black' : 'white')
-									->style('dominant-baseline:middle;text-anchor:' . ($labelAtRight ? 'start;' : 'end;'))
+									->style(
+										'dominant-baseline:middle;' .
+										'text-anchor:' . ($labelAtRight ? 'start;' : 'end;')
+									)
 									->c($result['count'])
 								->end
 							->end;
