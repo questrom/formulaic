@@ -1,5 +1,6 @@
 <?php
 
+use voku\helper\UTF8;
 
 # Display information about a particular view
 class ViewInfoView implements Renderable {
@@ -36,7 +37,7 @@ class FormItemView implements Renderable {
 					->end
 					->div->class('ui horizontal right floated label')
 						->c($this->data->count)
-						->c(json_decode('"\u2004"') . 'submissions')
+						->c(UTF8::chr(0x2004) . 'submissions')
 					->end
 				->end
 					# Only show the list if the form actually HAS views
@@ -83,7 +84,7 @@ class FormListView implements Renderable {
 						->h1->class('ui center aligned header')
 							->c('All Forms')
 						->end
-						->div->class('ui large relaxed divided list')
+						->div->class('ui large relaxed divided list segment')->style('padding: 0.5rem 1rem')
 							->c(
 								array_map(function($formInfo) {
 									return new FormItemView($formInfo);
