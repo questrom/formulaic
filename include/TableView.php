@@ -79,3 +79,20 @@ class TableView implements ConfigurableView {
 		$this->mongo = $page->getMongo();
 	}
 }
+
+class CSVView implements View {
+	function __construct($tableView) {
+		$tableView->perPage = null;
+		$this->tableView = $tableView;
+	}
+	function query($page) {
+		return $this->tableView->query($page);
+	}
+	function setPage($page) {
+		return $this->tableView->setPage($page);
+	}
+	function makeView($data) {
+		$this->tableView->makeView($data);
+		return new CSVPage($this->tableView);
+	}
+}

@@ -430,7 +430,7 @@ class FileUpload extends NamedLabeledComponent {
 		if ($v === null) {
 			return null;
 		}
-		if (is_string($v) && !isset($v['url'])) {
+		if (is_string($v) || !isset($v['url'])) {
 			# In case the file upload is from an older version of the app,
 			# which stored things in a rather unsual manner
 			return null;
@@ -843,6 +843,9 @@ class IPField implements TableViewPartFactory, Storeable {
 	function getSubmissionPart($val) {
 		return Result::ok(['_ip' => $_SERVER['REMOTE_ADDR']]);
 	}
+	function makeCSVPart($v) {
+		return is_string($v) ? $v : null;
+	}
 }
 
 # Keeps track of the timestamp associated with a form submission.
@@ -855,13 +858,17 @@ class TimestampField implements TableViewPartFactory, Storeable {
 		$this->label = 'Timestamp';
 	}
 	function makeTableViewPart($v) {
-		if ($v === null) {
+
+		if ($v === null || is_string($v)) {
 			return null;
 		}
 		return new OrdinaryTableCell($v->format('n/j/Y g:i A'));
 	}
 	function getSubmissionPart($val) {
 		return Result::ok(['_timestamp' => new DateTimeImmutable()]);
+	}
+	function makeCSVPart($v) {
+		return is_string($v) ? $v : null;
 	}
 }
 

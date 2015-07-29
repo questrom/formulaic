@@ -16,6 +16,9 @@ class TablePart implements TableViewPartFactory, DetailsViewPartFactory, EmailVi
 	function makeEmailViewPart($value) {
 		return new EmailValueRow($value, $this->component);
 	}
+	function makeCSVPart($v) {
+		$str = isset($v) && is_string($v) ? $v : null;
+	}
 }
 
 # A table along with IP/timetsamp info (for DetailsView and EmailView).

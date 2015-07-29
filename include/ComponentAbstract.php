@@ -42,6 +42,7 @@ interface FormPartFactory {
 # - $value is the data to be displayed in the table cell.
 interface TableViewPartFactory {
 	public function makeTableViewPart($value);
+	public function makeCSVPart($value);
 }
 
 # Implemented by classes that create Renderables to be
@@ -75,6 +76,9 @@ trait Tableize {
 	}
 	function makeEmailViewPart($v) {
 		return $this->makeTableViewPart($v);
+	}
+	function makeCSVPart($v) {
+		return is_string($v) ? $v : null;
 	}
 }
 

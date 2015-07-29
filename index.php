@@ -123,6 +123,29 @@ $klein->respond('POST', '/submit', function () use($parser) {
 
 });
 
+# Generate a CSV file for a TableView
+# See http://stackoverflow.com/questions/217424/create-a-csv-file-for-a-user-in-php
+$klein->respond('GET', '/csv', function($req) use($parser) {
+	$page = $parser->parseJade($_GET['form']);
+	$view = new CSVView($page->getView($_GET['view']));
+
+	// TODO: add these back in
+	// header("Content-type: text/csv; charset=utf-8");
+	// header("Content-Disposition: attachment; filename=" . $page->id . ".csv");
+
+	header("Content-type: text/plain; charset=utf-8");
+
+	# Get the CSV via output buffering (somewhat hacky, but the only way)
+	ob_start();
+	$view
+		->makeView($view->query(1))
+		->render()
+		->save('php://output');
+	$result = ob_get_clean();
+
+	return $result;
+});
+
 # Get the details of a particular table entry.
 $klein->respond('GET', '/details', function () use($parser) {
 	$page = $parser->parseJade($_GET['form']);

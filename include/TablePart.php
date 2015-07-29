@@ -409,6 +409,14 @@ class TablePage implements Renderable {
 			->body
 				->c(new TopHeader())
 				->div->class('ui fluid container table-page')
+						->a->class('right floated ui positive labeled icon button')
+							->href(
+								'csv?form=' . $this->f->formID .
+								'&view=' . $this->f->name
+							)
+							->i->class('download icon')->end
+							->c('Download CSV')
+						->end
 						->h1
 							->c($this->f->title)
 						->end
@@ -489,5 +497,44 @@ class TablePage implements Renderable {
 				->end
 			->end
 		->end;
+	}
+}
+
+
+class CSVPage implements Renderable {
+	function __construct($f) {
+		$this->f = $f;
+		$this->byName = $this->f->pageData->form->getAllFields();
+	}
+	function render() {
+		# Should generate via PHPExcel
+		$excel = new PHPExcel();
+		$sheet = $excel->getActiveSheet();
+
+		# Write out headers
+		foreach($this->f->cols as $index => $column) {
+			$sheet->setCellValueByColumnAndRow($index, 1, $column->header);
+		}
+
+		# Write out actual data
+		foreach($this->f->data as $rowIndex => $row) {
+			foreach($this->f->cols as $colIndex => $col) {
+
+				$str = $this->byName[$col->name]->makeCSVPart(  isget($row[$col->name]) );
+
+				if(is_null($str)) {
+					$str = '';
+				} else if(!is_string($str)) {
+					throw new Error('Invalid CSV part!');
+				}
+
+				$sheet->setCellValueByColumnAndRow($colIndex, $rowIndex + 2,  $str);
+			}
+		}
+
+		# Create and return a writer object
+		$objWriter = PHPExcel_IOFactory::createWriter($excel, 'CSV');
+		return $objWriter;
+
 	}
 }
