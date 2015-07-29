@@ -31,14 +31,14 @@
         "ext-mbstring": "*",
         "ext-mongo": ">=1.6.8",
         "ext-xmlreader": "*",
-        "ext-SPL": "*",
+        "ext-SPL": "~0.2",
         "ext-mbstring": "*",
-        "ext-json": "*",
-        "ext-fileinfo": "^1.0.5",
-        "phpoffice/phpexcel": "^1.8",
-        "jamesmoss/toml": "^1.1",
+        "ext-json": "~1.2.1",
+        "ext-fileinfo": "~1.0.5",
+        "phpoffice/phpexcel": "~1.8",
+        "jamesmoss/toml": "~1.1",
         "ext-iconv": "*",
-        "ext-intl": "*"
+        "ext-intl": "~1.1.0"
     },
     "config": {
         "__comment__" : "Use the below line so that component-installer won't create an extra directory...",
