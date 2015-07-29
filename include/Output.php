@@ -38,7 +38,9 @@ class MongoOutput implements Configurable, Storage {
 	# Get the associated MongoDB client
 	private function getClient() {
 		if($this->client === null) {
-			$this->client = (new MongoClient($this->server))
+			$this->client = (new MongoClient($this->server, [
+					'connect' => false
+				]))
 				->selectDB($this->database)
 				->selectCollection($this->collection);
 		}

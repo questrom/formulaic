@@ -24,8 +24,6 @@ require 'Parser.php';
 # Conditions within "show-if" elements.
 require 'Condition.php';
 
-# DSL for generating HTML
-require 'HTMLGenerator.php';
 
 # Form validation helper
 require 'Validate.php';
@@ -46,6 +44,10 @@ require 'Validate.php';
 
 require 'ComponentAbstract.php';
 require 'Component.php';
+
+# DSL for generating HTML ============================================================
+# Similar to "hyperscript" in JS
+require 'HTMLGenerator.php';
 
 # Renderables ========================================================================
 

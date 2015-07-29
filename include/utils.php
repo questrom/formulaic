@@ -1,6 +1,6 @@
 <?php
 
-use Yosymfony\Toml\Toml;
+// use Yosymfony\Toml\Toml;
 use Gregwar\Cache\Cache;
 
 # Shortcut for "isset()" checks
@@ -44,7 +44,7 @@ class Config {
 	private static $data = null;
 	static function get() {
 		if(self::$data === null) {
-			self::$data = Toml::Parse('config/config.toml');
+			self::$data = Toml\Parser::fromFile('config/config.toml');
 		}
 		return self::$data;
 	}
@@ -105,7 +105,6 @@ class Hashes {
 			self::getData();
 		}
 		if(isset(self::$data[$key])) {
-			// Allow disabling this...
 			return self::$data[$key];
 		} else {
 			$hash = sha1_file($key);
@@ -114,28 +113,30 @@ class Hashes {
 			return $hash;
 		}
 	}
+
+	# This function writes the URLs, with hashes included, into a page before it is displayed to the user.
+	# We have to do this replacement after the page has been generated so that we can cache
+	# form UIs properly (when cache-forms is enabled).
+	static function fixAssets($html) {
+		return preg_replace_callback('/____\{\{asset (.*?)\}\}____/', function($matches) {
+			$config = Config::get();
+			$assetMap = $config['debug'] ? [] : [
+				'lib/semantic.css' => 'lib/semantic.min.css',
+				'lib/semantic.js' => 'lib/semantic.min.js',
+				'lib/jquery.js' => 'lib/jquery.min.js',
+				'lib/jquery.inputmask.bundle.js' => 'lib/jquery.inputmask.bundle.min.js'
+			];
+			$fileName = isget($assetMap[$matches[1]], $matches[1]);
+
+			return preg_replace_callback('/^(.*)\.(.*)$/', function($parts) use($matches, $config) {
+				return $config['asset-prefix'] . $parts[1] . '.hash-' . self::get($matches[1]) . '.' . $parts[2];
+			}, $fileName);
+
+		}, $html);
+	}
+
 }
 
-# This function writes the URLs, with hashes included, into a page before it is displayed to the user.
-# We have to do this replacement after the page has been generated so that we can cache
-# form UIs properly (when cache-forms is enabled).
-function fixAssets($html) {
-	return preg_replace_callback('/____\{\{asset (.*?)\}\}____/', function($matches) {
-		$config = Config::get();
-		$assetMap = $config['debug'] ? [] : [
-			'lib/semantic.css' => 'lib/semantic.min.css',
-			'lib/semantic.js' => 'lib/semantic.min.js',
-			'lib/jquery.js' => 'lib/jquery.min.js',
-			'lib/jquery.inputmask.bundle.js' => 'lib/jquery.inputmask.bundle.min.js'
-		];
-		$fileName = isget($assetMap[$matches[1]], $matches[1]);
-
-		return preg_replace_callback('/^(.*)\.(.*)$/', function($parts) use($matches, $config) {
-			return $config['asset-prefix'] . $parts[1] . '.hash-' . Hashes::get($matches[1]) . '.' . $parts[2];
-		}, $fileName);
-
-	}, $html);
-}
 
 # This keeps track of the number of times a form has been submitted,
 # so that it can be displayed on the main list of forms.

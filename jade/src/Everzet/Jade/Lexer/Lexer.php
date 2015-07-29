@@ -154,8 +154,8 @@ class Lexer implements LexerInterface
           $token = $this->scanId();
           if(null !== $token && $token) { return $token; }
 
-          $token = $this->scanClass();
-          if(null !== $token && $token) { return $token; }
+          // $token = $this->scanClass();
+          // if(null !== $token && $token) { return $token; }
 
           $token = $this->scanAttributes();
           if(null !== $token && $token) { return $token; }

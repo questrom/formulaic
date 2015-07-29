@@ -24,20 +24,20 @@ cache-xml = false
 cache-hashes = false
 
 # Set the time zone used throughout the app.
-time-zone = 'America/New_York'
+time-zone = "America/New_York"
 
 # This string will be prepended to the URLs used for assets
 # (CSS, JS, et cetera).
-asset-prefix='/'
+asset-prefix="/"
 
 # The path (e.g. subdirectory) at which the app is hosted
-app-path=''
+app-path=""
 
 [branding]
 # The image to use for the top menu of the app.
-image='/img/logo.jpg'
+image="/img/logo.jpg"
 # The color to use for this menu, in "R, G, B" form.
-color='0, 130, 130'
+color="0, 130, 130"
 
 
 # Key/Secret for Amazon S3. The buckets and permissions

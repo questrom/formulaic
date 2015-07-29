@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "8d36af8a2e870378420dd959ee97d69e",
+    "hash": "a84b11e6e7c48ecb0b5142a941653767",
     "packages": [
         {
             "name": "gabrielelana/byte-units",
@@ -144,6 +144,49 @@
                 "system"
             ],
             "time": "2014-09-24 11:23:30"
+        },
+        {
+            "name": "jamesmoss/toml",
+            "version": "1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jamesmoss/toml.git",
+                "reference": "88885ac70cf1116972d262ee80ec2965d2362e26"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jamesmoss/toml/zipball/88885ac70cf1116972d262ee80ec2965d2362e26",
+                "reference": "88885ac70cf1116972d262ee80ec2965d2362e26",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Toml": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "James Moss",
+                    "email": "email@jamesmoss.co.uk",
+                    "homepage": "http://jamesmoss.co.uk"
+                }
+            ],
+            "description": "A parser for TOML implemented in PHP.",
+            "homepage": "http://github.com/jamesmoss/toml",
+            "keywords": [
+                "github",
+                "mojombo",
+                "toml"
+            ],
+            "time": "2014-02-25 09:21:11"
         },
         {
             "name": "klein/klein",

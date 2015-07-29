@@ -22,7 +22,7 @@
 # The below class, HTMLGeneratorAbstract, provides methods shared
 # by all four HTMLGenerator objects. The h() function just returns
 # a new HTMLParentlessContext, as a shortcut.
-abstract class HTMLGeneratorAbstract {
+abstract class HTMLGeneratorAbstract implements Renderable {
 
 	# The "c" function is used to add text or other HTML elements
 	# into the current element.
@@ -31,9 +31,9 @@ abstract class HTMLGeneratorAbstract {
 	# __get() is used as to implement things like ->div and ->end
 	abstract function __get($name);
 
-	# toStringArray converts an HTMLGenerator into an array of strings
+	# render converts an HTMLGenerator into an array of strings
 	# (or an array of arrays, etc.)
-	abstract function toStringArray();
+	abstract function render();
 
 	# This function actually converts HTMLGenerator objects into strings.
 	# There were three ways of implementing this:
@@ -60,6 +60,10 @@ abstract class HTMLGeneratorAbstract {
 		# A "call stack" type structure
 		$stack = [];
 
+		# The top of the stack. Keep track of this manually for greater speed.
+		# If $stack is like a call stack, this is like the esp register.
+		$top = 1;
+
 		# The thing currently being processed
 		$element = $this;
 
@@ -71,25 +75,29 @@ abstract class HTMLGeneratorAbstract {
 		# Algorithm runs in O(infinity) time. </sarcasm>
 		while(true) {
 
-			if($element instanceof Renderable) {
+			if (is_array($element) && count($element) > 0) {
+				# If it is an array with at least one element, then
+				# break it apart: put each element onto the stack,
+				# in reverse order, along with the escapeCount.
+				$element = array_values($element);
+				for($i = count($element) - 1; $i >= 1; $i--) {
+					$stack[$top] = $element[$i];
+					$top++;
+					$stack[$top] = $escapeCount;
+					$top++;
+				}
+				# Now process the first array element.
+				$element = $element[0];
+			} elseif ($element instanceof Renderable) {
 				# If it is a Renderable, render it and handle it in
-				# the next iteration.
+				# the next iteration. HTMLGeneratorAbstract implements Renderable
+				# as well.
 				$element = $element->render();
-			} else if($element instanceof HTMLGeneratorAbstract) {
-				# If it is an HTMLGenerator, convert it into an array
-				# and handle it in the next iteration.
-				$element = $element->toStringArray();
-			} else if ($element instanceof DoubleEncode) {
+			} elseif ($element instanceof DoubleEncode) {
 				# If it is a DoubleEncode, turn it into an array, add
 				# to escapeCount, and iterate again.
 				$element = [$element->value];
 				$escapeCount++;
-			} else if (is_array($element) && count($element) > 0) {
-				# If it is an array with at least one element, leave
-				# one element behind on the stack. Also store escapeCount
-				# on the stack.
-				$stack[] = array_pop($element);
-				$stack[] = $escapeCount;
 			} else {
 				# This would be the "base case" if the algorithm were recursive. Here
 				# we handle things that can't be further subdivided.
@@ -97,13 +105,12 @@ abstract class HTMLGeneratorAbstract {
 				# Empty arrays/strings and null values produce no output, so just skip them.
 				if(!is_array($element) && $element !== null && $element !== '') {
 
-
 					if($element instanceof SafeString) {
 						# If a string is wrapped in a SafeString object, it needs no escaping.
 						$element = $element->value;
 					} else if(is_scalar($element)) {
-						# Strings and other primitive types must be escaped.
-						$element = htmlspecialchars($element, ENT_QUOTES | ENT_HTML5);
+						# Strings and other primitive types must be escaped an extra time.
+						$escapeCount++;
 					} else {
 						throw new Exception("Invalid HTML component!");
 					}
@@ -117,23 +124,20 @@ abstract class HTMLGeneratorAbstract {
 					$out .= $element;
 				}
 
-
-				if(count($stack) > 0) {
+				if($top > 1) {
 					# If the stack still has items left, get the
 					# escapeCount and element from it.
-					$escapeCount = array_pop($stack);
-					$element = array_pop($stack);
+					$top--;
+					$escapeCount = $stack[$top];
+					$top--;
+					$element = $stack[$top];
 				} else {
 					# Otherwise, we're done!
-					break;
+					return $out;
 				}
 			}
 
 		}
-
-		// echo '<br><br><br>'.(microtime(true)-$t)*1000;
-
-		return $out;
 	}
 }
 
@@ -181,7 +185,7 @@ class HTMLContentGenerator extends HTMLGeneratorAbstract {
 	}
 
 	# Make an array
-	function toStringArray() {
+	function render() {
 		return $this->children;
 	}
 }
@@ -226,7 +230,7 @@ class HTMLTagGenerator extends HTMLGeneratorAbstract {
 	}
 
 	# Turn it into an array of strings (or an array of arrays of strings, etc...)
-	function toStringArray() {
+	function render() {
 		$arr = [];
 		$arr[] = new SafeString('<');
 		$arr[] = $this->tag;
@@ -240,9 +244,9 @@ class HTMLTagGenerator extends HTMLGeneratorAbstract {
 
 		$arr[] = new SafeString('>');
 
-		# Might as well take care of the toStringArray() call here instead
+		# Might as well take care of the render() call here instead
 		# of in generateString().
-		$arr[] = $this->contents->toStringArray();
+		$arr[] = $this->contents->render();
 
 		$arr[] = new SafeString('</');
 		$arr[] = $this->tag;
@@ -280,8 +284,8 @@ class HTMLParentContext extends HTMLGeneratorAbstract {
 		}
 	}
 
-	function toStringArray() {
-		return $this->generator->toStringArray();
+	function render() {
+		return $this->generator->render();
 	}
 }
 
@@ -299,8 +303,8 @@ class HTMLParentlessContext extends HTMLGeneratorAbstract{
 		return new HTMLParentlessContext($this->generator->c($arr));
 	}
 
-	function toStringArray() {
-		return $this->generator->toStringArray();
+	function render() {
+		return $this->generator->render();
 	}
 }
 

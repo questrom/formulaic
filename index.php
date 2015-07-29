@@ -28,7 +28,7 @@ $klein->onHttpError(function ($code, $router) {
 # The main list of forms
 $klein->respond('GET', '/', function () use($parser) {
 	$formlist = new FormList($parser->getFormInfo());
-	$ret = '<!DOCTYPE html>' . fixAssets($formlist->makeFormList()->render()->generateString());
+	$ret = '<!DOCTYPE html>' . Hashes::fixAssets($formlist->makeFormList()->render()->generateString());
 	return $ret;
 });
 
@@ -38,7 +38,7 @@ $klein->respond('GET', '/view', function ($req) use($parser) {
 	$page = $parser->parseJade($_GET['form']);
 	$view = $page->getView($_GET['view']);
 
-	return fixAssets(
+	return Hashes::fixAssets(
 		$view
 		->makeView(
 			$view->query( $req->paramsGet()->get('page', 1) )
@@ -73,7 +73,7 @@ $klein->respond('GET', '/forms/[:formID]', function($request) use($parser) {
 	# so that it won't be cached.
 	$html = str_replace('__{{CSRF__TOKEN}}__', htmlspecialchars($token), $html);
 
-	return fixAssets($html);
+	return Hashes::fixAssets($html);
 });
 
 $klein->respond('POST', '/submit', function () use($parser) {
@@ -128,7 +128,7 @@ $klein->respond('GET', '/details', function () use($parser) {
 	$page = $parser->parseJade($_GET['form']);
 	$view = new DetailsView();
 	$view->setPage($page);
-	return '<!DOCTYPE html>' . fixAssets($view->makeView($view->query($_GET))->render()->generateString());
+	return '<!DOCTYPE html>' . Hashes::fixAssets($view->makeView($view->query($_GET))->render()->generateString());
 });
 
 # See https://github.com/chriso/klein.php/wiki/Sub-Directory-Installation
