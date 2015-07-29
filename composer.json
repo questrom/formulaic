@@ -6,17 +6,6 @@
             "email": "jason@jasonhansel.com"
         }
     ],
-    "repositories": [ {
-        "type": "package",
-        "package": {
-            "name": "hranicka/tracy",
-            "version": "1.0.0",
-            "dist": {
-                "url": "https://github.com/hranicka/tracy/archive/8fbd9eea088bdc64e24d88f1bba41d9e718fcbc8.zip",
-                "type": "zip"
-            }
-        }
-    } ],
     "require": {
         "tpyo/amazon-s3-php-class": "^0.5.1",
         "nette/mail": "^2.3",

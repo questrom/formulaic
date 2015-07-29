@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "85ba4939e9c7f35829b360b2e7fc48e9",
+    "hash": "28ce6a22e525746ff41e1c41331fab35",
     "packages": [
         {
             "name": "gabrielelana/byte-units",
