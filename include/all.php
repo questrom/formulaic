@@ -4,6 +4,7 @@
 
 # Charset
 mb_internal_encoding('UTF-8');
+ini_set('default_encoding', 'UTF-8');
 
 # Composer dependencies
 require 'vendor/autoload.php';

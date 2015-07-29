@@ -196,13 +196,16 @@ $(function() {
 
 			contentType: false,
 			cache: false,
-			processData: false
+			processData: false,
+			converters: {
+				// We'll parse the JSON ourselves
+				'text json': true
+			}
 		}).done(function(x) {
 			try {
 				x = JSON.parse(x);
 			} catch(e) {
-				$('.ui.form').append($('<p>').html(x));
-				// console.log(x);
+				// $('.ui.form').append($('<p>').html(x));
 				doFail();
 				return;
 			}

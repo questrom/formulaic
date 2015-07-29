@@ -21,7 +21,7 @@
         "tpyo/amazon-s3-php-class": "^0.5.1",
         "nette/mail": "^2.3",
         "Gregwar/Cache": "^1.0",
-        "yosymfony/toml": "^0.3.2",
+        "voku/portable-utf8": "^1.6.3",
         "riimu/kit-csrf": "^2.3",
         "mistic100/randomcolor": "^1.0",
         "gabrielelana/byte-units": "^0.3.0",

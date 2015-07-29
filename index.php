@@ -76,7 +76,7 @@ $klein->respond('GET', '/forms/[:formID]', function($request) use($parser) {
 	return Hashes::fixAssets($html);
 });
 
-$klein->respond('POST', '/submit', function () use($parser) {
+$klein->respond('POST', '/submit', function ($req, $res) use($parser) {
 
 	# Check for XSRF
 	$csrf = new \Riimu\Kit\CSRF\CSRFHandler();
@@ -88,6 +88,8 @@ $klein->respond('POST', '/submit', function () use($parser) {
 	# not the URL!
 	$page = $parser->parseJade($_POST['__form_name']);
 	$config = Config::get();
+
+	$res->header('Content-Type', 'application/json; charset=utf-8');
 
 	# Do the form submission and create data that is
 	# compatible with the frontend.
@@ -154,7 +156,7 @@ $klein->respond('GET', '/details', function () use($parser) {
 $config = Config::get();
 $request = \Klein\Request::createFromGlobals();
 $uri = $request->server()->get('REQUEST_URI');
-$request->server()->set('REQUEST_URI', substr($uri, strlen($config['app-path'])));
+$request->server()->set('REQUEST_URI', mb_substr($uri, mb_strlen($config['app-path'])));
 
 # Route!
 $klein->dispatch($request);

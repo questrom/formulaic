@@ -1,5 +1,7 @@
 <?php
 
+use voku\helper\UTF8;
+
 # These classes are mostly components: that is, Configurables that can create Renderables.
 # Each one corresponds to an element in the configruation file.
 
@@ -320,8 +322,10 @@ class Checkboxes extends NamedLabeledComponent implements Enumerative {
 	}
 }
 
-# The "captcha" element
-class Captcha extends NamedLabeledComponent {
+# The "captcha" element.
+class Captcha implements Configurable, Storeable, FormPartFactory {
+	use Groupize, Fieldize;
+
 	function __construct($args) {
 		# Google requires us to use this name for all CAPTCHA elements.
 		# Hence, the CAPTCHA element lacks a "name" attribute.
@@ -331,13 +335,6 @@ class Captcha extends NamedLabeledComponent {
 	function makeFormPart() {
 		return new CaptchaFormPart($this);
 	}
-	function makeTableViewPart($v) {
-		return new OrdinaryTableCell($v);
-	}
-	function makeCSVPart($v) {
-		return $v;
-	}
-
 	function getSubmissionPart($against) {
 		return $against
 			->post($this->name)
@@ -406,7 +403,7 @@ class FileUpload extends NamedLabeledComponent {
 	function makeFormPart() {
 		$innerText = 'Allowed file types: ' .
 			implode(', ', array_keys($this->allowedExtensions)) .
-			' ' . json_decode('"\u00B7"') . ' Max file size: ' .
+			' ' . UTF8::chr(0x00B7) . ' Max file size: ' .
 			ByteUnits\Metric::bytes($this->maxSize)->format(0);
 		return new InputFormPart($this, 'file', null, null, $innerText);
 	}
@@ -618,7 +615,7 @@ class PhoneNumber extends NamedLabeledComponent {
 		# before displaying it in a table
 		if (preg_match('/^[0-9]{10}$/', $v)) {
 			$showValue = '(' . mb_substr($v, 0, 3) . ')' .
-				json_decode('"\u2006"') . mb_substr($v, 3, 3) . json_decode('"\u2006"') .
+				UTF8::chr(0x2006) . mb_substr($v, 3, 3) . UTF8::chr(0x2006) .
 				mb_substr($v, 6, 4);
 		} else {
 			$showValue = $v;

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "a84b11e6e7c48ecb0b5142a941653767",
+    "hash": "0ef35477b190ae512947961c0ea29c7b",
     "packages": [
         {
             "name": "gabrielelana/byte-units",
@@ -646,52 +646,74 @@
             "time": "2015-04-27 06:12:39"
         },
         {
-            "name": "yosymfony/toml",
-            "version": "v0.3.2",
+            "name": "voku/portable-utf8",
+            "version": "1.6.3",
             "source": {
                 "type": "git",
-                "url": "https://github.com/yosymfony/Toml.git",
-                "reference": "8d552222a4f8ef58ccda87db9f9a9973801b3b7f"
+                "url": "https://github.com/voku/portable-utf8.git",
+                "reference": "6a486127abdc0627662c5d9bd947cbd110e77687"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yosymfony/Toml/zipball/8d552222a4f8ef58ccda87db9f9a9973801b3b7f",
-                "reference": "8d552222a4f8ef58ccda87db9f9a9973801b3b7f",
+                "url": "https://api.github.com/repos/voku/portable-utf8/zipball/6a486127abdc0627662c5d9bd947cbd110e77687",
+                "reference": "6a486127abdc0627662c5d9bd947cbd110e77687",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.0"
             },
+            "require-dev": {
+                "phpunit/phpunit": "4.*",
+                "satooshi/php-coveralls": "0.7.*@dev"
+            },
+            "suggest": {
+                "ext-iconv": "Use iconv for best performance",
+                "ext-intl": "Use Intl for best performance",
+                "ext-mbstring": "Use Mbstring for best performance"
+            },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.3-dev"
+                    "dev-master": "1.6.x-dev"
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Yosymfony\\Toml\\": "src/"
-                }
+                    "voku\\": "src/voku/"
+                },
+                "classmap": [
+                    "src/Normalizer.php"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "MIT"
+                "CC-BY-3.0"
             ],
             "authors": [
                 {
-                    "name": "Victor Puertas",
-                    "email": "vpgugr@gmail.com",
-                    "homepage": "http://yosymfony.com"
+                    "name": "Hamid Sarfraz",
+                    "homepage": "http://pageconfig.com/"
+                },
+                {
+                    "name": "Lars Moelleken",
+                    "homepage": "http://www.moelleken.org/"
+                },
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
                 }
             ],
-            "description": "A PHP parser for TOML compatible with specification 0.4.0",
-            "homepage": "http://github.com/yosymfony/toml",
+            "description": "Portable UTF-8 library with polyfill / shim for Iconv, Intl, Mbstring, Normalizrer etc.",
+            "homepage": "https://github.com/voku/portable-utf8",
             "keywords": [
-                "mojombo",
-                "parser",
-                "toml"
+                "UTF",
+                "clean",
+                "php",
+                "unicode",
+                "utf-8",
+                "utf8"
             ],
-            "time": "2015-03-09 20:27:22"
+            "time": "2015-07-27 06:46:35"
         }
     ],
     "packages-dev": [],
