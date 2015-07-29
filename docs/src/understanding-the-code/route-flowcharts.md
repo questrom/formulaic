@@ -136,7 +136,7 @@ This route displays a particular form. The configuration file to use is specifie
     <i class="send icon"></i>
     <div class="content">
       <div class="title">JSON response</div>
-      <div class="description">`->ifError` & `->ifOk`</div>
+      <div class="description">`ifError` / `ifOk`</div>
     </div>
   </div>
 </div>

@@ -10,7 +10,7 @@ nav_sort: 1
 
 * Formulaic generates forms based on **configuration files**; these must not be confused with the global configuration stored in `config.toml`. 
 * Configuration files are written in [**Jade**](http://jade-lang.com), which Formulaic will automatically compile to XML. See below for further details.
-* The **sample forms** included with the project provide an excellent way to get used to the syntax &mdash; in fact, these may be more useful that the following documentation.
+* The **sample forms** included with the project provide an excellent way to get used to the syntax &mdash; in fact, these may be more useful that the following documentation. Before they work, you may need to modify them to suit, e.g., your MongoDB configuration.
 
 ### Adding a form
 

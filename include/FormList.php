@@ -12,12 +12,10 @@ class ViewInfoView implements Renderable {
 	}
 	function render() {
 		return h()
-			->div->class('item')->c(
-				h()->a->href('view?form=' . $this->formData->id . '&view=' . $this->v->name)->class('item')
+			->a->href('view?form=' . $this->formData->id . '&view=' . $this->v->name)->class('item')
 					->i->class($this->v->getIcon())->end
 					->c($this->v->title)
-				->end
-			);
+				->end;
 	}
 }
 
@@ -29,26 +27,34 @@ class FormItemView implements Renderable {
 	}
 	function render() {
 		return h()
-			->div->class('item')
-				->div->class('header')
-					->a->href('forms/' . $this->data->id)
+			->div->class('fitted item')->href('forms/' . $this->data->id)
+				// ->div->class('header')
+					->a->class('item')->href('forms/' . $this->data->id)
+
+
 						->c($this->data->name)
+							->div->class('ui horizontal right floated label')
+							->c($this->data->count)
+							->c(json_decode('"\u2004"') . 'submissions')
+						->end
 					->end
-					->div->class('ui horizontal right floated label')
-						->c($this->data->count)
-						->c(json_decode('"\u2004"') . 'submissions')
-					->end
-				->end
+
+
+
 					# Only show the list if the form actually HAS views
 					->c(count($this->data->views) === 0 ? null :
 						h()
-						->div->class('ui horizontal list low-line-height')
-							->div->class('item header')->c('Views: ')->end
+
+						->div->class('menu')
+						// ->div->class('ui horizontal list low-line-height')
+													->div->class('header item')->c('Views: ')->end
+
 								->c(
 									array_map(function($view) {
 										return new ViewInfoView($view, $this->data);
 									}, $this->data->views)
 								)
+
 						->end
 					)
 
@@ -84,7 +90,8 @@ class FormListView implements Renderable {
 						->h1->class('ui center aligned header')
 							->c('All Forms')
 						->end
-						->div->class('ui large relaxed divided list')
+						// ->div->class('ui large relaxed divided list')
+						->div->class('ui fluid vertical menu')
 							->c(
 								array_map(function($formInfo) {
 									return new FormItemView($formInfo);
