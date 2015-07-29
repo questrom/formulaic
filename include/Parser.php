@@ -217,7 +217,6 @@ class Parser {
 			return $this->getJade()->render("!!! xml\n" . file_get_contents($file));
 		});
 
-		// $t = microtime(true);
 		$reader = $this->getReader();
 		$reader->xml($xml);
 
@@ -226,7 +225,6 @@ class Parser {
 		}
 		$cfg =  Config::get();
 		$readData = $reader->parseCurrentElement($cfg);
-		// echo '<br><br><br>' . (microtime(true) - $t)*1000;
 
 		$page = $readData['value'];
 

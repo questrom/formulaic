@@ -84,6 +84,13 @@ class Checkbox extends NamedLabeledComponent implements Enumerative {
 		}
 		return new CheckboxTableCell($v);
 	}
+
+	function makeCSVPart($v) {
+		if($v === null) {
+			return null;
+		}
+		return $v ? 'Yes' : 'No';
+	}
 }
 
 # The "time" element
@@ -108,12 +115,8 @@ class TimeInput extends NamedLabeledComponent {
 			->stepTime($this->step)
 			->name($this->name);
 	}
-	function makeTableViewPart($v) {
-		# Convert a time for display in a table view.
-		if ($v === null) {
-			# In case there isn't any value.
-			return null;
-		}
+	private function getText($v) {
+
 		$hour = floor($v / 3600);
 		$minute = ($v % 3600) / 60;
 		$xm = 'am';
@@ -124,7 +127,21 @@ class TimeInput extends NamedLabeledComponent {
 		if (intval($hour) === 0) {
 			$hour = 12;
 		}
-		return new OrdinaryTableCell(sprintf('%d:%02d %s', $hour, $minute, $xm));
+		return sprintf('%d:%02d %s', $hour, $minute, $xm);
+	}
+	function makeTableViewPart($v) {
+		# Convert a time for display in a table view.
+		if ($v === null) {
+			# In case there isn't any value.
+			return null;
+		}
+		return new OrdinaryTableCell($this->getText($v));
+	}
+	function makeCSVPart($v) {
+		if ($v === null) {
+			return null;
+		}
+		return $this->getText($v);
 	}
 }
 
@@ -151,11 +168,20 @@ class DateTimePicker extends NamedLabeledComponent {
 			->stepDateTime($this->step)
 			->name($this->name);
 	}
+	private function getText($v) {
+		return $v->format('n/j/Y g:i A');
+	}
 	function makeTableViewPart($v) {
 		if ($v === null || !is_object($v)) {
 			return null;
 		}
-		return new OrdinaryTableCell($v->format('n/j/Y g:i A'));
+		return new OrdinaryTableCell($this->getText($v));
+	}
+	function makeCSVPart($v) {
+		if ($v === null || !is_object($v)) {
+			return null;
+		}
+		return $v->format('Y-m-d H:i:00');
 	}
 }
 
@@ -189,6 +215,9 @@ class Textarea extends NamedLabeledComponent {
 		}
 		return new TextareaTableCell($v);
 	}
+	function makeCSVPart($v) {
+		return $v;
+	}
 }
 
 # The "dropdown" element
@@ -204,6 +233,9 @@ class Dropdown extends NamedLabeledComponent {
 	}
 	function makeTableViewPart($v) {
 		return new OrdinaryTableCell($v);
+	}
+	function makeCSVPart($v) {
+		return $v;
 	}
 
 
@@ -229,6 +261,9 @@ class Radios extends NamedLabeledComponent implements Enumerative {
 	}
 	function makeTableViewPart($v) {
 		return new OrdinaryTableCell($v);
+	}
+	function makeCSVPart($v) {
+		return $v;
 	}
 	function getPossibleValues() {
 		return $this->options;
@@ -277,6 +312,12 @@ class Checkboxes extends NamedLabeledComponent implements Enumerative {
 		}
 		return new ListTableCell($v);
 	}
+	function makeCSVPart($v) {
+		if ($v === null || count($v) === 0) {
+			return null;
+		}
+		return implode("\r\n", $v);
+	}
 }
 
 # The "captcha" element
@@ -292,6 +333,9 @@ class Captcha extends NamedLabeledComponent {
 	}
 	function makeTableViewPart($v) {
 		return new OrdinaryTableCell($v);
+	}
+	function makeCSVPart($v) {
+		return $v;
 	}
 
 	function getSubmissionPart($against) {
@@ -323,6 +367,9 @@ class Textbox extends NamedLabeledComponent {
 	}
 	function makeTableViewPart($v) {
 		return new OrdinaryTableCell($v);
+	}
+	function makeCSVPart($v) {
+		return $v;
 	}
 
 	function getSubmissionPart($against) {
@@ -437,6 +484,12 @@ class FileUpload extends NamedLabeledComponent {
 		}
 		return new FileUploadTableCell($v);
 	}
+	function makeCSVPart($v) {
+		if ($v === null || is_string($v) || !isset($v['url'])) {
+			return null;
+		}
+		return $v['url'];
+	}
 	function makeDetailsViewPart($v) {
 
 		if ($v === null) {
@@ -482,6 +535,9 @@ class Range extends NamedLabeledComponent {
 	}
 	function makeTableViewPart($v) {
 		return new OrdinaryTableCell($v);
+	}
+	function makeCSVPart($v) {
+		return $v;
 	}
 
 	function getSubmissionPart($against) {
@@ -530,6 +586,9 @@ class Password extends NamedLabeledComponent {
 	function makeTableViewPart($v) {
 		return new PasswordTableCell();
 	}
+	function makeCSVPart($v) {
+		return 'N/A';
+	}
 }
 
 # The "phone" element
@@ -566,6 +625,21 @@ class PhoneNumber extends NamedLabeledComponent {
 		}
 		return new LinkTableCell('tel:' . $v, $showValue);
 	}
+	function makeCSVPart($v) {
+		if ($v === null) {
+			return null;
+		}
+		# Format the phone number with pretty unicode spaces
+		# before displaying it in a table
+		if (preg_match('/^[0-9]{10}$/', $v)) {
+			$showValue = '(' . mb_substr($v, 0, 3) . ') ' .
+				mb_substr($v, 3, 3) . ' ' .
+				mb_substr($v, 6, 4);
+		} else {
+			$showValue = $v;
+		}
+		return $showValue;
+	}
 }
 
 # The "email" element
@@ -596,6 +670,9 @@ class EmailAddr extends NamedLabeledComponent {
 		}
 		return new LinkTableCell('mailto:' . $v, $v);
 	}
+	function makeCSVPart($v) {
+		return $v;
+	}
 }
 
 # The "url" element
@@ -621,6 +698,9 @@ class UrlInput extends NamedLabeledComponent {
 			return null;
 		}
 		return new LinkTableCell($v, $v, true);
+	}
+	function makeCSVPart($v) {
+		return $v;
 	}
 }
 
@@ -649,6 +729,9 @@ class NumberInp extends NamedLabeledComponent {
 			->filterNumber($this->integer)
 			->minMaxNumber($this->min, $this->max)
 			->name($this->name);
+	}
+	function makeCSVPart($v) {
+		return $v;
 	}
 }
 
@@ -695,11 +778,20 @@ class DatePicker extends NamedLabeledComponent {
 			->minMaxDate($this->min, $this->max)
 			->name($this->name);
 	}
+	private function getText($v) {
+		return $v->format('n/j/Y');
+	}
 	function makeTableViewPart($v) {
 		if ($v === null) {
 			return null;
 		}
-		return new OrdinaryTableCell($v->format('n/j/Y'));
+		return new OrdinaryTableCell($this->getText($v));
+	}
+	function makeCSVPart($v) {
+		if ($v === null) {
+			return null;
+		}
+		return $v->format('Y-m-d');
 	}
 }
 
@@ -773,12 +865,10 @@ class ListComponent implements FormPartFactory, Configurable,
 		# converting $_FILES with diverse_array if need be.
 		return $val
 			->ifOk(function ($v) {
-				return Result::ok(
-					[
-						isset($v->post[ $this->name ]) ? $v->post[ $this->name ] : null,
-						isset($v->files[ $this->name ]) ? $v->files[ $this->name ] : null
-					]
-				);
+				return Result::ok([
+					isget($v->post[$this->name]),
+					isget($v->files[$this->name])
+				]);
 			})
 			->ifOk(function ($data) {
 				return Result::ok([
@@ -790,16 +880,25 @@ class ListComponent implements FormPartFactory, Configurable,
 	}
 
 	# Only in details/email view do we actually show the individual list items.
-	function makeTableViewPart($v) {
-		if ($v === null) {
-			return null;
-		}
+	private function getText($v) {
 		if (count($v) === 1) {
 			$showValue = '(1 item)';
 		} else {
 			$showValue = '(' . count($v) . ' items)';
 		}
-		return new OrdinaryTableCell($showValue);
+		return $showValue;
+	}
+	function makeTableViewPart($v) {
+		if ($v === null) {
+			return null;
+		}
+		return new OrdinaryTableCell($this->getText($v));
+	}
+	function makeCSVPart($v) {
+		if ($v === null) {
+			return null;
+		}
+		return $this->getText($v);
 	}
 	function makeDetailsViewPart($v) {
 		if ($v === null) {
@@ -840,11 +939,12 @@ class IPField implements TableViewPartFactory, Storeable {
 		}
 		return new OrdinaryTableCell($v);
 	}
+
 	function getSubmissionPart($val) {
 		return Result::ok(['_ip' => $_SERVER['REMOTE_ADDR']]);
 	}
 	function makeCSVPart($v) {
-		return is_string($v) ? $v : null;
+		return $v;
 	}
 }
 
@@ -857,18 +957,23 @@ class TimestampField implements TableViewPartFactory, Storeable {
 		$this->name = '_timestamp';
 		$this->label = 'Timestamp';
 	}
+	private function getText($v) {
+		return $v->format('n/j/Y g:i A');
+	}
 	function makeTableViewPart($v) {
-
 		if ($v === null || is_string($v)) {
 			return null;
 		}
-		return new OrdinaryTableCell($v->format('n/j/Y g:i A'));
+		return new OrdinaryTableCell($this->getText($v));
 	}
 	function getSubmissionPart($val) {
 		return Result::ok(['_timestamp' => new DateTimeImmutable()]);
 	}
 	function makeCSVPart($v) {
-		return is_string($v) ? $v : null;
+		if ($v === null || is_string($v)) {
+			return null;
+		}
+		return $v->format('Y-m-d H:i:s');
 	}
 }
 

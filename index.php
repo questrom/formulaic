@@ -129,13 +129,9 @@ $klein->respond('GET', '/csv', function($req) use($parser) {
 	$page = $parser->parseJade($_GET['form']);
 	$view = new CSVView($page->getView($_GET['view']));
 
-	// TODO: add these back in
-	// header("Content-type: text/csv; charset=utf-8");
-	// header("Content-Disposition: attachment; filename=" . $page->id . ".csv");
+	header("Content-type: text/csv; charset=utf-8");
+	header("Content-Disposition: attachment; filename=" . $page->id . "-" . time() . ".csv");
 
-	header("Content-type: text/plain; charset=utf-8");
-
-	# Get the CSV via output buffering (somewhat hacky, but the only way)
 	ob_start();
 	$view
 		->makeView($view->query(1))

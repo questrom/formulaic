@@ -17,7 +17,7 @@ class TablePart implements TableViewPartFactory, DetailsViewPartFactory, EmailVi
 		return new EmailValueRow($value, $this->component);
 	}
 	function makeCSVPart($v) {
-		$str = isset($v) && is_string($v) ? $v : null;
+		throw new Exception('Not implemented!');
 	}
 }
 

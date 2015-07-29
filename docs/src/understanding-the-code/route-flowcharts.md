@@ -178,3 +178,38 @@ This route submits a form, returning either validation errors or a confirmation 
 
 
 This route is used when the Details button in a table view is pressed.
+
+## GET `/csv`
+
+<div class="ui small steps">
+  <div class="step">
+    <i class="file text outline icon"></i>
+    <div class="content">
+      <div class="title">Parse config. file</div>
+      <div class="description">`Parser->parseJade`</div>
+    </div>
+  </div>
+  <div class="step">
+    <i class="unhide icon"></i>
+    <div class="content">
+      <div class="title">Make the view</div>
+      <div class="description">`new CSVView`</div>
+    </div>
+  </div>
+  <div class="step">
+    <i class="database icon"></i>
+    <div class="content">
+      <div class="title">Query Mongo</div>
+      <div class="description">`View->query`</div>
+    </div>
+  </div>
+  <div class="step">
+    <i class="code outline icon"></i>
+    <div class="content">
+      <div class="title">Make HTML</div>
+      <div class="description">`->generateString`</div>
+    </div>
+  </div>
+</div>
+
+This route is used when the Download CSV button in a table view is pressed.

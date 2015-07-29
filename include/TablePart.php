@@ -510,7 +510,6 @@ class CSVPage implements Renderable {
 		# Should generate via PHPExcel
 		$excel = new PHPExcel();
 		$sheet = $excel->getActiveSheet();
-
 		# Write out headers
 		foreach($this->f->cols as $index => $column) {
 			$sheet->setCellValueByColumnAndRow($index, 1, $column->header);
@@ -520,15 +519,15 @@ class CSVPage implements Renderable {
 		foreach($this->f->data as $rowIndex => $row) {
 			foreach($this->f->cols as $colIndex => $col) {
 
-				$str = $this->byName[$col->name]->makeCSVPart(  isget($row[$col->name]) );
+				$str = $this->byName[$col->name]->makeCSVPart(isget($row[$col->name]));
 
-				if(is_null($str)) {
-					$str = '';
-				} else if(!is_string($str)) {
-					throw new Error('Invalid CSV part!');
+				if(is_scalar($str)) {
+					$sheet->setCellValueByColumnAndRow($colIndex, $rowIndex + 2,  (string) $str);
+				} else if(!is_null($str)) {
+					throw new Exception('Invalid CSV part!');
 				}
 
-				$sheet->setCellValueByColumnAndRow($colIndex, $rowIndex + 2,  $str);
+
 			}
 		}
 

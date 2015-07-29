@@ -77,9 +77,6 @@ trait Tableize {
 	function makeEmailViewPart($v) {
 		return $this->makeTableViewPart($v);
 	}
-	function makeCSVPart($v) {
-		return is_string($v) ? $v : null;
-	}
 }
 
 # A field which can be identified by its name.
