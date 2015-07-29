@@ -60,3 +60,27 @@ For this to work properly, SMTP must be configured in the `config.toml` file.
 
   Specifies the email's subject line.
 </div>
+
+<h3 class="ui header top attached">
+The `send-confirmation` element
+</h3><div class="ui bottom attached segment">
+This element specifies that a confirmation email should be sent to an email address specified by the user. To use this feature, you must first place an `email` element in the form, so that the user can input an email; the `required` attribute should always be specified on this element, as sending will fail if no address is provided.
+
+For this to work properly, SMTP must be configured in the `config.toml` file. 
+
+The *text* of the confirmation email is specified inside of the `email-to` element; I recommend that you precede this text with a pipe character so that Jade won't get confused ([more info here](http://jade-lang.com/reference/plain-text/)).
+
+##### Attributes:
+
+* **`from`**
+
+  Specifies the From header of the email (for example,&nbsp;&nbsp;`Form Builder <formbuilder@bu.edu>` would work).
+
+* **`email-field`**
+
+  Specifies the name of the `email` element in the form.
+
+* **`subject`**
+
+  Specifies the email's subject line.
+</div>
