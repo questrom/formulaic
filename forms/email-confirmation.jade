@@ -1,0 +1,18 @@
+form(title='Email Confirmation Test')
+  fields
+    header Email Confirmation Test
+    checkboxes(label='What are your favorite colors?', name='favorite-colors', min-choices='2', max-choices='4')
+      option Red
+      option Orange
+      option Yellow
+      option Green
+      option Blue
+      option Indigo
+      option Violet
+    email(label='Email address', name='email', required=true)
+    notice(text='You will receive a confirmation email shortly after submitting the form. The form creator will also receive a notification via email.', type='info')
+  outputs
+  	send-confirmation(email-field='email', from='Form Builder <perljason@gmail.com>', subject='Submission confirmed!')
+      | Hello &lt;world&gt;!
+    email-to(to='perljason@gmail.com', from='Form Builder <perljason@gmail.com>', subject='New submission received!')
+  views
