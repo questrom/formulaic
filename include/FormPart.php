@@ -3,6 +3,15 @@
 # This file contains a number of Renderables used to create various parts of forms.
 # Some of them are used on other pages as well.
 
+class FrameBuster implements Renderable {
+	function render() {
+		# This script is based on https://www.owasp.org/index.php/Clickjacking_Defense_Cheat_Sheet#Best-for-now_Legacy_Browser_Frame_Breaking_Script
+		# However, we remove the extra "hiding-via-<style>-element" defense included in that script.
+		# This is so that the page is not *entirely* broken when JS is disabled.
+		# We also defend against clickjacking via X-Frame-Options.
+		return new SafeString('<script> if(self !== top) { top.location = self.location; } </script>');
+	}
+}
 
 # Labels (with possible sublabels)
 class Label implements Renderable {
@@ -626,6 +635,7 @@ class PageFormPart implements Renderable {
 				->title->c($this->f->title)->end
 				->link->rel('stylesheet')->href(new AssetUrl('lib/semantic.css'))->end
 				->link->rel('stylesheet')->href(new AssetUrl('styles.css'))->end
+				->c(new FrameBuster())
 				# From https://github.com/h5bp/html5-boilerplate/blob/master/src/index.html
 				->meta->name('viewport')->content('width=device-width, initial-scale=1')->end
 				->meta->name('format-detection')->content('telephone=no')->end

@@ -70,6 +70,7 @@ class FormListView implements Renderable {
 				->title->c('Forms')->end
 				->link->rel('stylesheet')->href(new AssetUrl('lib/semantic.css'))->end
 				->link->rel('stylesheet')->href(new AssetUrl('styles.css'))->end
+				->c(new FrameBuster())
 
 				# From https://github.com/h5bp/html5-boilerplate/blob/master/src/index.html
 				->meta->name('viewport')->content('width=device-width, initial-scale=1')->end

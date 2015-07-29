@@ -18,6 +18,7 @@ class GraphViewRenderable implements Renderable {
 				->title->c($this->f->title)->end
 				->link->rel('stylesheet')->href(new AssetUrl('lib/semantic.css'))->end
 				->link->rel('stylesheet')->href(new AssetUrl('styles.css'))->end
+				->c(new FrameBuster())
 			->end
 			->body
 				->c(new TopHeader())

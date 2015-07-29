@@ -66,7 +66,8 @@ class BetterReader extends XMLReader {
 				'is-checked' => 'IsCheckedCondition',
 				'is-not-checked' => 'IsNotCheckedCondition',
 				'is-radio-selected' => 'IsRadioSelectedCondition',
-				'views' => 'ViewList'
+				'views' => 'ViewList',
+				'send-confirmation' => 'SendConfirmationOutput'
 			];
 	function parseCurrentElement($cfg) {
 

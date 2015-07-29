@@ -181,7 +181,6 @@ class EmailOutput implements Output, Configurable {
 		$this->to = $args['to'];
 		$this->from = $args['from'];
 		$this->subject = $args['subject'];
-		$this->secret = Config::get();
 	}
 	function run($data, $page) {
 
@@ -199,7 +198,59 @@ class EmailOutput implements Output, Configurable {
 		    ->setSubject($this->subject)
 		    ->setHTMLBody($html);
 
-		$mailer = new SmtpMailer($this->secret['smtp']);
+		$mailer = new SmtpMailer(Config::get()['smtp']);
+
+		$mailer->send($mail);
+
+		return $data;
+	}
+}
+
+# Renderable for confirmation emails
+class ConfirmationEmail implements Renderable {
+	function __construct($output) { $this->output = $output; }
+	function render() {
+		return
+		h()
+		->html
+			->head
+				->meta->charset('utf-8')->end
+				->title->c($this->output->subject)->end
+			->end
+			->body
+				# styles based on semantic UI
+				->div->style('border: 1px solid #A3C293; color: #2C662D; padding: 1em 1.5em; border-radius: 0.285714rem;')
+					->p->style('font-size:1.5em;')
+						->c($this->output->body)
+					->end
+				->end
+			->end
+		->end;
+	}
+}
+
+# Send confirmation messages
+class SendConfirmationOutput implements Configurable, Output {
+	function __construct($args) {
+		$this->from = $args['from'];
+		$this->emailField = $args['email-field'];
+		$this->subject = $args['subject'];
+		$this->body = $args['innerText'];
+	}
+	function run($data, $page) {
+		# Create the email
+		$view = new ConfirmationEmail($this);
+		$html = '<!DOCTYPE html>' . $view->render()->generateString();
+
+		# ... and send it!
+		$mail = new Message();
+		$mail
+			->setFrom($this->from)
+		    ->addTo($data[$this->emailField])
+		    ->setSubject($this->subject)
+		    ->setHTMLBody($html);
+
+		$mailer = new SmtpMailer(Config::get()['smtp']);
 
 		$mailer->send($mail);
 
