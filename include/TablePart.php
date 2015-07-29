@@ -141,7 +141,7 @@ class ListEmailTableCell implements Renderable {
 		return h()
 		->td
 			->c(array_map(function($listitem) {
-				return new EmailTable($this->value, $listitem, false);
+				return new EmailTable($this->value, $listitem, null);
 			}, $this->v))
 		->end;
 	}
@@ -156,7 +156,7 @@ class ListDetailedTableCell implements Renderable {
 		return h()
 		->td
 			->c(array_map(function($listitem) {
-				return new ValueTable($this->value, $listitem, false);
+				return new ValueTable($this->value, $listitem, null);
 			}, $this->v))
 		->end;
 	}
@@ -259,7 +259,7 @@ class IPTimestampInfo implements Renderable {
 
 # A table for use in an email
 class EmailTable implements Renderable {
-	function __construct($fields, $data, $stamp = false) {
+	function __construct($fields, $data, $stamp) {
 		$this->fields = $fields;
 		$this->data = $data;
 		$this->stamp = $stamp;
@@ -272,20 +272,20 @@ class EmailTable implements Renderable {
 			->tbody
 				->c(array_map(function($field) {
 					if($field instanceof EmailViewPartFactory) {
-						return ( new TablePart( $field ) )->makeEmailViewPart(  isget($this->data[$field->name]) );
+						return ( new TablePart($field) )->makeEmailViewPart(isget($this->data[$field->name]) );
 					} else {
 						return null;
 					}
-				}, $this->fields ))
+				}, $this->fields))
 			->end
-			->c(!$this->stamp ? null : $this->stamp)
+			->c($this->stamp)
 		->end;
 	}
 }
 
 # Display a table in details mode
 class ValueTable implements Renderable {
-	function __construct($fields, $data, $stamp = false) {
+	function __construct($fields, $data, $stamp) {
 		$this->fields = $fields;
 		$this->data = $data;
 		$this->stamp = $stamp;
@@ -296,13 +296,13 @@ class ValueTable implements Renderable {
 			->tbody
 				->c(array_map(function($field) {
 					if($field instanceof DetailsViewPartFactory) {
-						return ( new TablePart( $field ) )->makeDetailsViewPart(  isget($this->data[$field->name]) );
+						return ( new TablePart($field) )->makeDetailsViewPart(isget($this->data[$field->name]) );
 					} else {
 						return null;
 					}
 				}, $this->fields ))
 			->end
-			->c(!$this->stamp ? null : $this->stamp)
+			->c($this->stamp)
 		->end;
 	}
 }
