@@ -35,7 +35,7 @@ app-path=""
 
 [branding]
 # The image to use for the top menu of the app.
-image="/img/logo.jpg"
+image="/img/white-nike-swoosh-wfotplbl.png"
 # The color to use for this menu, in "R, G, B" form.
 color="0, 130, 130"
 

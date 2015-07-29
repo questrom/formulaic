@@ -429,7 +429,7 @@ class TablePage implements Renderable {
 										->col->style('width: ' . ($x->width * 100) . '%;')
 									->end;
 								}, $this->f->cols))
-								->col->style('width:90px;')->end
+								->col->style('width:76px;')->end
 							->end
 							->thead
 								->tr
@@ -455,7 +455,7 @@ class TablePage implements Renderable {
 									}, $this->f->cols))
 									# After the columns, show the Details button
 									->td->class('center aligned nowrap unpadded-cell')
-										->a->class('ui no-margin compact button')
+										->a->class('ui no-margin compact small button')
 											->href('details?form=' . $this->f->formID . '&id=' . $row['_id'])
 											->c('Details')
 										->end
