@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "0ef35477b190ae512947961c0ea29c7b",
+    "hash": "a336aaad80769c16ed618d5a6cd57741",
     "packages": [
         {
             "name": "gabrielelana/byte-units",
@@ -243,73 +243,6 @@
                 "sinatra"
             ],
             "time": "2014-11-07 07:35:23"
-        },
-        {
-            "name": "kylekatarnls/jade-php",
-            "version": "1.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/kylekatarnls/jade-php.git",
-                "reference": "8548f11d29c276ca1f8f7912476341bcd2ec7093"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/kylekatarnls/jade-php/zipball/8548f11d29c276ca1f8f7912476341bcd2ec7093",
-                "reference": "8548f11d29c276ca1f8f7912476341bcd2ec7093",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Jade": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Konstantin Kudryasho",
-                    "email": "konstantin.kudryashov@knplabs.com",
-                    "homepage": "http://about.me/everzet",
-                    "role": "Developer"
-                },
-                {
-                    "name": "Janez Troha",
-                    "email": "janez.troha@gmail.com",
-                    "homepage": "http://flavors.me/dz0ny",
-                    "role": "Maintainer"
-                },
-                {
-                    "name": "Luke GB",
-                    "email": "git@lukegb.com",
-                    "homepage": "http://twitter.com/lukegb",
-                    "role": "Maintainer"
-                },
-                {
-                    "name": "Ronan Tessier",
-                    "email": "ronan.tessier@vaconsulting.lu",
-                    "homepage": "http://github.com/ronan-gloo",
-                    "role": "Maintainer"
-                },
-                {
-                    "name": "kylekatarnls",
-                    "homepage": "http://github.com/kylekatarnls",
-                    "role": "Maintainer"
-                }
-            ],
-            "description": "HAML-like template engine for PHP 5.3",
-            "homepage": "https://github.com/ronan-gloo/jade.php",
-            "keywords": [
-                "jade",
-                "minification",
-                "template"
-            ],
-            "time": "2015-04-21 21:56:16"
         },
         {
             "name": "mistic100/randomcolor",
@@ -729,7 +662,9 @@
         "ext-xmlreader": "*",
         "ext-spl": "*",
         "ext-json": "*",
-        "ext-fileinfo": "^1.0.5"
+        "ext-fileinfo": "^1.0.5",
+        "ext-iconv": "*",
+        "ext-intl": "*"
     },
     "platform-dev": []
 }
