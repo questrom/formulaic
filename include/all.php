@@ -1,9 +1,11 @@
 <?php
 
+use voku\helper\UTF8;
+
 # Various things =========================================================================
 
-# Charset
-mb_internal_encoding('UTF-8');
+# Set charset
+UTF8::checkForSupport(); # will run mb_internal_encoding if necessary
 ini_set('default_encoding', 'UTF-8');
 
 # Composer dependencies
