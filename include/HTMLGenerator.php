@@ -19,21 +19,141 @@
 # serious performance problems, as it is very easy to do so by
 # accident. (I can attest.)
 
-# The below class, HTMLGeneratorAbstract, provides methods shared
-# by all four HTMLGenerator objects. The h() function just returns
-# a new HTMLParentlessContext, as a shortcut.
-abstract class HTMLGeneratorAbstract implements Renderable {
+
+# Things implemented by both HTMLParentContext and HTMLParentlessContext,
+# which are described below.
+interface HTMLGenerator extends Renderable {
 
 	# The "c" function is used to add text or other HTML elements
 	# into the current element.
-	abstract function c($arr);
+	public function c($arr);
 
 	# __get() is used as to implement things like ->div and ->end
-	abstract function __get($name);
+	public function __get($name);
 
-	# render converts an HTMLGenerator into an array of strings
-	# (or an array of arrays, etc.)
-	abstract function render();
+	# render() converts an HTMLGenerator into an array of strings
+	# (or an array of arrays, etc.). It is defined by Renderable.
+}
+
+# Used to hold strings in order to mark that they do not
+# need to be escaped.
+class SafeString {
+	function __construct($value) {
+		$this->value = $value;
+	}
+}
+
+# Used to hold values which need to be escaped an extra time.
+# Needed for nested lists to work properly.
+class DoubleEncode {
+	function __construct($value) {
+		$this->value = $value;
+	}
+}
+
+# Used to hold asset URLs that can be replaced with fixAssets()
+# See utils.php for details
+class AssetUrl extends SafeString {
+	function __construct($value) {
+		$this->value = '____{{asset ' . $value . '}}____';;
+	}
+}
+
+# Cache some safestrings globally for speed
+$SAFE_LT = new SafeString('<');
+$SAFE_GT = new SafeString('>');
+$SAFE_LT_SLASH =  new SafeString('</');
+$SAFE_EQ_QUOTE = new SafeString('="');
+$SAFE_QUOTE = new SafeString('"');
+
+# This generates an HTML tag with a parent element.
+class HTMLParentContext implements HTMLGenerator {
+
+	private $parent, $tag, $contents, $attrs;
+
+	function __construct($parent, $tag) {
+		# $tag is the name of the tag
+		$this->parent = $parent;
+		$this->tag = $tag;
+		$this->contents = [];
+		$this->attrs = [];
+		$this->end = $parent->c($this);
+	}
+
+	# Add an attribute
+	function __call($name, $args) {
+		if(!isset($args[1]) || $args[1]) {
+			$this->attrs[$name] = $args[0];
+		}
+		return $this;
+	}
+
+	# Add a child manually
+	function c($arr) {
+		$this->contents[] = $arr;
+		return $this;
+	}
+
+	# Shortcut for data-* attributes
+	function data($key, $val, $cond = true) {
+		if($cond) {
+			$this->attrs['data-' . $key] = $val;
+		}
+		return $this;
+	}
+
+	# Create a new child element using, e.g., ->div
+	function __get($name) {
+		return new HTMLParentContext($this, $name);
+	}
+
+	function render() {
+
+		global $SAFE_LT, $SAFE_GT, $SAFE_LT_SLASH, $SAFE_EQ_QUOTE, $SAFE_QUOTE;
+
+		$arr[] = $SAFE_LT;
+		$arr[] = $this->tag;
+
+		foreach ($this->attrs as $key => $value) {
+			$arr[] = ' ';
+			$arr[] = $key;
+			$arr[] = $SAFE_EQ_QUOTE;
+			$arr[] = $value;
+			$arr[] = $SAFE_QUOTE;
+		}
+
+		$arr[] = $SAFE_GT;
+
+		$arr[] = $this->contents;
+
+		$arr[] = $SAFE_LT_SLASH;
+		$arr[] = $this->tag;
+		$arr[] = $SAFE_GT;
+
+		return $arr;
+	}
+}
+
+# Creates HTML without a parent.
+class HTMLParentlessContext implements HTMLGenerator{
+	private $contents;
+
+	function __construct() {
+		$this->contents = [];
+	}
+
+	function __get($name) {
+		return new HTMLParentContext($this, $name);
+	}
+
+	function c($arr) {
+		$this->contents[] = $arr;
+		return $this;
+	}
+
+	function render() {
+		return $this->contents;
+	}
 
 	# This function actually converts HTMLGenerator objects into strings.
 	# There were three ways of implementing this:
@@ -61,7 +181,8 @@ abstract class HTMLGeneratorAbstract implements Renderable {
 		$stack = [];
 
 		# The top of the stack. Keep track of this manually for greater speed.
-		# If $stack is like a call stack, this is like the esp register.
+		# If $stack is like a call stack, this is like the "esp" register
+		# on an x86 architecture.
 		$top = 1;
 
 		# The thing currently being processed
@@ -80,11 +201,9 @@ abstract class HTMLGeneratorAbstract implements Renderable {
 				# break it apart: put each element onto the stack,
 				# in reverse order, along with the escapeCount.
 				$element = array_values($element);
-				for($i = count($element) - 1; $i >= 1; $i--) {
-					$stack[$top] = $element[$i];
-					$top++;
-					$stack[$top] = $escapeCount;
-					$top++;
+				for($i = count($element) - 1; $i >= 1;) {
+					$stack[$top++] = $element[$i--];
+					$stack[$top++] = $escapeCount;
 				}
 				# Now process the first array element.
 				$element = $element[0];
@@ -94,9 +213,8 @@ abstract class HTMLGeneratorAbstract implements Renderable {
 				# as well.
 				$element = $element->render();
 			} elseif ($element instanceof DoubleEncode) {
-				# If it is a DoubleEncode, turn it into an array, add
-				# to escapeCount, and iterate again.
-				$element = [$element->value];
+				# If it is a DoubleEncode, add to escapeCount.
+				$element = $element->value;
 				$escapeCount++;
 			} else {
 				# This would be the "base case" if the algorithm were recursive. Here
@@ -127,184 +245,14 @@ abstract class HTMLGeneratorAbstract implements Renderable {
 				if($top > 1) {
 					# If the stack still has items left, get the
 					# escapeCount and element from it.
-					$top--;
-					$escapeCount = $stack[$top];
-					$top--;
-					$element = $stack[$top];
+					$escapeCount = $stack[--$top];
+					$element = $stack[--$top];
 				} else {
-					# Otherwise, we're done!
-					return $out;
+					break;
 				}
 			}
-
 		}
-	}
-}
-
-# Used to hold strings in order to mark that they do not
-# need to be escaped.
-class SafeString {
-	function __construct($value) {
-		$this->value = $value;
-	}
-}
-
-# Used to hold values which need to be escaped an extra time.
-# Needed for nested lists to work properly.
-class DoubleEncode {
-	function __construct($value) {
-		$this->value = $value;
-	}
-}
-
-# Used to hold asset URLs that can be replaced with fixAssets()
-# See utils.php for details
-class AssetUrl extends SafeString {
-	function __construct($value) {
-		$this->value = '____{{asset ' . $value . '}}____';;
-	}
-}
-
-# An HTMLGenerator which generates the inside of an HTML element,
-# excluding start and end tags.
-class HTMLContentGenerator extends HTMLGeneratorAbstract {
-	function __construct($children = []) {
-		$this->children = $children;
-	}
-
-	# Create a new tag
-	function __get($name) {
-		return new HTMLTagGenerator(new HTMLContentGenerator(), $name);
-	}
-
-	# Add a child
-	function c($arr) {
-		$children = $this->children;
-		$children[] = $arr;
-		return new HTMLContentGenerator($children);
-	}
-
-	# Make an array
-	function render() {
-		return $this->children;
-	}
-}
-
-# Generates the outside of an HTML element, including start/end tags.
-# Internally, uses HTMLContentGenerator to make the inside of the tag.
-class HTMLTagGenerator extends HTMLGeneratorAbstract {
-	private $contents, $tag, $attrs;
-
-	function __construct( $contents, $tag, $attrs = []) {
-		$this->contents = $contents;
-		$this->tag = $tag;
-		$this->attrs = $attrs;
-	}
-
-	# Add an attribute, if the second parameter is given and false,
-	# then don't add it (this allows for attributes that are only added conditionally).
-	function __call($name, $args) {
-		if(isset($args[1]) && !$args[1]) {
-			return $this;
-		}
-		$this->attrs[$name] = $args[0];
-		return new HTMLTagGenerator($this->contents, $this->tag, $this->attrs);
-	}
-
-	# Shortcut for "data-*" attributes.
-	function data($key, $val, $cond = true) {
-		if(!$cond) {
-			return $this;
-		}
-		return new HTMLTagGenerator($this->contents, $this->tag, array_merge($this->attrs, [  'data-' . $key => $val ] ));
-	}
-
-	# Add a child element manually
-	function c($arr) {
-		return new HTMLTagGenerator($this->contents->c($arr), $this->tag, $this->attrs);
-	}
-
-	# Create a new child element
-	function __get($name) {
-		return new HTMLTagGenerator(new HTMLContentGenerator(), $name);
-	}
-
-	# Turn it into an array of strings (or an array of arrays of strings, etc...)
-	function render() {
-		$arr = [];
-		$arr[] = new SafeString('<');
-		$arr[] = $this->tag;
-		foreach ($this->attrs as $key => $value) {
-			$arr[] = new SafeString(' ');
-			$arr[] = $key;
-			$arr[] = new SafeString('="');
-			$arr[] = $value;
-			$arr[] = new SafeString('"');
-		}
-
-		$arr[] = new SafeString('>');
-
-		# Might as well take care of the render() call here instead
-		# of in generateString().
-		$arr[] = $this->contents->render();
-
-		$arr[] = new SafeString('</');
-		$arr[] = $this->tag;
-		$arr[] = new SafeString('>');
-		return $arr;
-	}
-}
-
-# Create an HTML element that has a parent. Basically, this just makes "->end" work
-# as a way of "leaving" a child element.
-class HTMLParentContext extends HTMLGeneratorAbstract {
-	function __construct($parent, $generator) {
-		# $generator is an HTML generator that creates the child element.
-		$this->parent = $parent;
-		$this->generator = $generator;
-	}
-
-	function __call($name, $args) {
-		return new HTMLParentContext($this->parent, $this->generator->__call($name, $args));
-	}
-
-	function c($arr) {
-		return new HTMLParentContext($this->parent, $this->generator->c($arr));
-	}
-
-	function data($key, $val, $cond = true) {
-		return new HTMLParentContext($this->parent, $this->generator->data($key, $val, $cond));
-	}
-
-	function __get($name) {
-		if($name === 'end') {
-			return $this->parent->c($this);
-		} else {
-			return new HTMLParentContext($this, $this->generator->__get($name));
-		}
-	}
-
-	function render() {
-		return $this->generator->render();
-	}
-}
-
-# Creates an HTML element with NO parent.
-class HTMLParentlessContext extends HTMLGeneratorAbstract{
-	function __construct($generator = null) {
-		$this->generator = $generator ? $generator : new HTMLContentGenerator();
-	}
-
-	function __get($name) {
-		return new HTMLParentContext($this, $this->generator->__get($name));
-	}
-
-	function c($arr) {
-		return new HTMLParentlessContext($this->generator->c($arr));
-	}
-
-	function render() {
-		return $this->generator->render();
+		return $out;
 	}
 }
 
