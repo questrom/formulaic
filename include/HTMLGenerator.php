@@ -248,10 +248,20 @@ class HTMLParentlessContext implements HTMLGenerator{
 						}
 					}
 
+					# Generate arrays that can, in theory, be serialized
+					# (e.g. stored in JSON).
+					# We could use PHP's serialize(), but this is worse for perf.
+
 					if(is_string($element) && $lastString) {
 						$out[count($out) - 1] .= $element;
-					} else {
+					} else if(is_string($element)) {
 						$out[] = $element;
+					} else if($element instanceof AssetUrl) {
+						$out[] = ['asset' => $element->value];
+					} else if($element instanceof CSRFPlaceholder) {
+						$out[] = ['csrf' => true];
+					}  else {
+						throw new Exception("Invalid HTML component!");
 					}
 					$lastString = is_string($element);
 				}
@@ -267,22 +277,7 @@ class HTMLParentlessContext implements HTMLGenerator{
 			}
 		}
 
-		# Generate arrays that can, in theory, be serialized
-		# (e.g. stored in JSON).
-		# We could use PHP's serialize(), but this risks
-		# quite serious security issues if we accidentally
-		# unserialize untrusted data.
-		$out = array_map(function($x) {
-			if(is_string($x)) {
-				return $x;
-			} else if($x instanceof AssetUrl) {
-				return ['asset' => $x->value];
-			} else if($x instanceof CSRFPlaceholder) {
-				return ['csrf' => true];
-			} else {
-				throw new Exception("Invalid HTML component!");
-			}
-		}, $out);
+
 
 		return $out;
 	}
@@ -293,6 +288,7 @@ class HTMLParentlessContext implements HTMLGenerator{
 function stringize($out, $csrfToken = null) {
 
 	$config = Config::get();
+	$hashes = new Hashes();
 
 	# Unless we're in debug mode, serve minified versions of things like semantic.
 	# Don't bother minifying styles.css and client.js, because their size is tiny
@@ -313,8 +309,8 @@ function stringize($out, $csrfToken = null) {
 
 			$fileName = isget($assetMap[$x], $x);
 
-			$str .= preg_replace_callback('/^(.*)\.(.*)$/', function($parts) use($fileName, $config) {
-				return htmlspecialchars($config['asset-prefix'] . $parts[1] . '.hash-' . Hashes::get($fileName) . '.' . $parts[2], ENT_QUOTES | ENT_HTML5);
+			$str .= preg_replace_callback('/^(.*)\.(.*)$/', function($parts) use($fileName, $config, $hashes) {
+				return htmlspecialchars($config['asset-prefix'] . $parts[1] . '.hash-' . $hashes->get($fileName) . '.' . $parts[2], ENT_QUOTES | ENT_HTML5);
 			}, $fileName);
 
 		} else if(isset($x['csrf'])) {

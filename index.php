@@ -76,7 +76,6 @@ $klein->respond('GET', '/forms/[:formID]', function($request) use($parser) {
 	# so that these aren't getting cached.
 	$html = stringize(json_decode($html, true), $token);
 
-
 	return '<!DOCTYPE html>' . $html;
 });
 

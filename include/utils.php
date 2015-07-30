@@ -84,32 +84,32 @@ function midpoint($a, $b) {
 # This class computes the hashes and, if cache-hashes is enabled in the configuration file,
 # caches the hashes so we don't need to re-hash files on every single request.
 class Hashes {
-	private static $data = null;
-	private static function getData() {
+	private $data = null;
+	private function getData() {
 		$config = Config::get();
 
 		if(!$config['cache-hashes']) {
-			self::$data = [];
-			self::write();
+			$this->data = [];
+			$this->write();
 		} elseif (file_exists('cache/hashes.json')) {
-			self::$data = (array) json_decode(file_get_contents('cache/hashes.json'));
+			$this->data = (array) json_decode(file_get_contents('cache/hashes.json'));
 		} else {
-			self::$data = [];
+			$this->data = [];
 		}
 	}
-	private static function write() {
-		file_put_contents('cache/hashes.json', json_encode(self::$data));
+	private function write() {
+		file_put_contents('cache/hashes.json', json_encode($this->data));
 	}
-	static function get($key) {
-		if(self::$data === null) {
-			self::getData();
+	function get($key) {
+		if($this->data === null) {
+			$this->getData();
 		}
-		if(isset(self::$data[$key])) {
-			return self::$data[$key];
+		if(isset($this->data[$key])) {
+			return $this->data[$key];
 		} else {
 			$hash = sha1_file($key);
-			self::$data[$key] = $hash;
-			self::write();
+			$this->data[$key] = $hash;
+			$this->write();
 			return $hash;
 		}
 	}
