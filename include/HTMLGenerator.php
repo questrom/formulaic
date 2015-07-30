@@ -23,6 +23,7 @@
 # accident. (I can attest.)
 
 
+
 # Things implemented by both HTMLParentContext and HTMLParentlessContext,
 # which are described below.
 interface HTMLGenerator extends Renderable {
