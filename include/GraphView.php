@@ -262,7 +262,7 @@ class BarGraphRenderable implements Renderable {
 
 									# Get the color by hashing the text
 									# So it stays the same when the page is refreshed
-									return (hexdec(mb_substr(md5($key), 0, 2)) / pow(16, 2))  * ($max - $min) + $min;
+									return (hexdec(UTF8::substr(md5($key), 0, 2)) / pow(16, 2))  * ($max - $min) + $min;
 								}
 							]);
 
