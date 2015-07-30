@@ -16,7 +16,7 @@ ini_set('default_encoding', 'UTF-8');
 # see: https://github.com/everzet/jade.php
 require 'jade/autoload.php.dist';
 
-# Miscellaneous utility functions
+# Miscellaneous utility functions/classes/etc.
 require 'utils.php';
 
 # Set the time zone manually so PHP won't complain
