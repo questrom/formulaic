@@ -2,6 +2,7 @@
 
 use Nette\Mail\Message;
 use Nette\Mail\SmtpMailer;
+use voku\helper\UTF8;
 
 # An interface implemented by all elements that can go in the "outputs"
 # section of a configuration file.
@@ -208,7 +209,7 @@ class EmailOutput implements Output, Configurable {
 
 # Renderable for confirmation emails
 class ConfirmationEmail implements Renderable {
-	function __construct($output) { $this->output = $output; }
+	function __construct($output, $timestamp) { $this->output = $output; $this->timestamp = $timestamp; }
 	function render() {
 		return
 		h()
@@ -220,8 +221,11 @@ class ConfirmationEmail implements Renderable {
 			->body
 				# styles based on semantic UI
 				->div->style('border: 1px solid #A3C293; color: #2C662D; padding: 1em 1.5em; border-radius: 0.285714rem;')
-					->p->style('font-size:1.5em;')
+					->p->style('font-size:1.5em;margin:0;')
 						->c($this->output->body)
+					->end
+					->small
+						->c('Form submitted: ')->c($this->timestamp->format('n/j/Y g:i A'))
 					->end
 				->end
 			->end
@@ -239,7 +243,7 @@ class SendConfirmationOutput implements Configurable, Output {
 	}
 	function run($data, $page) {
 		# Create the email
-		$view = new ConfirmationEmail($this);
+		$view = new ConfirmationEmail($this, $data['_timestamp']);
 		$html = '<!DOCTYPE html>' . $view->render()->generateString();
 
 		# ... and send it!
