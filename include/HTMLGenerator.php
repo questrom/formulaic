@@ -159,10 +159,6 @@ class HTMLParentlessContext implements HTMLGenerator{
 	function render() {
 		return $this->contents;
 	}
-
-	final function generateString() {
-		return Stringifier::makeArray($this);
-	}
 }
 
 # This class handles converting HTML data into strings, as a two step process.
@@ -250,7 +246,8 @@ class Stringifier {
 					}
 
 					# Handle the escapeCount by escaping extra times.
-					# We assume that AssetURLs and other non-string things won't need extra escaping.
+					# We assume that AssetURLs and other non-string things
+					# won't need extra escaping.
 					if(is_string($element)) {
 						for($j = $escapeCount; $j--;) {
 							$element = htmlspecialchars($element, ENT_QUOTES | ENT_HTML5);
@@ -258,8 +255,8 @@ class Stringifier {
 					}
 
 					# Generate arrays that can, in theory, be serialized
-					# (e.g. stored in JSON).
-					# We could use PHP's serialize(), but this is worse for perf.
+					# (e.g. stored in JSON). We could use PHP's serialize(),
+					# but this is worse for perf.
 
 					if(is_string($element) && $lastString) {
 						$out[count($out) - 1] .= $element;
