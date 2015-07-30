@@ -8,7 +8,7 @@ debug = true
 # Caching settings
 # Note that, after disabling caching, you will want to remove
 # the previously cached files before reenabling it!
-
+# To clear all caches, just delete the "cache" folder.
 
 # Cache the HTML for each form in cache/jade-* files.
 # Disable if you are altering how form HTML gets generated.
