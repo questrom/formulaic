@@ -52,8 +52,12 @@ class Config {
 
 # A "fake cache" used in place of Gregwar\Cache\Cache when caching is disabled
 class FakeCache extends Cache {
-	public function set($filename, $contents = '') { return $this; }
-	protected function checkConditions($cacheFile, array $conditions = []) { return false; }
+	public function set($filename, $contents = '') {
+		return $this;
+	}
+	protected function checkConditions($cacheFile, array $conditions = []) {
+		return false;
+	}
 }
 
 # PHP formats the $_FILES array in an extremely unusual way;
