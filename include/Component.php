@@ -614,9 +614,9 @@ class PhoneNumber extends NamedLabeledComponent {
 		# Format the phone number with pretty unicode spaces
 		# before displaying it in a table
 		if (preg_match('/^[0-9]{10}$/', $v)) {
-			$showValue = '(' . mb_substr($v, 0, 3) . ')' .
-				UTF8::chr(0x2006) . mb_substr($v, 3, 3) . UTF8::chr(0x2006) .
-				mb_substr($v, 6, 4);
+			$showValue = '(' . UTF8::substr($v, 0, 3) . ')' .
+				UTF8::chr(0x2006) . UTF8::substr($v, 3, 3) . UTF8::chr(0x2006) .
+				UTF8::substr($v, 6, 4);
 		} else {
 			$showValue = $v;
 		}
@@ -629,9 +629,9 @@ class PhoneNumber extends NamedLabeledComponent {
 		# Format the phone number with pretty unicode spaces
 		# before displaying it in a table
 		if (preg_match('/^[0-9]{10}$/', $v)) {
-			$showValue = '(' . mb_substr($v, 0, 3) . ') ' .
-				mb_substr($v, 3, 3) . ' ' .
-				mb_substr($v, 6, 4);
+			$showValue = '(' . UTF8::substr($v, 0, 3) . ') ' .
+				UTF8::substr($v, 3, 3) . ' ' .
+				UTF8::substr($v, 6, 4);
 		} else {
 			$showValue = $v;
 		}

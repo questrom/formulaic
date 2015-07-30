@@ -1,5 +1,6 @@
 <?php
 use \Colors\RandomColor;
+use voku\helper\UTF8;
 
 # This file includes a number of classes related to implementing graph views --
 # that is, views which display a series of graphs.
@@ -160,7 +161,7 @@ class PieSlice implements Renderable {
 				'prng' => function($min, $max) use ($key) {
 					# Get the color by hashing the text
 					# So it stays the same when the page is refreshed
-					return (hexdec(mb_substr(md5($key), 0, 2)) / pow(16, 2))  * ($max - $min) + $min;
+					return (hexdec(UTF8::substr(md5($key), 0, 2)) / pow(16, 2))  * ($max - $min) + $min;
 				}
 			]);
 		}

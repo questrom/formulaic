@@ -1,6 +1,7 @@
 <?php
 
 use Gregwar\Cache\Cache;
+use voku\helper\UTF8;
 
 # This interface indicates that a class can be instantiated from data
 # obtained from a configuration file. $args is an array of attributes,
@@ -144,7 +145,7 @@ class Parser {
 	# For example, if the input is "test", this function returns
 	# "forms/test.jade".
 	function getForm($name) {
-		if (is_string($name) && !preg_match('/[^A-za-z0-9_-]/', $name) && mb_strlen($name) > 0) {
+		if (is_string($name) && !preg_match('/[^A-za-z0-9_-]/', $name) && UTF8::strlen($name) > 0) {
 			return 'forms/' . $name . '.jade';
 		} else {
 			throw new Exception('Invalid form name!');
