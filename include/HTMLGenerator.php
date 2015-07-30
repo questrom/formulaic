@@ -55,9 +55,12 @@ class DoubleEncode {
 # See utils.php for details
 class AssetUrl {
 	function __construct($value) {
-		$this->value = '____{{asset ' . $value . '}}____';;
+		$this->value = $value;
 	}
 }
+
+# Used as a placeholder for CSRF tokens
+class CSRFPlaceholder {}
 
 # Cache some safestrings globally for speed
 $SAFE_LT = new SafeString('<');
@@ -156,6 +159,8 @@ class HTMLParentlessContext implements HTMLGenerator{
 	}
 
 	# This function actually converts HTMLGenerator objects into strings.
+	# (well, actually arrays, which get re-converted by stringize below.
+	# this is a two-step process for caching purposes.)
 	# There were three ways of implementing this:
 	# 1. Using recursion - though fast and elegant, this results in call
 	#    stack overflows with very complex forms.
@@ -175,7 +180,10 @@ class HTMLParentlessContext implements HTMLGenerator{
 	final function generateString() {
 		// $t = microtime(true);
 		# The HTML output
-		$out = '';
+		$out = [];
+
+		# The last thing written to $out was a string
+		$lastString = false;
 
 		# A "call stack" type structure
 		$stack = [];
@@ -223,23 +231,29 @@ class HTMLParentlessContext implements HTMLGenerator{
 				# Empty arrays/strings and null values produce no output, so just skip them.
 				if(!is_array($element) && $element !== null && $element !== '') {
 
-					if($element instanceof SafeString || $element instanceof AssetUrl) {
+					if($element instanceof SafeString) {
 						# If a string is wrapped in a SafeString object, it needs no escaping.
 						$element = $element->value;
 					} else if(is_scalar($element)) {
 						# Strings and other primitive types must be escaped an extra time.
+						$element = (string) $element;
 						$escapeCount++;
-					} else {
-						throw new Exception("Invalid HTML component!");
 					}
 
 					# Handle the escapeCount by escaping extra times.
-					for($j = $escapeCount; $j--;) {
-						$element = htmlspecialchars($element, ENT_QUOTES | ENT_HTML5);
+					# We assume that AssetURLs and other non-string things won't need extra escaping.
+					if(is_string($element)) {
+						for($j = $escapeCount; $j--;) {
+							$element = htmlspecialchars($element, ENT_QUOTES | ENT_HTML5);
+						}
 					}
 
-					# Add to the output
-					$out .= $element;
+					if(is_string($element) && $lastString) {
+						$out[count($out) - 1] .= $element;
+					} else {
+						$out[] = $element;
+					}
+					$lastString = is_string($element);
 				}
 
 				if($top > 1) {
@@ -252,8 +266,65 @@ class HTMLParentlessContext implements HTMLGenerator{
 				}
 			}
 		}
+
+		# Generate arrays that can, in theory, be serialized
+		# (e.g. stored in JSON).
+		# We could use PHP's serialize(), but this risks
+		# quite serious security issues if we accidentally
+		# unserialize untrusted data.
+		$out = array_map(function($x) {
+			if(is_string($x)) {
+				return $x;
+			} else if($x instanceof AssetUrl) {
+				return ['asset' => $x->value];
+			} else if($x instanceof CSRFPlaceholder) {
+				return ['csrf' => true];
+			} else {
+				throw new Exception("Invalid HTML component!");
+			}
+		}, $out);
+
 		return $out;
 	}
+}
+
+# Convert an array from generateString() into an actual, final string
+# ready to be displayed to the user.
+function stringize($out, $csrfToken = null) {
+
+	$config = Config::get();
+
+	# Unless we're in debug mode, serve minified versions of things like semantic.
+	# Don't bother minifying styles.css and client.js, because their size is tiny
+	# compared to these libraries.
+	$assetMap = $config['debug'] ? [] : [
+		'lib/semantic.css' => 'lib/semantic.min.css',
+		'lib/semantic.js' => 'lib/semantic.min.js',
+		'lib/jquery.js' => 'lib/jquery.min.js',
+		'lib/jquery.inputmask.bundle.js' => 'lib/jquery.inputmask.bundle.min.js'
+	];
+
+	$str = '';
+	foreach($out as $x) {
+		if(is_string($x)) {
+			$str .= $x;
+		} else if(isset($x['asset'])) {
+			$x = $x['asset'];
+
+			$fileName = isget($assetMap[$x], $x);
+
+			$str .= preg_replace_callback('/^(.*)\.(.*)$/', function($parts) use($fileName, $config) {
+				return htmlspecialchars($config['asset-prefix'] . $parts[1] . '.hash-' . Hashes::get($fileName) . '.' . $parts[2], ENT_QUOTES | ENT_HTML5);
+			}, $fileName);
+
+		} else if(isset($x['csrf'])) {
+			$str .= htmlspecialchars($csrfToken, ENT_QUOTES | ENT_HTML5);
+		} else {
+			throw new Exception("Invalid HTML component!");
+		}
+	}
+
+	return $str;
 }
 
 # Very simple shortcut for getting an HTML generator.

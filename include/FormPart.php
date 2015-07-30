@@ -562,7 +562,7 @@ class FormElemFormPart implements Renderable {
 			->input
 				->type('hidden')
 				->name('csrf_token')
-				->value('__{{CSRF__TOKEN}}__')
+				->value(new CSRFPlaceholder())
 			->end
 			->div->class('ui floating error message validation-error-message')
 				->div->class('header')

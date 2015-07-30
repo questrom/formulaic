@@ -113,28 +113,6 @@ class Hashes {
 			return $hash;
 		}
 	}
-
-	# This function writes the URLs, with hashes included, into a page before it is displayed to the user.
-	# We have to do this replacement after the page has been generated so that we can cache
-	# form UIs properly (when cache-forms is enabled).
-	static function fixAssets($html) {
-		return preg_replace_callback('/____\{\{asset (.*?)\}\}____/', function($matches) {
-			$config = Config::get();
-			$assetMap = $config['debug'] ? [] : [
-				'lib/semantic.css' => 'lib/semantic.min.css',
-				'lib/semantic.js' => 'lib/semantic.min.js',
-				'lib/jquery.js' => 'lib/jquery.min.js',
-				'lib/jquery.inputmask.bundle.js' => 'lib/jquery.inputmask.bundle.min.js'
-			];
-			$fileName = isget($assetMap[$matches[1]], $matches[1]);
-
-			return preg_replace_callback('/^(.*)\.(.*)$/', function($parts) use($matches, $config) {
-				return $config['asset-prefix'] . $parts[1] . '.hash-' . self::get($matches[1]) . '.' . $parts[2];
-			}, $fileName);
-
-		}, $html);
-	}
-
 }
 
 

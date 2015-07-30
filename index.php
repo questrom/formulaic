@@ -22,14 +22,14 @@ $klein->onHttpError(function ($code, $router) {
 			->c($res->status()->getMessage())
 		->end;
 	$router->response()->body(
-		'<!DOCTYPE html>' . $message->generateString()
+		'<!DOCTYPE html>' . stringize($message->generateString())
 	);
 });
 
 # The main list of forms
 $klein->respond('GET', '/', function () use($parser) {
 	$formlist = new FormList($parser->getFormInfo());
-	$ret = '<!DOCTYPE html>' . Hashes::fixAssets($formlist->makeFormList()->render()->generateString());
+	$ret = '<!DOCTYPE html>' . stringize($formlist->makeFormList()->render()->generateString());
 	return $ret;
 });
 
@@ -39,14 +39,15 @@ $klein->respond('GET', '/view', function ($req) use($parser) {
 	$page = $parser->parseJade($_GET['form']);
 	$view = $page->getView($_GET['view']);
 
-	return Hashes::fixAssets(
-		$view
-		->makeView(
-			$view->query( $req->paramsGet()->get('page', 1) )
-		)
-		->render()
-		->generateString()
-	);
+	return '<!DOCTYPE html>' .
+		stringize(
+			$view
+			->makeView(
+				$view->query( $req->paramsGet()->get('page', 1) )
+			)
+			->render()
+			->generateString()
+		);
 });
 
 # A form itself
@@ -66,15 +67,17 @@ $klein->respond('GET', '/forms/[:formID]', function($request) use($parser) {
 		[],
 		function () use($request, $parser) {
 			$page = $parser->parseJade($request->formID);
-			return '<!DOCTYPE html>' . $page->makeFormPart()->render()->generateString();
+			return json_encode($page->makeFormPart()->render()->generateString());
 		}
 	);
 
-	# Add a CSRF token. We do this outside of the getOrCreate function
-	# so that it won't be cached.
-	$html = str_replace('__{{CSRF__TOKEN}}__', htmlspecialchars($token), $html);
+	# We add asset URLs and the CSRF token
+	# outside of the getOrCreate function
+	# so that these aren't getting cached.
+	$html = stringize(json_decode($html, true), $token);
 
-	return Hashes::fixAssets($html);
+
+	return '<!DOCTYPE html>' . $html;
 });
 
 $klein->respond('POST', '/submit', function ($req, $res) use($parser) {
@@ -150,7 +153,7 @@ $klein->respond('GET', '/details', function () use($parser) {
 	$page = $parser->parseJade($_GET['form']);
 	$view = new DetailsView();
 	$view->setPage($page);
-	return '<!DOCTYPE html>' . Hashes::fixAssets($view->makeView($view->query($_GET))->render()->generateString());
+	return '<!DOCTYPE html>' . stringize($view->makeView($view->query($_GET))->render()->generateString());
 });
 
 # See https://github.com/chriso/klein.php/wiki/Sub-Directory-Installation
