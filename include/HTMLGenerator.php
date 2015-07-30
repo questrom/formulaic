@@ -53,7 +53,7 @@ class DoubleEncode {
 
 # Used to hold asset URLs that can be replaced with fixAssets()
 # See utils.php for details
-class AssetUrl extends SafeString {
+class AssetUrl {
 	function __construct($value) {
 		$this->value = '____{{asset ' . $value . '}}____';;
 	}
@@ -223,7 +223,7 @@ class HTMLParentlessContext implements HTMLGenerator{
 				# Empty arrays/strings and null values produce no output, so just skip them.
 				if(!is_array($element) && $element !== null && $element !== '') {
 
-					if($element instanceof SafeString) {
+					if($element instanceof SafeString || $element instanceof AssetUrl) {
 						# If a string is wrapped in a SafeString object, it needs no escaping.
 						$element = $element->value;
 					} else if(is_scalar($element)) {
