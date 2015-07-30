@@ -9,7 +9,6 @@
     "require": {
         "ext-fileinfo": "~1.0.5",
         "ext-json": "~1.2.1",
-        "ext-mbstring": "*",
         "ext-mongo": ">=1.6.8",
         "ext-SPL": "~0.2",
         "ext-xmlreader": "*",
