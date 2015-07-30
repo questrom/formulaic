@@ -49,8 +49,13 @@ require 'ComponentAbstract.php';
 require 'Component.php';
 
 # DSL for generating HTML ============================================================
-# Similar to "hyperscript" in JS
+
+# This is similar to "hyperscript" in JS -- it provides a simple way of making HTML.
+# HTMLGenerator - includes objects used to generate objects representing HTML
+# Stringifier - handles converting such objects into strings
+
 require 'HTMLGenerator.php';
+require 'Stringifier.php';
 
 # Renderables ========================================================================
 
