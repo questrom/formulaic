@@ -31,7 +31,7 @@ Note that this does not include information about all possible query string para
     <i class="code outline icon"></i>
     <div class="content">
       <div class="title">Make HTML</div>
-      <div class="description">`->generateString`</div>
+      <div class="description">`stringify`</div>
     </div>
   </div>
 </div>
@@ -66,7 +66,7 @@ This route gets the main list of forms.
     <i class="code outline icon"></i>
     <div class="content">
       <div class="title">Make HTML</div>
-      <div class="description">`->generateString`</div>
+      <div class="description">`stringify`</div>
     </div>
   </div>
 </div>
@@ -101,7 +101,7 @@ This route displays a specific view of a specific form. The configuration file t
     <i class="code outline icon"></i>
     <div class="content">
       <div class="title">Make HTML</div>
-      <div class="description">`->generateString`</div>
+      <div class="description">`stringify`</div>
     </div>
   </div>
 </div>
@@ -171,7 +171,7 @@ This route submits a form, returning either validation errors or a confirmation 
     <i class="code outline icon"></i>
     <div class="content">
       <div class="title">Make HTML</div>
-      <div class="description">`->generateString`</div>
+      <div class="description">`stringify`</div>
     </div>
   </div>
 </div>
@@ -207,7 +207,7 @@ This route is used when the Details button in a table view is pressed.
     <i class="code outline icon"></i>
     <div class="content">
       <div class="title">Make HTML</div>
-      <div class="description">`->generateString`</div>
+      <div class="description">`stringify`</div>
     </div>
   </div>
 </div>

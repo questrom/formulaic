@@ -3,9 +3,11 @@
 # These classes define a simple DSL for generating HTML.
 # Perhaps this is best explained with a simple example:
 
-#  h()->div->class('test')
-#     ->span->id('hello')->c('Hello world')->end
-#   ->end->generateString()
+#  Stringifier::stringify(
+#    h()->div->class('test')
+#      ->span->id('hello')->c('Hello world')->end
+#    ->end
+#  )
 # equals:
 #   <div class="test"><span id="hello">Hello world</span></div>
 
@@ -158,9 +160,19 @@ class HTMLParentlessContext implements HTMLGenerator{
 		return $this->contents;
 	}
 
-	# This function actually converts HTMLGenerator objects into strings.
-	# (well, actually arrays, which get re-converted by stringize below.
-	# this is a two-step process for caching purposes.)
+	final function generateString() {
+		return Stringifier::makeArray($this);
+	}
+}
+
+# This class handles converting HTML data into strings, as a two step process.
+class Stringifier {
+
+
+	# This function converts HTMLGenerator objects into flat arrays,
+	# which can then be cached before final processing using the makeString
+	# function below.
+
 	# There were three ways of implementing this:
 	# 1. Using recursion - though fast and elegant, this results in call
 	#    stack overflows with very complex forms.
@@ -177,8 +189,8 @@ class HTMLParentlessContext implements HTMLGenerator{
 	# As well as on the purely iterative JavaScript solution
 	# given at this link: http://stackoverflow.com/questions/29991016/
 
-	final function generateString() {
-		// $t = microtime(true);
+	static function makeArray($element) {
+
 		# The HTML output
 		$out = [];
 
@@ -192,9 +204,6 @@ class HTMLParentlessContext implements HTMLGenerator{
 		# If $stack is like a call stack, this is like the "esp" register
 		# on an x86 architecture.
 		$top = 1;
-
-		# The thing currently being processed
-		$element = $this;
 
 		# The number of extra times that HTML needs to be escaped.
 		# This, along with the DoubleEncode class, is needed for nested
@@ -279,46 +288,51 @@ class HTMLParentlessContext implements HTMLGenerator{
 
 		return $out;
 	}
-}
 
-# Convert an array from generateString() into an actual, final string
-# ready to be displayed to the user.
-function stringize($out, $csrfToken = null) {
+	# Convert an array from makeArray() into an actual, final string
+	# ready to be displayed to the user.
+	static function makeString($out, $csrfToken = null) {
 
-	$config = Config::get();
-	$hashes = new Hashes();
+		$config = Config::get();
+		$hashes = new Hashes();
 
-	# Unless we're in debug mode, serve minified versions of things like semantic.
-	# Don't bother minifying styles.css and client.js, because their size is tiny
-	# compared to these libraries.
-	$assetMap = $config['debug'] ? [] : [
-		'lib/semantic.css' => 'lib/semantic.min.css',
-		'lib/semantic.js' => 'lib/semantic.min.js',
-		'lib/jquery.js' => 'lib/jquery.min.js',
-		'lib/jquery.inputmask.bundle.js' => 'lib/jquery.inputmask.bundle.min.js'
-	];
+		# Unless we're in debug mode, serve minified versions of things like semantic.
+		# Don't bother minifying styles.css and client.js, because their size is tiny
+		# compared to these libraries.
+		$assetMap = $config['debug'] ? [] : [
+			'lib/semantic.css' => 'lib/semantic.min.css',
+			'lib/semantic.js' => 'lib/semantic.min.js',
+			'lib/jquery.js' => 'lib/jquery.min.js',
+			'lib/jquery.inputmask.bundle.js' => 'lib/jquery.inputmask.bundle.min.js'
+		];
 
-	$str = '';
-	foreach($out as $x) {
-		if(is_string($x)) {
-			$str .= $x;
-		} else if(isset($x['asset'])) {
-			$x = $x['asset'];
+		$str = '';
+		foreach($out as $x) {
+			if(is_string($x)) {
+				$str .= $x;
+			} else if(isset($x['asset'])) {
+				$x = $x['asset'];
 
-			$fileName = isget($assetMap[$x], $x);
+				$fileName = isget($assetMap[$x], $x);
 
-			$str .= preg_replace_callback('/^(.*)\.(.*)$/', function($parts) use($fileName, $config, $hashes) {
-				return htmlspecialchars($config['asset-prefix'] . $parts[1] . '.hash-' . $hashes->get($fileName) . '.' . $parts[2], ENT_QUOTES | ENT_HTML5);
-			}, $fileName);
+				$str .= preg_replace_callback('/^(.*)\.(.*)$/', function($parts) use($fileName, $config, $hashes) {
+					return htmlspecialchars($config['asset-prefix'] . $parts[1] . '.hash-' . $hashes->get($fileName) . '.' . $parts[2], ENT_QUOTES | ENT_HTML5);
+				}, $fileName);
 
-		} else if(isset($x['csrf'])) {
-			$str .= htmlspecialchars($csrfToken, ENT_QUOTES | ENT_HTML5);
-		} else {
-			throw new Exception("Invalid HTML component!");
+			} else if(isset($x['csrf'])) {
+				$str .= htmlspecialchars($csrfToken, ENT_QUOTES | ENT_HTML5);
+			} else {
+				throw new Exception("Invalid HTML component!");
+			}
 		}
+
+		return $str;
 	}
 
-	return $str;
+	# Performs both steps at once.
+	static function stringify($element) {
+		return self::makeString(self::makeArray($element));
+	}
 }
 
 # Very simple shortcut for getting an HTML generator.

@@ -22,14 +22,14 @@ $klein->onHttpError(function ($code, $router) {
 			->c($res->status()->getMessage())
 		->end;
 	$router->response()->body(
-		'<!DOCTYPE html>' . stringize($message->generateString())
+		'<!DOCTYPE html>' . Stringifier::stringify($message)
 	);
 });
 
 # The main list of forms
 $klein->respond('GET', '/', function () use($parser) {
 	$formlist = new FormList($parser->getFormInfo());
-	$ret = '<!DOCTYPE html>' . stringize($formlist->makeFormList()->render()->generateString());
+	$ret = '<!DOCTYPE html>' . Stringifier::stringify($formlist->makeFormList());
 	return $ret;
 });
 
@@ -40,13 +40,11 @@ $klein->respond('GET', '/view', function ($req) use($parser) {
 	$view = $page->getView($_GET['view']);
 
 	return '<!DOCTYPE html>' .
-		stringize(
+		Stringifier::stringify(
 			$view
 			->makeView(
 				$view->query( $req->paramsGet()->get('page', 1) )
 			)
-			->render()
-			->generateString()
 		);
 });
 
@@ -67,14 +65,15 @@ $klein->respond('GET', '/forms/[:formID]', function($request) use($parser) {
 		[],
 		function () use($request, $parser) {
 			$page = $parser->parseJade($request->formID);
-			return json_encode($page->makeFormPart()->render()->generateString());
+			$str = json_encode(Stringifier::makeArray($page->makeFormPart()->render()));
+			return $str;
 		}
 	);
 
 	# We add asset URLs and the CSRF token
 	# outside of the getOrCreate function
 	# so that these aren't getting cached.
-	$html = stringize(json_decode($html, true), $token);
+	$html = Stringifier::makeString(json_decode($html, true), $token);
 
 	return '<!DOCTYPE html>' . $html;
 });
@@ -152,7 +151,7 @@ $klein->respond('GET', '/details', function () use($parser) {
 	$page = $parser->parseJade($_GET['form']);
 	$view = new DetailsView();
 	$view->setPage($page);
-	return '<!DOCTYPE html>' . stringize($view->makeView($view->query($_GET))->render()->generateString());
+	return '<!DOCTYPE html>' . Stringifier::stringify($view->makeView($view->query($_GET)));
 });
 
 # See https://github.com/chriso/klein.php/wiki/Sub-Directory-Installation

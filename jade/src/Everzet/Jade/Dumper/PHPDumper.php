@@ -181,19 +181,20 @@ class PHPDumper implements DumperInterface
      */
     protected function dumpTag(TagNode $node, $level = 0)
     {
-        $html = str_repeat('  ', $level);
+        // $html = str_repeat('  ', $level);
+        $html = '';
 
         foreach ($this->visitors['tag'] as $visitor) {
             $visitor->visit($node);
         }
 
-        if (in_array($node->getName(), $this->selfClosing)) {
-            $html .= '<' . $node->getName();
-            $html .= $this->dumpAttributes($node->getAttributes());
-            $html .= ' />';
+        // if (in_array($node->getName(), $this->selfClosing)) {
+        //     $html .= '<' . $node->getName();
+        //     $html .= $this->dumpAttributes($node->getAttributes());
+        //     $html .= ' />';
 
-            return $html;
-        } else {
+        //     return $html;
+        // } else {
             if (count($node->getAttributes())) {
                 $html .= '<' . $node->getName();
                 $html .= $this->dumpAttributes($node->getAttributes());
@@ -204,31 +205,31 @@ class PHPDumper implements DumperInterface
 
             if ($node->getCode()) {
                 if (count($node->getChilds())) {
-                    $html .= "\n" . str_repeat('  ', $level + 1) . $this->dumpCode($node->getCode());
+                    $html .= $this->dumpCode($node->getCode());
                 } else {
                     $html .= $this->dumpCode($node->getCode());
                 }
             }
             if ($node->getText() && count($node->getText()->getLines())) {
                 if (count($node->getChilds())) {
-                    $html .= "\n" . str_repeat('  ', $level + 1) . $this->dumpText($node->getText());
+                    $html .= $this->dumpText($node->getText());
                 } else {
                     $html .= $this->dumpText($node->getText());
                 }
             }
 
             if (count($node->getChilds())) {
-                $html .= "\n";
+                // $html .= "\n";
                 $childs = $node->getChilds();
                 foreach ($childs as $i => $child) {
                     $this->nextIsIf[$level + 1] = isset($childs[$i + 1]) && ($childs[$i + 1] instanceof CodeNode);
                     $html .= $this->dumpNode($child, $level + 1);
                 }
-                $html .= "\n" . str_repeat('  ', $level);
+                // $html .= "\n" . str_repeat('  ', $level);
             }
 
             return $html . '</' . $node->getName() . '>';
-        }
+        // }
     }
 
     /**

@@ -132,43 +132,18 @@ class Lexer implements LexerInterface
      *
      * @return  Object
      */
-    protected function getNextToken()
-    {
-          $token = $this->getDeferredToken();
-          if(null !== $token && $token) { return $token; }
-
-          $token = $this->scanEOS();
-          if(null !== $token && $token) { return $token; }
-
-          $token = $this->scanTag();
-          if(null !== $token && $token) { return $token; }
-
-          $token = $this->scanFilter();
-          if(null !== $token && $token) { return $token; }
-
-          $token = $this->scanCode();
-          if(null !== $token && $token) { return $token; }
-
-          $token = $this->scanDoctype();
-          if(null !== $token && $token) { return $token; }
-
-          $token = $this->scanId();
-          if(null !== $token && $token) { return $token; }
-
-          // $token = $this->scanClass();
-          // if(null !== $token && $token) { return $token; }
-
-          $token = $this->scanAttributes();
-          if(null !== $token && $token) { return $token; }
-
-          $token = $this->scanIndentation();
-          if(null !== $token && $token) { return $token; }
-
-          $token = $this->scanComment();
-          if(null !== $token && $token) { return $token; }
-
-          $token = $this->scanText();
-          if(null !== $token && $token) { return $token; }
+    protected function getNextToken() {
+        return $this->getDeferredToken() ?:
+            $this->scanEOS() ?:
+            $this->scanTag() ?:
+            $this->scanFilter() ?:
+            $this->scanCode() ?:
+            $this->scanDoctype() ?:
+            $this->scanId() ?:
+            $this->scanAttributes() ?:
+            $this->scanIndentation() ?:
+            $this->scanComment() ?:
+            $this->scanText();
     }
 
     /**
