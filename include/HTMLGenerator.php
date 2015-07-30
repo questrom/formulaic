@@ -277,8 +277,6 @@ class HTMLParentlessContext implements HTMLGenerator{
 			}
 		}
 
-
-
 		return $out;
 	}
 }
