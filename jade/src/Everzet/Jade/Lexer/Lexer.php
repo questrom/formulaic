@@ -3,6 +3,7 @@
 namespace Everzet\Jade\Lexer;
 
 use Everzet\Jade\Exception\Exception;
+use voku\helper\UTF8;
 
 /*
  * This file is part of the Jade.php.
@@ -177,7 +178,7 @@ class Lexer implements LexerInterface
      */
     protected function consumeInput($length)
     {
-        $this->input = mb_substr($this->input, $length);
+        $this->input = UTF8::substr($this->input, $length);
     }
 
     /**
@@ -192,7 +193,7 @@ class Lexer implements LexerInterface
     {
         $matches = array();
         if (preg_match($regex . 'S', $this->input, $matches)) {
-            $this->consumeInput(mb_strlen($matches[0]));
+            $this->consumeInput(UTF8::strlen($matches[0]));
 
             return $this->takeToken($type, $matches[1]);
         }
@@ -205,7 +206,7 @@ class Lexer implements LexerInterface
      */
     protected function scanEOS()
     {
-        if (mb_strlen($this->input)) {
+        if (UTF8::strlen($this->input)) {
             return;
         }
 
@@ -222,7 +223,7 @@ class Lexer implements LexerInterface
         $matches = array();
 
         if (preg_match('/^ *\/\/(-)?([^\n]+)?/', $this->input, $matches)) {
-            $this->consumeInput(mb_strlen($matches[0]));
+            $this->consumeInput(UTF8::strlen($matches[0]));
             $token = $this->takeToken('comment', isset($matches[2]) ? $matches[2] : '');
             $token->buffer = !isset($matches[1]) || '-' !== $matches[1];
 
@@ -300,7 +301,7 @@ class Lexer implements LexerInterface
         $matches = array();
 
         if (preg_match('/^(!?=|-)([^\n]+)/', $this->input, $matches)) {
-            $this->consumeInput(mb_strlen($matches[0]));
+            $this->consumeInput(UTF8::strlen($matches[0]));
 
             $flags = $matches[1];
             $token = $this->takeToken('code', $matches[2]);
@@ -319,7 +320,7 @@ class Lexer implements LexerInterface
     {
         if ('(' === $this->input[0]) {
             $index      = $this->getDelimitersIndex('(', ')');
-            $input      = mb_substr($this->input, 1, $index - 1);
+            $input      = UTF8::substr($this->input, 1, $index - 1);
             $token      = $this->takeToken('attributes', $input);
             $attributes = preg_split('/ *, *(?=[\'"\w-]+ *[:=]|[\w-]+ *$)/', $token->value);
             $this->consumeInput($index + 1);
@@ -327,11 +328,11 @@ class Lexer implements LexerInterface
 
             foreach ($attributes as $i => $pair) {
                 $pair = preg_replace('/^ *| *$/', '', $pair);
-                $colon = mb_strpos($pair, ':');
-                $equal = mb_strpos($pair, '=');
+                $colon = UTF8::strpos($pair, ':');
+                $equal = UTF8::strpos($pair, '=');
 
-                $sbrac = mb_strpos($pair, '\'');
-                $dbrac = mb_strpos($pair, '"');
+                $sbrac = UTF8::strpos($pair, '\'');
+                $dbrac = UTF8::strpos($pair, '"');
                 if ($sbrac < 1) {
                     $sbrac = false;
                 }
@@ -355,8 +356,8 @@ class Lexer implements LexerInterface
                         $splitter = $colon;
                     }
 
-                    $key    = mb_substr($pair, 0, $splitter);
-                    $value  = preg_replace('/^ *[\'"]?|[\'"]? *$/', '', mb_substr($pair, ++$splitter, mb_strlen($pair)));
+                    $key    = UTF8::substr($pair, 0, $splitter);
+                    $value  = preg_replace('/^ *[\'"]?|[\'"]? *$/', '', UTF8::substr($pair, ++$splitter, UTF8::strlen($pair)));
 
                     if ('true' === $value) {
                         $value = true;
@@ -383,20 +384,20 @@ class Lexer implements LexerInterface
 
         if (preg_match('/^\n( *)/', $this->input, $matches)) {
             $this->lineno++;
-            $this->consumeInput(mb_strlen($matches[0]));
+            $this->consumeInput(UTF8::strlen($matches[0]));
 
             $token      = $this->takeToken('indent', $matches[1]);
-            $indents    = mb_strlen($token->value) / 2;
+            $indents    = UTF8::strlen($token->value) / 2;
 
 
-            if (mb_strlen($this->input) && "\n" === $this->input[0]) {
+            if (UTF8::strlen($this->input) && "\n" === $this->input[0]) {
                 $token->type = 'newline';
 
                 return $token;
             } elseif (0 !== $indents % 1) {
                 throw new Exception(sprintf(
                     'Invalid indentation found. Spaces count must be a multiple of two, but %d got.'
-                  , mb_strlen($token->value)
+                  , UTF8::strlen($token->value)
                 ));
             } elseif ($this->lastIndents === $indents) {
                 $token->type = 'newline';
@@ -438,7 +439,7 @@ class Lexer implements LexerInterface
         $sbrac      = false;
         $dbrac      = false;
 
-        for ($i = 0, $length = mb_strlen($string); $i < $length; ++$i) {
+        for ($i = 0, $length = UTF8::strlen($string); $i < $length; ++$i) {
             if ('"' === $string[$i]) {
                 $dbrac = !$dbrac;
             } elseif ('\'' === $string[$i]) {

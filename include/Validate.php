@@ -1,5 +1,7 @@
 <?php
 
+use voku\helper\UTF8;
+
 # In order to understand what this abstract class does, please
 # first read the documentation below it, which describes the nature of
 # the Success, Failure, and Result types.
@@ -199,7 +201,7 @@ abstract class Validate {
 	function filterPhone() {
 		return $this->ifOk(function($x) {
 			$phn = preg_replace('/[^x+0-9]/', '', $x);
-			if(mb_strlen($phn) >= 10 || $x === '') {
+			if(UTF8::strlen($phn) >= 10 || $x === '') {
 				return Result::ok($phn);
 			} else {
 				return Result::error('Invalid phone number.');
@@ -301,9 +303,9 @@ abstract class Validate {
 	# Check that the length of a string is within a specific range
 	function minMaxLength($minLength, $maxLength) {
 		return $this->ifOk(function($x) use ($minLength, $maxLength) {
-			if(mb_strlen($x) > $maxLength) {
+			if(UTF8::strlen($x) > $maxLength) {
 				return Result::error('The input is too long. Maximum is ' . $maxLength . ' characters.');
-			} elseif(mb_strlen($x) < $minLength) {
+			} elseif(UTF8::strlen($x) < $minLength) {
 				return Result::error('The input is too short. Minimum is ' . $minLength . ' characters.');
 			} else {
 				return Result::ok($x);
