@@ -46,6 +46,13 @@ class SafeString {
 	}
 }
 
+# Cache some safestrings globally for speed
+$SAFE_LT = new SafeString('<');
+$SAFE_GT = new SafeString('>');
+$SAFE_LT_SLASH =  new SafeString('</');
+$SAFE_EQ_QUOTE = new SafeString('="');
+$SAFE_QUOTE = new SafeString('"');
+
 # Used to hold values which need to be escaped an extra time.
 # Needed for nested lists to work properly.
 class DoubleEncode {
@@ -64,13 +71,6 @@ class AssetUrl {
 
 # Used as a placeholder for CSRF tokens
 class CSRFPlaceholder {}
-
-# Cache some safestrings globally for speed
-$SAFE_LT = new SafeString('<');
-$SAFE_GT = new SafeString('>');
-$SAFE_LT_SLASH =  new SafeString('</');
-$SAFE_EQ_QUOTE = new SafeString('="');
-$SAFE_QUOTE = new SafeString('"');
 
 # This generates an HTML tag with a parent element.
 class HTMLParentContext implements HTMLGenerator {
