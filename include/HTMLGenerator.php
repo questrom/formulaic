@@ -245,28 +245,31 @@ class Stringifier {
 						$escapeCount++;
 					}
 
-					# Handle the escapeCount by escaping extra times.
-					# We assume that AssetURLs and other non-string things
-					# won't need extra escaping.
-					if(is_string($element)) {
-						for($j = $escapeCount; $j--;) {
-							$element = htmlspecialchars($element, ENT_QUOTES | ENT_HTML5);
-						}
-					}
 
-					# Generate arrays that can, in theory, be serialized
+					# Generate values that can, in theory, be serialized
 					# (e.g. stored in JSON). We could use PHP's serialize(),
 					# but this is worse for perf.
 
-					if(is_string($element) && $lastString) {
-						$out[count($out) - 1] .= $element;
-					} else if(is_string($element)) {
-						$out[] = $element;
+					if(is_string($element)) {
+						# Handle the escapeCount by escaping extra times.
+						# We assume that AssetURLs and other non-string things
+						# won't need extra escaping.
+						for($j = $escapeCount; $j--;) {
+							$element = htmlspecialchars($element, ENT_QUOTES | ENT_HTML5);
+						}
+
+						if($lastString) {
+							# If possible, append to a previous string
+							$out[count($out) - 1] .= $element;
+						} else {
+							$out[] = $element;
+						}
+
 					} else if($element instanceof AssetUrl) {
 						$out[] = ['asset' => $element->value];
 					} else if($element instanceof CSRFPlaceholder) {
 						$out[] = ['csrf' => true];
-					}  else {
+					} else {
 						throw new Exception("Invalid HTML component!");
 					}
 					$lastString = is_string($element);

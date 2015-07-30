@@ -24,6 +24,8 @@ class AllowElem implements Configurable {
 
 # Note that, since XMLReader's error handling is not very good, errors may result in infinite loops :(
 class BetterReader extends XMLReader {
+
+	# The map of XML element names to PHP classes that implement Configurable.
 	private $elementMap = [
 		'checkbox' => 'Checkbox',
 		'textbox' => 'Textbox',
@@ -182,16 +184,13 @@ class Parser {
 	}
 
 	# Get an XML reader
-	function getReader() {
+	private function getReader() {
+		# cache this, for FormList
 		if(!isset($this->reader)) {
-			$reader = $this->reader = new BetterReader();
-
-			# The map of XML element names to PHP classes that implement Configurable.
-
+			return $this->reader = new BetterReader();
 		} else {
-			$reader = $this->reader;
+			return $this->reader;
 		}
-		return $reader;
 	}
 
 	# Get a jade parser
@@ -225,7 +224,7 @@ class Parser {
 		while ($reader->nodeType !== XMLReader::ELEMENT) {
 			$reader->read();
 		}
-		$cfg =  Config::get();
+		$cfg = Config::get();
 		$readData = $reader->parseCurrentElement($cfg);
 
 		$page = $readData['value'];

@@ -16,3 +16,4 @@ node_modules
 the.todo
 config/config.toml
 data/
+cache/

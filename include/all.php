@@ -5,6 +5,9 @@
 # Composer dependencies
 require 'vendor/autoload.php';
 
+# Create directories
+if(!is_dir('cache')) { mkdir('cache'); }
+
 # Set charset
 voku\helper\UTF8::checkForSupport(); # will run mb_internal_encoding if necessary
 ini_set('default_encoding', 'UTF-8');
