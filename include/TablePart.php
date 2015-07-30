@@ -416,6 +416,7 @@ class TablePage implements Renderable {
 								'csv?form=' . $this->f->formID .
 								'&view=' . $this->f->name
 							)
+							->target('_blank') # So there's some indication it's loading
 							->i->class('download icon')->end
 							->c('Download CSV')
 						->end
