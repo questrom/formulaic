@@ -38,15 +38,11 @@ require 'Validate.php';
 #   elements placed inside configuration files.
 # - They have methods which create Renderable objects -- in other words,
 #   they allow the creation of HTML elements.
-# Many are also Storeable: i.e., they have associated data that can be stored
-# inside of, say, MongoDB.
+# Many are also Storeable: i.e., they have associated data that can be validated
+# and stored inside of, say, MongoDB.
 
-# More specifically, ComponentAbstract.php contains some interfaces, traits, and
-# abstract classes used by components, while Component.php contains the
-# components themselves.
-
-require 'ComponentAbstract.php';
-require 'Component.php';
+require 'ComponentAbstract.php'; # Interfaces, traits, and abstract classes used by components
+require 'Component.php'; # The components themselves
 
 # DSL for generating HTML ============================================================
 
