@@ -405,7 +405,9 @@ class FileUpload extends NamedLabeledComponent {
 			implode(', ', array_keys($this->allowedExtensions)) .
 			' ' . UTF8::chr(0x00B7) . ' Max file size: ' .
 			ByteUnits\Metric::bytes($this->maxSize)->format(0);
-		return new InputFormPart($this, 'file', null, null, $innerText);
+
+		$accept = implode(',', array_map(function($x) { return '.'.$x; }, array_keys($this->allowedExtensions)));
+		return new InputFormPart($this, 'file', null, null, $innerText, $accept);
 	}
 	function getSubmissionPart($against) {
 		# Validating file inputs is a rather difficult task.

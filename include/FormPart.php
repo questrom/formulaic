@@ -170,12 +170,13 @@ class InputFormPart implements Renderable {
 	# $icon - the icon going inside the input
 	# $mask - the input mask
 	# $sublabel - the sublabel to use
-	function __construct($field, $type, $icon = null, $mask = null, $sublabel = null) {
+	function __construct($field, $type, $icon = null, $mask = null, $sublabel = null, $accept = null) {
 		$this->f = $field;
 		$this->type = $type;
 		$this->icon = $icon;
 		$this->mask = $mask;
 		$this->sublabel = $sublabel;
+		$this->accept = $accept;
 	}
 	function render() {
 		return h()
@@ -190,6 +191,7 @@ class InputFormPart implements Renderable {
 					->type($this->type)
 					->name($this->f->name)
 					->data('inputmask', $this->mask, $this->mask !== null)
+					->accept($this->accept, $this->accept !== null)
 				->end
 			->end
 		->end;
