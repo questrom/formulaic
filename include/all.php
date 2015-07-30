@@ -62,11 +62,8 @@ require 'Stringifier.php';
 # These files contain some (not all) classes implementing Renderable. Such classes
 # can be turned into HTML.
 
-# More specifically, FormPart.php contains Renderables primarily used within forms,
-# while TablePart.php contains ones primarily used within tables.
-
-require 'FormPart.php';
-require 'TablePart.php';
+require 'FormPart.php'; # Renderables primarily used within forms
+require 'TablePart.php'; # Renderables primarily used within tables
 
 # Outputs ===========================================================================
 
@@ -80,20 +77,12 @@ require 'Output.php';
 # These files various classes related to views -- that is, ways in which data
 # from form submissions can be displayed.
 
-# More specifically:
-# View - General interfaces and helpers
-# GeneralTable - shared among TableView/DetailsView/EmailView
-# TableView - Things related to table views
-# GraphView - Things related to graph views
-# DetailsView - The view shown after clicking the "Details" button in a table
-# EmailView - Used by the "email-to" output
-
-require 'View.php';
-require 'GeneralTable.php';
-require 'TableView.php';
-require 'GraphView.php';
-require 'DetailsView.php';
-require 'EmailView.php';
+require 'View.php'; # General interfaces/helpers
+require 'GeneralTable.php'; # Things shared among TableView/DetailsView/EmailView
+require 'TableView.php'; # Table views
+require 'GraphView.php'; # Graph views
+require 'DetailsView.php'; # The view shown after clicking the "Details" button in a table
+require 'EmailView.php'; # Used by the "email-to" output
 
 # FormList =============================================================================
 
