@@ -28,7 +28,6 @@ require 'Parser.php';
 # Conditions within "show-if" elements.
 require 'Condition.php';
 
-
 # Form validation helper
 require 'Validate.php';
 
