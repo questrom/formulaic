@@ -121,9 +121,9 @@ class TimeInput extends NamedLabeledComponent {
 
 		$hour = floor($v / 3600);
 		$minute = ($v % 3600) / 60;
-		$xm = 'am';
+		$xm = 'AM';
 		if ($hour > 11) {
-			$xm = 'pm';
+			$xm = 'PM';
 			$hour -= 12;
 		}
 		if (intval($hour) === 0) {
@@ -183,7 +183,7 @@ class DateTimePicker extends NamedLabeledComponent {
 		if ($v === null || !is_object($v)) {
 			return null;
 		}
-		return $v->format('Y-m-d H:i:00');
+		return $v->format('Y-m-d g:i A');
 	}
 }
 
@@ -970,7 +970,7 @@ class TimestampField implements TableViewPartFactory, Storeable {
 		if ($v === null || is_string($v)) {
 			return null;
 		}
-		return $v->format('Y-m-d H:i:s');
+		return $v->format('Y-m-d g:i A');
 	}
 }
 
