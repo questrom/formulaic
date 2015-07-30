@@ -92,8 +92,7 @@ class Stringifier {
 
 					if(is_string($element)) {
 						# Handle the escapeCount by escaping extra times.
-						# We assume that AssetURLs and other non-string things
-						# won't need extra escaping.
+
 						for($j = $escapeCount; $j--;) {
 							$element = htmlspecialchars($element, ENT_QUOTES | ENT_HTML5);
 						}
@@ -105,12 +104,18 @@ class Stringifier {
 							$out[] = $element;
 						}
 
-					} else if($element instanceof AssetUrl) {
-						$out[] = ['asset' => $element->value];
-					} else if($element instanceof CSRFPlaceholder) {
-						$out[] = ['csrf' => true];
 					} else {
-						throw new Exception("Invalid HTML component!");
+						if($escapeCount > 0) {
+							# We can't perform escapeCount escaping on non-strings
+							throw new Exception('Cannot escape non-string values!');
+						}
+						if($element instanceof AssetUrl) {
+							$out[] = ['asset' => $element->value];
+						} else if($element instanceof CSRFPlaceholder) {
+							$out[] = ['csrf' => true];
+						} else {
+							throw new Exception("Invalid HTML component!");
+						}
 					}
 					$lastString = is_string($element);
 				}
