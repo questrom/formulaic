@@ -11,4 +11,4 @@ form(title='Client Satisfaction Survey')
       col(name='_timestamp', header='Form submission date', width=1)
       col(name='_ip', header='IP address', width=1)
   outputs
-    mongo(server='mongodb://localhost:27017', database='forms', collection='customer_satisfaction')
+    mongo(collection='customer_satisfaction')

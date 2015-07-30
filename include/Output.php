@@ -30,8 +30,10 @@ class MongoOutput implements Configurable, Storage {
 	# Construct an object from an element in a configuration file
 	function __construct($args) {
 
-		$this->server = $args['server'];
-		$this->database = $args['database'];
+		$config = Config::get()['mongo'];
+
+		$this->server = $config['server'];
+		$this->database = $config['database'];
 		$this->collection = $args['collection'];
 		$this->client = null;
 	}

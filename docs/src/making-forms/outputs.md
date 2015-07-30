@@ -25,16 +25,12 @@ Note that uploaded files will be renamed for security reasons. Also note that S3
 <h3 class="ui header top attached">
 The `mongo` element
 </h3><div class="ui bottom attached segment">
-This element specifies that form submissions should be stored in MongoDB.
+This element specifies that form submissions should be stored in MongoDB. The server and database are specified in `config/config.toml`; this element specifies only the collection.
 
 Unlike the other outputs described on this page, MongoDB is treated as read-write rather than write-only. **For this reason, MongoDB is used by [views](views.html) to retrieve data.** In particular, the first `mongo` element present in a configuration file will be used by the views.
 
 ##### Attributes:
-* **`server`**
-
-  Specifies the `mongodb://` URL of the MongoDB server. See [this page from the PHP docs](http://php.net/manual/en/mongoclient.construct.php) for more information about the URL format.
-
-* **`database` and `collection`**
+* **`collection`**
 
   These attributes specify the database and collection in which the data should be stored.
 </div>

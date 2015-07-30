@@ -39,6 +39,13 @@ image="/img/white-nike-swoosh-wfotplbl.png"
 # The color to use for this menu, in "R, G, B" form.
 color="0, 130, 130"
 
+[mongo]
+# The MongoDB connection string to use
+# For more info, see: http://php.net/manual/en/mongoclient.construct.php
+server="mongodb://localhost:27017"
+# The database to use. The collection can be specified on a per-form basis.
+database="forms"
+
 
 # Key/Secret for Amazon S3. The buckets and permissions
 # for uploaded files can be set on a per-form basis.

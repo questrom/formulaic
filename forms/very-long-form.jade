@@ -73,7 +73,7 @@ form(title='Very Long Form', success-message='Lorem ipsum!')
     captcha
   outputs
     s3(bucket='form-builder-uploads')
-    mongo(server='mongodb://localhost:27017', database='forms', collection='example_form')
+    mongo(collection='example_form')
     email-to(to='perljason@gmail.com', from='Form Builder <perljason@gmail.com>', subject = 'Test2')
   views
     table-view(name='table', title='Main view', per-page=10)

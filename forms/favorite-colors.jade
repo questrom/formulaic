@@ -14,7 +14,7 @@ form(title='Favorite Colors')
     textarea(label='Why are these your favorites? (Optional)', name='explanation')
     notice(text='Results will be delivered via email and stored in MongoDB.', type='info')
   outputs
-  	mongo(server='mongodb://localhost:27017', database='forms', collection='favorite_colors')
+  	mongo(collection='favorite_colors')
     email-to(to='perljason@gmail.com', from='Form Builder <perljason@gmail.com>', subject='Favorite colors')
   views
   	graph-view(name='graphs', title='Graph')
