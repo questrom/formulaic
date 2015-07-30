@@ -15,7 +15,7 @@ Views can be accessed through the main page of the app, in the links placed belo
 <h3 class="ui header top attached">
 The `table-view` element
 </h3><div class="ui bottom attached segment">
-This element creates a table view: a view which shows data as an (optionally paginated) table. Each `table-view` element **must contain one or more `col` elements.**
+This element creates a table view: a view which shows data as an (optionally paginated) table, along with a "Download CSV" button. Each `table-view` element **must contain one or more `col` elements.**
 
 ##### Attributes:
 * **`name`**
