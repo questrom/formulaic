@@ -447,8 +447,9 @@ class TablePage implements Renderable {
 				->div->class('ui fluid container table-page')
 						->a->class('right floated ui positive labeled icon button')
 							->href(
+								# See FormList.php for why we use urlencode()
 								'csv?form=' . $this->f->formID .
-								'&view=' . $this->f->name
+								'&view=' . urlencode($this->f->name)
 							)
 							->target('_blank') # So there's some indication it's loading
 							->i->class('download icon')->end
@@ -492,7 +493,7 @@ class TablePage implements Renderable {
 									# After the columns, show the Details button
 									->td->class('center aligned nowrap unpadded-cell')
 										->a->class('ui no-margin compact small button')
-											->href('details?form=' . $this->f->formID . '&id=' . $row['_id'])
+											->href('details?form=' . $this->f->formID . '&id=' . urlencode($row['_id']))
 											->c('Details')
 										->end
 									->end
@@ -508,8 +509,8 @@ class TablePage implements Renderable {
 											. ($this->f->page === 1 ? 'disabled' : ''))
 										->href(
 											'view?form=' . $this->f->formID .
-											'&view=' . $this->f->name .
-											'&page=' . ($this->f->page - 1)
+											'&view=' . urlencode($this->f->name) .
+											'&page=' . urlencode($this->f->page - 1)
 										)
 										->i->class('left chevron icon')->end
 										->c('Previous')
@@ -523,8 +524,8 @@ class TablePage implements Renderable {
 											. ((($this->f->page - 1) === $this->f->max) ? 'disabled' : ''))
 										->href(
 											'view?form=' . $this->f->formID .
-											'&view=' . $this->f->name .
-											'&page=' . ($this->f->page + 1)
+											'&view=' . urlencode($this->f->name) .
+											'&page=' . urlencode($this->f->page + 1)
 										)
 										->i->class('right chevron icon')->end
 										->c('Next')
