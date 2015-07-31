@@ -104,7 +104,7 @@ class FormListView implements Renderable {
 			->body
 				->c(new BrowserProblemPart(
 					h()
-					->c(new TopHeader())
+					->c(new TopHeader(true))
 					->div->class('ui text container')
 						->h1->class('ui center aligned header')
 							->c('All Forms')

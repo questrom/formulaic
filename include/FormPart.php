@@ -587,8 +587,13 @@ class FormElemFormPart implements Renderable {
 
 # The header at the top of the page
 class TopHeader implements Renderable {
-	function __construct() { $this->cfg = Config::get(); }
+	function __construct($docsBtn = false) {
+		$this->cfg = Config::get();
+		$this->docsBtn = $docsBtn;
+	}
 	function render() {
+		# Don't bother escaping things; we assume that
+		# the global configuration file isn't malicious.
 		return h()
 		->div->class('ui top fixed menu')
 			->style(
@@ -601,6 +606,16 @@ class TopHeader implements Renderable {
 			->div->class('item')
 				->img->src($this->cfg['branding']['image'])->end
 			->end
+			->c(
+				!$this->docsBtn ? null :
+				h()
+				->div->class('right item')
+					->a->href('/docs')->class('ui button')
+						->style('background-color:rgba(255,255,255,0.5);color:#000;')
+						->c('View Docs')
+					->end
+				->end
+			)
 		->end;
 	}
 }
