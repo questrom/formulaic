@@ -810,6 +810,21 @@ class Header implements FormPartFactory, Configurable {
 	}
 }
 
+# The "inject" element
+class InjectPart implements FormPartFactory, Configurable {
+	use Groupize;
+	function __construct($args) {
+		$this->html = $args['innerText'];
+	}
+	function makeFormPart() {
+		$cfg = Config::get();
+		if(!isget($cfg['security']['allow-inject'], false)) {
+			return null;
+		}
+		return new SafeString($this->html);
+	}
+}
+
 # The "notice" element
 class Notice implements FormPartFactory, Configurable {
 	function __construct($args) {

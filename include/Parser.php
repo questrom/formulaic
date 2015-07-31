@@ -70,11 +70,24 @@ class BetterReader extends XMLReader {
 		'is-not-checked' => 'IsNotCheckedCondition',
 		'is-radio-selected' => 'IsRadioSelectedCondition',
 		'views' => 'ViewList',
-		'send-confirmation' => 'SendConfirmationOutput'
+		'send-confirmation' => 'SendConfirmationOutput',
+
+		'inject' => 'InjectPart'
 	];
 	function parseCurrentElement($cfg) {
 
 		$name = $this->localName;
+
+		if($name === 'inject') {
+			$xml = $this->readInnerXml();
+			$this->next();
+			return [
+				'name' => 'inject',
+				'value' => new InjectPart([
+					'innerText' => $xml
+				])
+			];
+		}
 
 		$attrs = [];
 		while ($this->moveToNextAttribute()) {

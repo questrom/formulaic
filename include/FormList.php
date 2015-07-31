@@ -67,7 +67,9 @@ class ParseErrorView implements Renderable {
 		return h()
 			->div->class('item')
 				->div->class('header')
-					->c($this->data->id)
+					->a->href('forms/' . $this->data->id)
+						->c($this->data->id)
+					->end
 				->end
 				->h4->class('ui red header')
 					->c('Error parsing configuration file.')

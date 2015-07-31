@@ -33,6 +33,12 @@ asset-prefix="/"
 # The path (e.g. subdirectory) at which the app is hosted
 app-path=""
 
+[security]
+# Allow the `inject` element. Note that enabling this will create
+# security risks, if untrusted users can create or modify form
+# configuration files. Disabled by default for security reasons.
+allow-inject=false
+
 [branding]
 # The image to use for the top menu of the app.
 image="/img/white-nike-swoosh-wfotplbl.png"
