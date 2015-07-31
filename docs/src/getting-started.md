@@ -47,3 +47,16 @@ These documentation pages are made with [Metalsmith](http://metalsmith.io). To b
 2. Run `npm install`
 3. Run `node build.js`
     * If you receive an error, you may need to run `node build.js` a second time
+
+### File Structure
+
+The following is a brief description of the most important folders and files used by Formulaic. Note that access to these files is controlled by a *whitelist* in `.htaccess`.
+
+* `cache/` - Caches various things; will be created if not found
+* `config/` - Stores global configuration file
+* `data/submit-counts.json` - Stores the number of times each form has been submitted
+* `forms/` - Holds form configuration files
+* `img/` and `lib/` - Client-side assets
+* `jade/` - Slightly modified version of the "Everzet/Jade" library
+* `vendor/` - Used by Composer
+* `include/` - Contains most of the app's PHP code
