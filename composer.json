@@ -24,8 +24,7 @@
         "riimu/kit-csrf": "^2.3",
         "tpyo/amazon-s3-php-class": "^0.5.1",
         "voku/portable-utf8": "^1.6.3",
-        "ezyang/htmlpurifier": "^4.6",
-        "erusev/parsedown": "^1.5"
+        "ezyang/htmlpurifier": "^4.6"
     },
     "config": {
         "__comment__" : "Use the below line so that component-installer won't create an extra directory...",
