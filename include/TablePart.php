@@ -426,8 +426,9 @@ class TablePage implements Renderable {
 						->table->class('unstackable ui celled striped compact table table-view sortable')
 							->colgroup
 								->c(array_map(function($x)  {
+									# Use intval for sanitization purposes
 									return h()
-										->col->style('width: ' . ($x->width * 100) . '%;')
+										->col->style('width: ' . (intval($x->width) * 100) . '%;')
 									->end;
 								}, $this->f->cols))
 								->col->style('width:76px;')->end
