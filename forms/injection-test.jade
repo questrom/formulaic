@@ -1,7 +1,7 @@
 form(title='Injection Test')
   fields
     inject
-      |  <h1 style="text-align:center;color:#f00;">Testing<br />HTML injection...</h1>
+      |  <h1 style="text-align:center;color:#f00;">Testing HTML injection...</h1>
     notice(text='The above header will not display unless the "inject" element is enabled in config/config.toml.')
     inject(no-sanitize=true)
       |  This link is <em>not</em> sanitized: <a href="javascript:alert('test')">Click me!</a><br />
