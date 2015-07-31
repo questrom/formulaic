@@ -10,6 +10,8 @@ $klein = new \Klein\Klein();
 # Create a config file parser
 $parser = new Parser();
 
+// header('X-Frame-Options: DENY');
+
 # Display simple error messages.
 # Based on code from the Klein documentation.
 $klein->onHttpError(function ($code, $router) {
@@ -21,7 +23,8 @@ $klein->onHttpError(function ($code, $router) {
 		->h2->style('text-align:center')
 			->c($res->status()->getMessage())
 		->end;
-	$router->response()->body(
+
+	$res->body(
 		'<!DOCTYPE html>' . Stringifier::stringify($message)
 	);
 });
@@ -34,7 +37,9 @@ $klein->respond('GET', '/', function () use($parser) {
 });
 
 # A view
-$klein->respond('GET', '/view', function ($req) use($parser) {
+$klein->respond('GET', '/view', function ($req, $res) use($parser) {
+
+
 
 	$page = $parser->parseJade($_GET['form']);
 	$view = $page->getView($_GET['view']);
@@ -49,7 +54,9 @@ $klein->respond('GET', '/view', function ($req) use($parser) {
 });
 
 # A form itself
-$klein->respond('GET', '/forms/[:formID]', function($request) use($parser) {
+$klein->respond('GET', '/forms/[:formID]', function($req, $res) use($parser) {
+
+
 
 	# Create a XSRF token
 	$csrf = new \Riimu\Kit\CSRF\CSRFHandler();
@@ -61,10 +68,10 @@ $klein->respond('GET', '/forms/[:formID]', function($request) use($parser) {
 	$cache = $config['cache-forms'] ? new Cache() : new FakeCache();
 	$cache->setPrefixSize(0);
 	$html = $cache->getOrCreate(
-		'jade-' . sha1_file($parser->getForm($request->formID)) . '-' . sha1_file('config/config.toml'),
+		'jade-' . sha1_file($parser->getForm($req->formID)) . '-' . sha1_file('config/config.toml'),
 		[],
-		function () use($request, $parser) {
-			$page = $parser->parseJade($request->formID);
+		function () use($req, $parser) {
+			$page = $parser->parseJade($req->formID);
 			$str = json_encode(Stringifier::makeArray($page->makeFormPart()->render()));
 			return $str;
 		}
