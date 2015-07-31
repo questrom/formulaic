@@ -12,9 +12,13 @@ class ViewInfoView implements Renderable {
 		$this->v = $view;
 	}
 	function render() {
+		# See http://php.net/manual/en/function.urlencode.php#111410
+		# for the rationale behind escaping the view name as we do.
+		# We don't need to escape form ID's since Parser excludes
+		# any names that would cause issues in URLs anyway.
 		return h()
 			->div->class('item')->c(
-				h()->a->href('view?form=' . $this->formData->id . '&view=' . $this->v->name)->class('item')
+				h()->a->href('view?form=' . $this->formData->id . '&view=' . urlencode($this->v->name))->class('item')
 					->i->class($this->v->getIcon())->end
 					->c($this->v->title)
 				->end
