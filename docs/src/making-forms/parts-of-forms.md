@@ -339,9 +339,15 @@ Unlike with `header`, the text inside of a notice must be specified using the `t
 <h3 class="ui header top attached">
 The `inject` element
 </h3><div class="ui bottom attached segment">
-This element allows the injection of **arbitrary HTML** into the form. For this to work, it must be enabled in `config/config.toml`; it is **disabled by default** for security reasons, because *no sanitization* is performed.
+This element allows HTML to be injected into the form. For this to work, it must be enabled in `config/config.toml`; it is **disabled by default** for security reasons.
 
 Note that the HTML inserted in this way must also be valid XML, so that the configuration file parser doesn't mess it up. Trying to inject Jade code instead of HTML will cause issues, as the Jade parser used in the project is suited only to configuration-file parsing.
 
 To use this element, simply place HTML inside of it, preferably as [piped text](http://jade-lang.com/reference/plain-text/).
+
+##### Attributes:
+
+* **`no-sanitize`**
+
+  Do not attempt to sanitize HTML at all. This attribute can be disabled in `config/config.toml`. Note that you should not put too much trust in the sanitizer (HTMLPurifier), as it is unlikely to be entirely bug-free.
 </div>

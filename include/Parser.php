@@ -78,16 +78,6 @@ class BetterReader extends XMLReader {
 
 		$name = $this->localName;
 
-		if($name === 'inject') {
-			$xml = $this->readInnerXml();
-			$this->next();
-			return [
-				'name' => 'inject',
-				'value' => new InjectPart([
-					'innerText' => $xml
-				])
-			];
-		}
 
 		$attrs = [];
 		while ($this->moveToNextAttribute()) {
@@ -95,6 +85,16 @@ class BetterReader extends XMLReader {
 		}
 
 		$this->moveToElement();
+
+		if($name === 'inject') {
+			$xml = $this->readInnerXml();
+			$this->next();
+			$attrs['innerText'] = $xml;
+			return [
+				'name' => 'inject',
+				'value' => new InjectPart($attrs)
+			];
+		}
 
 		$text = '';
 		$elements = [];

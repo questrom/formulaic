@@ -37,6 +37,15 @@ app-path=""
 # Allow the `inject` element. Note that enabling this will create
 # security risks, if untrusted users can create or modify form
 # configuration files. Disabled by default for security reasons.
+
+# If set to..
+# true - the inject element will be enabled, as well as the `no-sanitize` attribute.
+# "sanitize" - The inject element will be enabled, but its contents will always be sanitized.
+#              Note that you should not put too much trust in the sanitizer (HTMLPurifier),
+#              as it is unlikely to be entirely bug-free.
+# false - The inject element will be disabled entirely.
+
+# See the documentation for more details on this element.
 allow-inject=false
 
 [branding]

@@ -6,7 +6,7 @@ nav_groups:
 nav_sort: 5
 ---
 
-This page presents some ideas for new features that could be added to make Formulaic even more useful and stable.
+This page presents some ideas for new features that could be added to make Formulaic even more useful, stable, and secure.
 
 ### Unit Tests
 

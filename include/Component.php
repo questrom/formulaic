@@ -810,16 +810,25 @@ class Header implements FormPartFactory, Configurable {
 	}
 }
 
+$hpconfig = HTMLPurifier_Config::createDefault();
+$purifier = new HTMLPurifier($hpconfig);
+
 # The "inject" element
 class InjectPart implements FormPartFactory, Configurable {
 	use Groupize;
 	function __construct($args) {
+		$this->sanitize = !isget($args['no-sanitize'], false);
 		$this->html = $args['innerText'];
 	}
 	function makeFormPart() {
+		global $purifier;
 		$cfg = Config::get();
-		if(!isget($cfg['security']['allow-inject'], false)) {
+		$inject = isget($cfg['security']['allow-inject'], false);
+		if(!$inject) {
 			return null;
+		}
+		if($inject === "sanitize" || $this->sanitize) {
+			$this->html = $purifier->purify($this->html);
 		}
 		return new SafeString($this->html);
 	}
