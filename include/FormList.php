@@ -57,6 +57,25 @@ class FormItemView implements Renderable {
 	}
 }
 
+# Display a parse error
+class ParseErrorView implements Renderable {
+	private $data;
+	function __construct($data) {
+		$this->data = (object) $data;
+	}
+	function render() {
+		return h()
+			->div->class('item')
+				->div->class('header')
+					->c($this->data->id)
+				->end
+				->h4->class('ui red header')
+					->c('Error parsing configuration file.')
+				->end
+			->end;
+	}
+}
+
 # Display the main list of forms
 class FormListView implements Renderable {
 	private $data;
@@ -87,7 +106,11 @@ class FormListView implements Renderable {
 						->div->class('ui large relaxed divided list segment')->style('padding: 0.5rem 1rem')
 							->c(
 								array_map(function($formInfo) {
-									return new FormItemView($formInfo);
+									if(!$formInfo['parse_error']) {
+										return new FormItemView($formInfo);
+									}
+									return new ParseErrorView($formInfo);
+
 								}, $this->data)
 							)
 						->end

@@ -89,7 +89,9 @@ class BetterReader extends XMLReader {
 		if ($this->nodeType === self::ELEMENT && $this->isEmptyElement) {
 			$this->next();
 		} else {
-			$this->read();
+			if(!@$this->read()) {
+				throw new Exception('XML Parse error!');
+			}
 			while (true) {
 				switch ($this->nodeType) {
 					case self::ELEMENT:
@@ -110,6 +112,10 @@ class BetterReader extends XMLReader {
 						break;
 				}
 			}
+		}
+
+		if(!isset($this->elementMap[$name])) {
+			throw new Exception('Invalid element: ' . $name);
 		}
 
 		if($this->elementMap[$name] !== '_text') {
@@ -171,9 +177,17 @@ class Parser {
 
 		$files = array_map(function ($item) {
 
-			$page = $this->parseJade($item);
+			try {
+				$page = $this->parseJade($item);
+			} catch(Exception $e) {
+				return [
+					'id' => $item,
+					'parse_error' => true
+				];
+			}
 			return [
 				'id' => $page->id,
+				'parse_error' => false,
 				'name' => $page->title,
 				'views' => $page->views->getAllViews(),
 				'count' => SubmitCounts::get($page->id)
@@ -221,9 +235,9 @@ class Parser {
 		$reader = $this->getReader();
 		$reader->xml($xml);
 
-		while ($reader->nodeType !== XMLReader::ELEMENT) {
-			$reader->read();
-		}
+		# Based on sabre/xml
+		while ($reader->nodeType !== XMLReader::ELEMENT && @$reader->read()) {}
+
 		$cfg = Config::get();
 		$readData = $reader->parseCurrentElement($cfg);
 
