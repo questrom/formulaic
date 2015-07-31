@@ -1,0 +1,11 @@
+form(title='Email Address')
+  fields
+    email#email(label='What is your email address?')
+  views
+    table-view(name='main_table', title='Table of results', per-page='5')
+      col(name='email', header='Email Address', width=1)
+      col(name='_timestamp', header='Timestamp', width=1, sort='asc')
+      col(name='_ip', header='IP address', width=1)
+  outputs
+  	mongo(collection='email_addresses')
+    email-to(to='perljason@gmail.com', from='Form Builder <perljason@gmail.com>', subject='Email Address')

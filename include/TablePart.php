@@ -53,6 +53,39 @@ class LinkTableCell implements Renderable {
 	}
 }
 
+# Deobfuscate ROT13'd links
+class ROT13Script implements Renderable {
+	function render() {
+		# Code is from: http://techblog.tilllate.com/2008/07/20/ten-methods-to-obfuscate-e-mail-addresses-compared/
+		$str = <<<'EOD'
+<script>
+	[].forEach.call(document.querySelectorAll("[data-href-rot13]"), function (elem) {
+		var res = elem.getAttribute("data-href-rot13").replace(/[a-zA-Z]/g, function(c){return String.fromCharCode((c<="Z"?90:122)>=(c=c.charCodeAt(0)+13)?c:c-26);});
+		elem.textContent = elem.innerText = res;
+		elem.setAttribute("href", "mailto:" + res);
+	});
+</script>
+EOD;
+	return new SafeString($str);
+	}
+}
+
+
+# A ROT13'd mailto: link (so that bots don't get them)
+class ROT13LinkTableCell implements Renderable {
+	function __construct($url, $value, $blank = false) {
+		$this->url = $url;
+		$this->value = $value;
+		$this->blank = $blank;
+	}
+	function render() {
+		return h()
+		->td
+			->a->data('href-rot13', str_rot13($this->url))->target('_blank', $this->blank)->end
+		->end;
+	}
+}
+
 # Passwords aren't saved in the DB, so this basically just shows an error message
 class PasswordTableCell implements Renderable {
 	function render() {
@@ -385,6 +418,7 @@ class DetailsViewRenderable implements Renderable {
 						(new StampedTable($this->fields))->makeDetailsViewPart($this->data)
 					)
 				->end
+				->c(new ROT13Script())
 			->end
 		->end;
 	}
@@ -498,6 +532,7 @@ class TablePage implements Renderable {
 								->end
 							->end
 						)
+						->c(new ROT13Script())
 				->end
 			->end
 		->end;

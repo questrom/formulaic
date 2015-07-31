@@ -667,6 +667,12 @@ class EmailAddr extends NamedLabeledComponent {
 		if ($v === null) {
 			return null;
 		}
+		return new ROT13LinkTableCell($v, $v);
+	}
+	function makeEmailViewPart($v) {
+		if ($v === null) {
+			return null;
+		}
 		return new LinkTableCell('mailto:' . $v, $v);
 	}
 	function makeCSVPart($v) {
