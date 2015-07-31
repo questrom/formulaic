@@ -99,6 +99,7 @@ $klein->respond('POST', '/submit', function ($req, $res) use($parser) {
 		->form
 		->getSubmissionPart(Result::ok(new ClientData($_POST, $_FILES)))
 		->ifError(function ($val) {
+
 			return Result::error([
 				'success' => false,
 				'errors' => $val

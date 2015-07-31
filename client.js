@@ -205,6 +205,7 @@ $(function() {
 			try {
 				x = JSON.parse(x);
 			} catch(e) {
+				// console.log(x);
 				// $('.ui.form').append($('<p>').html(x));
 				doFail();
 				return;
