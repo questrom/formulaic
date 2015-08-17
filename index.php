@@ -142,7 +142,7 @@ $klein->respond('GET', '/csv', function($req) use($parser) {
 	$view = new CSVView($page->getView($_GET['view']));
 
 	header("Content-type: text/csv; charset=utf-8");
-	header("Content-Disposition: attachment; filename=formbuilder-" . time() . ".csv");
+	header("Content-Disposition: attachment; filename=formulaic-" . time() . ".csv");
 
 	ob_start();
 	$view
