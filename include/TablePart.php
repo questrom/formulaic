@@ -523,7 +523,7 @@ class TablePage implements Renderable {
 								->end
 								->div->class('right item')
 									->a->class('ui right floated primary right labeled icon button '
-											. (($this->f->page - 1 === $this->f->max) ? 'disabled' : ''))
+											. ($this->f->page - 1 === $this->f->max ? 'disabled' : ''))
 										->href(
 											'view?' . http_build_query([
 												'form' => $this->f->formID,
