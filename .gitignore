@@ -9,11 +9,11 @@
 .tags_sorted_by_file
 
 # Installed packages
-vendor/
+/vendor
 node_modules
 
 # Other files
-the.todo
-config/config.toml
-data/
-cache/
+/the.todo
+/config/config.toml
+/data
+/cache
