@@ -84,7 +84,7 @@ RewriteEngine On
 RewriteRule ^(.*)\.hash-.*?\.(.*)$ $1.$2 [PT]
 # Except for specific (whitelisted) files, rewrite everything to index.php
 # for appropriate routing.
-RewriteRule !^(styles\.css|client\.js|lib\/.*|img\/.*|docs\/.*|robots\.txt)$ index.php [END]
+RewriteRule !^(styles\.css|client\.js|lib\/.*|img\/.*|docs\/.*|robots\.txt)$ index.php
 
 # Misc. caching settings
 FileETag All
