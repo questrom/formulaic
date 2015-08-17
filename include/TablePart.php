@@ -508,9 +508,11 @@ class TablePage implements Renderable {
 									->a->class('ui left floated primary labeled icon button '
 											. ($this->f->page === 1 ? 'disabled' : ''))
 										->href(
-											'view?form=' . $this->f->formID .
-											'&view=' . urlencode($this->f->name) .
-											'&page=' . urlencode($this->f->page - 1)
+											'view?' . http_build_query([
+												'form' => $this->f->formID,
+												'view' => $this->f->name,
+												'page' => $this->f->page - 1
+											])
 										)
 										->i->class('left chevron icon')->end
 										->c('Previous')
@@ -523,9 +525,12 @@ class TablePage implements Renderable {
 									->a->class('ui right floated primary right labeled icon button '
 											. ((($this->f->page - 1) === $this->f->max) ? 'disabled' : ''))
 										->href(
-											'view?form=' . $this->f->formID .
-											'&view=' . urlencode($this->f->name) .
-											'&page=' . urlencode($this->f->page + 1)
+											'view?' . http_build_query([
+												'form' => $this->f->formID,
+												'view' => $this->f->name,
+												'page' => $this->f->page + 1,
+												'abc' => '1 2'
+											])
 										)
 										->i->class('right chevron icon')->end
 										->c('Next')
