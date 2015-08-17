@@ -528,8 +528,7 @@ class TablePage implements Renderable {
 											'view?' . http_build_query([
 												'form' => $this->f->formID,
 												'view' => $this->f->name,
-												'page' => $this->f->page + 1,
-												'abc' => '1 2'
+												'page' => $this->f->page + 1
 											])
 										)
 										->i->class('right chevron icon')->end
