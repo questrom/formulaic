@@ -1030,6 +1030,8 @@ class Page implements Configurable {
 			'The form was submitted successfully.';
 		$this->outputs = $args['byTag']['outputs'];
 		$this->views = $args['byTag']['views'];
+
+		$this->allowFraming = isget($args['allow-framing'], false);
 	}
 
 	function makeFormPart() {

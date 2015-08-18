@@ -645,14 +645,14 @@ class BrowserProblemPart implements Renderable {
 class PageFormPart implements Renderable {
 	public function __construct($field) { $this->f = $field; }
 	function render() {
-		return h()
+		$html = h()
 		->html
 			->head
 				->meta->charset('utf-8')->end
 				->title->c($this->f->title)->end
 				->link->rel('stylesheet')->href(new AssetUrl('lib/semantic.css'))->end
 				->link->rel('stylesheet')->href(new AssetUrl('styles.css'))->end
-				->c(new FrameBuster())
+				->c($this->f->allowFraming ? null : new FrameBuster())
 				# From https://github.com/h5bp/html5-boilerplate/blob/master/src/index.html
 				->meta->name('viewport')->content('width=device-width, initial-scale=1')->end
 				->meta->name('format-detection')->content('telephone=no')->end
@@ -698,6 +698,11 @@ class PageFormPart implements Renderable {
 				))
 			->end
 		->end;
+		return [
+			$this->f->allowFraming ? null : new HeaderSet('X-Frame-Options', 'DENY'),
+			new SafeString('<!DOCTYPE html>'),
+			$html
+		];
 	}
 }
 

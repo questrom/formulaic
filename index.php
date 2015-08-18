@@ -77,8 +77,6 @@ $klein->respond('GET', '/forms/[:formID]', function($req, $res) use($parser, $st
 	$token = $csrf->getToken();
 
 	# Write the response
-	$res->header('X-Frame-Options', 'DENY');
-	$res->append('<!DOCTYPE html>');
 	$stringifier->writeArray(json_decode($html, true), $res, $token);
 });
 
