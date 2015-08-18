@@ -73,6 +73,14 @@ class AssetUrl {
 # Used as a placeholder for CSRF tokens
 class CSRFPlaceholder {}
 
+# Used to represent that a header should be set with a response
+class HeaderSet {
+	function __construct($key, $value) {
+		$this->key = $key;
+		$this->value = $value;
+	}
+}
+
 # This generates an HTML tag with a parent element.
 class HTMLParentContext implements HTMLGenerator {
 

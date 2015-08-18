@@ -102,6 +102,8 @@ class Stringifier {
 							yield ['asset' => $element->value];
 						} else if($element instanceof CSRFPlaceholder) {
 							yield ['csrf' => true];
+						} else if($element instanceof HeaderSet) {
+							yield ['header' => $element->key, 'value' => $element->value ];
 						} else {
 							throw new Exception("Invalid HTML component!");
 						}
@@ -168,6 +170,8 @@ class Stringifier {
 				);
 			} else if(isset($part['csrf'])) {
 				$response->append(htmlspecialchars($csrfToken, ENT_QUOTES | ENT_HTML5));
+			} else if(isset($part['header'])) {
+				$response->header($part['header'], $part['value']);
 			} else {
 				throw new Exception("Invalid HTML component!");
 			}

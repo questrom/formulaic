@@ -18,7 +18,6 @@ $stringifier = new Stringifier();
 $klein->onHttpError(function ($code, $router) use($stringifier) {
 
 	$res = $router->response();
-	$res->header('X-Frame-Options', 'DENY');
 
 	$message = h()
 		->h1->style('text-align:center;font-size:72px;')
@@ -28,44 +27,29 @@ $klein->onHttpError(function ($code, $router) use($stringifier) {
 			->c($res->status()->getMessage())
 		->end;
 
-	$res->append('<!DOCTYPE html>');
-	$stringifier->writeResponse($message, $res);
+	$stringifier->writeResponse(new PageWrapper($message), $res);
 });
 
 # The main list of forms
 $klein->respond('GET', '/', function ($req, $res) use($parser, $stringifier) {
-	$res->header('X-Frame-Options', 'DENY');
-
 	$formlist = new FormList($parser->getFormInfo());
-	$res->append('<!DOCTYPE html>');
-	$stringifier->writeResponse($formlist->makeFormList(), $res);
+	$stringifier->writeResponse(new PageWrapper($formlist->makeFormList()), $res);
 });
 
 # A view
 $klein->respond('GET', '/view', function ($req, $res) use($parser, $stringifier) {
-	$res->header('X-Frame-Options', 'DENY');
-
 	$page = $parser->parseJade($_GET['form']);
 	$view = $page->getView($_GET['view']);
-
-	$res->append('<!DOCTYPE html>');
-	$render = $view
-			->makeView(
-				$view->query( $req->paramsGet()->get('page', 1) )
-			);
-	$stringifier->writeResponse($render, $res);
+	$render = $view->makeView(
+		$view->query(
+			$req->paramsGet()->get('page', 1)
+		)
+	);
+	$stringifier->writeResponse(new PageWrapper($render), $res);
 });
 
 # A form itself
 $klein->respond('GET', '/forms/[:formID]', function($req, $res) use($parser, $stringifier) {
-
-	$res->header('X-Frame-Options', 'DENY');
-
-
-	# Create a XSRF token
-	$csrf = new \Riimu\Kit\CSRF\CSRFHandler();
-	$token = $csrf->getToken();
-
 	$config = Config::get();
 
 	# This code caches the HTML associated with a form if "cache-forms" is enabled
@@ -85,15 +69,17 @@ $klein->respond('GET', '/forms/[:formID]', function($req, $res) use($parser, $st
 		}
 	);
 
-	# We add asset URLs and the CSRF token
-	# outside of the getOrCreate function
+	# We add asset URLs and the CSRF token outside of the getOrCreate function
 	# so that these aren't getting cached.
 
+	# Create a XSRF token
+	$csrf = new \Riimu\Kit\CSRF\CSRFHandler();
+	$token = $csrf->getToken();
+
+	# Write the response
+	$res->header('X-Frame-Options', 'DENY');
 	$res->append('<!DOCTYPE html>');
 	$stringifier->writeArray(json_decode($html, true), $res, $token);
-	// $html = $stringifier->makeString(json_decode($html, true), $token);
-
-	// return '<!DOCTYPE html>' . $html;
 });
 
 $klein->respond('POST', '/submit', function ($req, $res) use($parser, $stringifier) {
@@ -173,15 +159,13 @@ $klein->respond('GET', '/csv', function($req, $res) use($parser, $stringifier) {
 
 # Get the details of a particular table entry.
 $klein->respond('GET', '/details', function ($req, $res) use($parser, $stringifier) {
-		$res->header('X-Frame-Options', 'DENY');
 
 
 	$page = $parser->parseJade($_GET['form']);
 	$view = new DetailsView();
 	$view->setPage($page);
 
-	$res->append('<!DOCTYPE html>');
-	$stringifier->writeResponse($view->makeView($view->query($_GET)), $res);
+	$stringifier->writeResponse(new PageWrapper($view->makeView($view->query($_GET))), $res);
 });
 
 # See https://github.com/chriso/klein.php/wiki/Sub-Directory-Installation

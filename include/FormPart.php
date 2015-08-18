@@ -700,3 +700,15 @@ class PageFormPart implements Renderable {
 		->end;
 	}
 }
+
+# Wrapper for displaying pages with proper doctype, etc.
+class PageWrapper implements Renderable {
+	function __construct($inner) {$this->inner = $inner;}
+	function render() {
+		return [
+			new HeaderSet('X-Frame-Options', 'DENY'),
+			new SafeString('<!DOCTYPE html>'),
+			$this->inner
+		];
+	}
+}
