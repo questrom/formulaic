@@ -1,0 +1,179 @@
+<html>
+<head>
+	<title>Formulaic Docs - Views</title>
+	<link href="../assets/prism.css" rel="stylesheet">
+	<link href="../assets/semantic.css" rel="stylesheet">
+	<style>
+		li > p:last-child { margin-bottom: 1em; }
+		img { width: 100%; }
+		code, kbd, pre, samp { font-family: Consolas, monospace,monospace; font-size: 1em; }
+		code, kbd, samp { background: rgba(0,0,0,0.1); padding: 0 2px; border-radius: 2px; border: 1px solid rgba(0,0,0,0.1); }
+		pre > code { background:transparent;padding:0;border:0;border-radius:0; }
+		.ui.step, .ui.steps .step,
+		.ui.steps .step:first-child { padding:7px 10px 7px 14px;}
+		.ui.steps .step:first-child { padding-left:5px; }
+		.ui.steps .step:last-child { padding-right:5px; }
+		.ui.steps .step > .icon { margin: 0 0.4rem 0 0.1rem; }
+	</style>
+</head>
+<body style="background-color: rgb(27, 28, 29);">
+	<div class="ui internally celled grid container" style="max-width: 960px !important; min-height:100%;flex-flow: row;">
+			<div class="column" style="flex:0 0 237px; -webkit-flex: 0 0 237px; padding-top:1em; ">
+				<div class="ui inverted vertical menu">
+					<div class="ui big header item">Formulaic Docs</div>
+				        
+				        		<a class="item"  href="../index.html">Home</a>
+				        
+				        
+				        
+				        
+				        		<a class="item"  href="../getting-started.html">Getting Started</a>
+				        
+				        
+				        
+				        
+				        <div class="item">
+				            Making Forms
+				             <div class="menu">
+				                    
+				                    		<a class="item"  href="introduction.html">Introduction</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="parts-of-forms.html">Parts of Forms</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="outputs.html">Outputs</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="active item"  href="views.html">Views</a>
+				                    
+				                    
+				                    
+				            </div>
+				        </div>
+				        
+				        
+				        <div class="item">
+				            Understanding the Code
+				             <div class="menu">
+				                    
+				                    		<a class="item"  href="../understanding-the-code/introduction.html">Introduction</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="../understanding-the-code/conceptual-overview.html">Conceptual Overview</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="../understanding-the-code/route-flowcharts.html">Route Flowcharts</a>
+				                    
+				                    
+				                    
+				            </div>
+				        </div>
+				        
+				        
+				        		<a class="item"  href="../future-directions.html">Future Directions</a>
+				        
+				        
+				        
+				</div>
+			</div>
+			<div class="twelve wide column" style="flex:1; -webkit-flex: 1; padding-top:1em; background:#fff;">
+					<div class="ui massive breadcrumb">
+					
+					
+					            <a class="section" href="../making-forms.html">Making Forms</a>
+					            <i class="right chevron icon divider"></i>
+					
+					    <div class="active section">
+					        Views
+					    </div>
+					</div>
+				<div>
+					<p>The elements described on this page are used to create &quot;views&quot; &mdash; pages on which the user can easily view the data submitted through the form. To add a view, place a <code>table-view</code> or <code>graph-view</code> element (as described below) into the <code>views</code> section of a <a href="introduction.html">configuration file</a>.</p>
+<p>Views can be accessed through the main page of the app, in the links placed below each form.</p>
+<h2 id="table-views">Table Views</h2>
+<p><h3 class="ui header top attached">
+The <code>table-view</code> element
+</h3><div class="ui bottom attached segment">
+This element creates a table view: a view which shows data as an (optionally paginated) table, along with a &quot;Download CSV&quot; button. Each <code>table-view</code> element <strong>must contain one or more <code>col</code> elements.</strong></p>
+<h5 id="attributes-">Attributes:</h5>
+<ul>
+<li><p><strong><code>name</code></strong></p>
+<p>Specifies the name of the view, to be used in URLs. No two views for the same form can have the same name.</p>
+</li>
+<li><p><strong><code>title</code></strong></p>
+<p>Specifies the title of the view, which the user will see.</p>
+</li>
+<li><p><strong><code>per-page</code></strong></p>
+<p>If provided, this attribute specifies the number of items that are shown on a page. If not provided, the table will not be paginated.
+</div></p>
+</li>
+</ul>
+<p><h3 class="ui header top attached">
+The <code>col</code> element
+</h3><div class="ui bottom attached segment">
+This element creates a column within a table view. Each <code>table-view</code> element must contain one or more columns.</p>
+<h5 id="attributes-">Attributes:</h5>
+<ul>
+<li><p><strong><code>name</code></strong></p>
+<p>The name of the form field whose associated data will be displayed in the column.</p>
+</li>
+<li><p><strong><code>header</code></strong></p>
+<p>The header at the top of the column.</p>
+</li>
+<li><p><strong><code>width</code></strong></p>
+<p>The <em>relative</em> width of the column.</p>
+<p>For instance, if there are five columns with <code>width=1</code>, each column will take up a fifth of the available space; if one column has <code>width=2</code> and another has <code>width=1</code>, the former will take up twice as much space as the latter.</p>
+</li>
+<li><p><strong><code>sort</code></strong></p>
+<p>If provided, the table will be sorted by the value of this column.</p>
+<p>If the attribute is set to <code>asc</code>, the sort is ascending; otherwise, it is descending.
+</div></p>
+</li>
+</ul>
+<h2 id="graph-views">Graph Views</h2>
+<p><h3 class="ui header top attached">
+The <code>graph-view</code> element
+</h3><div class="ui bottom attached segment">
+This element creates a graph view: a view that displays data as a series of one or more graphs. Each <code>graph-view</code> element <strong>must contain one or more <code>bar</code> or <code>pie</code> elements.</strong></p>
+<h5 id="attributes-">Attributes:</h5>
+<ul>
+<li><p><strong><code>name</code></strong></p>
+<p>Specifies the name of the view, to be used in URLs. No two views for the same form can have the same name.</p>
+</li>
+<li><p><strong><code>title</code></strong></p>
+<p>Specifies the title of the view, which the user will see.
+</div></p>
+</li>
+</ul>
+<p><h3 class="ui header top attached">
+The <code>bar</code> and <code>pie</code> elements
+</h3><div class="ui bottom attached segment">
+These elements, which must be placed within a <code>graph-view</code> element, create bar graphs and pie charts, respectively.</p>
+<h5 id="attributes-">Attributes:</h5>
+<ul>
+<li><p><strong><code>name</code></strong></p>
+<p>The name of the form field whose associated data will be displayed in the graph.</p>
+</li>
+<li><p><strong><code>label</code></strong></p>
+<p>The header text that will be displayed above the graph.
+</div></p>
+</li>
+</ul>
+
+				</div>
+			</div>
+	</div>
+	<script src="../assets/prism.js"></script>
+</body>
+</html>

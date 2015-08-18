@@ -1,0 +1,126 @@
+<html>
+<head>
+	<title>Formulaic Docs - Home</title>
+	<link href="assets/prism.css" rel="stylesheet">
+	<link href="assets/semantic.css" rel="stylesheet">
+	<style>
+		li > p:last-child { margin-bottom: 1em; }
+		img { width: 100%; }
+		code, kbd, pre, samp { font-family: Consolas, monospace,monospace; font-size: 1em; }
+		code, kbd, samp { background: rgba(0,0,0,0.1); padding: 0 2px; border-radius: 2px; border: 1px solid rgba(0,0,0,0.1); }
+		pre > code { background:transparent;padding:0;border:0;border-radius:0; }
+		.ui.step, .ui.steps .step,
+		.ui.steps .step:first-child { padding:7px 10px 7px 14px;}
+		.ui.steps .step:first-child { padding-left:5px; }
+		.ui.steps .step:last-child { padding-right:5px; }
+		.ui.steps .step > .icon { margin: 0 0.4rem 0 0.1rem; }
+	</style>
+</head>
+<body style="background-color: rgb(27, 28, 29);">
+	<div class="ui internally celled grid container" style="max-width: 960px !important; min-height:100%;flex-flow: row;">
+			<div class="column" style="flex:0 0 237px; -webkit-flex: 0 0 237px; padding-top:1em; ">
+				<div class="ui inverted vertical menu">
+					<div class="ui big header item">Formulaic Docs</div>
+				        
+				        		<a class="active item"  href="index.html">Home</a>
+				        
+				        
+				        
+				        
+				        		<a class="item"  href="getting-started.html">Getting Started</a>
+				        
+				        
+				        
+				        
+				        <div class="item">
+				            Making Forms
+				             <div class="menu">
+				                    
+				                    		<a class="item"  href="making-forms/introduction.html">Introduction</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="making-forms/parts-of-forms.html">Parts of Forms</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="making-forms/outputs.html">Outputs</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="making-forms/views.html">Views</a>
+				                    
+				                    
+				                    
+				            </div>
+				        </div>
+				        
+				        
+				        <div class="item">
+				            Understanding the Code
+				             <div class="menu">
+				                    
+				                    		<a class="item"  href="understanding-the-code/introduction.html">Introduction</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="understanding-the-code/conceptual-overview.html">Conceptual Overview</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="understanding-the-code/route-flowcharts.html">Route Flowcharts</a>
+				                    
+				                    
+				                    
+				            </div>
+				        </div>
+				        
+				        
+				        		<a class="item"  href="future-directions.html">Future Directions</a>
+				        
+				        
+				        
+				</div>
+			</div>
+			<div class="twelve wide column" style="flex:1; -webkit-flex: 1; padding-top:1em; background:#fff;">
+				<div>
+					<h1 class="ui center aligned header" style="font-size:3em">
+    Formulaic
+    <p class="sub header" style="font-size: 0.5em">Build complex webforms using simple, declarative configuration files.</p>
+</h1>
+
+<h3 id="features">Features</h3>
+<ul>
+<li><strong>Creates</strong> well-designed, easy-to-use forms for nearly any purpose.</li>
+<li><strong>Validates</strong> data provided by the user with helpful feedback.</li>
+<li><strong>Sends</strong> data to Amazon S3, MongoDB, or email addresses.</li>
+<li><strong>Views</strong> data stored in MongoDB in tabular or graphical form.</li>
+</ul>
+<h3 id="advantages">Advantages</h3>
+<ul>
+<li><strong>Rapid development:</strong> forms can be developed much more quickly using Formulaic than using HTML/CSS/JS/PHP alone: Formulaic takes care of most of the work.</li>
+<li><strong>Security:</strong> Formulaic automatically protects against XSS, XSRF, and unrestricted file upload attacks.</li>
+<li><strong>Robustness:</strong> In accordance with the <a href="https://en.wikipedia.org/wiki/Robustness_principle">robustness principle</a>, it attempts to give very strong guarantees about the data it stores.</li>
+<li><strong>Flexibility:</strong> Formulaic can create forms of all types, including ones with conditionally displayed fields, nested lists, and file uploads.</li>
+<li><strong>Extensibility:</strong> Formulaic is built to be extensible, so that it can become even more useful in the future.</li>
+</ul>
+<h3 id="architecture">Architecture</h3>
+<ul>
+<li>Formulaic is written in <strong>PHP</strong> so that it can be set up quickly in most environments.</li>
+<li>It uses several small libraries installed through <strong>Composer</strong>, but it is not based on a large framework.</li>
+<li>It requires <strong>Apache</strong> for <code>.htaccess</code> support.</li>
+<li>Most of the logic is performed on the <strong>server side</strong> to improve performance and keep things simple.</li>
+<li>The client side uses <strong>Semantic UI</strong>, making it easily themeable.</li>
+</ul>
+
+				</div>
+			</div>
+	</div>
+	<script src="assets/prism.js"></script>
+</body>
+</html>

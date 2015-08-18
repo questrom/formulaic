@@ -1,0 +1,159 @@
+<html>
+<head>
+	<title>Formulaic Docs - Getting Started</title>
+	<link href="assets/prism.css" rel="stylesheet">
+	<link href="assets/semantic.css" rel="stylesheet">
+	<style>
+		li > p:last-child { margin-bottom: 1em; }
+		img { width: 100%; }
+		code, kbd, pre, samp { font-family: Consolas, monospace,monospace; font-size: 1em; }
+		code, kbd, samp { background: rgba(0,0,0,0.1); padding: 0 2px; border-radius: 2px; border: 1px solid rgba(0,0,0,0.1); }
+		pre > code { background:transparent;padding:0;border:0;border-radius:0; }
+		.ui.step, .ui.steps .step,
+		.ui.steps .step:first-child { padding:7px 10px 7px 14px;}
+		.ui.steps .step:first-child { padding-left:5px; }
+		.ui.steps .step:last-child { padding-right:5px; }
+		.ui.steps .step > .icon { margin: 0 0.4rem 0 0.1rem; }
+	</style>
+</head>
+<body style="background-color: rgb(27, 28, 29);">
+	<div class="ui internally celled grid container" style="max-width: 960px !important; min-height:100%;flex-flow: row;">
+			<div class="column" style="flex:0 0 237px; -webkit-flex: 0 0 237px; padding-top:1em; ">
+				<div class="ui inverted vertical menu">
+					<div class="ui big header item">Formulaic Docs</div>
+				        
+				        		<a class="item"  href="index.html">Home</a>
+				        
+				        
+				        
+				        
+				        		<a class="active item"  href="getting-started.html">Getting Started</a>
+				        
+				        
+				        
+				        
+				        <div class="item">
+				            Making Forms
+				             <div class="menu">
+				                    
+				                    		<a class="item"  href="making-forms/introduction.html">Introduction</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="making-forms/parts-of-forms.html">Parts of Forms</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="making-forms/outputs.html">Outputs</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="making-forms/views.html">Views</a>
+				                    
+				                    
+				                    
+				            </div>
+				        </div>
+				        
+				        
+				        <div class="item">
+				            Understanding the Code
+				             <div class="menu">
+				                    
+				                    		<a class="item"  href="understanding-the-code/introduction.html">Introduction</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="understanding-the-code/conceptual-overview.html">Conceptual Overview</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="understanding-the-code/route-flowcharts.html">Route Flowcharts</a>
+				                    
+				                    
+				                    
+				            </div>
+				        </div>
+				        
+				        
+				        		<a class="item"  href="future-directions.html">Future Directions</a>
+				        
+				        
+				        
+				</div>
+			</div>
+			<div class="twelve wide column" style="flex:1; -webkit-flex: 1; padding-top:1em; background:#fff;">
+					<div class="ui massive breadcrumb">
+					
+					    <div class="active section">
+					        Getting Started
+					    </div>
+					</div>
+				<div>
+					<h3 id="dependencies">Dependencies</h3>
+<p>The following dependencies are required in production.</p>
+<ol>
+<li>PHP &gt;= 5.5 (tested with 5.5.25.0)<ul>
+<li>Composer (see below) will tell you if you are missing any required PHP extensions</li>
+<li>If you are using the XDebug extension for development, you may need to increase the value of the <code>xdebug.max_nesting_level</code> configuration option.</li>
+</ul>
+</li>
+<li>Apache (tested with 2.4.12)<ul>
+<li><code>.htaccess</code> usage must be fully enabled</li>
+<li>Serving over HTTPS is recommended if you are using password-protected forms</li>
+<li>Besides the default ones, the following extensions should be enabled:<ul>
+<li><code>mod_deflate</code> - for GZip</li>
+<li><code>mod_headers</code> and <code>mod_expires</code> - for proper caching</li>
+<li><code>mod_rewrite</code> - for routing</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>MongoDB 3.0 (for data storage)</li>
+<li><a href="https://getcomposer.org">Composer</a> (tested with version &quot;1.0-dev&quot;)</li>
+</ol>
+<h3 id="installation">Installation</h3>
+<ol>
+<li>Copy the files from the main project directory to the server.</li>
+<li>Run <code>composer install</code> to install all PHP dependencies</li>
+<li>Copy the <code>config/config-example.toml</code> file into <code>config/config.toml</code>. Modify this file as needed; some features will not work without proper configuration.</li>
+<li>Test the app&#39;s features to make sure things are working. In particular, make sure the <code>.htaccess</code> settings have taken effect.</li>
+</ol>
+<h3 id="basic-usage">Basic usage</h3>
+<p>Going to the main page of the project will produce a list of forms; from this you can access the forms and their associated views. Some sample forms are included with the project.</p>
+<p>To learn how to make a form, go to <a href="making-forms/introduction.html">the next page of this documentation</a>.</p>
+<p>To learn more about the code base, go to <a href="understanding-the-code/introduction.html">Understanding the Code</a>.</p>
+<h3 id="rebuilding-these-docs">Rebuilding these docs</h3>
+<p>These documentation pages are made with <a href="http://metalsmith.io">Metalsmith</a>. To build them:</p>
+<ol>
+<li>Go into the <code>docs</code> folder</li>
+<li>Run <code>npm install</code></li>
+<li>Run <code>node build.js</code><ul>
+<li>If you receive an error, you may need to run <code>node build.js</code> a second time</li>
+</ul>
+</li>
+</ol>
+<h3 id="file-structure">File Structure</h3>
+<p>The following is a brief description of the most important folders and files used by Formulaic. Note that access to these files is controlled by a <em>whitelist</em> in <code>.htaccess</code>.</p>
+<ul>
+<li><code>cache/</code> - Caches various things; will be created if not found</li>
+<li><code>config/</code> - Stores global configuration file</li>
+<li><code>data/submit-counts.json</code> - Stores the number of times each form has been submitted</li>
+<li><code>forms/</code> - Holds form configuration files</li>
+<li><code>img/</code> and <code>lib/</code> - Client-side assets</li>
+<li><code>jade/</code> - Slightly modified version of the &quot;Everzet/Jade&quot; library</li>
+<li><code>vendor/</code> - Used by Composer</li>
+<li><code>include/</code> - Contains most of the app&#39;s PHP code</li>
+</ul>
+
+				</div>
+			</div>
+	</div>
+	<script src="assets/prism.js"></script>
+</body>
+</html>

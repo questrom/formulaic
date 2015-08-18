@@ -1,0 +1,406 @@
+<html>
+<head>
+	<title>Formulaic Docs - Parts of Forms</title>
+	<link href="../assets/prism.css" rel="stylesheet">
+	<link href="../assets/semantic.css" rel="stylesheet">
+	<style>
+		li > p:last-child { margin-bottom: 1em; }
+		img { width: 100%; }
+		code, kbd, pre, samp { font-family: Consolas, monospace,monospace; font-size: 1em; }
+		code, kbd, samp { background: rgba(0,0,0,0.1); padding: 0 2px; border-radius: 2px; border: 1px solid rgba(0,0,0,0.1); }
+		pre > code { background:transparent;padding:0;border:0;border-radius:0; }
+		.ui.step, .ui.steps .step,
+		.ui.steps .step:first-child { padding:7px 10px 7px 14px;}
+		.ui.steps .step:first-child { padding-left:5px; }
+		.ui.steps .step:last-child { padding-right:5px; }
+		.ui.steps .step > .icon { margin: 0 0.4rem 0 0.1rem; }
+	</style>
+</head>
+<body style="background-color: rgb(27, 28, 29);">
+	<div class="ui internally celled grid container" style="max-width: 960px !important; min-height:100%;flex-flow: row;">
+			<div class="column" style="flex:0 0 237px; -webkit-flex: 0 0 237px; padding-top:1em; ">
+				<div class="ui inverted vertical menu">
+					<div class="ui big header item">Formulaic Docs</div>
+				        
+				        		<a class="item"  href="../index.html">Home</a>
+				        
+				        
+				        
+				        
+				        		<a class="item"  href="../getting-started.html">Getting Started</a>
+				        
+				        
+				        
+				        
+				        <div class="item">
+				            Making Forms
+				             <div class="menu">
+				                    
+				                    		<a class="item"  href="introduction.html">Introduction</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="active item"  href="parts-of-forms.html">Parts of Forms</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="outputs.html">Outputs</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="views.html">Views</a>
+				                    
+				                    
+				                    
+				            </div>
+				        </div>
+				        
+				        
+				        <div class="item">
+				            Understanding the Code
+				             <div class="menu">
+				                    
+				                    		<a class="item"  href="../understanding-the-code/introduction.html">Introduction</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="../understanding-the-code/conceptual-overview.html">Conceptual Overview</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="../understanding-the-code/route-flowcharts.html">Route Flowcharts</a>
+				                    
+				                    
+				                    
+				            </div>
+				        </div>
+				        
+				        
+				        		<a class="item"  href="../future-directions.html">Future Directions</a>
+				        
+				        
+				        
+				</div>
+			</div>
+			<div class="twelve wide column" style="flex:1; -webkit-flex: 1; padding-top:1em; background:#fff;">
+					<div class="ui massive breadcrumb">
+					
+					
+					            <a class="section" href="../making-forms.html">Making Forms</a>
+					            <i class="right chevron icon divider"></i>
+					
+					    <div class="active section">
+					        Parts of Forms
+					    </div>
+					</div>
+				<div>
+					<p>The following section describes the elements which can be placed within the <code>fields</code> section of a configuration file. Each of these elements will correspond to a part of the form that is displayed to the user.</p>
+<p><h3 class="ui header top attached">
+Global attributes
+</h3><div class="ui bottom attached segment">
+A few &quot;global attributes&quot; can be applied to most (<em>not necessarily all</em>) of the elements in the <code>fields</code> section. Of these, <code>name</code> and <code>label</code> <strong>must be provided</strong> for all form fields (that is, all elements that accept user input).</p>
+<ul>
+<li><p><strong><code>name</code></strong></p>
+<p>This attribute assigns a name to a form field. This name will be used within the HTML &quot;name&quot; attribute of the generated form; as the key for the form field in data stored in MongoDB; and to refer to the field elsewhere in the configuration file. However, it will never be exposed to the user.</p>
+<p>Note that <em>no two fields in a form may have the same name.</em> Ignoring this instruction will cause problems.</p>
+</li>
+<li><p><strong><code>label</code></strong></p>
+<p>This attribute specifies the label which will go above a form field. All form fields that accept user input <em>must</em> be given labels; otherwise, it would be impossible to distinguish fields from one another.</p>
+</li>
+<li><p><strong><code>sublabel</code></strong></p>
+<p>This attribute specifies a piece of smaller text to be rendered in gray below a form field&#39;s label. It is useful for providing more detailed instructions to the user.</p>
+<p>In some cases, the sublabel will be generated from other attributes of the form field if it is not explicitly specified. For instance, it may display the minimum and maximum accepted values of a form control.</p>
+</li>
+<li><p><strong><code>required</code></strong></p>
+<p>If provided, this attribute specifies that a value for the field <em>must</em> be provided by the user. Note that <strong>by default all fields are optional.</strong>
+</div></p>
+</li>
+</ul>
+<h2 id="form-fields">Form fields</h2>
+<p>The following elements represent form fields that accept input from the user.</p>
+<p><h3 class="ui header top attached">
+The <code>checkbox</code> element
+</h3><div class="ui bottom attached segment">
+This element creates a checkbox.</p>
+<h5 id="attributes-">Attributes:</h5>
+<ul>
+<li><p><strong><code>must-check</code></strong></p>
+<p>If provided, this attribute specifies that the user cannot submit the form without checking the checkbox.
+</div></p>
+</li>
+</ul>
+<p><h3 class="ui header top attached">
+The <code>textbox</code> and <code>textarea</code> elements
+</h3><div class="ui bottom attached segment">
+These elements create single-line and multi-line text boxes, respectively.</p>
+<h5 id="attributes-">Attributes:</h5>
+<ul>
+<li><p><strong><code>min-length</code> and <code>max-length</code></strong></p>
+<p>These specify the minimum and maximum number of characters that can be entered by the user.</p>
+</li>
+<li><p><strong><code>must-match</code></strong></p>
+<p>This attribute specifies a regular expression which the text must match. Note that validation error messages do not expose the regular expression to the user, and are thus rather unhelpful.
+</div></p>
+</li>
+</ul>
+<p><h3 class="ui header top attached">
+The <code>password</code> element
+</h3><div class="ui bottom attached segment">
+This element creates a password input field. It is intended for creating forms which require a password to be submitted. Note that data from password fields is <strong>never</strong> permanently stored (in databases or otherwise) for the sake of security.</p>
+<p>Putting a <code>password</code> element inside of a <code>show-if</code> element (as described later) will result in unintended behavior: if the field is hidden, the user will be able to submit the form without needing a password!</p>
+<h5 id="attributes-">Attributes:</h5>
+<ul>
+<li><p><strong><code>match-hash</code></strong></p>
+<p>Specifies a salted and hashed password, created with PHP&#39;s <code>password_hash</code> function, which the entered password must match.</p>
+<p>There is no way to specify the password in plaintext for security reasons.
+</div></p>
+</li>
+</ul>
+<p><h3 class="ui header top attached">
+The <code>dropdown</code> and <code>radios</code> elements
+</h3><div class="ui bottom attached segment">
+These elements create dropdown menus and lists of radio buttons, respectively. Both of them allow the user to select an option from a list; the difference is purely cosmetic.</p>
+<p>In order to specify the individual options available to the user, simply nest <code>option</code> elements inside. (See the sample forms to learn the precise syntax for this.)
+</div></p>
+<p><h3 class="ui header top attached">
+The <code>checkboxes</code> element
+</h3><div class="ui bottom attached segment">
+This element creates a list of checkboxes, from which the user can select zero or more options. As with <code>dropdown</code> and <code>radios</code>, child <code>option</code> elements are used to specify the list of available options.</p>
+<h5 id="attributes-">Attributes:</h5>
+<ul>
+<li><p><strong><code>min-choices</code> and <code>max-choices</code></strong></p>
+<p>These attributes specify the minimum and maximum number of choices that the user can select.
+</div></p>
+</li>
+</ul>
+<p><h3 class="ui header top attached">
+The <code>range</code> element
+</h3><div class="ui bottom attached segment">
+This element creates a slider, which allows the user to select a numeric value within a specified range. If greater precision is needed, consider using the <code>number</code> element instead.</p>
+<h5 id="attributes">Attributes</h5>
+<ul>
+<li><p><strong><code>min</code> and <code>max</code></strong></p>
+<p>These attributes specify the minimum and maximum values for the slider, respectively.</p>
+</li>
+<li><p><strong><code>def</code></strong></p>
+<p>Specifies the default value for the slider. Note that there is no way for the user to choose not to provide input to a slider -- in other words, you cannot really have &quot;optional&quot; sliders.</p>
+</li>
+<li><p><strong><code>step</code></strong></p>
+<p>Specifies the smallest increment along the slider. For example: if this is set to 1, only integers are allowed; if it is set to 2, only even integers will be accepted.
+</div></p>
+</li>
+</ul>
+<p><h3 class="ui header top attached">
+The <code>phone</code>, <code>email</code>, and <code>url</code> elements
+</h3><div class="ui bottom attached segment">
+These elements provide textboxes in which the user can only enter phone numbers, email addresses, and URLs, respectively.</p>
+<h5 id="attributes-">Attributes:</h5>
+<ul>
+<li><p><strong><code>must-have-domain</code></strong></p>
+<p>This attribute, which applies only to the <code>email</code> element, specifies a domain which the email address must have. For instance, if this attribute is set to <code>bu.edu</code>, the entered email must end with <code>@bu.edu</code>.
+</div></p>
+</li>
+</ul>
+<p><h3 class="ui header top attached">
+The <code>number</code> element
+</h3><div class="ui bottom attached segment">
+This element allows the user to input a precise numeric value.</p>
+<h5 id="attributes-">Attributes:</h5>
+<ul>
+<li><p><strong><code>min</code> and <code>max</code></strong></p>
+<p>These specify the minimum and maximum values that the user can enter.
+</div></p>
+</li>
+</ul>
+<p><h3 class="ui header top attached">
+The <code>time</code> element
+</h3><div class="ui bottom attached segment">
+This element allows the user to specify a time of day. Note that this will be stored in the database as the number of <em>seconds after midnight,</em> to avoid possible issues with date/time conversions.</p>
+<h5 id="attributes-">Attributes:</h5>
+<ul>
+<li><p><strong><code>min</code> and <code>max</code></strong></p>
+<p>These specify, in &quot;h:mm xm&quot; format, the minimum and maximum times that the user can enter.</p>
+</li>
+<li><p><strong><code>step</code></strong></p>
+<p>If specified, the time (measured in <em>minutes</em> past midnight) must be a multiple of this number.
+</div></p>
+</li>
+</ul>
+<p><h3 class="ui header top attached">
+The <code>date</code> element
+</h3><div class="ui bottom attached segment">
+This element allows the user to specify a date without an associated time.</p>
+<h5 id="attributes-">Attributes:</h5>
+<ul>
+<li><p><strong><code>min</code> and <code>max</code></strong></p>
+<p>These specify, in <code>YYYY-MM-DD</code> format, the minimum and maximum dates that can be entered in the form field.
+</div></p>
+</li>
+</ul>
+<p><h3 class="ui header top attached">
+The <code>datetime</code> element
+</h3><div class="ui bottom attached segment">
+This element allows the user to specify a date without an associated time.</p>
+<p>No time zone conversion is performed to avoid <a href="http://www.wired.com/2012/06/falsehoods-programmers-believe-about-time/">problems</a> and the associated <a href="http://i.ytimg.com/vi/-5wpm-gesOY/maxresdefault.jpg">headaches</a>. The <code>time-zone</code> option in the global configuration file is used elsewhere within Formulaic.</p>
+<h5 id="attributes-">Attributes:</h5>
+<ul>
+<li><p><strong><code>min</code> and <code>max</code></strong></p>
+<p>These specify, in <code>YYYY-MM-DD hh:mm xm</code> format, the minimum and maximum values that can be entered in the form field.</p>
+</li>
+<li><p><strong><code>step</code></strong></p>
+<p>If specified, the time of day (measured in minutes past midnight) must be a multiple of this number. This does not take into account the date in any way.
+</div></p>
+</li>
+</ul>
+<p><h3 class="ui header top attached">
+The <code>file</code> element
+</h3><div class="ui bottom attached segment">
+This element allows the user to upload a file, which can be stored in Amazon S3. Files are <strong>never</strong> stored locally on the server for more than a short period of time.</p>
+<p>For this element to work properly, you must <em>whitelist</em> specific pairs of file extensions and MIME types that can be uploaded. The <code>allow</code> element is used to specify these pairs -- see the sample forms for the syntax to use.</p>
+<h5 id="attributes-">Attributes:</h5>
+<ul>
+<li><p><strong><code>max-size</code></strong></p>
+<p>The maximum file size, in <em>bytes</em>. Note that the file size limit set in <code>php.ini</code> can override this.</p>
+</li>
+<li><p><strong><code>permissions</code></strong></p>
+<p>If the file is to be uploaded to Amazon S3, this attribute specifies what permissions the file will have. <code>public-read</code> is probably what you want; for a full list of possible values, see <a href="https://github.com/tpyo/amazon-s3-php-class/blob/121318e65e857a994b22ffe0aa04a0c55e832bea/S3.php#L40">this page</a>.
+</div></p>
+</li>
+</ul>
+<p><h3 class="ui header top attached">
+The <code>captcha</code> element
+</h3><div class="ui bottom attached segment">
+This element uses reCAPTCHA to add a CAPTCHA to the form. This is useful for preventing spam.
+</div></p>
+<h2 id="groups-of-form-fields">Groups of form fields</h2>
+<p>These elements do not represent individual form fields; rather, they provide ways to combine other form fields together. In general, they can be arbirarily nested within each other (though this has not been exhaustively tested in all cases).</p>
+<p><h3 class="ui header top attached">
+The <code>group</code> element
+</h3><div class="ui bottom attached segment">
+Creates a border around a group of form controls in order to show that they are related. This element is purely cosmetic: it does not affect the data stored in the database (or anywhere else).</p>
+<p>The children of this element represent the form fields to be grouped together.
+</div></p>
+<p><h3 class="ui header top attached">
+The <code>list</code> element
+</h3><div class="ui bottom attached segment">
+Essentially, this allows the user to duplicate a set of form fields an arbitrary number of times, thus allowing the creation of lists.</p>
+<p>This element is best explained by example. To create a list of file uploads with associated captions, one might use:</p>
+<pre><code class="lang-jade">list(name=&quot;pictures&quot;, label=&quot;Pictures to upload&quot;, add-text=&quot;Add a picture&quot;)
+  file(label=&quot;Image file&quot;, name=&quot;image_file&quot;, max-size=&quot;10000000&quot;, permissions=&quot;public-read&quot;)
+    allow(ext=&quot;jpg&quot;, mime=&quot;image/jpeg&quot;)
+    allow(ext=&quot;png&quot;, mime=&quot;image/png&quot;)
+  textbox(label=&quot;Caption&quot;, name=&quot;caption&quot;, required=true)
+</code></pre>
+<p>The associated data will be stored in the database as an array (in this example, the key for the array will be <code>pictures</code>).</p>
+<h5 id="attributes">Attributes</h5>
+<ul>
+<li><p><strong><code>add-text</code></strong></p>
+<p>Specifies the text on the button that is used to add an item to the list.</p>
+</li>
+<li><p><strong><code>min-items</code> and <code>max-items</code></strong></p>
+<p>These attributes specify the minimum and maximum number of items that the user can provide.
+</div></p>
+</li>
+</ul>
+<h2 id="conditionals">Conditionals</h2>
+<p>The <code>show-if</code> element is used to create conditional form fields: form fields that are only shown when a certain condition is met. The first child element within a <code>show-if</code> must be a <strong>condition</strong>, the second element must be the <strong>form field</strong> which is to be shown/hidden.</p>
+<p>To put a group of form fields behind a single conditional, use the <code>group</code> element to combine them.</p>
+<h4 id="the-following-elements-specify-conditions-">The following elements specify conditions:</h4>
+<p><h3 class="ui header top attached">
+The <code>is-checked</code> element
+</h3><div class="ui bottom attached segment">
+This condition is only satisfied when a checkbox is checked.</p>
+<h5 id="attributes-">Attributes:</h5>
+<ul>
+<li><p><strong><code>name</code></strong></p>
+<p>The name of the checkbox.
+</div></p>
+</li>
+</ul>
+<p><h3 class="ui header top attached">
+The <code>is-not-checked</code> element
+</h3><div class="ui bottom attached segment">
+This condition is only satisfied when a checkbox is <strong>not</strong> checked.</p>
+<h5 id="attributes-">Attributes:</h5>
+<ul>
+<li><p><strong><code>name</code></strong></p>
+<p>The name of the checkbox.
+</div></p>
+</li>
+</ul>
+<p><h3 class="ui header top attached">
+The <code>is-radio-selected</code> element
+</h3><div class="ui bottom attached segment">
+This condition is only satisfied when a radio element having a certain value is selected.</p>
+<h5 id="attributes-">Attributes:</h5>
+<ul>
+<li><p><strong><code>name</code></strong></p>
+<p>The name of the <code>radios</code> element.</p>
+</li>
+<li><p><strong><code>value</code></strong></p>
+<p>The text of the <code>option</code> element representing the radio button. In other words, this attribute specifies which radio button inside of the <code>radios</code> element is to be used.
+</div></p>
+</li>
+</ul>
+<h2 id="other-form-elements">Other form elements</h2>
+<p>These elements, which can also be placed within the <code>fields</code> element, do not represent form fields at all; instead, they display text to the user. When placed inside of a <code>group</code>, these elements format themselves nicely to match.</p>
+<p><h3 class="ui header top attached">
+The <code>header</code> element
+</h3><div class="ui bottom attached segment">
+Creates a heading; the text of the heading should be placed inside of the <code>header</code> element.</p>
+<h5 id="attributes-">Attributes:</h5>
+<ul>
+<li><p><strong><code>size</code></strong></p>
+<p>The size of the header, where <code>1</code> is the largest and <code>6</code> is the smallest.</p>
+</li>
+<li><p><strong><code>icon</code></strong></p>
+<p>An icon to display next to the header. These icons come from <a href="http://semantic-ui.com/elements/icon.html">Semantic UI</a>. For example, if you want the &quot;alarm&quot; icon, set&nbsp;&nbsp;<code>icon=&quot;alarm&quot;</code>.</p>
+</li>
+<li><p><strong><code>subhead</code></strong></p>
+<p>Text to be displayed at a smaller size beneath the header itself.
+</div></p>
+</li>
+</ul>
+<p><h3 class="ui header top attached">
+The <code>notice</code> element
+</h3><div class="ui bottom attached segment">
+Creates a message offset from the surrounding text and form fields. Optionally, <code>li</code> elements can be placed inside of this element to create an unordered list.</p>
+<p>Unlike with <code>header</code>, the text inside of a notice must be specified using the <code>text</code> attribute, instead of being placed directly within the element.</p>
+<h5 id="attributes-">Attributes:</h5>
+<ul>
+<li><p><strong><code>text</code></strong></p>
+<p>The text contained in the notice.</p>
+</li>
+<li><p><strong><code>header</code></strong></p>
+<p>A header to be placed at the top of the notice.</p>
+</li>
+<li><p><strong><code>icon</code></strong></p>
+<p>An icon displayed next to the notice. (See the documentation for the <code>header</code> element for more details.)
+</div></p>
+</li>
+</ul>
+<p><h3 class="ui header top attached">
+The <code>inject</code> element
+</h3><div class="ui bottom attached segment">
+This element allows HTML to be injected into the form. For this to work, it must be enabled in <code>config/config.toml</code>; it is <strong>disabled by default</strong> for security reasons.</p>
+<p>Note that the HTML inserted in this way must also be valid XML, so that the configuration file parser doesn&#39;t mess it up. Trying to inject Jade code instead of HTML will cause issues, as the Jade parser used in the project is suited only to configuration-file parsing.</p>
+<p>To use this element, simply place HTML inside of it, preferably as <a href="http://jade-lang.com/reference/plain-text/">piped text</a>.</p>
+<h5 id="attributes-">Attributes:</h5>
+<ul>
+<li><p><strong><code>no-sanitize</code></strong></p>
+<p>Do not attempt to sanitize HTML at all. This attribute can be disabled in <code>config/config.toml</code>. Note that you should not put too much trust in the sanitizer (HTMLPurifier), as it is unlikely to be entirely bug-free.
+</div></p>
+</li>
+</ul>
+
+				</div>
+			</div>
+	</div>
+	<script src="../assets/prism.js"></script>
+</body>
+</html>

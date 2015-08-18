@@ -1,0 +1,115 @@
+<html>
+<head>
+	<title>Formulaic Docs - Future Directions</title>
+	<link href="assets/prism.css" rel="stylesheet">
+	<link href="assets/semantic.css" rel="stylesheet">
+	<style>
+		li > p:last-child { margin-bottom: 1em; }
+		img { width: 100%; }
+		code, kbd, pre, samp { font-family: Consolas, monospace,monospace; font-size: 1em; }
+		code, kbd, samp { background: rgba(0,0,0,0.1); padding: 0 2px; border-radius: 2px; border: 1px solid rgba(0,0,0,0.1); }
+		pre > code { background:transparent;padding:0;border:0;border-radius:0; }
+		.ui.step, .ui.steps .step,
+		.ui.steps .step:first-child { padding:7px 10px 7px 14px;}
+		.ui.steps .step:first-child { padding-left:5px; }
+		.ui.steps .step:last-child { padding-right:5px; }
+		.ui.steps .step > .icon { margin: 0 0.4rem 0 0.1rem; }
+	</style>
+</head>
+<body style="background-color: rgb(27, 28, 29);">
+	<div class="ui internally celled grid container" style="max-width: 960px !important; min-height:100%;flex-flow: row;">
+			<div class="column" style="flex:0 0 237px; -webkit-flex: 0 0 237px; padding-top:1em; ">
+				<div class="ui inverted vertical menu">
+					<div class="ui big header item">Formulaic Docs</div>
+				        
+				        		<a class="item"  href="index.html">Home</a>
+				        
+				        
+				        
+				        
+				        		<a class="item"  href="getting-started.html">Getting Started</a>
+				        
+				        
+				        
+				        
+				        <div class="item">
+				            Making Forms
+				             <div class="menu">
+				                    
+				                    		<a class="item"  href="making-forms/introduction.html">Introduction</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="making-forms/parts-of-forms.html">Parts of Forms</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="making-forms/outputs.html">Outputs</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="making-forms/views.html">Views</a>
+				                    
+				                    
+				                    
+				            </div>
+				        </div>
+				        
+				        
+				        <div class="item">
+				            Understanding the Code
+				             <div class="menu">
+				                    
+				                    		<a class="item"  href="understanding-the-code/introduction.html">Introduction</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="understanding-the-code/conceptual-overview.html">Conceptual Overview</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="understanding-the-code/route-flowcharts.html">Route Flowcharts</a>
+				                    
+				                    
+				                    
+				            </div>
+				        </div>
+				        
+				        
+				        		<a class="active item"  href="future-directions.html">Future Directions</a>
+				        
+				        
+				        
+				</div>
+			</div>
+			<div class="twelve wide column" style="flex:1; -webkit-flex: 1; padding-top:1em; background:#fff;">
+					<div class="ui massive breadcrumb">
+					
+					    <div class="active section">
+					        Future Directions
+					    </div>
+					</div>
+				<div>
+					<p>This page presents some ideas for new features that could be added to make Formulaic even more useful, stable, and secure.</p>
+<h3 id="unit-tests">Unit Tests</h3>
+<p>The program as it stands does not include unit tests, as the behavior of the app was rapidly changing during development. Now, however, it may be desirable to add some unit tests (especially for the less IO-heavy parts of the app.) The best option for doing this seems to be <a href="https://github.com/shiflett/testmore">testmore</a>, which is less bloated than things like PHPUnit.</p>
+<h3 id="linting">Linting</h3>
+<p>Currently, I have tried linting the app using both PHPCS and PHPMD; the <a href="https://github.com/jakoch/Goldstandard-for-PHP">Goldstandard</a> standard has been particularly useful, as it checks for the use of string functions that aren&#39;t Unicode-safe.</p>
+<p>However, I have encountered difficulty in setting up these tools to work well for this project; PHPCS in particular is very hard to configure. Therefore, I have not included a ruleset or standard with this project. I encourage the reader only to maintain the existing style wherever possible, and to use tabs instead of spaces for indentation :)</p>
+<p>In the future, however, creating such a standard might be useful for this and for other projects.</p>
+<h3 id="unicode-support">Unicode Support</h3>
+<p>Every effort has been made to make the app support Unicode by consistently using UTF-8. However, complete Unicode support is <a href="http://stackoverflow.com/questions/279170/utf-8-all-the-way-through">rather tricky in PHP</a>, and Formulaic&#39;s dependencies may not have proper Unicode support. In particular, it is known that Excel won&#39;t handle Unicode characters in CSV files generated by the app, due to bugs in PHPExcel.</p>
+<p>Currently, I am using <a href="https://github.com/voku/portable-utf8/">portable-utf8</a> to provide Unicode-compatible string manupulation functions; this means that extensions such as <code>mbstring</code> are not rqeuired for the app to run. Note that it might be a good idea to start using the <code>UTF8::clean</code> function from that library in more places, if concerns related to malformed UTF8 data arise.</p>
+<p>Note that issues with Unicode support may cause security vulnerabilities, so care should be taken in adding this feature. No such security vulnerabilities are known to exist in the app at present.</p>
+
+				</div>
+			</div>
+	</div>
+	<script src="assets/prism.js"></script>
+</body>
+</html>

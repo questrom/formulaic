@@ -1,0 +1,128 @@
+<html>
+<head>
+	<title>Formulaic Docs - Conceptual Overview</title>
+	<link href="../assets/prism.css" rel="stylesheet">
+	<link href="../assets/semantic.css" rel="stylesheet">
+	<style>
+		li > p:last-child { margin-bottom: 1em; }
+		img { width: 100%; }
+		code, kbd, pre, samp { font-family: Consolas, monospace,monospace; font-size: 1em; }
+		code, kbd, samp { background: rgba(0,0,0,0.1); padding: 0 2px; border-radius: 2px; border: 1px solid rgba(0,0,0,0.1); }
+		pre > code { background:transparent;padding:0;border:0;border-radius:0; }
+		.ui.step, .ui.steps .step,
+		.ui.steps .step:first-child { padding:7px 10px 7px 14px;}
+		.ui.steps .step:first-child { padding-left:5px; }
+		.ui.steps .step:last-child { padding-right:5px; }
+		.ui.steps .step > .icon { margin: 0 0.4rem 0 0.1rem; }
+	</style>
+</head>
+<body style="background-color: rgb(27, 28, 29);">
+	<div class="ui internally celled grid container" style="max-width: 960px !important; min-height:100%;flex-flow: row;">
+			<div class="column" style="flex:0 0 237px; -webkit-flex: 0 0 237px; padding-top:1em; ">
+				<div class="ui inverted vertical menu">
+					<div class="ui big header item">Formulaic Docs</div>
+				        
+				        		<a class="item"  href="../index.html">Home</a>
+				        
+				        
+				        
+				        
+				        		<a class="item"  href="../getting-started.html">Getting Started</a>
+				        
+				        
+				        
+				        
+				        <div class="item">
+				            Making Forms
+				             <div class="menu">
+				                    
+				                    		<a class="item"  href="../making-forms/introduction.html">Introduction</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="../making-forms/parts-of-forms.html">Parts of Forms</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="../making-forms/outputs.html">Outputs</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="../making-forms/views.html">Views</a>
+				                    
+				                    
+				                    
+				            </div>
+				        </div>
+				        
+				        
+				        <div class="item">
+				            Understanding the Code
+				             <div class="menu">
+				                    
+				                    		<a class="item"  href="introduction.html">Introduction</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="active item"  href="conceptual-overview.html">Conceptual Overview</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="route-flowcharts.html">Route Flowcharts</a>
+				                    
+				                    
+				                    
+				            </div>
+				        </div>
+				        
+				        
+				        		<a class="item"  href="../future-directions.html">Future Directions</a>
+				        
+				        
+				        
+				</div>
+			</div>
+			<div class="twelve wide column" style="flex:1; -webkit-flex: 1; padding-top:1em; background:#fff;">
+					<div class="ui massive breadcrumb">
+					
+					
+					            <a class="section" href="../understanding-the-code.html">Understanding the Code</a>
+					            <i class="right chevron icon divider"></i>
+					
+					    <div class="active section">
+					        Conceptual Overview
+					    </div>
+					</div>
+				<div>
+					<p>Four interfaces are particularly important parts of Formulaic: Configurable, Renderable, FormPartFactory, and Storeable. This page will focus on these four interfaces as a general way of introducing the codebase.</p>
+<p>All class diagrams shown here were generated using PHPStorm; they may not be entirely up-to-date, but should be close.</p>
+<p><img src="configurable.png" alt="Configurable"></p>
+<h2 id="configurable">Configurable</h2>
+<p>The Configurable interface specifies that a particular class corresponds to an element within a configuration file, and that each instance of the class corresponds to exactly one usage of the element. So, for instance, the Textbox class is Configurable because it corresponds to the &quot;textbox&quot; element.</p>
+<p>Which element corresponds to which class is determined by the <code>elementMap</code> given in <code>include/Parser.php</code>. To add a new configuration file element, one can just add to this map. The meaning of an element never depends on context, inasmuch as each element is associated with exactly one class.</p>
+<p>When an element is encountered in the configuration file, the corresponding class is instantiated (via <code>__construct</code>) with an associative array containing the attributes, text, and child elements associated with the element in the configuration file.</p>
+<p><img src="renderable.png" alt="Renderable"></p>
+<h2 id="renderable">Renderable</h2>
+<p>The Renderable interface specifies that a particular class can create HTML via a <code>render()</code> method. In particular, this method will generally use the <code>HTMLGenerator</code> DSL specified in <code>include/HTMLGenerator.php</code>.</p>
+<p>One of the rules to which Formulaic adheres is that <strong>no Configurable classes are Renderable.</strong> This is crucial because it allows for a much greater separation of concerns.</p>
+<p><img src="formpartfactory.png" alt="FormPartFactory"></p>
+<h2 id="formpartfactory">FormPartFactory</h2>
+<p>As stated above, no Configurable classes are Renderable. But many Configurable classes, such as &quot;textbox,&quot; do have associated HTML content &ndash; most importantly, the HTML that is placed inside of a web form. So how are Configurables and Renderables connected?</p>
+<p>The answer is that many Configurables also implement FormPartFactory, and therefore have a <code>makeFormPart</code> method. This method, which returns a Renderable, provides the HTML that should be placed into a form. In the case of the <code>textbox</code> element, this includes a <code>&lt;input type=&quot;text&quot;&gt;</code> tag.</p>
+<p><img src="storeable.png" alt="Storeable"></p>
+<h2 id="storeable">Storeable</h2>
+<p>Besides having associated HTML, many parts of a configuration file &ndash; such as Textboxes &ndash; have associated data which are included as part of a form submission. In the case of <code>textbox</code>, this means the text which the user entered into the textbox.</p>
+<p>Furthermore, things like Textboxes aren&#39;t always associated with submitted data; instead, they can be associated with validation errors &ndash; errors in a form submission that the user will need to correct (such as a missing value for a <code>required</code> form field).</p>
+<p>Such classes implement the <code>Storeable</code> interface, whose sole method, <code>getSubmissionPart</code>, gets the part of the form submission (whether an error or a successful value) associated with a form control. In particular, this uses <code>Result</code> types; for more, see <code>include/Result.php</code>.</p>
+
+				</div>
+			</div>
+	</div>
+	<script src="../assets/prism.js"></script>
+</body>
+</html>

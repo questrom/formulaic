@@ -1,0 +1,170 @@
+<html>
+<head>
+	<title>Formulaic Docs - Outputs</title>
+	<link href="../assets/prism.css" rel="stylesheet">
+	<link href="../assets/semantic.css" rel="stylesheet">
+	<style>
+		li > p:last-child { margin-bottom: 1em; }
+		img { width: 100%; }
+		code, kbd, pre, samp { font-family: Consolas, monospace,monospace; font-size: 1em; }
+		code, kbd, samp { background: rgba(0,0,0,0.1); padding: 0 2px; border-radius: 2px; border: 1px solid rgba(0,0,0,0.1); }
+		pre > code { background:transparent;padding:0;border:0;border-radius:0; }
+		.ui.step, .ui.steps .step,
+		.ui.steps .step:first-child { padding:7px 10px 7px 14px;}
+		.ui.steps .step:first-child { padding-left:5px; }
+		.ui.steps .step:last-child { padding-right:5px; }
+		.ui.steps .step > .icon { margin: 0 0.4rem 0 0.1rem; }
+	</style>
+</head>
+<body style="background-color: rgb(27, 28, 29);">
+	<div class="ui internally celled grid container" style="max-width: 960px !important; min-height:100%;flex-flow: row;">
+			<div class="column" style="flex:0 0 237px; -webkit-flex: 0 0 237px; padding-top:1em; ">
+				<div class="ui inverted vertical menu">
+					<div class="ui big header item">Formulaic Docs</div>
+				        
+				        		<a class="item"  href="../index.html">Home</a>
+				        
+				        
+				        
+				        
+				        		<a class="item"  href="../getting-started.html">Getting Started</a>
+				        
+				        
+				        
+				        
+				        <div class="item">
+				            Making Forms
+				             <div class="menu">
+				                    
+				                    		<a class="item"  href="introduction.html">Introduction</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="parts-of-forms.html">Parts of Forms</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="active item"  href="outputs.html">Outputs</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="views.html">Views</a>
+				                    
+				                    
+				                    
+				            </div>
+				        </div>
+				        
+				        
+				        <div class="item">
+				            Understanding the Code
+				             <div class="menu">
+				                    
+				                    		<a class="item"  href="../understanding-the-code/introduction.html">Introduction</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="../understanding-the-code/conceptual-overview.html">Conceptual Overview</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="../understanding-the-code/route-flowcharts.html">Route Flowcharts</a>
+				                    
+				                    
+				                    
+				            </div>
+				        </div>
+				        
+				        
+				        		<a class="item"  href="../future-directions.html">Future Directions</a>
+				        
+				        
+				        
+				</div>
+			</div>
+			<div class="twelve wide column" style="flex:1; -webkit-flex: 1; padding-top:1em; background:#fff;">
+					<div class="ui massive breadcrumb">
+					
+					
+					            <a class="section" href="../making-forms.html">Making Forms</a>
+					            <i class="right chevron icon divider"></i>
+					
+					    <div class="active section">
+					        Outputs
+					    </div>
+					</div>
+				<div>
+					<p>The elements described on this page are used to specify how the data submitted through a form will be <strong>processed</strong>, <strong>distributed</strong>, and <strong>stored</strong>. They must be placed within the <code>outputs</code> section of a <a href="introduction.html">configuration file</a>.</p>
+<p><h3 class="ui header top attached">
+The <code>s3</code> element
+</h3><div class="ui bottom attached segment">
+This element specifies that files uploaded through the form should be stored in Amazon S3. It must be placed <strong>before</strong> any other output elements in the configuration file.</p>
+<p>Note that uploaded files will be renamed for security reasons. Also note that S3 is currently the <em>only</em> way of storing uploadeded files (they are never stored locally on a permanent basis).</p>
+<h5 id="attributes-">Attributes:</h5>
+<ul>
+<li><p><strong><code>bucket</code></strong></p>
+<p>Specifies in which S3 bucket the uploaded files will be stored.
+</div></p>
+</li>
+</ul>
+<p><h3 class="ui header top attached">
+The <code>mongo</code> element
+</h3><div class="ui bottom attached segment">
+This element specifies that form submissions should be stored in MongoDB. The server and database are specified in <code>config/config.toml</code>; this element specifies only the collection.</p>
+<p>Unlike the other outputs described on this page, MongoDB is treated as read-write rather than write-only. <strong>For this reason, MongoDB is used by <a href="views.html">views</a> to retrieve data.</strong> In particular, the first <code>mongo</code> element present in a configuration file will be used by the views.</p>
+<h5 id="attributes-">Attributes:</h5>
+<ul>
+<li><p><strong><code>collection</code></strong></p>
+<p>These attributes specify the database and collection in which the data should be stored.
+</div></p>
+</li>
+</ul>
+<p><h3 class="ui header top attached">
+The <code>email-to</code> element
+</h3><div class="ui bottom attached segment">
+This element specifies that form submissions should be emailed to a particular person. To send submissions to multiple addresses, provide multiple <code>email-to</code> elements as needed.</p>
+<p>For this to work properly, SMTP must be configured in the <code>config.toml</code> file. </p>
+<h5 id="attributes-">Attributes:</h5>
+<ul>
+<li><p><strong><code>from</code></strong></p>
+<p>Specifies the From header of the email (for example,&nbsp;&nbsp;<code>Form Builder &lt;formbuilder@bu.edu&gt;</code> would work).</p>
+</li>
+<li><p><strong><code>to</code></strong></p>
+<p>Specifies the email address to which emails will be sent.</p>
+</li>
+<li><p><strong><code>subject</code></strong></p>
+<p>Specifies the email&#39;s subject line.
+</div></p>
+</li>
+</ul>
+<p><h3 class="ui header top attached">
+The <code>send-confirmation</code> element
+</h3><div class="ui bottom attached segment">
+This element specifies that a confirmation email should be sent to an email address specified by the user. To use this feature, you must first place an <code>email</code> element in the form, so that the user can input an email; the <code>required</code> attribute should always be specified on this element, as sending will fail if no address is provided.</p>
+<p>For this to work properly, SMTP must be configured in the <code>config.toml</code> file. </p>
+<p>The <em>text</em> of the confirmation email is specified inside of the <code>email-to</code> element; I recommend that you precede this text with a pipe character so that Jade won&#39;t get confused (<a href="http://jade-lang.com/reference/plain-text/">more info here</a>).</p>
+<h5 id="attributes-">Attributes:</h5>
+<ul>
+<li><p><strong><code>from</code></strong></p>
+<p>Specifies the From header of the email (for example,&nbsp;&nbsp;<code>Form Builder &lt;formbuilder@bu.edu&gt;</code> would work).</p>
+</li>
+<li><p><strong><code>email-field</code></strong></p>
+<p>Specifies the name of the <code>email</code> element in the form.</p>
+</li>
+<li><p><strong><code>subject</code></strong></p>
+<p>Specifies the email&#39;s subject line.
+</div></p>
+</li>
+</ul>
+
+				</div>
+			</div>
+	</div>
+	<script src="../assets/prism.js"></script>
+</body>
+</html>

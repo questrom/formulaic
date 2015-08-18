@@ -1,0 +1,144 @@
+<html>
+<head>
+	<title>Formulaic Docs - Introduction</title>
+	<link href="../assets/prism.css" rel="stylesheet">
+	<link href="../assets/semantic.css" rel="stylesheet">
+	<style>
+		li > p:last-child { margin-bottom: 1em; }
+		img { width: 100%; }
+		code, kbd, pre, samp { font-family: Consolas, monospace,monospace; font-size: 1em; }
+		code, kbd, samp { background: rgba(0,0,0,0.1); padding: 0 2px; border-radius: 2px; border: 1px solid rgba(0,0,0,0.1); }
+		pre > code { background:transparent;padding:0;border:0;border-radius:0; }
+		.ui.step, .ui.steps .step,
+		.ui.steps .step:first-child { padding:7px 10px 7px 14px;}
+		.ui.steps .step:first-child { padding-left:5px; }
+		.ui.steps .step:last-child { padding-right:5px; }
+		.ui.steps .step > .icon { margin: 0 0.4rem 0 0.1rem; }
+	</style>
+</head>
+<body style="background-color: rgb(27, 28, 29);">
+	<div class="ui internally celled grid container" style="max-width: 960px !important; min-height:100%;flex-flow: row;">
+			<div class="column" style="flex:0 0 237px; -webkit-flex: 0 0 237px; padding-top:1em; ">
+				<div class="ui inverted vertical menu">
+					<div class="ui big header item">Formulaic Docs</div>
+				        
+				        		<a class="item"  href="../index.html">Home</a>
+				        
+				        
+				        
+				        
+				        		<a class="item"  href="../getting-started.html">Getting Started</a>
+				        
+				        
+				        
+				        
+				        <div class="item">
+				            Making Forms
+				             <div class="menu">
+				                    
+				                    		<a class="active item"  href="introduction.html">Introduction</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="parts-of-forms.html">Parts of Forms</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="outputs.html">Outputs</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="views.html">Views</a>
+				                    
+				                    
+				                    
+				            </div>
+				        </div>
+				        
+				        
+				        <div class="item">
+				            Understanding the Code
+				             <div class="menu">
+				                    
+				                    		<a class="item"  href="../understanding-the-code/introduction.html">Introduction</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="../understanding-the-code/conceptual-overview.html">Conceptual Overview</a>
+				                    
+				                    
+				                    
+				                    
+				                    		<a class="item"  href="../understanding-the-code/route-flowcharts.html">Route Flowcharts</a>
+				                    
+				                    
+				                    
+				            </div>
+				        </div>
+				        
+				        
+				        		<a class="item"  href="../future-directions.html">Future Directions</a>
+				        
+				        
+				        
+				</div>
+			</div>
+			<div class="twelve wide column" style="flex:1; -webkit-flex: 1; padding-top:1em; background:#fff;">
+					<div class="ui massive breadcrumb">
+					
+					
+					            <a class="section" href="../making-forms.html">Making Forms</a>
+					            <i class="right chevron icon divider"></i>
+					
+					    <div class="active section">
+					        Introduction
+					    </div>
+					</div>
+				<div>
+					<h3 id="configuration-files">Configuration files</h3>
+<ul>
+<li>Formulaic generates forms based on <strong>configuration files</strong>; these must not be confused with the global configuration stored in <code>config.toml</code>. </li>
+<li>Configuration files are written in <a href="http://jade-lang.com"><strong>Jade</strong></a>, which Formulaic will automatically compile to XML. See below for further details.</li>
+<li>The <strong>sample forms</strong> included with the project provide an excellent way to get used to the syntax &mdash; in fact, these may be more useful that the following documentation. Before they work, you may need to modify them to suit, e.g., your MongoDB configuration.</li>
+</ul>
+<h3 id="adding-a-form">Adding a form</h3>
+<p>Adding a new form is as simple as placing a new Jade file in the <code>forms</code> folder of the project. It will be automatically recognized, provided that its filename matches the regular expression <code>/^[A-za-z0-9_-]+\.jade$/</code>.</p>
+<p>This example (which is also a working configuration file) shows the basic structure:</p>
+<pre><code class="lang-jade">form(name=&quot;Title of form&quot;)
+  fields
+    //- A list of headers, form fields, etc. to be put into the form
+  outputs
+    //- Specifies where the data submitted via the form will be stored or sent
+  views
+    //- A list of ways in which this data can be formatted and displayed
+</code></pre>
+<p><br>
+To learn more about...</p>
+<ul>
+<li>The contents of the <code>fields</code> element, see <a href="parts-of-forms.html">Parts of Forms</a>.</li>
+<li>The contents of the <code>outputs</code> element, see <a href="outputs.html">Outputs</a>.</li>
+<li>The contents of the <code>views</code> element, see <a href="views.html">Views</a>.</li>
+</ul>
+<h3 id="an-important-note-about-jade">An important note about Jade</h3>
+<p>Note that there is <strong>one key difference</strong> between the Jade used in this app and Jade templates in general. When a <code>#</code> character is used in a tag (e.g. <code>checkbox#foo</code>), Jade would normally interpret that as an <code>id</code> attribute. In other words, it would be equivalent to <code>checkbox(id=&quot;foo&quot;)</code>. However, in this app the <code>#</code> character specifies the <strong><code>name</code></strong> attribute instead. So <code>checkbox#foo</code> means <code>checkbox(name=&quot;foo&quot;)</code>. This allows for more concise configuration files, and is used in some of the sample forms. The meaning of the <code>name</code> attribute as applied to different elements will be explained later in this documentation.</p>
+<p>The following documentation presupposes a general understanding of Jade syntax. When it speaks of &quot;elements&quot; and &quot;attributes,&quot; these terms refer to <em>Jade</em> elements and attributes; don&#39;t try to put normal XML tags into configuration files.</p>
+<p>A side note: make sure to <strong>indent Jade files properly</strong>. Small mistakes in indentation can lead to fatal parse errors.</p>
+<h3 id="enabling-framing">Enabling framing</h3>
+<p>If you want to allow a form to be placed in an <code>&lt;iframe&gt;</code>, simply set the <code>allow-framing</code> attribute of the <code>page</code> element to <code>true</code>. For example:</p>
+<pre><code class="lang-jade">form(name=&quot;Title of form&quot;, allow-framing=true)
+  fields
+  outputs
+  views
+</code></pre>
+<p>By default, framing is not allowed in order to prevent clickjacking.</p>
+
+				</div>
+			</div>
+	</div>
+	<script src="../assets/prism.js"></script>
+</body>
+</html>
