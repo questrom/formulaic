@@ -26,9 +26,11 @@ class Stringifier {
 	# given at this link: http://stackoverflow.com/questions/29991016/
 
 
-	# Converts an HTMLGenerator object into an iterator (this function is a generator
-	# so there is no explicit array).
+	# Converts an HTMLGenerator object into an array.
 	private function generateArray($element) {
+
+		# The output
+		$out = [];
 
 		# A "call stack" type structure
 		$stack = [];
@@ -92,18 +94,18 @@ class Stringifier {
 						for($j = $escapeCount; $j--;) {
 							$element = htmlspecialchars($element, ENT_QUOTES | ENT_HTML5);
 						}
-						yield $element;
+						$out[] = $element;
 					} else {
 						if($escapeCount > 0) {
 							# We can't perform escapeCount escaping on non-strings
 							throw new Exception('Cannot escape non-string values!');
 						}
 						if($element instanceof AssetUrl) {
-							yield ['asset' => $element->value];
+							$out[] = ['asset' => $element->value];
 						} else if($element instanceof CSRFPlaceholder) {
-							yield ['csrf' => true];
+							$out[] = ['csrf' => true];
 						} else if($element instanceof HeaderSet) {
-							yield ['header' => $element->key, 'value' => $element->value ];
+							$out[] = ['header' => $element->key, 'value' => $element->value ];
 						} else {
 							throw new Exception("Invalid HTML component!");
 						}
@@ -120,22 +122,27 @@ class Stringifier {
 				}
 			}
 		}
+		return $out;
 	}
 
 	# Simplifies the data from generateArray() so that
 	# it can be cached and loaded more quickly.
 	function makeArray($element) {
 		$out = [];
-		$lastString = false;
+		$strBuffer = '';
 
 		foreach($this->generateArray($element) as $x) {
-			if(is_string($x) && $lastString) {
-				$out[count($out) - 1] .= $x;
+			if(is_string($x)) {
+				$strBuffer .= $x;
 			} else {
+				if($strBuffer !== '') {
+					$out[] = $strBuffer;
+					$strBuffer = '';
+				}
 				$out[] = $x;
 			}
-			$lastString = is_string($x);
 		}
+		$out[] = $strBuffer;
 		return $out;
 	}
 
