@@ -30,10 +30,16 @@ $klein->onHttpError(function ($code, $router) {
 });
 
 # The main list of forms
-$klein->respond('GET', '/', function () use($parser) {
+$klein->respond('GET', '/', function ($req, $res) use($parser) {
 	$formlist = new FormList($parser->getFormInfo());
-	$ret = '<!DOCTYPE html>' . Stringifier::stringify($formlist->makeFormList());
-	return $ret;
+
+	$out = Stringifier::makeArray($formlist->makeFormList());
+
+	$res->append('<!DOCTYPE html>');
+	$parts = Stringifier::generateString($out, null);
+	foreach($parts as $x) {
+		$res->append($x);
+	}
 });
 
 # A view

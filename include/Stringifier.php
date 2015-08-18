@@ -25,7 +25,9 @@ class Stringifier {
 	# As well as on the purely iterative JavaScript solution
 	# given at this link: http://stackoverflow.com/questions/29991016/
 
-	static function makeArray($element) {
+
+	# A helper generator function for that converts objects into an iterator
+	static function generateArray($element) {
 
 		# The HTML output
 		$out = [];
@@ -92,32 +94,23 @@ class Stringifier {
 
 					if(is_string($element)) {
 						# Handle the escapeCount by escaping extra times.
-
 						for($j = $escapeCount; $j--;) {
 							$element = htmlspecialchars($element, ENT_QUOTES | ENT_HTML5);
 						}
-
-						if($lastString) {
-							# If possible, append to a previous string
-							$out[count($out) - 1] .= $element;
-						} else {
-							$out[] = $element;
-						}
-
+						yield $element;
 					} else {
 						if($escapeCount > 0) {
 							# We can't perform escapeCount escaping on non-strings
 							throw new Exception('Cannot escape non-string values!');
 						}
 						if($element instanceof AssetUrl) {
-							$out[] = ['asset' => $element->value];
+							yield ['asset' => $element->value];
 						} else if($element instanceof CSRFPlaceholder) {
-							$out[] = ['csrf' => true];
+							yield ['csrf' => true];
 						} else {
 							throw new Exception("Invalid HTML component!");
 						}
 					}
-					$lastString = is_string($element);
 				}
 
 				if($top > 1) {
@@ -130,13 +123,27 @@ class Stringifier {
 				}
 			}
 		}
+	}
 
+	# Turns the generated data into a simplified array
+	static function makeArray($element) {
+		$out = [];
+		$lastString = false;
+
+		foreach(self::generateArray($element) as $x) {
+			if(is_string($x) && $lastString) {
+				$out[count($out) - 1] .= $x;
+			} else {
+				$out[] = $x;
+			}
+			$lastString = is_string($x);
+		}
 		return $out;
 	}
 
-	# Convert an array from makeArray() into an actual, final string
-	# ready to be displayed to the user.
-	static function makeString($out, $csrfToken = null) {
+
+	# Generator function used by makeString()
+	static function generateString($parts, $csrfToken) {
 
 		$config = Config::get();
 		$hashes = new Hashes();
@@ -151,31 +158,36 @@ class Stringifier {
 			'lib/jquery.inputmask.bundle.js' => 'lib/jquery.inputmask.bundle.min.js'
 		];
 
-		$str = '';
-		foreach($out as $x) {
-			if(is_string($x)) {
-				$str .= $x;
-			} else if(isset($x['asset'])) {
-				$x = $x['asset'];
-
-				$fileName = isget($assetMap[$x], $x);
-
-				$str .= preg_replace_callback('/^(.*)\.(.*)$/', function($parts) use($fileName, $config, $hashes) {
+		foreach($parts as $part) {
+			if(is_string($part)) {
+				yield $part;
+			} else if(isset($part['asset'])) {
+				$part = $part['asset'];
+				$fileName = isget($assetMap[$part], $part);
+				yield preg_replace_callback('/^(.*)\.(.*)$/', function($parts) use($fileName, $config, $hashes) {
 					return htmlspecialchars($config['asset-prefix'] . $parts[1] . '.hash-' . $hashes->get($fileName) . '.' . $parts[2], ENT_QUOTES | ENT_HTML5);
 				}, $fileName);
-
-			} else if(isset($x['csrf'])) {
-				$str .= htmlspecialchars($csrfToken, ENT_QUOTES | ENT_HTML5);
+			} else if(isset($part['csrf'])) {
+				yield htmlspecialchars($csrfToken, ENT_QUOTES | ENT_HTML5);
 			} else {
 				throw new Exception("Invalid HTML component!");
 			}
 		}
+	}
 
+	# Convert an array from makeArray() into an actual, final string
+	# ready to be displayed to the user.
+	static function makeString($out, $csrfToken = null) {
+		$str = '';
+		$res = self::generateString($out, $csrfToken);
+		foreach($res as $x) {
+			$str .= $x;
+		}
 		return $str;
 	}
 
 	# Performs both steps at once.
 	static function stringify($element) {
-		return self::makeString(self::makeArray($element));
+		return self::makeString(self::generateArray($element));
 	}
 }
