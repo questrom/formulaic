@@ -190,4 +190,15 @@ class Stringifier {
 	static function stringify($element) {
 		return self::makeString(self::generateArray($element));
 	}
+
+	# Stringify and write a HTTP response
+	static function writeResponse($element, $response) {
+		$out = self::generateArray($element);
+
+
+		$parts = self::generateString($out, null);
+		foreach($parts as $x) {
+			$response->append($x);
+		}
+	}
 }

@@ -32,14 +32,8 @@ $klein->onHttpError(function ($code, $router) {
 # The main list of forms
 $klein->respond('GET', '/', function ($req, $res) use($parser) {
 	$formlist = new FormList($parser->getFormInfo());
-
-	$out = Stringifier::makeArray($formlist->makeFormList());
-
 	$res->append('<!DOCTYPE html>');
-	$parts = Stringifier::generateString($out, null);
-	foreach($parts as $x) {
-		$res->append($x);
-	}
+	Stringifier::writeResponse($formlist->makeFormList(), $res);
 });
 
 # A view
@@ -50,13 +44,13 @@ $klein->respond('GET', '/view', function ($req, $res) use($parser) {
 	$page = $parser->parseJade($_GET['form']);
 	$view = $page->getView($_GET['view']);
 
-	return '<!DOCTYPE html>' .
-		Stringifier::stringify(
-			$view
+	$res->append('<!DOCTYPE html>');
+
+	$render = $view
 			->makeView(
 				$view->query( $req->paramsGet()->get('page', 1) )
-			)
-		);
+			);
+	Stringifier::writeResponse($render, $res);
 });
 
 # A form itself
@@ -77,9 +71,13 @@ $klein->respond('GET', '/forms/[:formID]', function($req, $res) use($parser) {
 		'jade-' . sha1_file($parser->getForm($req->formID)) . '-' . sha1_file('config/config.toml'),
 		[],
 		function () use($req, $parser) {
-			$page = $parser->parseJade($req->formID);
-			$str = json_encode(Stringifier::makeArray($page->makeFormPart()->render()));
-			return $str;
+			return json_encode(
+				Stringifier::makeArray(
+					$parser
+						->parseJade($req->formID)
+						->makeFormPart()
+				)
+			);
 		}
 	);
 
