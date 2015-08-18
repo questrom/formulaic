@@ -48,6 +48,12 @@ class GraphViewRenderable implements Renderable {
 # See the ConfigurableView interface in View.php for more info about each method.
 class GraphView implements ConfigurableView {
 
+	function __construct($args, $context) {
+		$this->name = $args['name'];
+		$this->title = $args['title'];
+		$this->graphs = $args['children'];
+	}
+
 	function makeView($data) {
 		$info = [];
 		foreach($data as $index => $piece) {
@@ -62,12 +68,6 @@ class GraphView implements ConfigurableView {
 
 	function getIcon() {
 		return 'area chart icon';
-	}
-
-	function __construct($args) {
-		$this->name = $args['name'];
-		$this->title = $args['title'];
-		$this->graphs = $args['children'];
 	}
 
 	function setPage($page) {
@@ -97,7 +97,7 @@ class GraphView implements ConfigurableView {
 # An abstract class used to implement both pie and bar charts.
 abstract class Graph implements Configurable, GraphViewPartFactory  {
 
-	function __construct($args) {
+	function __construct($args, $context) {
 		$this->name = $args['name'];
 		$this->label = $args['label'];
 	}

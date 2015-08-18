@@ -5,7 +5,7 @@
 class ViewList implements Configurable {
 
 	private $views;
-	function __construct($args) {
+	function __construct($args, $context) {
 		$this->views = $args['children'];
 	}
 	function getAllViews() {

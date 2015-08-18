@@ -11,7 +11,7 @@ use voku\helper\UTF8;
 # The "show-if" element
 class ShowIfComponent implements FormPartFactory, Storeable, Configurable {
 
-	function __construct($args) {
+	function __construct($args, $context) {
 		$this->condition = $args['children'][0];
 		$this->item = $args['children'][1];
 	}
@@ -54,8 +54,8 @@ class ShowIfComponent implements FormPartFactory, Storeable, Configurable {
 
 # The "checkbox" element
 class Checkbox extends NamedLabeledComponent implements Enumerative {
-	function __construct($args) {
-		parent::__construct($args);
+	function __construct($args, $context) {
+		parent::__construct($args, $context);
 
 		# This attribute that the box MUST be checked
 
@@ -97,8 +97,8 @@ class Checkbox extends NamedLabeledComponent implements Enumerative {
 
 # The "time" element
 class TimeInput extends NamedLabeledComponent {
-	function __construct($args) {
-		parent::__construct($args);
+	function __construct($args, $context) {
+		parent::__construct($args, $context);
 
 		$this->required = isset($args['required']);
 		$this->max = isset($args['max']) ? $args['max'] : null;
@@ -150,8 +150,8 @@ class TimeInput extends NamedLabeledComponent {
 
 # The "datetime" element
 class DateTimePicker extends NamedLabeledComponent {
-	function __construct($args) {
-		parent::__construct($args);
+	function __construct($args, $context) {
+		parent::__construct($args, $context);
 
 		$this->required = isset($args['required']);
 		$this->max = isset($args['max']) ? DateTimeImmutable::createFromFormat('Y-m-d g:i a', $args['max']) : null;
@@ -189,8 +189,8 @@ class DateTimePicker extends NamedLabeledComponent {
 
 # The "textarea" element
 class Textarea extends NamedLabeledComponent {
-	function __construct($args) {
-		parent::__construct($args);
+	function __construct($args, $context) {
+		parent::__construct($args, $context);
 
 		$this->maxLength = isset($args['max-length']) ? intval($args['max-length']) : INF;
 		$this->minLength = isset($args['min-length']) ? intval($args['min-length']) : 0;
@@ -224,8 +224,8 @@ class Textarea extends NamedLabeledComponent {
 
 # The "dropdown" element
 class Dropdown extends NamedLabeledComponent {
-	function __construct($args) {
-		parent::__construct($args);
+	function __construct($args, $context) {
+		parent::__construct($args, $context);
 
 		$this->options = $args['children'];
 		$this->required = isset($args['required']);
@@ -252,8 +252,8 @@ class Dropdown extends NamedLabeledComponent {
 
 # The "radios" element
 class Radios extends NamedLabeledComponent implements Enumerative {
-	function __construct($args) {
-		parent::__construct($args);
+	function __construct($args, $context) {
+		parent::__construct($args, $context);
 
 		$this->options = $args['children'];
 		$this->required = isset($args['required']);
@@ -281,8 +281,8 @@ class Radios extends NamedLabeledComponent implements Enumerative {
 
 # The "checkboxes" element
 class Checkboxes extends NamedLabeledComponent implements Enumerative {
-	function __construct($args) {
-		parent::__construct($args);
+	function __construct($args, $context) {
+		parent::__construct($args, $context);
 		$this->options = $args['children'];
 
 		$this->required = isset($args['required']);
@@ -326,7 +326,7 @@ class Checkboxes extends NamedLabeledComponent implements Enumerative {
 class Captcha implements Configurable, Storeable, FormPartFactory {
 	use Groupize, Fieldize;
 
-	function __construct($args) {
+	function __construct($args, $context) {
 		# Google requires us to use this name for all CAPTCHA elements.
 		# Hence, the CAPTCHA element lacks a "name" attribute.
 		$this->name = 'g-recaptcha-response';
@@ -351,8 +351,8 @@ class Captcha implements Configurable, Storeable, FormPartFactory {
 
 # The "textbox" element
 class Textbox extends NamedLabeledComponent {
-	function __construct($args) {
-		parent::__construct($args);
+	function __construct($args, $context) {
+		parent::__construct($args, $context);
 
 		$this->maxLength = isset($args['max-length']) ? intval($args['max-length']) : INF;
 		$this->minLength = isset($args['min-length']) ? intval($args['min-length']) : 0;
@@ -385,8 +385,8 @@ class Textbox extends NamedLabeledComponent {
 
 # The "file" element
 class FileUpload extends NamedLabeledComponent {
-	function __construct($args) {
-		parent::__construct($args);
+	function __construct($args, $context) {
+		parent::__construct($args, $context);
 		$this->required = isset($args['required']);
 		$this->allowedExtensions = array_reduce(
 			array_map(function ($x) {
@@ -520,9 +520,8 @@ class FileUpload extends NamedLabeledComponent {
 
 # The "range" element
 class Range extends NamedLabeledComponent {
-	function __construct($args) {
-
-		parent::__construct($args);
+	function __construct($args, $context) {
+		parent::__construct($args, $context);
 
 		$this->max = isset($args['max']) ? intval($args['max']) : 1;
 		$this->min = isset($args['min']) ? intval($args['min']) : 0;
@@ -554,8 +553,8 @@ class Range extends NamedLabeledComponent {
 # The "password" element
 class Password extends NamedLabeledComponent {
 
-	function __construct($args) {
-		parent::__construct($args);
+	function __construct($args, $context) {
+		parent::__construct($args, $context);
 
 		$this->required = isset($args['required']);
 
@@ -593,8 +592,8 @@ class Password extends NamedLabeledComponent {
 # The "phone" element
 class PhoneNumber extends NamedLabeledComponent {
 
-	function __construct($args) {
-		parent::__construct($args);
+	function __construct($args, $context) {
+		parent::__construct($args, $context);
 		$this->required = isset($args['required']);
 	}
 	function makeFormPart() {
@@ -643,8 +642,8 @@ class PhoneNumber extends NamedLabeledComponent {
 
 # The "email" element
 class EmailAddr extends NamedLabeledComponent {
-	function __construct($args) {
-		parent::__construct($args);
+	function __construct($args, $context) {
+		parent::__construct($args, $context);
 
 		$this->required = isset($args['required']);
 		$this->mustHaveDomain = isset($args['must-have-domain']) ? $args['must-have-domain'] : null;
@@ -682,8 +681,8 @@ class EmailAddr extends NamedLabeledComponent {
 
 # The "url" element
 class UrlInput extends NamedLabeledComponent {
-	function __construct($args) {
-		parent::__construct($args);
+	function __construct($args, $context) {
+		parent::__construct($args, $context);
 		$this->required = isset($args['required']);
 	}
 	function makeFormPart() {
@@ -711,8 +710,8 @@ class UrlInput extends NamedLabeledComponent {
 
 # The "number" element
 class NumberInp extends NamedLabeledComponent {
-	function __construct($args) {
-		parent::__construct($args);
+	function __construct($args, $context) {
+		parent::__construct($args, $context);
 
 		$this->required = isset($args['required']);
 		$this->min = isset($args['min']) ? intval($args['min']) : -INF;
@@ -742,8 +741,8 @@ class NumberInp extends NamedLabeledComponent {
 
 # The "date" element
 class DatePicker extends NamedLabeledComponent {
-	function __construct($args) {
-		parent::__construct($args);
+	function __construct($args, $context) {
+		parent::__construct($args, $context);
 
 		$this->required = isset($args['required']);
 		$this->min = isset($args['min']) ?
@@ -802,7 +801,7 @@ class DatePicker extends NamedLabeledComponent {
 
 # The "Header" element
 class Header implements FormPartFactory, Configurable {
-	function __construct($args) {
+	function __construct($args, $context) {
 		$this->text = $args['innerText'];
 		$this->subhead = isset($args['subhead']) ? $args['subhead'] : null;
 		$this->icon = isset($args['icon']) ? $args['icon'] : null;
@@ -822,7 +821,7 @@ $purifier = new HTMLPurifier($hpconfig);
 # The "inject" element
 class InjectPart implements FormPartFactory, Configurable {
 	use Groupize;
-	function __construct($args) {
+	function __construct($args, $context) {
 		$this->sanitize = !isget($args['no-sanitize'], false);
 		$this->html = $args['innerText'];
 	}
@@ -842,7 +841,7 @@ class InjectPart implements FormPartFactory, Configurable {
 
 # The "notice" element
 class Notice implements FormPartFactory, Configurable {
-	function __construct($args) {
+	function __construct($args, $context) {
 		$this->text = isset($args['text']) ? $args['text'] : '';
 		$this->header = isset($args['header']) ? $args['header'] : null;
 		$this->icon = isset($args['icon']) ? $args['icon'] : null;
@@ -865,7 +864,7 @@ class Notice implements FormPartFactory, Configurable {
 class ListComponent implements FormPartFactory, Configurable,
 	TableViewPartFactory, DetailsViewPartFactory, EmailViewPartFactory, Storeable {
 	use Tableize, Groupize, Fieldize;
-	function __construct($args) {
+	function __construct($args, $context) {
 		$this->items = $args['children'];
 		$this->name = $args['name'];
 		$this->label = $args['label'];
@@ -945,7 +944,7 @@ class ListComponent implements FormPartFactory, Configurable,
 
 # The "group" element
 class Group extends GroupComponent {
-	function __construct($args) {
+	function __construct($args, $context) {
 		$this->items = $args['children'];
 	}
 	function makeFormPart() {
@@ -1008,7 +1007,7 @@ class TimestampField implements TableViewPartFactory, Storeable {
 
 # The "fields" element
 class FieldList extends GroupComponent {
-	function __construct($args) {
+	function __construct($args, $context) {
 		$this->items = $args['children'];
 		$this->items[] = new TimestampField();
 		$this->items[] = new IPField();
@@ -1022,7 +1021,7 @@ class FieldList extends GroupComponent {
 # configuration file.
 class Page implements Configurable {
 
-	function __construct($args) {
+	function __construct($args, $context) {
 		$this->form = $args['byTag']['fields'];
 
 		$this->title = isset($args['title']) ? $args['title'] : 'Form';

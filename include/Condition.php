@@ -11,7 +11,7 @@ interface Condition {
 # A condition that is satisfied when a checkbox is checked.
 class IsCheckedCondition implements Configurable, Condition {
 
-	function __construct($args) {
+	function __construct($args, $context) {
 		$this->name = $args['name'];
 	}
 	function evaluate($cd) {
@@ -28,7 +28,7 @@ class IsCheckedCondition implements Configurable, Condition {
 # A condition that is satisfied when a checkbox is NOT checked.
 class IsNotCheckedCondition implements Configurable, Condition {
 
-	function __construct($args) {
+	function __construct($args, $context) {
 		$this->name = $args['name'];
 	}
 	function evaluate($cd) {
@@ -45,7 +45,7 @@ class IsNotCheckedCondition implements Configurable, Condition {
 # A condition that is satisfied when a radio button within a group is selected.s
 class IsRadioSelectedCondition implements Configurable, Condition {
 
-	function __construct($args) {
+	function __construct($args, $context) {
 		$this->name = $args['name'];
 		$this->value = $args['value'];
 	}

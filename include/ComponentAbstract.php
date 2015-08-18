@@ -93,7 +93,7 @@ abstract class NamedLabeledComponent implements FormPartFactory, Configurable,
 
 	use Tableize, Groupize, Fieldize;
 
-	function __construct($args) {
+	function __construct($args, $context) {
 		$this->label = $args['label'];
 		$this->name = $args['name'];
 		$this->customSublabel = isset($args['sublabel']) ? $args['sublabel'] : null;

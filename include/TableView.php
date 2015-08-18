@@ -5,7 +5,7 @@
 # The "col" element. Just holds data from the attributes
 # in the configuration file.
 class Column implements Configurable {
-	function __construct($args) {
+	function __construct($args, $context) {
 		$this->name = $args['name'];
 		$this->header = $args['header'];
 		$this->width = intval($args['width']);
@@ -17,7 +17,7 @@ class Column implements Configurable {
 # The "table-view" element itself. For mroe info about each method,
 # see ConfigurableView in View.php.
 class TableView implements ConfigurableView {
-	function __construct($args) {
+	function __construct($args, $context) {
 
 		$this->name = $args['name'];
 		$this->title = $args['title'];

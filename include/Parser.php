@@ -8,12 +8,12 @@ use voku\helper\UTF8;
 # with special "children" and "innerText" keys used to store
 # the children or text inside of the element, respectively.
 interface Configurable {
-	public function __construct($args);
+	public function __construct($args, $context);
 }
 
 # Used for the <allow ext="..." mime="..."> element within file upload inputs.
 class AllowElem implements Configurable {
-	function __construct($args) {
+	function __construct($args, $context) {
 		$this->ext = $args['ext'];
 		$this->mime = $args['mime'];
 	}
@@ -92,7 +92,7 @@ class BetterReader extends XMLReader {
 			$attrs['innerText'] = $xml;
 			return [
 				'name' => 'inject',
-				'value' => new InjectPart($attrs)
+				'value' => new InjectPart($attrs, $cfg)
 			];
 		}
 

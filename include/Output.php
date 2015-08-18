@@ -28,7 +28,7 @@ class MongoOutput implements Configurable, Storage {
 
 
 	# Construct an object from an element in a configuration file
-	function __construct($args) {
+	function __construct($args, $context) {
 
 		$config = Config::get()['mongo'];
 
@@ -138,7 +138,7 @@ class S3Output implements Output, Configurable {
 	# Create from an element in the configuration file and from options in the config.toml.
 	# Key and secret are stored in config.toml so people with access to the configuration
 	# files can't necessarily see this (sensitive) information.
-	function __construct($args) {
+	function __construct($args, $context) {
 		$this->secret =Config::get();
 		$this->s3 = new S3($this->secret['s3']['key'], $this->secret['s3']['secret']);
 		$this->bucket = $args['bucket'];
@@ -180,7 +180,7 @@ class S3Output implements Output, Configurable {
 # Send form submissions via email
 class EmailOutput implements Output, Configurable {
 
-	function __construct($args) {
+	function __construct($args, $context) {
 		$this->to = $args['to'];
 		$this->from = $args['from'];
 		$this->subject = $args['subject'];
@@ -239,7 +239,7 @@ class ConfirmationEmail implements Renderable {
 
 # Send confirmation messages
 class SendConfirmationOutput implements Configurable, Output {
-	function __construct($args) {
+	function __construct($args, $context) {
 		$this->from = $args['from'];
 		$this->emailField = $args['email-field'];
 		$this->subject = $args['subject'];
@@ -279,7 +279,7 @@ class CounterOutput implements Output {
 # Combines multiple outputs together.
 class SuperOutput implements Output, Configurable {
 
-	function __construct($args) {
+	function __construct($args, $context) {
 		$this->outputs = $args['children'];
 	}
 
