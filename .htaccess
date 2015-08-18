@@ -32,7 +32,6 @@ Options -MultiViews
 # Alter HTTP headers for improved security
 Header set X-Content-Type-Options "nosniff"
 Header set X-XSS-Protection "1; mode=block"
-Header set X-Frame-Options "DENY"
 Header unset X-Powered-By
 
 # Hide Apache somewhat (see html5boilerplate for details)

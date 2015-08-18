@@ -16,7 +16,10 @@ $stringifier = new Stringifier();
 # Display simple error messages.
 # Based on code from the Klein documentation.
 $klein->onHttpError(function ($code, $router) use($stringifier) {
+
 	$res = $router->response();
+	$res->header('X-Frame-Options', 'DENY');
+
 	$message = h()
 		->h1->style('text-align:center;font-size:72px;')
 			->c($res->status()->getCode())
@@ -32,6 +35,8 @@ $klein->onHttpError(function ($code, $router) use($stringifier) {
 
 # The main list of forms
 $klein->respond('GET', '/', function ($req, $res) use($parser, $stringifier) {
+	$res->header('X-Frame-Options', 'DENY');
+
 	$formlist = new FormList($parser->getFormInfo());
 	$res->append('<!DOCTYPE html>');
 	$stringifier->writeResponse($formlist->makeFormList(), $res);
@@ -39,6 +44,8 @@ $klein->respond('GET', '/', function ($req, $res) use($parser, $stringifier) {
 
 # A view
 $klein->respond('GET', '/view', function ($req, $res) use($parser, $stringifier) {
+	$res->header('X-Frame-Options', 'DENY');
+
 	$page = $parser->parseJade($_GET['form']);
 	$view = $page->getView($_GET['view']);
 
@@ -53,6 +60,7 @@ $klein->respond('GET', '/view', function ($req, $res) use($parser, $stringifier)
 # A form itself
 $klein->respond('GET', '/forms/[:formID]', function($req, $res) use($parser, $stringifier) {
 
+	$res->header('X-Frame-Options', 'DENY');
 
 
 	# Create a XSRF token
@@ -87,6 +95,9 @@ $klein->respond('GET', '/forms/[:formID]', function($req, $res) use($parser, $st
 });
 
 $klein->respond('POST', '/submit', function ($req, $res) use($parser, $stringifier) {
+
+	$res->header('X-Frame-Options', 'DENY');
+
 
 	# Check for XSRF
 	$csrf = new \Riimu\Kit\CSRF\CSRFHandler();
@@ -138,7 +149,10 @@ $klein->respond('POST', '/submit', function ($req, $res) use($parser, $stringifi
 
 # Generate a CSV file for a TableView
 # See http://stackoverflow.com/questions/217424/create-a-csv-file-for-a-user-in-php
-$klein->respond('GET', '/csv', function($req) use($parser, $stringifier) {
+$klein->respond('GET', '/csv', function($req, $res) use($parser, $stringifier) {
+
+	$res->header('X-Frame-Options', 'DENY');
+
 	$page = $parser->parseJade($_GET['form']);
 	$view = new CSVView($page->getView($_GET['view']));
 
@@ -156,11 +170,16 @@ $klein->respond('GET', '/csv', function($req) use($parser, $stringifier) {
 });
 
 # Get the details of a particular table entry.
-$klein->respond('GET', '/details', function () use($parser, $stringifier) {
+$klein->respond('GET', '/details', function ($req, $res) use($parser, $stringifier) {
+		$res->header('X-Frame-Options', 'DENY');
+
+
 	$page = $parser->parseJade($_GET['form']);
 	$view = new DetailsView();
 	$view->setPage($page);
-	return '<!DOCTYPE html>' . $stringifier->stringify($view->makeView($view->query($_GET)));
+
+	$res->append('<!DOCTYPE html>');
+	$stringifier->writeResponse($view->makeView($view->query($_GET)), $res);
 });
 
 # See https://github.com/chriso/klein.php/wiki/Sub-Directory-Installation
