@@ -41,3 +41,16 @@ Note that there is **one key difference** between the Jade used in this app and 
 The following documentation presupposes a general understanding of Jade syntax. When it speaks of "elements" and "attributes," these terms refer to *Jade* elements and attributes; don't try to put normal XML tags into configuration files.
 
 A side note: make sure to **indent Jade files properly**. Small mistakes in indentation can lead to fatal parse errors.
+
+### Enabling framing
+
+If you want to allow a form to be placed in an `<iframe>`, simply set the `allow-framing` attribute of the `page` element to `true`. For example:
+
+```jade
+form(name="Title of form", allow-framing=true)
+  fields
+  outputs
+  views
+```
+
+By default, framing is not allowed in order to prevent clickjacking.
