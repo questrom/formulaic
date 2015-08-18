@@ -26,14 +26,9 @@ class Stringifier {
 	# given at this link: http://stackoverflow.com/questions/29991016/
 
 
-	# A helper generator function for that converts objects into an iterator
-	function generateArray($element) {
-
-		# The HTML output
-		$out = [];
-
-		# The last thing written to $out was a string
-		$lastString = false;
+	# Converts an HTMLGenerator object into an iterator (this function is a generator
+	# so there is no explicit array).
+	private function generateArray($element) {
 
 		# A "call stack" type structure
 		$stack = [];
@@ -125,7 +120,8 @@ class Stringifier {
 		}
 	}
 
-	# Turns the generated data into a simplified array
+	# Simplifies the data from generateArray() so that
+	# it can be cached and loaded more quickly.
 	function makeArray($element) {
 		$out = [];
 		$lastString = false;
@@ -142,8 +138,9 @@ class Stringifier {
 	}
 
 
-	# Generator function used by makeString()
-	function generateString($parts, $csrfToken) {
+	# Takes a series of arrays (from generateArray/makeArray)
+	# and writes their contents into an HTTP response.
+	function writeArray($parts, $response, $csrfToken = null) {
 
 		$config = Config::get();
 		$hashes = new Hashes();
@@ -160,45 +157,40 @@ class Stringifier {
 
 		foreach($parts as $part) {
 			if(is_string($part)) {
-				yield $part;
+				$response->append($part);
 			} else if(isset($part['asset'])) {
 				$part = $part['asset'];
 				$fileName = isget($assetMap[$part], $part);
-				yield preg_replace_callback('/^(.*)\.(.*)$/', function($parts) use($fileName, $config, $hashes) {
-					return htmlspecialchars($config['asset-prefix'] . $parts[1] . '.hash-' . $hashes->get($fileName) . '.' . $parts[2], ENT_QUOTES | ENT_HTML5);
-				}, $fileName);
+				$response->append(
+					preg_replace_callback('/^(.*)\.(.*)$/', function($parts) use($fileName, $config, $hashes) {
+						return htmlspecialchars($config['asset-prefix'] . $parts[1] . '.hash-' . $hashes->get($fileName) . '.' . $parts[2], ENT_QUOTES | ENT_HTML5);
+					}, $fileName)
+				);
 			} else if(isset($part['csrf'])) {
-				yield htmlspecialchars($csrfToken, ENT_QUOTES | ENT_HTML5);
+				$response->append(htmlspecialchars($csrfToken, ENT_QUOTES | ENT_HTML5));
 			} else {
 				throw new Exception("Invalid HTML component!");
 			}
 		}
 	}
 
-	# Convert an array from makeArray() into an actual, final string
-	# ready to be displayed to the user.
+	# Converts a series of arrays (from generateArray/makeArray)
+	# into a string of HTML, via the response body. This should not
+	# be used when the HTML will be written into an HTTP response;
+	# for that, use writeArray.
 	function makeString($out, $csrfToken = null) {
-		$str = '';
-		$res = $this->generateString($out, $csrfToken);
-		foreach($res as $x) {
-			$str .= $x;
-		}
-		return $str;
+		$resp = new \Klein\Response();
+		$this->writeArray($out, $resp, $csrfToken);
+		return $resp->body();
 	}
 
-	# Performs both steps at once.
+	# Converts an HTMLGenerator to a string (see the note on makeString above).
 	function stringify($element) {
 		return $this->makeString($this->generateArray($element));
 	}
 
-	# Stringify and write a HTTP response
-	function writeResponse($element, $response) {
-		$out = $this->generateArray($element);
-
-
-		$parts = $this->generateString($out, null);
-		foreach($parts as $x) {
-			$response->append($x);
-		}
+	# Writes an HTMLGenerator into an HTTP response.
+	function writeResponse($element, $response, $csrfToken = null) {
+		$this->writeArray($this->generateArray($element), $response, $csrfToken);
 	}
 }

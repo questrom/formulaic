@@ -28,9 +28,8 @@ $klein->onHttpError(function ($code, $router) use($stringifier) {
 			->c($res->status()->getMessage())
 		->end;
 
-	$res->body(
-		'<!DOCTYPE html>' . $stringifier->stringify($message)
-	);
+	$res->append('<!DOCTYPE html>');
+	$stringifier->writeResponse($message, $res);
 });
 
 # The main list of forms
@@ -89,9 +88,12 @@ $klein->respond('GET', '/forms/[:formID]', function($req, $res) use($parser, $st
 	# We add asset URLs and the CSRF token
 	# outside of the getOrCreate function
 	# so that these aren't getting cached.
-	$html = $stringifier->makeString(json_decode($html, true), $token);
 
-	return '<!DOCTYPE html>' . $html;
+	$res->append('<!DOCTYPE html>');
+	$stringifier->writeArray(json_decode($html, true), $res, $token);
+	// $html = $stringifier->makeString(json_decode($html, true), $token);
+
+	// return '<!DOCTYPE html>' . $html;
 });
 
 $klein->respond('POST', '/submit', function ($req, $res) use($parser, $stringifier) {
