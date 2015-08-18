@@ -9,12 +9,13 @@ $klein = new \Klein\Klein();
 
 # Create a config file parser
 $parser = new Parser();
+$stringifier = new Stringifier();
 
 // header('X-Frame-Options: DENY');
 
 # Display simple error messages.
 # Based on code from the Klein documentation.
-$klein->onHttpError(function ($code, $router) {
+$klein->onHttpError(function ($code, $router) use($stringifier) {
 	$res = $router->response();
 	$message = h()
 		->h1->style('text-align:center;font-size:72px;')
@@ -25,19 +26,19 @@ $klein->onHttpError(function ($code, $router) {
 		->end;
 
 	$res->body(
-		'<!DOCTYPE html>' . Stringifier::stringify($message)
+		'<!DOCTYPE html>' . $stringifier->stringify($message)
 	);
 });
 
 # The main list of forms
-$klein->respond('GET', '/', function ($req, $res) use($parser) {
+$klein->respond('GET', '/', function ($req, $res) use($parser, $stringifier) {
 	$formlist = new FormList($parser->getFormInfo());
 	$res->append('<!DOCTYPE html>');
-	Stringifier::writeResponse($formlist->makeFormList(), $res);
+	$stringifier->writeResponse($formlist->makeFormList(), $res);
 });
 
 # A view
-$klein->respond('GET', '/view', function ($req, $res) use($parser) {
+$klein->respond('GET', '/view', function ($req, $res) use($parser, $stringifier) {
 	$page = $parser->parseJade($_GET['form']);
 	$view = $page->getView($_GET['view']);
 
@@ -46,11 +47,11 @@ $klein->respond('GET', '/view', function ($req, $res) use($parser) {
 			->makeView(
 				$view->query( $req->paramsGet()->get('page', 1) )
 			);
-	Stringifier::writeResponse($render, $res);
+	$stringifier->writeResponse($render, $res);
 });
 
 # A form itself
-$klein->respond('GET', '/forms/[:formID]', function($req, $res) use($parser) {
+$klein->respond('GET', '/forms/[:formID]', function($req, $res) use($parser, $stringifier) {
 
 
 
@@ -66,9 +67,9 @@ $klein->respond('GET', '/forms/[:formID]', function($req, $res) use($parser) {
 	$html = $cache->getOrCreate(
 		'jade-' . sha1_file($parser->getForm($req->formID)) . '-' . sha1_file('config/config.toml'),
 		[],
-		function () use($req, $parser) {
+		function () use($req, $parser, $stringifier) {
 			return json_encode(
-				Stringifier::makeArray(
+				$stringifier->makeArray(
 					$parser
 						->parseJade($req->formID)
 						->makeFormPart()
@@ -80,12 +81,12 @@ $klein->respond('GET', '/forms/[:formID]', function($req, $res) use($parser) {
 	# We add asset URLs and the CSRF token
 	# outside of the getOrCreate function
 	# so that these aren't getting cached.
-	$html = Stringifier::makeString(json_decode($html, true), $token);
+	$html = $stringifier->makeString(json_decode($html, true), $token);
 
 	return '<!DOCTYPE html>' . $html;
 });
 
-$klein->respond('POST', '/submit', function ($req, $res) use($parser) {
+$klein->respond('POST', '/submit', function ($req, $res) use($parser, $stringifier) {
 
 	# Check for XSRF
 	$csrf = new \Riimu\Kit\CSRF\CSRFHandler();
@@ -137,7 +138,7 @@ $klein->respond('POST', '/submit', function ($req, $res) use($parser) {
 
 # Generate a CSV file for a TableView
 # See http://stackoverflow.com/questions/217424/create-a-csv-file-for-a-user-in-php
-$klein->respond('GET', '/csv', function($req) use($parser) {
+$klein->respond('GET', '/csv', function($req) use($parser, $stringifier) {
 	$page = $parser->parseJade($_GET['form']);
 	$view = new CSVView($page->getView($_GET['view']));
 
@@ -155,11 +156,11 @@ $klein->respond('GET', '/csv', function($req) use($parser) {
 });
 
 # Get the details of a particular table entry.
-$klein->respond('GET', '/details', function () use($parser) {
+$klein->respond('GET', '/details', function () use($parser, $stringifier) {
 	$page = $parser->parseJade($_GET['form']);
 	$view = new DetailsView();
 	$view->setPage($page);
-	return '<!DOCTYPE html>' . Stringifier::stringify($view->makeView($view->query($_GET)));
+	return '<!DOCTYPE html>' . $stringifier->stringify($view->makeView($view->query($_GET)));
 });
 
 # See https://github.com/chriso/klein.php/wiki/Sub-Directory-Installation

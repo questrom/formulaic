@@ -27,7 +27,7 @@ class Stringifier {
 
 
 	# A helper generator function for that converts objects into an iterator
-	static function generateArray($element) {
+	function generateArray($element) {
 
 		# The HTML output
 		$out = [];
@@ -126,11 +126,11 @@ class Stringifier {
 	}
 
 	# Turns the generated data into a simplified array
-	static function makeArray($element) {
+	function makeArray($element) {
 		$out = [];
 		$lastString = false;
 
-		foreach(self::generateArray($element) as $x) {
+		foreach($this->generateArray($element) as $x) {
 			if(is_string($x) && $lastString) {
 				$out[count($out) - 1] .= $x;
 			} else {
@@ -143,7 +143,7 @@ class Stringifier {
 
 
 	# Generator function used by makeString()
-	static function generateString($parts, $csrfToken) {
+	function generateString($parts, $csrfToken) {
 
 		$config = Config::get();
 		$hashes = new Hashes();
@@ -177,9 +177,9 @@ class Stringifier {
 
 	# Convert an array from makeArray() into an actual, final string
 	# ready to be displayed to the user.
-	static function makeString($out, $csrfToken = null) {
+	function makeString($out, $csrfToken = null) {
 		$str = '';
-		$res = self::generateString($out, $csrfToken);
+		$res = $this->generateString($out, $csrfToken);
 		foreach($res as $x) {
 			$str .= $x;
 		}
@@ -187,16 +187,16 @@ class Stringifier {
 	}
 
 	# Performs both steps at once.
-	static function stringify($element) {
-		return self::makeString(self::generateArray($element));
+	function stringify($element) {
+		return $this->makeString($this->generateArray($element));
 	}
 
 	# Stringify and write a HTTP response
-	static function writeResponse($element, $response) {
-		$out = self::generateArray($element);
+	function writeResponse($element, $response) {
+		$out = $this->generateArray($element);
 
 
-		$parts = self::generateString($out, null);
+		$parts = $this->generateString($out, null);
 		foreach($parts as $x) {
 			$response->append($x);
 		}

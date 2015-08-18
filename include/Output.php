@@ -191,7 +191,9 @@ class EmailOutput implements Output, Configurable {
 		$view = new EmailView($page);
 		$view->data = $data;
 
-		$html = '<!DOCTYPE html>' . Stringifier::stringify($view->makeEmailView());
+		$stringifier = new Stringifier();
+
+		$html = '<!DOCTYPE html>' . $stringifier->stringify($view->makeEmailView());
 
 		# ... and send it using nette/mail
 		$mail = new Message();
@@ -246,7 +248,8 @@ class SendConfirmationOutput implements Configurable, Output {
 	function run($data, $page) {
 		# Create the email
 		$view = new ConfirmationEmail($this, $data['_timestamp']);
-		$html = '<!DOCTYPE html>' . Stringifier::stringify($view);
+		$stringifier = new Stringifier();
+		$html = '<!DOCTYPE html>' . $stringifier->stringify($view);
 
 		# ... and send it!
 		$mail = new Message();

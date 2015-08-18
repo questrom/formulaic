@@ -3,7 +3,7 @@
 # These classes define a simple DSL for generating HTML.
 # Perhaps this is best explained with a simple example:
 
-#  Stringifier::stringify(
+#  (new Stringifier())->stringify(
 #    h()->div->class('test')
 #      ->span->id('hello')->c('Hello world')->end
 #    ->end
