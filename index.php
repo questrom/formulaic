@@ -38,14 +38,10 @@ $klein->respond('GET', '/', function ($req, $res) use($parser) {
 
 # A view
 $klein->respond('GET', '/view', function ($req, $res) use($parser) {
-
-
-
 	$page = $parser->parseJade($_GET['form']);
 	$view = $page->getView($_GET['view']);
 
 	$res->append('<!DOCTYPE html>');
-
 	$render = $view
 			->makeView(
 				$view->query( $req->paramsGet()->get('page', 1) )
