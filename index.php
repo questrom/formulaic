@@ -125,7 +125,7 @@ $klein->respond('POST', '/submit', function ($req, $res) use($parser, $stringifi
 		->ifError(function ($val) {
 			return Result::ok($val);
 		})
-		->ifOk(function ($output) use ($csrf) {
+		->ifOk(function ($output) {
 			return json_encode([
 				'data' => $output
 			]);
