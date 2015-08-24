@@ -86,13 +86,15 @@ class HTMLParentContext implements HTMLGenerator {
 
 	private $parent, $tag, $contents, $attrs;
 
-	function __construct($parent, $tag) {
+	function __construct($parent, $tag, $noadd = false) {
 		# $tag is the name of the tag
 		$this->parent = $parent;
 		$this->tag = $tag;
 		$this->contents = [];
 		$this->attrs = [];
-		$this->end = $parent->c($this);
+		if(!$noadd) {
+			$this->end = $parent->c($this);
+		}
 	}
 
 	# Add an attribute
@@ -100,6 +102,12 @@ class HTMLParentContext implements HTMLGenerator {
 		if(!isset($args[1]) || $args[1]) {
 			$this->attrs[$name] = $args[0];
 		}
+		return $this;
+	}
+
+	# Set attributes
+	function setAttrs($attrs) {
+		$this->attrs = $attrs;
 		return $this;
 	}
 
@@ -160,6 +168,27 @@ class HTMLParentlessContext implements HTMLGenerator{
 	function __get($name) {
 		return new HTMLParentContext($this, $name);
 	}
+
+	# Allow
+	function __call($name, $args) {
+		$ctx = new HTMLParentContext($this, $name, true);
+		$attrs = is_array($args[0]) ? $args[0] : [];
+		$fn = is_array($args[0]) ? $args[1] : $args[0];
+
+		$ctx->setAttrs($attrs);
+
+		$inner = new HTMLParentlessContext();
+		$ctx->c(iterator_to_array($fn()));
+		return $this->c($ctx);
+	}
+	function open($fn) {
+		$gen = $fn();
+		foreach($gen as $x) {
+			$this->c($x);
+		}
+		return $this;
+	}
+
 
 	function c($arr) {
 		$this->contents[] = $arr;

@@ -20,11 +20,15 @@ class Label implements Renderable {
 		$this->sublabel = isset($this->f->customSublabel) ? $this->f->customSublabel : $sublabel;
 	}
 	function render() {
-		return h()
-		->label
-			->span->c($this->f->label)->end
-		->end
-		->c(new PossibleSublabel($this->sublabel, false));
+		$h = h();
+		return $h->open(function() {
+			yield h()->label(function() {
+				yield h()->span(function() {
+					yield $this->f->label;
+				});
+			});
+			yield new PossibleSublabel($this->sublabel, false);
+		});
 	}
 }
 
