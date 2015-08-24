@@ -1,0 +1,5 @@
+# Exclude files you probably don't want ag to search
+cache/
+img/
+**/*.min.js
+**/*.min.css
