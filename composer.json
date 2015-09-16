@@ -12,6 +12,7 @@
         "ext-mongo": ">=1.6.8",
         "ext-SPL": "~0.2",
         "ext-xmlreader": "*",
+        "ext-mcrypt": "*",
         "gabrielelana/byte-units": "^0.3.0",
         "google/recaptcha": "^1.1",
         "Gregwar/Cache": "^1.0",
